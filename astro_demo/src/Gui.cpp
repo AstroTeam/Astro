@@ -52,6 +52,10 @@ void Gui::render() {
 		TCODColor::darkerRed);
 	//draw the mana bar
 	renderBar(1,3,BAR_WIDTH, "MANA",0,0,TCODColor::lightBlue, TCODColor::darkerBlue);
+	//draw the last target's hp bar
+	if (engine.player->attacker->lastTarget != NULL) {		renderBar(1,9,BAR_WIDTH, "target's HP",engine.player->attacker->lastTarget->destructible->hp,
+			engine.player->attacker->lastTarget->destructible->maxHp,TCODColor::lightRed, TCODColor::darkerRed);
+    }
 	//draw the message log
 	int y = 1;
 	float colorCoef = 0.4f;
@@ -70,7 +74,7 @@ void Gui::render() {
 	//dungeon level
 	con->setDefaultForeground(TCODColor::white);
 	con->print(3,5,"Dungeon level %d", engine.level);
-	con->print(3,9,"FPS : %d",TCODSystem::getFps());
+	//con->print(3,9,"FPS : %d",TCODSystem::getFps());
 	con->print(3,11,"Turn count: %d",engine.turnCount);
 	
 	//display player xp bar
@@ -136,6 +140,9 @@ void Gui::renderKeyLook() {
 					first = false;
 				}
 					strcat(buf,actor->name);
+				if (actor->attacker && !actor->destructible->isDead() && engine.map->isInFov(x,y)) {
+					engine.player->attacker->lastTarget = actor;
+				}
 			}
 		}
 		//display the list of actors under the mouse cursor

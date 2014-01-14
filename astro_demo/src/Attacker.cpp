@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "main.hpp"
 
-Attacker::Attacker(float power) : power(power) {
+Attacker::Attacker(float power) : power(power), lastTarget(NULL) {
 }
 
 void Attacker::load(TCODZip &zip) {
@@ -23,4 +23,5 @@ void Attacker::attack(Actor *owner, Actor *target) {
 	} else {
 		engine.gui->message(TCODColor::lightGrey,"The %s attacks the %s in vain.\n", owner->name,target->name);
 	}
+	lastTarget = target;
 }

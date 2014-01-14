@@ -90,6 +90,7 @@ void PlayerAi::update(Actor *owner) {
 	case TCODK_CONTROL: 
 		engine.player->x = engine.stairs->x;
 		engine.player->y = engine.stairs->y;
+		engine.map->computeFov(); break;
 	case TCODK_KP5: engine.gameStatus = Engine::NEW_TURN; break;
 	case TCODK_CHAR: handleActionKey(owner, engine.lastKey.c); break;
 	default: break;

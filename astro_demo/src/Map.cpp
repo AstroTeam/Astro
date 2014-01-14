@@ -127,7 +127,7 @@ void Map::addItem(int x, int y) {
 		engine.sendToBack(healthPotion);
 	} else if(dice < 10+10) {
 		//create a scroll of lightningbolt
-		Actor *scrollOfLightningBolt = new Actor(x,y,'&', "scroll of lightning bolt",
+		Actor *scrollOfLightningBolt = new Actor(x,y,'?', "scroll of lightning bolt",
 			TCODColor::lightYellow);
 		scrollOfLightningBolt->blocks = false;
 		scrollOfLightningBolt->pickable = new LightningBolt(5,20);
@@ -135,7 +135,7 @@ void Map::addItem(int x, int y) {
 		engine.sendToBack(scrollOfLightningBolt);
 	} else if(dice < 10+10+10) {
 		//create a scroll of fireball
-		Actor *scrollOfFireball = new Actor(x,y,'&',"scroll of fireball",
+		Actor *scrollOfFireball = new Actor(x,y,'?',"scroll of fireball",
 			TCODColor::lightOrange);
 		scrollOfFireball->blocks = false;
 		scrollOfFireball->pickable = new Fireball(3,12,8);
@@ -143,7 +143,7 @@ void Map::addItem(int x, int y) {
 		engine.sendToBack(scrollOfFireball);
 	} else {
 		//create a scroll of confusion
-		Actor *scrollOfConfusion = new Actor(x,y,'&',"scroll of confusion",
+		Actor *scrollOfConfusion = new Actor(x,y,'?',"scroll of confusion",
 			TCODColor::lighterGreen);
 		scrollOfConfusion->blocks = false;
 		scrollOfConfusion->pickable = new Confuser(10,8);
