@@ -147,6 +147,14 @@ bool Confuser::use(Actor *owner, Actor *wearer) {
 	if (!actor) {
 		return false;
 	}
+	
+	/* 
+	***UNCOMMENT THIS IF YOU WANT THE PLAYER TO NOT BE ABLE TO CONFUSE HIMSELF***
+	if (actor == engine.player) {
+		engine.gui->message(TCODColor::lightRed, "YOu begin to read the scroll, but grow too confused to continue!");
+		return false;
+	} */
+	
 	//confuse the target for nbTurns turns
 	Ai *confusedAi = new ConfusedActorAi(nbTurns, actor->ai);
 	actor->ai = confusedAi;

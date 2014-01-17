@@ -290,7 +290,7 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {
 Actor *Engine::getActor(int x, int y) const {
 	for (Actor **it = actors.begin(); it != actors.end(); it++) {
 		Actor *actor = *it;
-		if (actor->x ==x && actor->y && actor->destructible &&
+		if (actor->x ==x && actor->y==y && actor->destructible &&
 			!actor->destructible->isDead()) {
 			return actor;
 		}
@@ -301,7 +301,7 @@ Actor *Engine::getActor(int x, int y) const {
 Actor *Engine::getAnyActor(int x, int y) const {
 	for (Actor **it = actors.begin(); it != actors.end(); it++) {
 		Actor *actor = *it;
-		if (actor->x ==x && actor->y) {
+		if (actor->x ==x && actor->y == y) {
 			return actor;
 		}
 	}

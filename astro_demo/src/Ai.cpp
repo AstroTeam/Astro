@@ -91,7 +91,7 @@ void PlayerAi::update(Actor *owner) {
 		engine.player->x = engine.stairs->x;
 		engine.player->y = engine.stairs->y;
 		engine.map->computeFov(); break;
-	case TCODK_KP5: engine.gameStatus = Engine::NEW_TURN; break;
+	case TCODK_KP5: engine.map->computeFov(); engine.gameStatus = Engine::NEW_TURN; break;
 	case TCODK_CHAR: handleActionKey(owner, engine.lastKey.c); break;
 	default: break;
 	}
@@ -138,6 +138,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 	switch(ascii) {
 		case 'g': //pickup the item
 		{
+			engine.map->computeFov();
 			bool found = false;
 			for (Actor **iterator = engine.actors.begin();
 				iterator != engine.actors.end(); iterator++) {
@@ -163,15 +164,19 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		break;
 		case 'i': //display inventory
 		{ 
+			engine.map->computeFov();
 			Actor *actor = choseFromInventory(owner);
 			if (actor) {
-				
-				actor->pickable->use(actor,owner);
-				engine.gameStatus = Engine::NEW_TURN;
+				bool used;
+				used = actor->pickable->use(actor,owner);
+				if (used) {
+					engine.gameStatus = Engine::NEW_TURN;
+				}
 			}
 		}break;
 		case 'd': //drop an item
 		{
+			engine.map->computeFov();
 			Actor *actor = choseFromInventory(owner);
 			if (actor) {
 				actor->pickable->drop(actor,owner);
@@ -180,10 +185,12 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		}break;
 		case 'l':
 		{
+			engine.map->computeFov();
 			engine.gui->renderKeyLook();
 		}break;
 		case '>':
 		if (engine.stairs->x == owner->x && engine.stairs->y == owner->y) {
+			engine.player->attacker->lastTarget = NULL;
 			engine.nextLevel();
 		} else {
 			engine.gui->message(TCODColor::lightGrey, "There are no stairs here. Perhaps you are disoriented?");
@@ -310,26 +317,35 @@ void ConfusedActorAi::save(TCODZip &zip) {
 }
 
 void ConfusedActorAi::update(Actor *owner) {
-	TCODRandom *rng = TCODRandom::getInstance();
-	int dx = rng->getInt(-1,1);
-	int dy = rng->getInt(-1,1);
+	if (owner->destructible && !owner->destructible->isDead() ) {
+		TCODRandom *rng = TCODRandom::getInstance();
+		int dx = rng->getInt(-1,1);
+		int dy = rng->getInt(-1,1);
 	
-	if (dx != 0 || dy!=0) {
-		int destx = owner->x + dx;
-		int desty = owner->y + dy;
-		if (engine.map->canWalk(destx,desty)) {
-			owner->x = destx;
-			owner->y = desty;
-		} else {
-			Actor *actor = engine.getActor(destx, desty);
-			if (actor) {
-				owner->attacker->attack(owner,actor);
+		if (dx != 0 || dy!=0) {
+			int destx = owner->x + dx;
+			int desty = owner->y + dy;
+			if (engine.map->canWalk(destx,desty)) {
+				owner->x = destx;
+				owner->y = desty;
+				engine.map->computeFov();
+			} else {
+				Actor *actor = engine.getActor(destx, desty);
+				if (actor) {
+					owner->attacker->attack(owner,actor);
+					engine.map->computeFov();
+				}
 			}
 		}
 	}
 	nbTurns--;
+	
 	if(nbTurns == 0) {
 		owner->ai = oldAi;
 		delete this;
+	}
+		if (owner == engine.player) {
+		engine.gameStatus = Engine::NEW_TURN;
+		return;
 	}
 }
