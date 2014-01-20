@@ -277,8 +277,12 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {
 		
 		for (int i = 0; i < map->height; i++) {
 			for (int j = 0; j < map->width; j++) {
-				if ( distance(*x,j,*y,i) <= AOE) {
-					TCODConsole::root->setCharBackground(j,i,TCODColor::pink);
+				if ( distance(*x,j,*y,i) <= AOE ) {
+					if ( distance(*x,player->x,*y,player->y) >= maxRange && maxRange != 0) {
+						TCODConsole::root->setCharBackground(j,i,TCODColor::desaturatedPink);
+					} else {
+						TCODConsole::root->setCharBackground(j,i,TCODColor::pink);
+					}
 				}
 			}
 		}
