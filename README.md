@@ -15,9 +15,11 @@ Races
 ● Human - Base class. Flat starting stats with no innate specialization. 
 Adequate at everything. Ability: Greed: doubles the chance of money 
 drops for 10 turns. Requires many kills to refresh. 
+
 ● Robot - High starting vitality, strength, and intelligence. Cannot wear 
 armor or eat food. Ability: Consume Armor: destroys armor for small 
 health regeneration. 
+
 ● Alien - High base dexterity and intelligence. Low base vitality. Ability: 
 Consume Corpse: eliminates corpses for small health regeneration. 
 
@@ -27,27 +29,39 @@ Classes & Subclasses
 ● Marine - Combat-focused specialties. Starts with gun with cheap parts. 
 Ability: Barricade: drops a small wall to block a hallway that lasts two 
 turns. Requires many kills to refresh. 
-○ Infantry - 10% more laser weapon damage. 
-○ Medic - Intelligence increases chance of keeping a health pack 
-after using it. 
-○ Quartermaster - Starts game with 3 blank key cards. These can 
-be used to open any locks. Can hold 3 additional items at the 
-start of the game. 
+
+    ○ Infantry - 10% more laser weapon damage. 
+
+    ○ Medic - Intelligence increases chance of keeping a health pack after using it. 
+
+    ○ Quartermaster - Starts game with 3 blank key cards. These can 
+        be used to open any locks. Can hold 3 additional items at the 
+        start of the game. 
+
+
 ● Explorer - Utility-based specialties. Starts with a combat knife. Have 
 more starting vision distance. Ability: Flare: Shoots a pen flare, giving 
 vision surrounding a line until it hits a wall or enemy. Requires a few kills 
 to refresh. 
-○ Survivalist - Takes 1 less damage from all sources. 
-○ Pirate - Corpses have a higher chance of dropping loot. 
-○ Merchant - Takes 1 more damage from all sources. Starts with 
-one grenade, one health pack, and one food. 
+
+    ○ Survivalist - Takes 1 less damage from all sources. 
+
+    ○ Pirate - Corpses have a higher chance of dropping loot. 
+
+    ○ Merchant - Takes 1 more damage from all sources. Starts with 
+        one grenade, one health pack, and one food. 
+
+
 ● Mercenary- Narrowly-focused classes. Start with 3 grenades. Ability: 
 Dash: Gives a free move without using a turn. Requires many kills to 
 refresh. 
-○ Assassin - Has half health (calculated after bonuses). Deals 
-double damage. Starts with a sword and 5 throwing knives. 
-○ Brute - Has extra starting vitality. Starts with 6 bonus grenades 
-and a mace. 
-○ Hacker - Can hack vending machines for lower prices. Increased 
-damage against robots. Has bonus intelligence at start of game. 
-Starts with taser. 
+
+    ○ Assassin - Has half health (calculated after bonuses). Deals 
+        double damage. Starts with a sword and 5 throwing knives. 
+
+    ○ Brute - Has extra starting vitality. Starts with 6 bonus grenades 
+        and a mace. 
+
+    ○ Hacker - Can hack vending machines for lower prices. Increased 
+        damage against robots. Has bonus intelligence at start of game. 
+        Starts with taser. 
