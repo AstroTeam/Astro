@@ -251,9 +251,9 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 			menuy+=3;
 	} else {
 		static TCODImage img("background.png");
-		img.blit2x(TCODConsole::root,40,12);
-		menux = 75;
-		menuy = 10 + TCODConsole::root->getHeight() / 3;
+		img.blit2x(TCODConsole::root,25,12);
+		menux = 60;
+		menuy = 15 + TCODConsole::root->getHeight() / 3;
 	}
 	
 	while (!TCODConsole::isWindowClosed()) {
