@@ -100,7 +100,7 @@ void Map::addMonster(int x, int y) {
 		//create an orc
 		Actor *orc = new Actor(x,y,'o',"orc",TCODColor::desaturatedGreen);
 		orc->destructible = new MonsterDestructible(10,0,"dead orc",10);
-		orc->attacker = new Attacker(3);
+		orc->attacker = new Attacker(4);
 		orc->ai = new MonsterAi();
 		engine.actors.push(orc);
 	}
@@ -108,7 +108,7 @@ void Map::addMonster(int x, int y) {
 		//create a troll
 		Actor *troll = new Actor(x,y,'T',"troll",TCODColor::darkerGreen);
 		troll->destructible = new MonsterDestructible(16,1,"troll carcass",20);
-		troll->attacker = new Attacker(4);
+		troll->attacker = new Attacker(7);
 		troll->ai = new MonsterAi();
 		engine.actors.push(troll);
 	}
@@ -118,14 +118,14 @@ void Map::addItem(int x, int y) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
 	int dice = rng->getInt(0,100);
-	if (dice < 10) {
+	if (dice < 25) {
 		//create a health potion
 		Actor *healthPotion = new Actor(x,y,'!',"health potion", TCODColor::violet);
 		healthPotion->blocks = false;
-		healthPotion->pickable = new Healer(4);
+		healthPotion->pickable = new Healer(20);
 		engine.actors.push(healthPotion);
 		engine.sendToBack(healthPotion);
-	} else if(dice < 10+10) {
+	} else if(dice < 25+25) {
 		//create a scroll of lightningbolt
 		Actor *scrollOfLightningBolt = new Actor(x,y,'?', "scroll of lightning bolt",
 			TCODColor::lightYellow);
@@ -133,7 +133,7 @@ void Map::addItem(int x, int y) {
 		scrollOfLightningBolt->pickable = new LightningBolt(5,20);
 		engine.actors.push(scrollOfLightningBolt);
 		engine.sendToBack(scrollOfLightningBolt);
-	} else if(dice < 10+10+10) {
+	} else if(dice < 25+25+25) {
 		//create a scroll of fireball
 		Actor *scrollOfFireball = new Actor(x,y,'?',"scroll of fireball",
 			TCODColor::lightOrange);
