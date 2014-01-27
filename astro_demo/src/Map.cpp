@@ -96,11 +96,11 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 
 void Map::addMonster(int x, int y) {
 	TCODRandom *rng =TCODRandom::getInstance();
-	if (rng->getInt(0,100) < 80) {
+	if (rng->getInt(0,100) < 60) {
 		//create an orc
 		Actor *orc = new Actor(x,y,'o',"orc",TCODColor::desaturatedGreen);
 		orc->destructible = new MonsterDestructible(10,0,"dead orc",10);
-		orc->attacker = new Attacker(4);
+		orc->attacker = new Attacker(5);
 		orc->ai = new MonsterAi();
 		engine.actors.push(orc);
 	}

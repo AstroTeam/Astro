@@ -91,6 +91,10 @@ void PlayerAi::update(Actor *owner) {
 		engine.player->x = engine.stairs->x;
 		engine.player->y = engine.stairs->y;
 		engine.map->computeFov(); break;
+		
+	case TCODK_PRINTSCREEN:
+		TCODSystem::saveScreenshot(NULL);
+		engine.gui->message(TCODColor::orange,"screenshot saved"); break;
 	case TCODK_KP5: engine.map->computeFov(); engine.gameStatus = Engine::NEW_TURN; break;
 	case TCODK_CHAR: handleActionKey(owner, engine.lastKey.c); break;
 	default: break;
