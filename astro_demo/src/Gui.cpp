@@ -12,10 +12,12 @@ const int PAUSE_MENU_HEIGHT = 23;
 
 Gui::Gui() {
 	con = new TCODConsole(engine.screenWidth, PANEL_HEIGHT);
+	sidebar = new TCODConsole(MSG_X, engine.screenHeight);
 }
 
 Gui::~Gui() {
 	delete con;
+	delete sidebar;
 	clear();
 }
 
@@ -45,15 +47,22 @@ void Gui::render() {
 	//clear the GUI console
 	con->setDefaultBackground(TCODColor::black);
 	con->clear();
+	sidebar->setDefaultBackground(TCODColor::black);
+	sidebar->clear();
+	
+	
+	sidebar->setDefaultForeground(TCODColor(200,180,50));
+	sidebar->printFrame(0,0,MSG_X,
+		engine.screenHeight-15,true,TCOD_BKGND_ALPHA(50),"CHARACTER INFO");
 	
 	//draw the health bar
-	renderBar(1,1,BAR_WIDTH, "HP", engine.player->destructible->hp,
+	renderBar(1,3,BAR_WIDTH, "HP", engine.player->destructible->hp,
 		engine.player->destructible->maxHp, TCODColor::lightRed, 
 		TCODColor::darkerRed);
 	//draw the mana bar
-	renderBar(1,3,BAR_WIDTH, "MANA",0,0,TCODColor::lightBlue, TCODColor::darkerBlue);
+	renderBar(1,5,BAR_WIDTH, "MANA",0,0,TCODColor::lightBlue, TCODColor::darkerBlue);
 	//draw the last target's hp bar
-	if (engine.player->attacker->lastTarget != NULL) {		renderBar(1,9,BAR_WIDTH, "target's HP",engine.player->attacker->lastTarget->destructible->hp,
+	if (engine.player->attacker->lastTarget != NULL) {		renderBar(1,11,BAR_WIDTH, "target's HP",engine.player->attacker->lastTarget->destructible->hp,
 			engine.player->attacker->lastTarget->destructible->maxHp,TCODColor::lightRed, TCODColor::darkerRed);
     }
 	//draw the message log
@@ -62,7 +71,7 @@ void Gui::render() {
 	for (Message **it = log.begin(); it != log.end(); it++) {
 		Message *message = *it;
 		con->setDefaultForeground(message->col * colorCoef);
-		con->print(MSG_X,y,message->text);
+		con->print(1,y,message->text);
 		y++;
 		if (colorCoef < 1.0f) {
 			colorCoef +=0.3f;
@@ -72,19 +81,37 @@ void Gui::render() {
 	//renderMouseLook();
 	
 	//dungeon level
-	con->setDefaultForeground(TCODColor::white);
-	con->print(3,5,"Dungeon level %d", engine.level);
+	//sidebar->setDefaultForeground(TCODColor::white);
+	sidebar->print(3,7,"Dungeon level %d", engine.level);
 	//con->print(3,9,"FPS : %d",TCODSystem::getFps());
-	con->print(3,11,"Turn count: %d",engine.turnCount);
+	sidebar->print(3,13,"Turn count: %d",engine.turnCount);
+	
+	//display the armor slots
+	sidebar->print(9,17,"Armor");
+	sidebar->print(3,19,"Head: ");
+	sidebar->print(3,21,"Chest: ");
+	sidebar->print(3,23,"Legs: ");
+	sidebar->print(3,25,"Feet: ");
+	sidebar->print(3,27,"Hand1: ");
+	sidebar->print(3,29,"Hand2: ");
+	sidebar->print(3,31,"Rangd: ");
 	
 	//display player xp bar
 	PlayerAi *ai = (PlayerAi *)engine.player->ai;
 	char xpTxt[128];
 	sprintf(xpTxt, "XP(%d)", ai->xpLevel);
-	renderBar(1,7,BAR_WIDTH,xpTxt,engine.player->destructible->xp,
+	renderBar(1,9,BAR_WIDTH,xpTxt,engine.player->destructible->xp,
 		ai->getNextLevelXp(),TCODColor::lightViolet, TCODColor::darkerViolet);
+		
+		
+	//display an ability cooldown bar
+	sidebar->print(1,41,"Ability Cooldown: ");
+	renderBar(1,43, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
 	
-	//blit the GUI console 
+
+	//blit the GUI consoles (sidebar and message log) 
+	TCODConsole::blit(sidebar, 0, 0, MSG_X, engine.screenHeight, 
+		TCODConsole::root, 0, 0);
 	TCODConsole::blit(con, 0, 0, engine.screenWidth, PANEL_HEIGHT, 
 		TCODConsole::root, 0, engine.screenHeight - PANEL_HEIGHT);
 }
@@ -94,19 +121,21 @@ void Gui::renderBar(int x, int y, int width, const char *name,
 	const TCODColor &backColor) {
 	
 	//fill the background
-	con->setDefaultBackground(backColor);
-	con->rect(x,y,width,1,false,TCOD_BKGND_SET);
+	sidebar->setDefaultBackground(backColor);
+	sidebar->rect(x,y,width,1,false,TCOD_BKGND_SET);
 	int barWidth = (int)(value / maxValue * width);
 	if (barWidth > 0) {
 		//draw the bar
-		con->setDefaultBackground(barColor);
-		con->rect(x,y,barWidth,1,false,TCOD_BKGND_SET);
+		sidebar->setDefaultBackground(barColor);
+		sidebar->rect(x,y,barWidth,1,false,TCOD_BKGND_SET);
 	}
 	
 	//print the text on top of the bar
-	con->setDefaultForeground(TCODColor::white);
-	con->printEx(x+width/2,y,TCOD_BKGND_NONE,TCOD_CENTER,
-		"%s : %g/%g", name, value, maxValue);
+	if (name != NULL) {
+		sidebar->setDefaultForeground(TCODColor::white);
+		sidebar->printEx(x+width/2,y,TCOD_BKGND_NONE,TCOD_CENTER,
+			"%s : %g/%g", name, value, maxValue);
+	}
 }
 
 Gui::Message::Message(const char *text, const TCODColor &col) : 

@@ -159,7 +159,7 @@ bool Confuser::use(Actor *owner, Actor *wearer) {
 	Ai *confusedAi = new ConfusedActorAi(nbTurns, actor->ai);
 	actor->ai = confusedAi;
 	
-	engine.gui->message(TCODColor::lightGreen, "The eyes of the %s look vacant, as he starts to stumble around!",
+	engine.gui->message(TCODColor::lightGreen, "The flash of light confuses the %s, and they start to stumble around!",
 		actor->name);
 	return Pickable::use(owner,wearer);
 }

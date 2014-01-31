@@ -43,6 +43,7 @@ public:
 	
 protected:
 	TCODConsole *con;
+	TCODConsole *sidebar;
 	//void renderMouseLook(); remove me to remove mouse look
 	struct Message {
 		char *text;

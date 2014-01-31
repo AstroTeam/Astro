@@ -96,18 +96,18 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 
 void Map::addMonster(int x, int y) {
 	TCODRandom *rng =TCODRandom::getInstance();
-	if (rng->getInt(0,100) < 60) {
+	if (rng->getInt(0,100) < 80) {
 		//create an orc
-		Actor *orc = new Actor(x,y,'o',"orc",TCODColor::desaturatedGreen);
-		orc->destructible = new MonsterDestructible(10,0,"dead orc",10);
+		Actor *orc = new Actor(x,y,'o',"infected crewmember",TCODColor::desaturatedGreen);
+		orc->destructible = new MonsterDestructible(10,0,"infected corpse",10);
 		orc->attacker = new Attacker(5);
 		orc->ai = new MonsterAi();
 		engine.actors.push(orc);
 	}
 	else {	
 		//create a troll
-		Actor *troll = new Actor(x,y,'T',"troll",TCODColor::darkerGreen);
-		troll->destructible = new MonsterDestructible(16,1,"troll carcass",20);
+		Actor *troll = new Actor(x,y,'T',"gross alien",TCODColor::darkerGreen);
+		troll->destructible = new MonsterDestructible(16,1,"gross alien corpse",20);
 		troll->attacker = new Attacker(7);
 		troll->ai = new MonsterAi();
 		engine.actors.push(troll);
@@ -120,14 +120,14 @@ void Map::addItem(int x, int y) {
 	int dice = rng->getInt(0,100);
 	if (dice < 25) {
 		//create a health potion
-		Actor *healthPotion = new Actor(x,y,'!',"health potion", TCODColor::violet);
+		Actor *healthPotion = new Actor(x,y,'!',"Medkit", TCODColor::violet);
 		healthPotion->blocks = false;
 		healthPotion->pickable = new Healer(20);
 		engine.actors.push(healthPotion);
 		engine.sendToBack(healthPotion);
 	} else if(dice < 25+25) {
 		//create a scroll of lightningbolt
-		Actor *scrollOfLightningBolt = new Actor(x,y,'?', "scroll of lightning bolt",
+		Actor *scrollOfLightningBolt = new Actor(x,y,'?', "EMP Pulse",
 			TCODColor::lightYellow);
 		scrollOfLightningBolt->blocks = false;
 		scrollOfLightningBolt->pickable = new LightningBolt(5,20);
@@ -135,7 +135,7 @@ void Map::addItem(int x, int y) {
 		engine.sendToBack(scrollOfLightningBolt);
 	} else if(dice < 25+25+25) {
 		//create a scroll of fireball
-		Actor *scrollOfFireball = new Actor(x,y,'?',"scroll of fireball",
+		Actor *scrollOfFireball = new Actor(x,y,'?',"Firebomb",
 			TCODColor::lightOrange);
 		scrollOfFireball->blocks = false;
 		scrollOfFireball->pickable = new Fireball(3,12,8);
@@ -143,7 +143,7 @@ void Map::addItem(int x, int y) {
 		engine.sendToBack(scrollOfFireball);
 	} else {
 		//create a scroll of confusion
-		Actor *scrollOfConfusion = new Actor(x,y,'?',"scroll of confusion",
+		Actor *scrollOfConfusion = new Actor(x,y,'?',"Flashbang",
 			TCODColor::lighterGreen);
 		scrollOfConfusion->blocks = false;
 		scrollOfConfusion->pickable = new Confuser(10,8);
@@ -242,12 +242,12 @@ void Map::render() const {
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
 				
 				if (isWall(x,y)) {
-					TCODConsole::root->setChar(x, y, '#');
-					TCODConsole::root->setCharForeground(x,y,TCODColor::white);
+					engine.mapcon->setChar(x, y, '#');
+					engine.mapcon->setCharForeground(x,y,TCODColor::white);
 				}
 				else {
-					TCODConsole::root->setChar(x, y, '.');
-					TCODConsole::root->setCharForeground(x,y,TCODColor::white);
+					engine.mapcon->setChar(x, y, '.');
+					engine.mapcon->setCharForeground(x,y,TCODColor::white);
 				}
 			}
 			else if (isExplored(x,y)) {
@@ -255,12 +255,12 @@ void Map::render() const {
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
 				
 				if (isWall(x,y)) {
-					TCODConsole::root->setChar(x, y, '#');
-					TCODConsole::root->setCharForeground(x,y,TCODColor::darkGrey);
+					engine.mapcon->setChar(x, y, '#');
+					engine.mapcon->setCharForeground(x,y,TCODColor::darkGrey);
 				}
 				else {
-					TCODConsole::root->setChar(x, y, '.');
-					TCODConsole::root->setCharForeground(x,y,TCODColor::darkGrey);
+					engine.mapcon->setChar(x, y, '.');
+					engine.mapcon->setCharForeground(x,y,TCODColor::darkGrey);
 				}
 			}
 		}

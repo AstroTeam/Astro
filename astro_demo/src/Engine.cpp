@@ -13,8 +13,10 @@
 Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	player(NULL),map(NULL), fovRadius(3),
 	screenWidth(screenWidth),screenHeight(screenHeight),level(1),turnCount(0) {
-	
+	mapWidth = screenWidth - 22;
+	mapHeight = screenHeight - 14;
 	TCODConsole::initRoot(screenWidth,screenHeight,"Astro", false);
+	mapcon = new TCODConsole(mapWidth,mapHeight);
 	gui = new Gui();
 }
 
@@ -31,7 +33,7 @@ void Engine::term() {
 
 void Engine::init() {
 	player = new Actor(40,25,'@', "player",TCODColor::white);
-	player->destructible = new PlayerDestructible(70, 2, "your cadaver");
+	player->destructible = new PlayerDestructible(100, 2, "your cadaver");
 	player->attacker = new Attacker(5);
 	player->ai = new PlayerAi();
 	player->container = new Container(26);
@@ -39,7 +41,7 @@ void Engine::init() {
 	stairs = new Actor(0,0,'>', "stairs", TCODColor::white);
 	stairs->blocks = false;
 	actors.push(stairs);
-	map = new Map(screenWidth,screenHeight - 14);
+	map = new Map(mapWidth, mapHeight);
 	map->init(true);
 	gui->message(TCODColor::red, 
     	"Welcome stranger! Prepare to face a horde of Orcs and Trolls");
@@ -179,6 +181,7 @@ float Engine::distance(int x1, int x2, int y1, int y2) {
 void Engine::render()
 {
 	TCODConsole::root->clear();
+	mapcon->clear();
 
 	//draw the map
 	map->render();
@@ -202,6 +205,9 @@ void Engine::render()
 	
 	gui->render();
 	
+	TCODConsole::blit(mapcon, 0, 0, mapWidth, mapHeight, 
+		TCODConsole::root, TCODConsole::root->getWidth() - mapWidth, 0);
+	
 	//the comment below is the old gui code
 	/* TCODConsole::root->print(1, screenHeight-2, "HP: %d/%d", 
 	(int)player->destructible->hp,(int)player->destructible->maxHp); */
@@ -223,9 +229,10 @@ void Engine::nextLevel() {
 		}
 	}
 	//create a new map
-	map = new Map(screenWidth,screenHeight - 14);
+	map = new Map(mapWidth,mapHeight);
 	map->init(true);
 	gameStatus = STARTUP;
+	save();
 }
 
 void Engine::sendToBack(Actor *actor) {
@@ -279,13 +286,15 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {
 			for (int j = 0; j < map->width; j++) {
 				if ( distance(*x,j,*y,i) <= AOE ) {
 					if ( distance(*x,player->x,*y,player->y) >= maxRange && maxRange != 0) {
-						TCODConsole::root->setCharBackground(j,i,TCODColor::desaturatedPink);
+						mapcon->setCharBackground(j,i,TCODColor::desaturatedPink);
 					} else {
-						TCODConsole::root->setCharBackground(j,i,TCODColor::pink);
+						mapcon->setCharBackground(j,i,TCODColor::pink);
 					}
 				}
 			}
 		}
+		TCODConsole::blit(mapcon, 0, 0, mapWidth, mapHeight, 
+			TCODConsole::root, TCODConsole::root->getWidth() - mapWidth, 0);
 		TCODConsole::flush();
 	}
 	return false;

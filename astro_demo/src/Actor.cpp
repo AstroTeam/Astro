@@ -69,8 +69,8 @@ void Actor::load(TCODZip &zip) {
 	
 void Actor::render() const
 {
-	TCODConsole::root->setChar(x, y, ch);
-	TCODConsole::root->setCharForeground(x,y,col);
+	engine.mapcon->setChar(x, y, ch);
+	engine.mapcon->setCharForeground(x,y,col);
 
 }
 

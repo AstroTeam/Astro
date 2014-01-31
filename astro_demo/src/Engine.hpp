@@ -8,6 +8,7 @@ public:
 		VICTORY,
 		DEFEAT} gameStatus;
 
+	TCODConsole *mapcon;
 	TCODList<Actor *> actors;
 	Actor *player;
 	Actor *stairs;
@@ -15,6 +16,8 @@ public:
 	int fovRadius;
 	int screenWidth;
 	int screenHeight;
+	int mapWidth;
+	int mapHeight;
 	int level;
 	int turnCount;
 	Gui *gui;
