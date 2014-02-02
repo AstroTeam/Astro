@@ -44,13 +44,15 @@ void Gui::load(TCODZip &zip) {
 }
 
 void Gui::render() {
-	//clear the GUI console
+	//clear the GUI consoles
 	con->setDefaultBackground(TCODColor::black);
 	con->clear();
 	sidebar->setDefaultBackground(TCODColor::black);
 	sidebar->clear();
 	
 	
+	
+	//create the sidebar
 	sidebar->setDefaultForeground(TCODColor(200,180,50));
 	sidebar->printFrame(0,0,MSG_X,
 		engine.screenHeight-15,true,TCOD_BKGND_ALPHA(50),"CHARACTER INFO");
@@ -65,20 +67,6 @@ void Gui::render() {
 	if (engine.player->attacker->lastTarget != NULL) {		renderBar(1,11,BAR_WIDTH, "target's HP",engine.player->attacker->lastTarget->destructible->hp,
 			engine.player->attacker->lastTarget->destructible->maxHp,TCODColor::lightRed, TCODColor::darkerRed);
     }
-	//draw the message log
-	int y = 1;
-	float colorCoef = 0.4f;
-	for (Message **it = log.begin(); it != log.end(); it++) {
-		Message *message = *it;
-		con->setDefaultForeground(message->col * colorCoef);
-		con->print(1,y,message->text);
-		y++;
-		if (colorCoef < 1.0f) {
-			colorCoef +=0.3f;
-		}
-	}
-	//mouse look
-	//renderMouseLook();
 	
 	//dungeon level
 	//sidebar->setDefaultForeground(TCODColor::white);
@@ -105,10 +93,26 @@ void Gui::render() {
 		
 		
 	//display an ability cooldown bar
-	sidebar->print(1,41,"Ability Cooldown: ");
-	renderBar(1,43, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
+	sidebar->print(1,33,"Ability Cooldown: ");
+	renderBar(1,35, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
 	
 
+	//mouse look
+	//renderMouseLook();
+	
+	//draw the message log
+	int y = 1;
+	float colorCoef = 0.4f;
+	for (Message **it = log.begin(); it != log.end(); it++) {
+		Message *message = *it;
+		con->setDefaultForeground(message->col * colorCoef);
+		con->print(1,y,message->text);
+		y++;
+		if (colorCoef < 1.0f) {
+			colorCoef +=0.3f;
+		}
+	}
+	
 	//blit the GUI consoles (sidebar and message log) 
 	TCODConsole::blit(sidebar, 0, 0, MSG_X, engine.screenHeight, 
 		TCODConsole::root, 0, 0);
@@ -280,9 +284,9 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 			menuy+=3;
 	} else {
 		static TCODImage img("background.png");
-		img.blit2x(TCODConsole::root,25,12);
-		menux = 60;
-		menuy = 15 + TCODConsole::root->getHeight() / 3;
+		img.blit2x(TCODConsole::root,0,6);
+		menux = 35;
+		menuy = 20 + TCODConsole::root->getHeight() / 3;
 	}
 	
 	while (!TCODConsole::isWindowClosed()) {

@@ -13,8 +13,8 @@
 Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	player(NULL),map(NULL), fovRadius(3),
 	screenWidth(screenWidth),screenHeight(screenHeight),level(1),turnCount(0) {
-	mapWidth = screenWidth - 22;
-	mapHeight = screenHeight - 14;
+	mapWidth = 100;
+	mapHeight = 100;
 	TCODConsole::initRoot(screenWidth,screenHeight,"Astro", false);
 	mapcon = new TCODConsole(mapWidth,mapHeight);
 	gui = new Gui();
@@ -205,8 +205,34 @@ void Engine::render()
 	
 	gui->render();
 	
-	TCODConsole::blit(mapcon, 0, 0, mapWidth, mapHeight, 
-		TCODConsole::root, TCODConsole::root->getWidth() - mapWidth, 0);
+	int mapx1 = 0, mapy1 = 0, mapy2 = 0, mapx2 = 0;
+	
+	mapx1 = player->x - ((screenWidth -22)/2);
+	mapy1 = player->y - ((screenHeight -14)/2);
+	mapx2 = player->x + ((screenWidth -22)/2);
+	mapy2 = player->y + ((screenHeight -14)/2);
+	
+	if (mapx1 < 0) {
+		mapx2 += (0-mapx1);
+		mapx1 = 0;
+	}	
+	if (mapy1 < 0) { 
+		mapy2 += (0-mapy1);
+		mapy1 = 0;
+	}
+	if (mapx2 > 99) {
+		mapx1 += (99-mapx2);
+		mapx2 = 99;
+	}
+	if (mapy2 > 99) {
+		mapy1 += (99-mapy2);
+		mapy2 = 99;
+	}
+	//if (mapx2 > TCODConsole::root->getWidth() - 22) mapx2 = TCODConsole::root->getWidth() - 22;
+	if (mapy2 > TCODConsole::root->getHeight() - 14) mapy2 = TCODConsole::root->getHeight() - 14;
+	
+	TCODConsole::blit(mapcon, mapx1, mapy1, mapx2, mapy2, 
+		TCODConsole::root, 22, 0);
 	
 	//the comment below is the old gui code
 	/* TCODConsole::root->print(1, screenHeight-2, "HP: %d/%d", 
@@ -282,6 +308,11 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {
 		*x += dx;
 		*y += dy;
 		
+		if (*x > 99) *x = 99;
+		if (*x < 0) *x = 0;
+		if (*y > 99) *y = 99;
+		if (*y < 0) *y = 0;
+		
 		for (int i = 0; i < map->height; i++) {
 			for (int j = 0; j < map->width; j++) {
 				if ( distance(*x,j,*y,i) <= AOE ) {
@@ -293,10 +324,39 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {
 				}
 			}
 		}
-		TCODConsole::blit(mapcon, 0, 0, mapWidth, mapHeight, 
-			TCODConsole::root, TCODConsole::root->getWidth() - mapWidth, 0);
-		TCODConsole::flush();
+		
+	int mapx1 = 0, mapy1 = 0, mapy2 = 0, mapx2 = 0;
+	
+	mapx1 = *x - ((screenWidth -22)/2);
+	mapy1 = *y - ((screenHeight -14)/2);
+	mapx2 = *x + ((screenWidth -22)/2);
+	mapy2 = *y + ((screenHeight -14)/2);
+	
+if (mapx1 < 0) {
+		mapx2 += (0-mapx1);
+		mapx1 = 0;
+	}	
+	if (mapy1 < 0) { 
+		mapy2 += (0-mapy1);
+		mapy1 = 0;
 	}
+	if (mapx2 > 99) {
+		mapx1 += (99-mapx2);
+		mapx2 = 99;
+	}
+	if (mapy2 > 99) {
+		mapy1 += (99-mapy2);
+		mapy2 = 99;
+	}
+	//if (mapx2 > TCODConsole::root->getWidth() - 22) mapx2 = TCODConsole::root->getWidth() - 14;
+	if (mapy2 > TCODConsole::root->getHeight() - 14) mapy2 = TCODConsole::root->getHeight() - 14;
+	 
+	TCODConsole::blit(mapcon, mapx1, mapy1, mapx2, mapy2, 
+		TCODConsole::root, 22, 0);
+		
+	TCODConsole::flush();
+		
+	} 
 	return false;
 }
 

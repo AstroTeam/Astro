@@ -39,7 +39,7 @@ void PlayerAi::update(Actor *owner) {
 		bool choice_made = false, first = true;
 		while (!choice_made) {
 		if (first) {
-			engine.gui->message(TCODColor::yellow,"As the monster falls to the floor, you feel yourself filled with some unknown strength!");
+			engine.gui->message(TCODColor::yellow,"As the monster falls to the floor, you feel yourself filled with some\n unknown strength!");
 			TCODConsole::flush();
 			xpLevel++;
 			owner->destructible->xp -= levelUpXp;
@@ -203,7 +203,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		int w, h;
 		if (!TCODConsole::isFullscreen()){
 			TCODSystem::getCurrentResolution(&w,&h);
-			TCODConsole::initRoot(w/8,h/8,"Astro",true);
+			TCODConsole::initRoot(w/16,h/16,"Astro",true);
 		} else {
 			engine.gui->message(TCODColor::darkerPink,"minimizing");
 			TCODConsole::initRoot(engine.screenWidth,engine.screenHeight, "Astro", false);

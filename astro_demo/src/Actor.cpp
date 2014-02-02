@@ -69,9 +69,12 @@ void Actor::load(TCODZip &zip) {
 	
 void Actor::render() const
 {
-	engine.mapcon->setChar(x, y, ch);
-	engine.mapcon->setCharForeground(x,y,col);
-
+	TCODConsole *offscrn = new TCODConsole(1,1);
+	offscrn->setChar(0, 0, ch);
+	offscrn->setCharForeground(0,0,col); 
+	//offscrn->setKeyColor(TCODColor::black);
+	TCODConsole::blit(offscrn,0,0,0,0,engine.mapcon,x,y,1.0,0.0);
+	delete offscrn;
 }
 
 void Actor::update()

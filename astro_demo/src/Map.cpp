@@ -106,7 +106,7 @@ void Map::addMonster(int x, int y) {
 	}
 	else {	
 		//create a troll
-		Actor *troll = new Actor(x,y,'T',"gross alien",TCODColor::darkerGreen);
+		Actor *troll = new Actor(x,y,'T',"gross alien",TCODColor::yellow);
 		troll->destructible = new MonsterDestructible(16,1,"gross alien corpse",20);
 		troll->attacker = new Attacker(7);
 		troll->ai = new MonsterAi();
@@ -246,8 +246,8 @@ void Map::render() const {
 					engine.mapcon->setCharForeground(x,y,TCODColor::white);
 				}
 				else {
-					engine.mapcon->setChar(x, y, '.');
-					engine.mapcon->setCharForeground(x,y,TCODColor::white);
+					engine.mapcon->setChar(x, y, ' ');
+					engine.mapcon->setCharBackground(x,y,TCODColor::grey);
 				}
 			}
 			else if (isExplored(x,y)) {
@@ -259,8 +259,8 @@ void Map::render() const {
 					engine.mapcon->setCharForeground(x,y,TCODColor::darkGrey);
 				}
 				else {
-					engine.mapcon->setChar(x, y, '.');
-					engine.mapcon->setCharForeground(x,y,TCODColor::darkGrey);
+					engine.mapcon->setChar(x, y, ' ');
+					engine.mapcon->setCharBackground(x,y,TCODColor::darkGrey);
 				}
 			}
 		}
