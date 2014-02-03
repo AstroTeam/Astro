@@ -1,8 +1,6 @@
 #include "main.hpp"
 
-
 Engine engine(150/1.875,90/1.875);
-
 
 int main() {
 	engine.load(false);
