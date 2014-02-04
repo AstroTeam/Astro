@@ -1,3 +1,6 @@
+$ cat .gitignore
+#Game Save Files
+*.sav
 
 # Executables
 *.exe

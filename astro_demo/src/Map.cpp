@@ -98,7 +98,7 @@ void Map::addMonster(int x, int y) {
 	TCODRandom *rng =TCODRandom::getInstance();
 	if (rng->getInt(0,100) < 80) {
 		//create an orc
-		Actor *orc = new Actor(x,y,'o',"infected crewmember",TCODColor::desaturatedGreen);
+		Actor *orc = new Actor(x,y,164,"infected crewmember",TCODColor::white);
 		orc->destructible = new MonsterDestructible(10,0,"infected corpse",10);
 		orc->attacker = new Attacker(5);
 		orc->ai = new MonsterAi();
@@ -106,7 +106,7 @@ void Map::addMonster(int x, int y) {
 	}
 	else {	
 		//create a troll
-		Actor *troll = new Actor(x,y,'T',"gross alien",TCODColor::yellow);
+		Actor *troll = new Actor(x,y,165,"Spore Creature",TCODColor::white);
 		troll->destructible = new MonsterDestructible(16,1,"gross alien corpse",20);
 		troll->attacker = new Attacker(7);
 		troll->ai = new MonsterAi();
@@ -242,7 +242,7 @@ void Map::render() const {
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
 				
 				if (isWall(x,y)) {
-					engine.mapcon->setChar(x, y, '#');
+					engine.mapcon->setChar(x, y, '^');
 					engine.mapcon->setCharForeground(x,y,TCODColor::white);
 				}
 				else {
@@ -255,7 +255,7 @@ void Map::render() const {
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
 				
 				if (isWall(x,y)) {
-					engine.mapcon->setChar(x, y, '#');
+					engine.mapcon->setChar(x, y, '^');
 					engine.mapcon->setCharForeground(x,y,TCODColor::darkGrey);
 				}
 				else {
