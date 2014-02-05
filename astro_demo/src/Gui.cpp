@@ -2,7 +2,7 @@
 #include <stdarg.h>
 #include "main.hpp"
 
-static const int PANEL_HEIGHT = 14;
+static const int PANEL_HEIGHT = 12;
 static const int BAR_WIDTH = 20;
 static const int MSG_X = BAR_WIDTH + 2;
 static const int MSG_HEIGHT = PANEL_HEIGHT-1;
@@ -55,7 +55,7 @@ void Gui::render() {
 	//create the sidebar
 	sidebar->setDefaultForeground(TCODColor(200,180,50));
 	sidebar->printFrame(0,0,MSG_X,
-		engine.screenHeight-15,true,TCOD_BKGND_ALPHA(50),"CHARACTER INFO");
+		engine.screenHeight-12,true,TCOD_BKGND_ALPHA(50),"CHARACTER INFO");
 	
 	//draw the health bar
 	renderBar(1,3,BAR_WIDTH, "HP", engine.player->destructible->hp,
@@ -75,14 +75,14 @@ void Gui::render() {
 	sidebar->print(3,13,"Turn count: %d",engine.turnCount);
 	
 	//display the armor slots
-	sidebar->print(9,17,"Armor");
-	sidebar->print(3,19,"Head: ");
-	sidebar->print(3,21,"Chest: ");
-	sidebar->print(3,23,"Legs: ");
-	sidebar->print(3,25,"Feet: ");
-	sidebar->print(3,27,"Hand1: ");
-	sidebar->print(3,29,"Hand2: ");
-	sidebar->print(3,31,"Rangd: ");
+	sidebar->print(9,15,"Armor");
+	sidebar->print(3,17,"Head: ");
+	sidebar->print(3,19,"Chest: ");
+	sidebar->print(3,21,"Legs: ");
+	sidebar->print(3,23,"Feet: ");
+	sidebar->print(3,25,"Hand1: ");
+	sidebar->print(3,27,"Hand2: ");
+	sidebar->print(3,29,"Rangd: ");
 	
 	//display player xp bar
 	PlayerAi *ai = (PlayerAi *)engine.player->ai;
@@ -93,8 +93,8 @@ void Gui::render() {
 		
 		
 	//display an ability cooldown bar
-	sidebar->print(1,33,"Ability Cooldown: ");
-	renderBar(1,35, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
+	sidebar->print(1,32,"Ability Cooldown: ");
+	renderBar(1,34, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
 	
 
 	//mouse look

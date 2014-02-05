@@ -208,9 +208,9 @@ void Engine::render()
 	int mapx1 = 0, mapy1 = 0, mapy2 = 0, mapx2 = 0;
 	
 	mapx1 = player->x - ((screenWidth -22)/2);
-	mapy1 = player->y - ((screenHeight -14)/2);
+	mapy1 = player->y - ((screenHeight -12)/2);
 	mapx2 = player->x + ((screenWidth -22)/2);
-	mapy2 = player->y + ((screenHeight -14)/2);
+	mapy2 = player->y + ((screenHeight -12)/2);
 	
 	if (mapx1 < 0) {
 		mapx2 += (0-mapx1);
@@ -220,16 +220,16 @@ void Engine::render()
 		mapy2 += (0-mapy1);
 		mapy1 = 0;
 	}
-	if (mapx2 > 99) {
-		mapx1 += (99-mapx2);
-		mapx2 = 99;
+	if (mapx2 > 100) {
+		mapx1 += (100-mapx2);
+		mapx2 = 100;
 	}
-	if (mapy2 > 99) {
-		mapy1 += (99-mapy2);
-		mapy2 = 99;
+	if (mapy2 > 100) {
+		mapy1 += (100-mapy2);
+		mapy2 = 100;
 	}
 	//if (mapx2 > TCODConsole::root->getWidth() - 22) mapx2 = TCODConsole::root->getWidth() - 22;
-	if (mapy2 > TCODConsole::root->getHeight() - 14) mapy2 = TCODConsole::root->getHeight() - 14;
+	if (mapy2 > TCODConsole::root->getHeight() - 12) mapy2 = TCODConsole::root->getHeight() - 12;
 	
 	TCODConsole::blit(mapcon, mapx1, mapy1, mapx2, mapy2, 
 		TCODConsole::root, 22, 0);
@@ -328,9 +328,9 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {
 	int mapx1 = 0, mapy1 = 0, mapy2 = 0, mapx2 = 0;
 	
 	mapx1 = *x - ((screenWidth -22)/2);
-	mapy1 = *y - ((screenHeight -14)/2);
+	mapy1 = *y - ((screenHeight -12)/2);
 	mapx2 = *x + ((screenWidth -22)/2);
-	mapy2 = *y + ((screenHeight -14)/2);
+	mapy2 = *y + ((screenHeight -12)/2);
 	
 if (mapx1 < 0) {
 		mapx2 += (0-mapx1);
@@ -340,16 +340,16 @@ if (mapx1 < 0) {
 		mapy2 += (0-mapy1);
 		mapy1 = 0;
 	}
-	if (mapx2 > 99) {
-		mapx1 += (99-mapx2);
-		mapx2 = 99;
+	if (mapx2 > 100) {
+		mapx1 += (100-mapx2);
+		mapx2 = 100;
 	}
-	if (mapy2 > 99) {
-		mapy1 += (99-mapy2);
-		mapy2 = 99;
+	if (mapy2 > 100) {
+		mapy1 += (100-mapy2);
+		mapy2 = 100;
 	}
 	//if (mapx2 > TCODConsole::root->getWidth() - 22) mapx2 = TCODConsole::root->getWidth() - 14;
-	if (mapy2 > TCODConsole::root->getHeight() - 14) mapy2 = TCODConsole::root->getHeight() - 14;
+	if (mapy2 > TCODConsole::root->getHeight() - 12) mapy2 = TCODConsole::root->getHeight() - 12;
 	 
 	TCODConsole::blit(mapcon, mapx1, mapy1, mapx2, mapy2, 
 		TCODConsole::root, 22, 0);
