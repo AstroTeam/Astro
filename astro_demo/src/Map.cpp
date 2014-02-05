@@ -4,7 +4,6 @@ static const int ROOM_MAX_SIZE = 12;
 static const int ROOM_MIN_SIZE = 6;
 static const int MAX_ROOM_MONSTERS = 3;
 static const int MAX_ROOM_ITEMS = 2;
-
 class BspListener : public ITCODBspCallback {
 private:
 	Map &map; //a map to dig
@@ -165,7 +164,14 @@ void Map::createRoom(bool first, int x1, int y1, int x2, int y2, bool withActors
 	}
 	TCODRandom *rng = TCODRandom::getInstance();
 	//add monsters
-	int nbMonsters = rng->getInt(0, MAX_ROOM_MONSTERS);
+	//horde chance
+	int nbMonsters;
+	if (rng->getInt(0,19) == 0) {
+		nbMonsters = rng->getInt(10, 25);
+	}
+	else {
+		nbMonsters = rng->getInt(0, MAX_ROOM_MONSTERS)
+	}
 	while (nbMonsters > 0) {
 		int x = rng->getInt(x1, x2);
 		int y = rng->getInt(y1, y2);
