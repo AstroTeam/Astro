@@ -225,13 +225,21 @@ Actor *PlayerAi::choseFromInventory(Actor *owner) {
 	con.setDefaultForeground(TCODColor::white);
 	int shortcut = 'a';
 	int y = 1;
-	for (Actor **it = owner->container->inventory.begin();
+	std::map<const char*, float>::iterator ii;
+	/*for (Actor **it = owner->container->inventory.begin();
 		it != owner->container->inventory.end(); it++) {
 		Actor *actor = *it;
 		con.print(2,y,"(%c) %s",shortcut,actor->name);
 		y++;
 		shortcut++;
+	}*/
+	for(ii=owner->container->stacks.begin(); ii!=owner->container->stacks.end(); ++ii){
+		con.print(2,y,"(%c) %s(%g)",shortcut,(*ii).first,(*ii).second);
+		owner->container->select[shortcut] = (*ii).first;
+		y++;
+		shortcut++;
 	}
+
 	//blit the inventory console on the root console
 	TCODConsole::blit(&con,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
 		TCODConsole::root, engine.screenWidth/2 - INVENTORY_WIDTH/2,
@@ -242,9 +250,19 @@ Actor *PlayerAi::choseFromInventory(Actor *owner) {
 	TCOD_key_t key;
 	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
 	if (key.vk == TCODK_CHAR) {
-		int actorIndex = key.c - 'a';
+		/*int actorIndex = key.c - 'a';
 		if (actorIndex >= 0 && actorIndex < owner->container->inventory.size()) {
 			return owner->container->inventory.get(actorIndex);
+		}*/
+		if(owner->container->select[key.c]){
+			int actorIndex = 0;
+			for (Actor **it = owner->container->inventory.begin(); it != owner->container->inventory.end(); it++) {
+				Actor *actor = *it;
+				if(strcmp(actor->name, owner->container->select[key.c]) == 0){
+					return owner->container->inventory.get(actorIndex);
+				}
+				actorIndex++;
+			}
 		}
 	}
 	return NULL;
