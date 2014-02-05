@@ -96,19 +96,33 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 
 void Map::addMonster(int x, int y) {
 	TCODRandom *rng =TCODRandom::getInstance();
+	//scales according to dungeon level
+	//add a container for them
+	
+	float infectedCrewMemMaxHp = 10;
+	float infectedCrewMemDef = 0;
+	float infectedCrewMemAtk = 5;
+	float infectedCrewMemXp = 10;
+	
+	float sporeCreatureMaxHp = 16;
+	float sporeCreatureDef = 1;
+	float sporeCreatureAtk = 7;
+	float sporeCreatureXp = 20;
+	
+	
 	if (rng->getInt(0,100) < 80) {
 		//create an infected crew member
 		Actor *infectedCrewMember = new Actor(x,y,164,"Infected Crewmember",TCODColor::white);
-		infectedCrewMember->destructible = new MonsterDestructible(10,0,"infected corpse",10);
-		infectedCrewMember->attacker = new Attacker(5);
+		infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
+		infectedCrewMember->attacker = new Attacker(infectedCrewMemAtk);
 		infectedCrewMember->ai = new MonsterAi();
 		engine.actors.push(infectedCrewMember);
 	}
 	else {	
 		//create a spore creature
 		Actor *sporeCreature = new Actor(x,y,165,"Spore Creature",TCODColor::white);
-		sporeCreature->destructible = new MonsterDestructible(16,1,"gross alien corpse",20);
-		sporeCreature->attacker = new Attacker(7);
+		sporeCreature->destructible = new MonsterDestructible(sporeCreatureMaxHp,sporeCreatureDef,"gross spore remains",sporeCreatureXp);
+		sporeCreature->attacker = new Attacker(sporeCreatureAtk);
 		sporeCreature->ai = new MonsterAi();
 		engine.actors.push(sporeCreature);
 	}
