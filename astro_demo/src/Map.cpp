@@ -97,20 +97,20 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 void Map::addMonster(int x, int y) {
 	TCODRandom *rng =TCODRandom::getInstance();
 	if (rng->getInt(0,100) < 80) {
-		//create an orc
-		Actor *orc = new Actor(x,y,164,"infected crewmember",TCODColor::white);
-		orc->destructible = new MonsterDestructible(10,0,"infected corpse",10);
-		orc->attacker = new Attacker(5);
-		orc->ai = new MonsterAi();
-		engine.actors.push(orc);
+		//create an infected crew member
+		Actor *infectedCrewMember = new Actor(x,y,164,"Infected Crewmember",TCODColor::white);
+		infectedCrewMember->destructible = new MonsterDestructible(10,0,"infected corpse",10);
+		infectedCrewMember->attacker = new Attacker(5);
+		infectedCrewMember->ai = new MonsterAi();
+		engine.actors.push(infectedCrewMember);
 	}
 	else {	
-		//create a troll
-		Actor *troll = new Actor(x,y,165,"Spore Creature",TCODColor::white);
-		troll->destructible = new MonsterDestructible(16,1,"gross alien corpse",20);
-		troll->attacker = new Attacker(7);
-		troll->ai = new MonsterAi();
-		engine.actors.push(troll);
+		//create a spore creature
+		Actor *sporeCreature = new Actor(x,y,165,"Spore Creature",TCODColor::white);
+		sporeCreature->destructible = new MonsterDestructible(16,1,"gross alien corpse",20);
+		sporeCreature->attacker = new Attacker(7);
+		sporeCreature->ai = new MonsterAi();
+		engine.actors.push(sporeCreature);
 	}
 }
 

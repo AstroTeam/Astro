@@ -44,7 +44,7 @@ void Engine::init() {
 	map = new Map(mapWidth, mapHeight);
 	map->init(true);
 	gui->message(TCODColor::red, 
-    	"Welcome stranger! Prepare to face a horde of Orcs and Trolls");
+    	"Welcome stranger! Prepare to face a horde of Astrocephalytes and Spores Creatures!");
 	gameStatus = STARTUP;
 }
 
