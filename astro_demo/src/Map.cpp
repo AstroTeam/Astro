@@ -170,7 +170,7 @@ void Map::createRoom(bool first, int x1, int y1, int x2, int y2, bool withActors
 		nbMonsters = rng->getInt(10, 25);
 	}
 	else {
-		nbMonsters = rng->getInt(0, MAX_ROOM_MONSTERS)
+		nbMonsters = rng->getInt(0, MAX_ROOM_MONSTERS);
 	}
 	while (nbMonsters > 0) {
 		int x = rng->getInt(x1, x2);
