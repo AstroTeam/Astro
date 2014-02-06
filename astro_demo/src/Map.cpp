@@ -230,6 +230,7 @@ void Map::computeFov() {
 }
 
 void Map::render() const {
+	
 	static const TCODColor darkWall(0,0,100);
 	static const TCODColor darkGround(50,50,150);
 	static const TCODColor lightWall(30,110,50);
@@ -241,13 +242,18 @@ void Map::render() const {
 				//TCODConsole::root->setCharBackground(x,y,isWall(x,y) ? lightWall : lightGround);
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
 				
+				//this is going to have to be changed if we add more environment tiles
+				
+				
 				if (isWall(x,y)) {
 					engine.mapcon->setChar(x, y, '^');
 					engine.mapcon->setCharForeground(x,y,TCODColor::white);
 				}
 				else {
-					engine.mapcon->setChar(x, y, ' ');
-					engine.mapcon->setCharBackground(x,y,TCODColor::grey);
+					//need to make into floor tiles
+					//these (x,y)'s need to be replaced with floor tiles
+					engine.mapcon->setChar(x, y, 31);//weird up carrot
+					engine.mapcon->setCharBackground(x,y,TCODColor::blue);
 				}
 			}
 			else if (isExplored(x,y)) {
@@ -256,14 +262,19 @@ void Map::render() const {
 				
 				if (isWall(x,y)) {
 					engine.mapcon->setChar(x, y, '^');
-					engine.mapcon->setCharForeground(x,y,TCODColor::darkGrey);
+					engine.mapcon->setCharForeground(x,y,TCODColor::darkGrey); 
 				}
 				else {
-					engine.mapcon->setChar(x, y, ' ');
-					engine.mapcon->setCharBackground(x,y,TCODColor::darkGrey);
+					//need to make into tinted floor tiles
+					engine.mapcon->setChar(x, y, 30);//weird down carrot
+					//tinted flo's
+					engine.mapcon->setCharBackground(x,y,TCODColor::blue);
 				}
 			}
 		}
 	}
+	
+	
+	
 }
 
