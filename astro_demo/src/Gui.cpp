@@ -2,13 +2,16 @@
 #include <stdarg.h>
 #include "main.hpp"
 
-static const int PANEL_HEIGHT = 14;
+static const int PANEL_HEIGHT = 12;
 static const int BAR_WIDTH = 20;
 static const int MSG_X = BAR_WIDTH + 2;
 static const int MSG_HEIGHT = PANEL_HEIGHT-1;
 
 const int PAUSE_MENU_WIDTH = 32;
 const int PAUSE_MENU_HEIGHT = 23;
+
+const int INVENTORY_MENU_WIDTH = 38;
+const int INVENTORY_MENU_HEIGHT = 4;
 
 Gui::Gui() {
 	con = new TCODConsole(engine.screenWidth, PANEL_HEIGHT);
@@ -55,7 +58,7 @@ void Gui::render() {
 	//create the sidebar
 	sidebar->setDefaultForeground(TCODColor(200,180,50));
 	sidebar->printFrame(0,0,MSG_X,
-		engine.screenHeight-15,true,TCOD_BKGND_ALPHA(50),"CHARACTER INFO");
+		engine.screenHeight-12,true,TCOD_BKGND_ALPHA(50),"CHARACTER INFO");
 	
 	//draw the health bar
 	renderBar(1,3,BAR_WIDTH, "HP", engine.player->destructible->hp,
@@ -75,14 +78,14 @@ void Gui::render() {
 	sidebar->print(3,13,"Turn count: %d",engine.turnCount);
 	
 	//display the armor slots
-	sidebar->print(9,17,"Armor");
-	sidebar->print(3,19,"Head: ");
-	sidebar->print(3,21,"Chest: ");
-	sidebar->print(3,23,"Legs: ");
-	sidebar->print(3,25,"Feet: ");
-	sidebar->print(3,27,"Hand1: ");
-	sidebar->print(3,29,"Hand2: ");
-	sidebar->print(3,31,"Rangd: ");
+	sidebar->print(9,15,"Armor");
+	sidebar->print(3,17,"Head: ");
+	sidebar->print(3,19,"Chest: ");
+	sidebar->print(3,21,"Legs: ");
+	sidebar->print(3,23,"Feet: ");
+	sidebar->print(3,25,"Hand1: ");
+	sidebar->print(3,27,"Hand2: ");
+	sidebar->print(3,29,"Rangd: ");
 	
 	//display player xp bar
 	PlayerAi *ai = (PlayerAi *)engine.player->ai;
@@ -93,8 +96,8 @@ void Gui::render() {
 		
 		
 	//display an ability cooldown bar
-	sidebar->print(1,33,"Ability Cooldown: ");
-	renderBar(1,35, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
+	sidebar->print(1,31,"Ability Cooldown: ");
+	renderBar(1,33, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
 	
 
 	//mouse look
@@ -263,7 +266,7 @@ void Menu::addItem(MenuItemCode code, const char *label) {
 
 Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 	int selectedItem = 0;
-	int menux, menuy;
+	int menux = 0, menuy = 0;
 	
 	if (mode == PAUSE) {
 		menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
@@ -282,43 +285,87 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		TCODConsole::blit(offscreen, 0, 0, PAUSE_MENU_WIDTH, PAUSE_MENU_HEIGHT, TCODConsole::root,menux,menuy,0.7,0.7);  */
 			menux+=2;
 			menuy+=3;
+	}else if (mode == INVENTORY) {
+		menux = engine.screenWidth / 2 - INVENTORY_MENU_WIDTH / 2;
+		menuy = engine.screenHeight / 2 - INVENTORY_MENU_HEIGHT / 2;
+		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
+		TCODConsole::root->printFrame(menux,menuy - 20,INVENTORY_MENU_WIDTH,
+			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"INVENTORY");
 	} else {
 		static TCODImage img("background.png");
 		img.blit2x(TCODConsole::root,0,6);
 		menux = 35;
 		menuy = 20 + TCODConsole::root->getHeight() / 3;
+		
 	}
-	
-	while (!TCODConsole::isWindowClosed()) {
+	if (mode == INVENTORY){
+		while (!TCODConsole::isWindowClosed()) {
 		
-		int currentItem = 0;
-		for (MenuItem **it = items.begin(); it != items.end(); it++) {
-			if (currentItem == selectedItem) {
-				TCODConsole::root->setDefaultForeground(TCODColor::orange);
-			} else {
-				TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
-			}
-			TCODConsole::root->print(menux,menuy+currentItem*3,(*it)->label);
-			currentItem++;
-		}
-		TCODConsole::flush();
-		
-		//check key presses
-		TCOD_key_t key;
-		TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
-		switch(key.vk) {
-			case TCODK_UP:
-				selectedItem--;
-				if(selectedItem < 0) {
-					selectedItem = items.size()-1;
+			int currentItem = 0;
+			for (MenuItem **it = items.begin(); it != items.end(); it++) {
+				if (currentItem == selectedItem) {
+					TCODConsole::root->setDefaultForeground(TCODColor::orange);
+				} else {
+					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
 				}
-			break;
-			case TCODK_DOWN:
-				selectedItem = (selectedItem +1) % items.size();
-			break;
-			case TCODK_ENTER: return items.get(selectedItem)->code;
-			case TCODK_ESCAPE: return NO_CHOICE;
-			default: break;
+				TCODConsole::root->print(menux+currentItem*8+1,menuy-18,(*it)->label);
+				currentItem++;
+			}
+			TCODConsole::flush();
+			
+			//check key presses
+			
+			
+				TCOD_key_t key;
+				TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
+				switch(key.vk) {
+					case TCODK_LEFT:
+						selectedItem--;
+						if(selectedItem < 0) {
+							selectedItem = items.size()-1;
+						}
+					break;
+					case TCODK_RIGHT:
+						selectedItem = (selectedItem +1) % items.size();
+					break;
+					case TCODK_ENTER: return items.get(selectedItem)->code;
+					case TCODK_ESCAPE:  return NO_CHOICE;
+					default: break;
+				}
+			
+		}
+	}else{
+		while (!TCODConsole::isWindowClosed()) {
+		
+			int currentItem = 0;
+			for (MenuItem **it = items.begin(); it != items.end(); it++) {
+				if (currentItem == selectedItem) {
+					TCODConsole::root->setDefaultForeground(TCODColor::orange);
+				} else {
+					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
+				}
+				TCODConsole::root->print(menux,menuy+currentItem*3,(*it)->label);
+				currentItem++;
+			}
+			TCODConsole::flush();
+			
+			//check key presses
+			TCOD_key_t key;
+			TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
+			switch(key.vk) {
+				case TCODK_UP:
+					selectedItem--;
+					if(selectedItem < 0) {
+						selectedItem = items.size()-1;
+					}
+				break;
+				case TCODK_DOWN:
+					selectedItem = (selectedItem +1) % items.size();
+				break;
+				case TCODK_ENTER: return items.get(selectedItem)->code;
+				case TCODK_ESCAPE: return NO_CHOICE;
+				default: break;
+			}
 		}
 	}
 	return NONE;

@@ -10,11 +10,16 @@ public:
 	MAIN_MENU,
 	CONSTITUTION,
 	STRENGTH,
-	AGILITY
+	AGILITY,
+	ITEMS,
+	TECH,
+	ARMOR,
+	WEAPONS
 	};
 	enum DisplayMode {
 		MAIN,
-		PAUSE
+		PAUSE,
+		INVENTORY
 	};
 	~Menu();
 	void clear();
@@ -27,6 +32,22 @@ protected:
 	};
 	TCODList<MenuItem *> items;
 };
+/*class InventoryMenu : public Menu{
+public:
+	enum MenuItemCode{
+		NONE,
+		NO_CHOICE,
+		ITEMS,
+		TECH,
+		WEAPONS,
+		ARMOR
+	};
+	~InventoryMenu(){clear();}
+	void clear(){Menu::clear();}
+	void addItem(MenuItemCode code, const char *label){Menu::addItem(code,label);}
+	MenuItemCode pick();
+
+};*/
 
 class Gui : public Persistent {
 public: 
