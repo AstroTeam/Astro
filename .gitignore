@@ -1,4 +1,8 @@
 $ cat .gitignore
+#MakeFile
+*MakeFile
+#Object Files
+*.o
 #Game Save Files
 *.sav
 

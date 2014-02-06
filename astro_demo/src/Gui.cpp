@@ -10,6 +10,9 @@ static const int MSG_HEIGHT = PANEL_HEIGHT-1;
 const int PAUSE_MENU_WIDTH = 32;
 const int PAUSE_MENU_HEIGHT = 23;
 
+const int INVENTORY_MENU_WIDTH = 38;
+const int INVENTORY_MENU_HEIGHT = 4;
+
 Gui::Gui() {
 	con = new TCODConsole(engine.screenWidth, PANEL_HEIGHT);
 	sidebar = new TCODConsole(MSG_X, engine.screenHeight);
@@ -263,7 +266,7 @@ void Menu::addItem(MenuItemCode code, const char *label) {
 
 Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 	int selectedItem = 0;
-	int menux, menuy;
+	int menux = 0, menuy = 0;
 	
 	if (mode == PAUSE) {
 		menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
@@ -282,43 +285,87 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		TCODConsole::blit(offscreen, 0, 0, PAUSE_MENU_WIDTH, PAUSE_MENU_HEIGHT, TCODConsole::root,menux,menuy,0.7,0.7);  */
 			menux+=2;
 			menuy+=3;
+	}else if (mode == INVENTORY) {
+		menux = engine.screenWidth / 2 - INVENTORY_MENU_WIDTH / 2;
+		menuy = engine.screenHeight / 2 - INVENTORY_MENU_HEIGHT / 2;
+		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
+		TCODConsole::root->printFrame(menux,menuy - 20,INVENTORY_MENU_WIDTH,
+			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"INVENTORY");
 	} else {
 		static TCODImage img("background.png");
 		img.blit2x(TCODConsole::root,0,6);
 		menux = 35;
 		menuy = 20 + TCODConsole::root->getHeight() / 3;
+		
 	}
-	
-	while (!TCODConsole::isWindowClosed()) {
+	if (mode == INVENTORY){
+		while (!TCODConsole::isWindowClosed()) {
 		
-		int currentItem = 0;
-		for (MenuItem **it = items.begin(); it != items.end(); it++) {
-			if (currentItem == selectedItem) {
-				TCODConsole::root->setDefaultForeground(TCODColor::orange);
-			} else {
-				TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
-			}
-			TCODConsole::root->print(menux,menuy+currentItem*3,(*it)->label);
-			currentItem++;
-		}
-		TCODConsole::flush();
-		
-		//check key presses
-		TCOD_key_t key;
-		TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
-		switch(key.vk) {
-			case TCODK_UP:
-				selectedItem--;
-				if(selectedItem < 0) {
-					selectedItem = items.size()-1;
+			int currentItem = 0;
+			for (MenuItem **it = items.begin(); it != items.end(); it++) {
+				if (currentItem == selectedItem) {
+					TCODConsole::root->setDefaultForeground(TCODColor::orange);
+				} else {
+					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
 				}
-			break;
-			case TCODK_DOWN:
-				selectedItem = (selectedItem +1) % items.size();
-			break;
-			case TCODK_ENTER: return items.get(selectedItem)->code;
-			case TCODK_ESCAPE: return NO_CHOICE;
-			default: break;
+				TCODConsole::root->print(menux+currentItem*8+1,menuy-18,(*it)->label);
+				currentItem++;
+			}
+			TCODConsole::flush();
+			
+			//check key presses
+			
+			
+				TCOD_key_t key;
+				TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
+				switch(key.vk) {
+					case TCODK_LEFT:
+						selectedItem--;
+						if(selectedItem < 0) {
+							selectedItem = items.size()-1;
+						}
+					break;
+					case TCODK_RIGHT:
+						selectedItem = (selectedItem +1) % items.size();
+					break;
+					case TCODK_ENTER: return items.get(selectedItem)->code;
+					case TCODK_ESCAPE:  return NO_CHOICE;
+					default: break;
+				}
+			
+		}
+	}else{
+		while (!TCODConsole::isWindowClosed()) {
+		
+			int currentItem = 0;
+			for (MenuItem **it = items.begin(); it != items.end(); it++) {
+				if (currentItem == selectedItem) {
+					TCODConsole::root->setDefaultForeground(TCODColor::orange);
+				} else {
+					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
+				}
+				TCODConsole::root->print(menux,menuy+currentItem*3,(*it)->label);
+				currentItem++;
+			}
+			TCODConsole::flush();
+			
+			//check key presses
+			TCOD_key_t key;
+			TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
+			switch(key.vk) {
+				case TCODK_UP:
+					selectedItem--;
+					if(selectedItem < 0) {
+						selectedItem = items.size()-1;
+					}
+				break;
+				case TCODK_DOWN:
+					selectedItem = (selectedItem +1) % items.size();
+				break;
+				case TCODK_ENTER: return items.get(selectedItem)->code;
+				case TCODK_ESCAPE: return NO_CHOICE;
+				default: break;
+			}
 		}
 	}
 	return NONE;
