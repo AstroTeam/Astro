@@ -127,7 +127,9 @@ void Map::addMonster(int x, int y) {
 	}
 	
 	
-	if (rng->getInt(0,100) < 80) {
+	//The percent of spore creatures starts at 20% and increases by 5 percent as you go down each level, but going no higher than 50%	
+	float percentInfectedCrewMembers =  ( (85 - 5*level) > 50 ? (85 - 5*level) : 50 ); 
+	if (rng->getInt(0,100) < percentInfectedCrewMembers) {
 		//create an infected crew member
 		Actor *infectedCrewMember = new Actor(x,y,164,"Infected Crewmember",TCODColor::white);
 		infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
