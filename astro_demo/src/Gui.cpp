@@ -96,8 +96,8 @@ void Gui::render() {
 		
 		
 	//display an ability cooldown bar
-	sidebar->print(1,31,"Ability Cooldown: ");
-	renderBar(1,33, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
+	sidebar->print(1,32,"Ability Cooldown: ");
+	renderBar(1,34, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
 	
 
 	//mouse look
