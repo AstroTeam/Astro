@@ -134,6 +134,7 @@ void Map::addMonster(int x, int y) {
 		Actor *infectedCrewMember = new Actor(x,y,164,"Infected Crewmember",TCODColor::white);
 		infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
 		infectedCrewMember->attacker = new Attacker(infectedCrewMemAtk);
+		infectedCrewMember->container = new Container(2);
 		infectedCrewMember->ai = new MonsterAi();
 		engine.actors.push(infectedCrewMember);
 	}
@@ -142,6 +143,7 @@ void Map::addMonster(int x, int y) {
 		Actor *sporeCreature = new Actor(x,y,165,"Spore Creature",TCODColor::white);
 		sporeCreature->destructible = new MonsterDestructible(sporeCreatureMaxHp,sporeCreatureDef,"gross spore remains",sporeCreatureXp);
 		sporeCreature->attacker = new Attacker(sporeCreatureAtk);
+		sporeCreature->container = new Container(2);
 		sporeCreature->ai = new MonsterAi();
 		engine.actors.push(sporeCreature);
 	}
