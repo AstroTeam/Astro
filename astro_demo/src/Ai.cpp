@@ -169,14 +169,52 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		case 'i': //display inventory
 		{ 
 			engine.map->computeFov();
-			Actor *actor = choseFromInventory(owner);
-			if (actor) {
-				bool used;
-				used = actor->pickable->use(actor,owner);
-				if (used) {
-					engine.gameStatus = Engine::NEW_TURN;
+			engine.gui->menu.clear();
+			engine.gui->menu.addItem(Menu::ITEMS, "Items");
+			engine.gui->menu.addItem(Menu::TECH, "Tech");
+			engine.gui->menu.addItem(Menu::ARMOR, "Armor");
+			engine.gui->menu.addItem(Menu::WEAPONS, "Weapons");
+			engine.gui->menu.addItem(Menu::EXIT, "Exit");
+			//Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
+			Actor *actor;
+			bool choice = true;
+			while(choice){
+			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
+				switch (menuItem) {
+					case Menu::ITEMS :
+						actor = choseFromInventory(owner);
+						if(actor)
+							choice = false;
+						break;
+					case Menu::TECH :
+						actor = choseFromInventory(owner);
+						if(actor)
+							choice = false;
+						break;
+					case Menu::ARMOR:
+						actor = choseFromInventory(owner);
+						if(actor)
+							choice = false;
+						break;
+					case Menu::WEAPONS:
+						actor = choseFromInventory(owner);
+						if(actor)
+							choice = false;
+						break;
+					case Menu::NO_CHOICE:
+						break;
+					case Menu::EXIT:
+						choice = false;
+					default: break;
 				}
 			}
+				if (actor) {
+					bool used;
+					used = actor->pickable->use(actor,owner);
+					if (used) {
+						engine.gameStatus = Engine::NEW_TURN;
+					}
+				}
 		}break;
 		case 'd': //drop an item
 		{
@@ -213,13 +251,13 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 }
 
 Actor *PlayerAi::choseFromInventory(Actor *owner) {
-	static const int INVENTORY_WIDTH = 50;
+	static const int INVENTORY_WIDTH = 38;
 	static const int INVENTORY_HEIGHT = 28;
 	static TCODConsole con(INVENTORY_WIDTH, INVENTORY_HEIGHT);
 	
 	//display the inventory frame
 	con.setDefaultForeground(TCODColor(200,180,50));
-	con.printFrame(0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,true,TCOD_BKGND_DEFAULT, "Inventory");
+	con.printFrame(0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,true,TCOD_BKGND_DEFAULT);
 	
 	//display the items with their keyboard shortcut
 	con.setDefaultForeground(TCODColor::white);
@@ -243,7 +281,7 @@ Actor *PlayerAi::choseFromInventory(Actor *owner) {
 	//blit the inventory console on the root console
 	TCODConsole::blit(&con,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
 		TCODConsole::root, engine.screenWidth/2 - INVENTORY_WIDTH/2,
-		engine.screenHeight/2 - INVENTORY_HEIGHT/2);
+		engine.screenHeight/2 - INVENTORY_HEIGHT/2 -8);
 	TCODConsole::flush();
 	
 	//wait for a key press
