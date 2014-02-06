@@ -281,7 +281,7 @@ Actor *PlayerAi::choseFromInventory(Actor *owner) {
 	//blit the inventory console on the root console
 	TCODConsole::blit(&con,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
 		TCODConsole::root, engine.screenWidth/2 - INVENTORY_WIDTH/2,
-		engine.screenHeight/2 - INVENTORY_HEIGHT/2 -8);
+		engine.screenHeight/2 - INVENTORY_HEIGHT/2 - 4);
 	TCODConsole::flush();
 	
 	//wait for a key press
