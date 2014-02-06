@@ -103,8 +103,8 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 
 void Map::addMonster(int x, int y) {
 	TCODRandom *rng =TCODRandom::getInstance();
-	//scales according to dungeon level
-	//add a container for them
+	
+	int level = engine.level; //Note first engine.level = 1
 	
 	float infectedCrewMemMaxHp = 10;
 	float infectedCrewMemDef = 0;
@@ -115,6 +115,16 @@ void Map::addMonster(int x, int y) {
 	float sporeCreatureDef = 1;
 	float sporeCreatureAtk = 7;
 	float sporeCreatureXp = 20;
+	
+	//Certain enemies' strength scales up as you go down a dungeon level
+	if(level != 0 && level % 2 == 0)
+	{
+		infectedCrewMemMaxHp += level/2; //infectedCrewMemMaxHp increases by 1 hp every other level (even)
+	}
+	else if(level != 0 && level % 2 != 0)
+	{
+		infectedCrewMemAtk += (level-1)/2; //infectedCrewMemAtk increased by 1 point every other level (odd)
+	}
 	
 	
 	if (rng->getInt(0,100) < 80) {
