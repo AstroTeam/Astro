@@ -52,6 +52,14 @@ void Map::init(bool withActors) {
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
+
+	//randomly infect tiles
+	for (int i = 0; i < width*height; i++) {
+		if (rng->getInt(0,4)==0) {
+			tiles[i].infected = true;
+		}
+	}
+
 	TCODBsp bsp(0,0,width,height);
 	bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
 	BspListener listener(*this);
@@ -184,7 +192,7 @@ void Map::createRoom(bool first, int x1, int y1, int x2, int y2, bool withActors
 		nbMonsters = rng->getInt(10, 25);
 	}
 	else {
-		nbMonsters = rng->getInt(0, MAX_ROOM_MONSTERS)
+		nbMonsters = rng->getInt(0, MAX_ROOM_MONSTERS);
 	}
 	while (nbMonsters > 0) {
 		int x = rng->getInt(x1, x2);
@@ -233,6 +241,10 @@ bool Map::isExplored(int x, int y) const {
 	return tiles[x+y*width].explored;
 }
 
+bool Map::isInfected(int x, int y) const {
+	return tiles[x+y*width].infected;
+}
+
 bool Map::isInFov(int x, int y) const {
 	if (x < 0 || x >= width || y < 0 || y >= height) {
 		return false;
@@ -260,27 +272,51 @@ void Map::render() const {
 			if (isInFov(x,y)) {
 				//TCODConsole::root->setCharBackground(x,y,isWall(x,y) ? lightWall : lightGround);
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
-				
+
 				if (isWall(x,y)) {
-					engine.mapcon->setChar(x, y, '^');
-					engine.mapcon->setCharForeground(x,y,TCODColor::white);
+					if (isInfected(x,y)) {
+						engine.mapcon->setChar(x, y, '^');
+						engine.mapcon->setCharForeground(x,y,TCODColor::green);
+					}
+					else {
+						engine.mapcon->setChar(x, y, '^');
+						engine.mapcon->setCharForeground(x,y,TCODColor::white);
+					}
 				}
 				else {
-					engine.mapcon->setChar(x, y, ' ');
-					engine.mapcon->setCharBackground(x,y,TCODColor::grey);
+					if (isInfected(x,y)) {
+						engine.mapcon->setChar(x, y, ',');
+						engine.mapcon->setCharForeground(x,y,TCODColor::green);
+					}
+					else {
+						engine.mapcon->setChar(x, y, ' ');
+						engine.mapcon->setCharBackground(x,y,TCODColor::grey);
+					}
 				}
 			}
 			else if (isExplored(x,y)) {
 				//TCODConsole::root->setCharBackground(x,y,isWall(x,y) ? darkWall : darkGround);
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
-				
+
 				if (isWall(x,y)) {
-					engine.mapcon->setChar(x, y, '^');
-					engine.mapcon->setCharForeground(x,y,TCODColor::darkGrey);
+					if (isInfected(x,y)) {
+						engine.mapcon->setChar(x, y, '^');
+						engine.mapcon->setCharForeground(x,y,TCODColor::darkGreen);
+					}
+					else {
+						engine.mapcon->setChar(x, y, '^');
+						engine.mapcon->setCharForeground(x,y,TCODColor::darkGrey);
+					}
 				}
 				else {
-					engine.mapcon->setChar(x, y, ' ');
-					engine.mapcon->setCharBackground(x,y,TCODColor::darkGrey);
+					if (isInfected(x,y)) {
+						engine.mapcon->setChar(x, y, ',');
+						engine.mapcon->setCharForeground(x,y,TCODColor::darkGreen);
+					}
+					else {
+						engine.mapcon->setChar(x, y, ' ');
+						engine.mapcon->setCharBackground(x,y,TCODColor::darkGrey);
+					}
 				}
 			}
 		}

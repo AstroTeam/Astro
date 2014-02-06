@@ -74,11 +74,15 @@ bool LightningBolt::use(Actor *owner, Actor *wearer) {
 		return false;
 	}
 	//hit the closest monster for <damage> hit points;
+	float damageTaken = closestMonster->destructible->takeDamage(closestMonster,damage);
+	if (!closestMonster->destructible->isDead()) {
 	engine.gui->message(TCODColor::lightBlue,
 		"A lightning bolt strikes the %s with a loud crack"
 		"for %g damage.",
-		closestMonster->name,damage);
-	closestMonster->destructible->takeDamage(closestMonster,damage);
+		closestMonster->name,damageTaken);
+	} else {
+		engine.gui->message(TCODColor::orange,"The %s crackles with electricity, twitching slightly as it falls.",closestMonster->name);
+	}
 	return Pickable::use(owner,wearer);
 }
 
@@ -113,10 +117,14 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 		Actor *actor = *it;
 		if (actor->destructible && !actor->destructible->isDead()
 			&&actor->getDistance(x,y) <= range) {
-			engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damage);
-			actor->destructible->takeDamage(actor,damage);
-
+			float damageTaken = actor->destructible->takeDamage(actor,damage);
+			if (!actor->destructible->isDead()) {
+				engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damageTaken);
 			}
+		}
+		else {
+			engine.gui->message(TCODColor::orange,"The %s is an ashen mound, crumbling under its own weight.",actor->name);
+		}
 	}
 	return Pickable::use(owner,wearer);
 }
