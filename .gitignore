@@ -6,6 +6,9 @@ $ cat .gitignore
 #Game Save Files
 *.sav
 
+#objects files
+*.o
+
 # Executables
 *.exe
 *.out

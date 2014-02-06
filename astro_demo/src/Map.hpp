@@ -1,6 +1,7 @@
 struct Tile {
 	bool explored;
-	Tile() : explored(false) {}
+	bool infected;
+	Tile() : explored(false),  infected (false) {}
 	
 };
 
@@ -14,6 +15,7 @@ public:
 	bool canWalk(int x, int y) const;
 	bool isInFov(int x, int y) const;
 	bool isExplored(int x, int y) const;
+	bool isInfected(int x, int y) const;
 	void computeFov();
 	void render() const;
 	void init(bool withActors);
