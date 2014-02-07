@@ -13,14 +13,14 @@ endif
 ifeq ($(shell sh -c 'uname -s'),Linux)
   LIBFLAGS=-L. -ltcod -ltcodxx -Wl,-rpath=.
 else
-LIBFLAGS=-Llib -ltcod-mingw -static-libgcc -static-libstdc++ -mwindows
+  LIBFLAGS=-Llib -ltcod-mingw -static-libgcc -static-libstdc++ -mwindows -lmingw32 -lSDLMain -lSDL
 endif
  
 debug : tuto
 release : tuto
  
 tuto : $(OBJS)
-  g++ $(OBJS) -o tuto -Wall $(LIBFLAGS) $(CFLAGS) -g
+	g++ $(OBJS) -o tuto -Wall $(LIBFLAGS) $(CFLAGS) -g
  
 src/main.hpp.gch : src/*.hpp
 	g++ src/main.hpp -Iinclude -Wall
