@@ -178,6 +178,7 @@ void Pickable::drop(Actor *owner, Actor *wearer) {
 		engine.actors.push(owner);
 		owner->x = wearer->x;
 		owner->y = wearer->y;
+		engine.sendToBack(owner);
 		if (wearer == engine.player){
 			engine.gui->message(TCODColor::lightGrey,"You drop a %s",owner->name);
 		}else {
