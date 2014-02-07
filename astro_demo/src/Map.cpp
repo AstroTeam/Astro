@@ -136,6 +136,7 @@ void Map::addMonster(int x, int y) {
 		infectedCrewMember->attacker = new Attacker(infectedCrewMemAtk);
 		infectedCrewMember->container = new Container(2);
 		infectedCrewMember->ai = new MonsterAi();
+		infectedCrewMember->infected = true;
 		engine.actors.push(infectedCrewMember);
 	}
 	else {	
@@ -145,6 +146,7 @@ void Map::addMonster(int x, int y) {
 		sporeCreature->attacker = new Attacker(sporeCreatureAtk);
 		sporeCreature->container = new Container(2);
 		sporeCreature->ai = new MonsterAi();
+		sporeCreature->infected = true;
 		engine.actors.push(sporeCreature);
 	}
 }
@@ -263,6 +265,10 @@ bool Map::isInfected(int x, int y) const {
 	return tiles[x+y*width].infected;
 }
 
+void Map::infectFloor(int x, int y) {
+	tiles[x+y*width].infected = true;
+}
+
 bool Map::isInFov(int x, int y) const {
 	if (x < 0 || x >= width || y < 0 || y >= height) {
 		return false;
@@ -303,8 +309,8 @@ void Map::render() const {
 				}
 				else {
 					if (isInfected(x,y)) {
-						engine.mapcon->setChar(x, y, ',');
-						engine.mapcon->setCharForeground(x,y,TCODColor::green);
+						engine.mapcon->setChar(x, y, ' ');
+						engine.mapcon->setCharBackground(x,y,TCODColor::darkGreen);
 					}
 					else {
 						engine.mapcon->setChar(x, y, ' ');
@@ -328,8 +334,8 @@ void Map::render() const {
 				}
 				else {
 					if (isInfected(x,y)) {
-						engine.mapcon->setChar(x, y, ',');
-						engine.mapcon->setCharForeground(x,y,TCODColor::darkGreen);
+						engine.mapcon->setChar(x, y, ' ');
+						engine.mapcon->setCharBackground(x,y,TCODColor::darkGreen);
 					}
 					else {
 						engine.mapcon->setChar(x, y, ' ');

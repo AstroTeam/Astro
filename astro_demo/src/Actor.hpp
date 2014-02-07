@@ -5,6 +5,8 @@ public:
 	TCODColor col; //color for representation
 	const char *name;  //the actor's name
 	bool blocks; //can you walk over this guy?
+	bool infected; //is this guy infected?
+	bool susceptible; //is this guy susceptible to the infection?
 	int type; //Actor type (1 = Item, 2 = Tech, 3 = Armor, 4 = Weapon)
 	//bool fovOnly; //only display when in FOV (maybe add this later)
 	Attacker *attacker; //something that deals damage

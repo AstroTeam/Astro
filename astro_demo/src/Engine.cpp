@@ -161,12 +161,21 @@ void Engine::update() {
 		load(true);
 	} 
 	player->update();
+	if (map->isInfected(player->x, player->y)) {
+		player->susceptible = true;
+	}
+	else {
+		player->susceptible = false;
+	}
 	if (gameStatus == NEW_TURN){
 		engine.turnCount++;
 		for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 			Actor *actor = *iterator;
 			if ( actor != player) {
 				actor->update();
+				if (actor->infected) {
+					map->infectFloor(actor->x, actor->y);
+				}
 			}
 		}
 	}
