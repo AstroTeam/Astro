@@ -136,6 +136,8 @@ void Map::addMonster(int x, int y) {
 		infectedCrewMember->attacker = new Attacker(infectedCrewMemAtk);
 		infectedCrewMember->container = new Container(2);
 		infectedCrewMember->ai = new MonsterAi();
+		infectedCrewMember->infected = true;
+		generateRandom(infectedCrewMember, 164);
 		engine.actors.push(infectedCrewMember);
 	}
 	else {	
@@ -145,6 +147,8 @@ void Map::addMonster(int x, int y) {
 		sporeCreature->attacker = new Attacker(sporeCreatureAtk);
 		sporeCreature->container = new Container(2);
 		sporeCreature->ai = new MonsterAi();
+		sporeCreature->infected = true;
+		generateRandom(sporeCreature, 165);
 		engine.actors.push(sporeCreature);
 	}
 }
@@ -153,25 +157,28 @@ void Map::addItem(int x, int y) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
 	int dice = rng->getInt(0,100);
-	if (dice < 25) {
+	if (dice < 15) {
 		//create a health potion
 		Actor *healthPotion = new Actor(x,y,'!',"Medkit", TCODColor::violet);
+		healthPotion->type = 1;
 		healthPotion->blocks = false;
 		healthPotion->pickable = new Healer(20);
 		engine.actors.push(healthPotion);
 		engine.sendToBack(healthPotion);
-	} else if(dice < 25+25) {
+	} else if(dice < 15+25) {
 		//create a scroll of lightningbolt
 		Actor *scrollOfLightningBolt = new Actor(x,y,'?', "EMP Pulse",
 			TCODColor::lightYellow);
+		scrollOfLightningBolt->type = 2;
 		scrollOfLightningBolt->blocks = false;
 		scrollOfLightningBolt->pickable = new LightningBolt(5,20);
 		engine.actors.push(scrollOfLightningBolt);
 		engine.sendToBack(scrollOfLightningBolt);
-	} else if(dice < 25+25+25) {
+	} else if(dice < 15+25+30) {
 		//create a scroll of fireball
 		Actor *scrollOfFireball = new Actor(x,y,'?',"Firebomb",
 			TCODColor::lightOrange);
+		scrollOfFireball->type = 2;
 		scrollOfFireball->blocks = false;
 		scrollOfFireball->pickable = new Fireball(3,12,8);
 		engine.actors.push(scrollOfFireball);
@@ -180,6 +187,7 @@ void Map::addItem(int x, int y) {
 		//create a scroll of confusion
 		Actor *scrollOfConfusion = new Actor(x,y,'?',"Flashbang",
 			TCODColor::lighterGreen);
+		scrollOfConfusion->type = 2;
 		scrollOfConfusion->blocks = false;
 		scrollOfConfusion->pickable = new Confuser(10,8);
 		engine.actors.push(scrollOfConfusion);
@@ -259,6 +267,10 @@ bool Map::isInfected(int x, int y) const {
 	return tiles[x+y*width].infected;
 }
 
+void Map::infectFloor(int x, int y) {
+	tiles[x+y*width].infected = true;
+}
+
 bool Map::isInFov(int x, int y) const {
 	if (x < 0 || x >= width || y < 0 || y >= height) {
 		return false;
@@ -276,6 +288,7 @@ void Map::computeFov() {
 }
 
 void Map::render() const {
+	
 	static const TCODColor darkWall(0,0,100);
 	static const TCODColor darkGround(50,50,150);
 	static const TCODColor lightWall(30,110,50);
@@ -286,7 +299,10 @@ void Map::render() const {
 			if (isInFov(x,y)) {
 				//TCODConsole::root->setCharBackground(x,y,isWall(x,y) ? lightWall : lightGround);
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
-
+				
+				//this is going to have to be changed if we add more environment tiles
+				
+				
 				if (isWall(x,y)) {
 					if (isInfected(x,y)) {
 						engine.mapcon->setChar(x, y, '^');
@@ -299,12 +315,12 @@ void Map::render() const {
 				}
 				else {
 					if (isInfected(x,y)) {
-						engine.mapcon->setChar(x, y, ',');
-						engine.mapcon->setCharForeground(x,y,TCODColor::green);
+						engine.mapcon->setChar(x, y, ' ');
+						engine.mapcon->setCharBackground(x,y,TCODColor::darkGreen);
 					}
 					else {
-						engine.mapcon->setChar(x, y, ' ');
-						engine.mapcon->setCharBackground(x,y,TCODColor::grey);
+						engine.mapcon->setChar(x, y, 31);
+						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
 					}
 				}
 			}
@@ -324,16 +340,107 @@ void Map::render() const {
 				}
 				else {
 					if (isInfected(x,y)) {
-						engine.mapcon->setChar(x, y, ',');
-						engine.mapcon->setCharForeground(x,y,TCODColor::darkGreen);
+						engine.mapcon->setChar(x, y, ' ');
+						engine.mapcon->setCharBackground(x,y,TCODColor::darkGreen);
 					}
 					else {
-						engine.mapcon->setChar(x, y, ' ');
-						engine.mapcon->setCharBackground(x,y,TCODColor::darkGrey);
+						engine.mapcon->setChar(x, y, 30);
+						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
 					}
 				}
 			}
 		}
 	}
+	
+	
+	
 }
-
+void Map::generateRandom(Actor *owner, int ascii){
+	TCODRandom *rng = TCODRandom::getInstance();
+	int dice = rng->getInt(0,100);
+	if(dice <= 40){
+			return;
+	}else{
+		if(ascii == 164){
+			for(int i = 0; i < owner->container->size; i++){
+				int rnd = rng->getInt(0,100);
+				if (rnd < 30) {
+					//create a health potion
+					Actor *healthPotion = new Actor(0,0,'!',"Medkit", TCODColor::violet);
+					healthPotion->type = 1;
+					healthPotion->blocks = false;
+					healthPotion->pickable = new Healer(20);
+					engine.actors.push(healthPotion);
+					healthPotion->pickable->pick(healthPotion,owner);
+				} else if(rnd < 10+30) {
+					//create a scroll of lightningbolt
+					Actor *scrollOfLightningBolt = new Actor(0,0,'?', "EMP Pulse",
+						TCODColor::lightYellow);
+					scrollOfLightningBolt->type = 2;
+					scrollOfLightningBolt->blocks = false;
+					scrollOfLightningBolt->pickable = new LightningBolt(5,20);
+					engine.actors.push(scrollOfLightningBolt);
+					scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
+				} else if(rnd < 10+30+20) {
+					//create a scroll of fireball
+					Actor *scrollOfFireball = new Actor(0,0,'?',"Firebomb",
+						TCODColor::lightOrange);
+					scrollOfFireball->type = 2;
+					scrollOfFireball->blocks = false;
+					scrollOfFireball->pickable = new Fireball(3,12,8);
+					engine.actors.push(scrollOfFireball);
+					scrollOfFireball->pickable->pick(scrollOfFireball,owner);
+				} else{
+					//create a scroll of confusion
+					Actor *scrollOfConfusion = new Actor(0,0,'?',"Flashbang",
+						TCODColor::lighterGreen);
+					scrollOfConfusion->type = 2;
+					scrollOfConfusion->blocks = false;
+					scrollOfConfusion->pickable = new Confuser(10,8);
+					engine.actors.push(scrollOfConfusion);
+					scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+				}
+			}
+		}else if(ascii == 165){
+			for(int i = 0; i < owner->container->size; i++){
+				int rnd2 = rng->getInt(0,100);
+				if (rnd2 < 25) {
+					//create a health potion
+					Actor *healthPotion = new Actor(0,0,'!',"Medkit", TCODColor::violet);
+					healthPotion->type = 1;
+					healthPotion->blocks = false;
+					healthPotion->pickable = new Healer(20);
+					engine.actors.push(healthPotion);
+					healthPotion->pickable->pick(healthPotion,owner);
+				} else if(rnd2 < 25+20) {
+					//create a scroll of lightningbolt
+					Actor *scrollOfLightningBolt = new Actor(0,0,'?', "EMP Pulse",
+						TCODColor::lightYellow);
+					scrollOfLightningBolt->type = 2;
+					scrollOfLightningBolt->blocks = false;
+					scrollOfLightningBolt->pickable = new LightningBolt(5,20);
+					engine.actors.push(scrollOfLightningBolt);
+					scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
+				} else if(rnd2 < 25+20+25) {
+					//create a scroll of fireball
+					Actor *scrollOfFireball = new Actor(0,0,'?',"Firebomb",
+						TCODColor::lightOrange);
+					scrollOfFireball->type = 2;
+					scrollOfFireball->blocks = false;
+					scrollOfFireball->pickable = new Fireball(3,12,8);
+					engine.actors.push(scrollOfFireball);
+					scrollOfFireball->pickable->pick(scrollOfFireball,owner);
+				} else{
+					//create a scroll of confusion
+					Actor *scrollOfConfusion = new Actor(0,0,'?',"Flashbang",
+						TCODColor::lighterGreen);
+					scrollOfConfusion->type = 2;
+					scrollOfConfusion->blocks = false;
+					scrollOfConfusion->pickable = new Confuser(10,8);
+					engine.actors.push(scrollOfConfusion);
+					scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+				}
+		}
+		}
+	}
+}

@@ -14,7 +14,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 }
 
 bool Pickable::pick(Actor *owner, Actor *wearer) {
-	if (wearer->container && wearer->container->add(owner)) {
+	if (wearer->container && wearer->container->add(owner,owner->type)) {
 		engine.actors.remove(owner);
 		return true;
 	}
@@ -121,9 +121,9 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 			if (!actor->destructible->isDead()) {
 				engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damageTaken);
 			}
-		}
 		else {
 			engine.gui->message(TCODColor::orange,"The %s is an ashen mound, crumbling under its own weight.",actor->name);
+		}
 		}
 	}
 	return Pickable::use(owner,wearer);
@@ -178,10 +178,11 @@ void Pickable::drop(Actor *owner, Actor *wearer) {
 		engine.actors.push(owner);
 		owner->x = wearer->x;
 		owner->y = wearer->y;
+		engine.sendToBack(owner);
 		if (wearer == engine.player){
 			engine.gui->message(TCODColor::lightGrey,"You drop a %s",owner->name);
 		}else {
-			engine.gui->message(TCODColor::lightGrey,"%s drops a %S",wearer->name,owner->name);
+			engine.gui->message(TCODColor::lightGrey,"%s drops a %s",wearer->name,owner->name);
 		}
 	}
 }

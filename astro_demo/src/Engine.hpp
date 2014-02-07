@@ -9,10 +9,13 @@ public:
 		DEFEAT} gameStatus;
 
 	TCODConsole *mapcon;
+	TCODConsole *mapconCpy;
 	TCODList<Actor *> actors;
 	Actor *player;
 	Actor *stairs;
 	Map *map;
+	//Map *mapCpy;
+	//Renderer *rend;
 	int fovRadius;
 	int screenWidth;
 	int screenHeight;
