@@ -156,6 +156,7 @@ void Map::addItem(int x, int y) {
 	if (dice < 25) {
 		//create a health potion
 		Actor *healthPotion = new Actor(x,y,'!',"Medkit", TCODColor::violet);
+		healthPotion->type = 1;
 		healthPotion->blocks = false;
 		healthPotion->pickable = new Healer(20);
 		engine.actors.push(healthPotion);
@@ -164,6 +165,7 @@ void Map::addItem(int x, int y) {
 		//create a scroll of lightningbolt
 		Actor *scrollOfLightningBolt = new Actor(x,y,'?', "EMP Pulse",
 			TCODColor::lightYellow);
+		scrollOfLightningBolt->type = 2;
 		scrollOfLightningBolt->blocks = false;
 		scrollOfLightningBolt->pickable = new LightningBolt(5,20);
 		engine.actors.push(scrollOfLightningBolt);
@@ -172,6 +174,7 @@ void Map::addItem(int x, int y) {
 		//create a scroll of fireball
 		Actor *scrollOfFireball = new Actor(x,y,'?',"Firebomb",
 			TCODColor::lightOrange);
+		scrollOfFireball->type = 2;
 		scrollOfFireball->blocks = false;
 		scrollOfFireball->pickable = new Fireball(3,12,8);
 		engine.actors.push(scrollOfFireball);
@@ -180,6 +183,7 @@ void Map::addItem(int x, int y) {
 		//create a scroll of confusion
 		Actor *scrollOfConfusion = new Actor(x,y,'?',"Flashbang",
 			TCODColor::lighterGreen);
+		scrollOfConfusion->type = 2;
 		scrollOfConfusion->blocks = false;
 		scrollOfConfusion->pickable = new Confuser(10,8);
 		engine.actors.push(scrollOfConfusion);

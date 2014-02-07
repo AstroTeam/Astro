@@ -14,7 +14,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 }
 
 bool Pickable::pick(Actor *owner, Actor *wearer) {
-	if (wearer->container && wearer->container->add(owner)) {
+	if (wearer->container && wearer->container->add(owner,owner->type)) {
 		engine.actors.remove(owner);
 		return true;
 	}

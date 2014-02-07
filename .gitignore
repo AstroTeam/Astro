@@ -1,8 +1,13 @@
 $ cat .gitignore
 #MakeFile
 *MakeFile
+
+#Screenshots
+*.png
+
 #Object Files
 *.o
+
 #Game Save Files
 *.sav
 
