@@ -4,7 +4,6 @@ static const int ROOM_MAX_SIZE = 12;
 static const int ROOM_MIN_SIZE = 6;
 static const int MAX_ROOM_MONSTERS = 3;
 static const int MAX_ROOM_ITEMS = 2;
-
 class BspListener : public ITCODBspCallback {
 private:
 	Map &map; //a map to dig
@@ -53,6 +52,14 @@ void Map::init(bool withActors) {
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
+
+	//randomly infect tiles
+	for (int i = 0; i < width*height; i++) {
+		if (rng->getInt(0,4)==0) {
+			tiles[i].infected = true;
+		}
+	}
+
 	TCODBsp bsp(0,0,width,height);
 	bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
 	BspListener listener(*this);
@@ -96,21 +103,53 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 
 void Map::addMonster(int x, int y) {
 	TCODRandom *rng =TCODRandom::getInstance();
-	if (rng->getInt(0,100) < 80) {
-		//create an orc
-		Actor *orc = new Actor(x,y,164,"infected crewmember",TCODColor::white);
-		orc->destructible = new MonsterDestructible(10,0,"infected corpse",10);
-		orc->attacker = new Attacker(5);
-		orc->ai = new MonsterAi();
-		engine.actors.push(orc);
+	
+	int level = engine.level; //Note first engine.level = 1
+	
+	float infectedCrewMemMaxHp = 10;
+	float infectedCrewMemDef = 0;
+	float infectedCrewMemAtk = 5;
+	float infectedCrewMemXp = 10;
+	
+	float sporeCreatureMaxHp = 16;
+	float sporeCreatureDef = 1;
+	float sporeCreatureAtk = 7;
+	float sporeCreatureXp = 20;
+	
+	//Certain enemies' strength scales up as you go down a dungeon level
+	if(level != 0 && level % 2 == 0)
+	{
+		infectedCrewMemMaxHp += level/2; //infectedCrewMemMaxHp increases by 1 hp every other level (even)
+	}
+	else if(level != 0 && level % 2 != 0)
+	{
+		infectedCrewMemAtk += (level-1)/2; //infectedCrewMemAtk increased by 1 point every other level (odd)
+	}
+	
+	
+	//The percent of spore creatures starts at 20% and increases by 5 percent as you go down each level, but going no higher than 50%	
+	float percentInfectedCrewMembers =  ( (85 - 5*level) > 50 ? (85 - 5*level) : 50 ); 
+	if (rng->getInt(0,100) < percentInfectedCrewMembers) {
+		//create an infected crew member
+		Actor *infectedCrewMember = new Actor(x,y,164,"Infected Crewmember",TCODColor::white);
+		infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
+		infectedCrewMember->attacker = new Attacker(infectedCrewMemAtk);
+		infectedCrewMember->container = new Container(2);
+		infectedCrewMember->ai = new MonsterAi();
+		infectedCrewMember->infected = true;
+		generateRandom(infectedCrewMember, 164);
+		engine.actors.push(infectedCrewMember);
 	}
 	else {	
-		//create a troll
-		Actor *troll = new Actor(x,y,165,"Spore Creature",TCODColor::white);
-		troll->destructible = new MonsterDestructible(16,1,"gross alien corpse",20);
-		troll->attacker = new Attacker(7);
-		troll->ai = new MonsterAi();
-		engine.actors.push(troll);
+		//create a spore creature
+		Actor *sporeCreature = new Actor(x,y,165,"Spore Creature",TCODColor::white);
+		sporeCreature->destructible = new MonsterDestructible(sporeCreatureMaxHp,sporeCreatureDef,"gross spore remains",sporeCreatureXp);
+		sporeCreature->attacker = new Attacker(sporeCreatureAtk);
+		sporeCreature->container = new Container(2);
+		sporeCreature->ai = new MonsterAi();
+		sporeCreature->infected = true;
+		generateRandom(sporeCreature, 165);
+		engine.actors.push(sporeCreature);
 	}
 }
 
@@ -118,25 +157,28 @@ void Map::addItem(int x, int y) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
 	int dice = rng->getInt(0,100);
-	if (dice < 25) {
+	if (dice < 15) {
 		//create a health potion
 		Actor *healthPotion = new Actor(x,y,'!',"Medkit", TCODColor::violet);
+		healthPotion->type = 1;
 		healthPotion->blocks = false;
 		healthPotion->pickable = new Healer(20);
 		engine.actors.push(healthPotion);
 		engine.sendToBack(healthPotion);
-	} else if(dice < 25+25) {
+	} else if(dice < 15+25) {
 		//create a scroll of lightningbolt
 		Actor *scrollOfLightningBolt = new Actor(x,y,'?', "EMP Pulse",
 			TCODColor::lightYellow);
+		scrollOfLightningBolt->type = 2;
 		scrollOfLightningBolt->blocks = false;
 		scrollOfLightningBolt->pickable = new LightningBolt(5,20);
 		engine.actors.push(scrollOfLightningBolt);
 		engine.sendToBack(scrollOfLightningBolt);
-	} else if(dice < 25+25+25) {
+	} else if(dice < 15+25+30) {
 		//create a scroll of fireball
 		Actor *scrollOfFireball = new Actor(x,y,'?',"Firebomb",
 			TCODColor::lightOrange);
+		scrollOfFireball->type = 2;
 		scrollOfFireball->blocks = false;
 		scrollOfFireball->pickable = new Fireball(3,12,8);
 		engine.actors.push(scrollOfFireball);
@@ -145,6 +187,7 @@ void Map::addItem(int x, int y) {
 		//create a scroll of confusion
 		Actor *scrollOfConfusion = new Actor(x,y,'?',"Flashbang",
 			TCODColor::lighterGreen);
+		scrollOfConfusion->type = 2;
 		scrollOfConfusion->blocks = false;
 		scrollOfConfusion->pickable = new Confuser(10,8);
 		engine.actors.push(scrollOfConfusion);
@@ -165,7 +208,14 @@ void Map::createRoom(bool first, int x1, int y1, int x2, int y2, bool withActors
 	}
 	TCODRandom *rng = TCODRandom::getInstance();
 	//add monsters
-	int nbMonsters = rng->getInt(0, MAX_ROOM_MONSTERS);
+	//horde chance
+	int nbMonsters;
+	if (rng->getInt(0,19) == 0) {
+		nbMonsters = rng->getInt(10, 25);
+	}
+	else {
+		nbMonsters = rng->getInt(0, MAX_ROOM_MONSTERS);
+	}
 	while (nbMonsters > 0) {
 		int x = rng->getInt(x1, x2);
 		int y = rng->getInt(y1, y2);
@@ -213,6 +263,14 @@ bool Map::isExplored(int x, int y) const {
 	return tiles[x+y*width].explored;
 }
 
+bool Map::isInfected(int x, int y) const {
+	return tiles[x+y*width].infected;
+}
+
+void Map::infectFloor(int x, int y) {
+	tiles[x+y*width].infected = true;
+}
+
 bool Map::isInFov(int x, int y) const {
 	if (x < 0 || x >= width || y < 0 || y >= height) {
 		return false;
@@ -246,29 +304,49 @@ void Map::render() const {
 				
 				
 				if (isWall(x,y)) {
-					engine.mapcon->setChar(x, y, '^');
-					engine.mapcon->setCharForeground(x,y,TCODColor::white);
+					if (isInfected(x,y)) {
+						engine.mapcon->setChar(x, y, '^');
+						engine.mapcon->setCharForeground(x,y,TCODColor::green);
+					}
+					else {
+						engine.mapcon->setChar(x, y, '^');
+						engine.mapcon->setCharForeground(x,y,TCODColor::white);
+					}
 				}
 				else {
-					//need to make into floor tiles
-					//these (x,y)'s need to be replaced with floor tiles
-					engine.mapcon->setChar(x, y, 31);//weird up carrot
-					engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+					if (isInfected(x,y)) {
+						engine.mapcon->setChar(x, y, ' ');
+						engine.mapcon->setCharBackground(x,y,TCODColor::darkGreen);
+					}
+					else {
+						engine.mapcon->setChar(x, y, 31);
+						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+					}
 				}
 			}
 			else if (isExplored(x,y)) {
 				//TCODConsole::root->setCharBackground(x,y,isWall(x,y) ? darkWall : darkGround);
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
-				
+
 				if (isWall(x,y)) {
-					engine.mapcon->setChar(x, y, '^');
-					engine.mapcon->setCharForeground(x,y,TCODColor::darkGrey); 
+					if (isInfected(x,y)) {
+						engine.mapcon->setChar(x, y, '^');
+						engine.mapcon->setCharForeground(x,y,TCODColor::darkGreen);
+					}
+					else {
+						engine.mapcon->setChar(x, y, '^');
+						engine.mapcon->setCharForeground(x,y,TCODColor::darkGrey);
+					}
 				}
 				else {
-					//need to make into tinted floor tiles
-					engine.mapcon->setChar(x, y, 30);//weird down carrot
-					//tinted flo's
-					engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+					if (isInfected(x,y)) {
+						engine.mapcon->setChar(x, y, ' ');
+						engine.mapcon->setCharBackground(x,y,TCODColor::darkGreen);
+					}
+					else {
+						engine.mapcon->setChar(x, y, 30);
+						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+					}
 				}
 			}
 		}
@@ -277,4 +355,92 @@ void Map::render() const {
 	
 	
 }
-
+void Map::generateRandom(Actor *owner, int ascii){
+	TCODRandom *rng = TCODRandom::getInstance();
+	int dice = rng->getInt(0,100);
+	if(dice <= 40){
+			return;
+	}else{
+		if(ascii == 164){
+			for(int i = 0; i < owner->container->size; i++){
+				int rnd = rng->getInt(0,100);
+				if (rnd < 30) {
+					//create a health potion
+					Actor *healthPotion = new Actor(0,0,'!',"Medkit", TCODColor::violet);
+					healthPotion->type = 1;
+					healthPotion->blocks = false;
+					healthPotion->pickable = new Healer(20);
+					engine.actors.push(healthPotion);
+					healthPotion->pickable->pick(healthPotion,owner);
+				} else if(rnd < 10+30) {
+					//create a scroll of lightningbolt
+					Actor *scrollOfLightningBolt = new Actor(0,0,'?', "EMP Pulse",
+						TCODColor::lightYellow);
+					scrollOfLightningBolt->type = 2;
+					scrollOfLightningBolt->blocks = false;
+					scrollOfLightningBolt->pickable = new LightningBolt(5,20);
+					engine.actors.push(scrollOfLightningBolt);
+					scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
+				} else if(rnd < 10+30+20) {
+					//create a scroll of fireball
+					Actor *scrollOfFireball = new Actor(0,0,'?',"Firebomb",
+						TCODColor::lightOrange);
+					scrollOfFireball->type = 2;
+					scrollOfFireball->blocks = false;
+					scrollOfFireball->pickable = new Fireball(3,12,8);
+					engine.actors.push(scrollOfFireball);
+					scrollOfFireball->pickable->pick(scrollOfFireball,owner);
+				} else{
+					//create a scroll of confusion
+					Actor *scrollOfConfusion = new Actor(0,0,'?',"Flashbang",
+						TCODColor::lighterGreen);
+					scrollOfConfusion->type = 2;
+					scrollOfConfusion->blocks = false;
+					scrollOfConfusion->pickable = new Confuser(10,8);
+					engine.actors.push(scrollOfConfusion);
+					scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+				}
+			}
+		}else if(ascii == 165){
+			for(int i = 0; i < owner->container->size; i++){
+				int rnd2 = rng->getInt(0,100);
+				if (rnd2 < 25) {
+					//create a health potion
+					Actor *healthPotion = new Actor(0,0,'!',"Medkit", TCODColor::violet);
+					healthPotion->type = 1;
+					healthPotion->blocks = false;
+					healthPotion->pickable = new Healer(20);
+					engine.actors.push(healthPotion);
+					healthPotion->pickable->pick(healthPotion,owner);
+				} else if(rnd2 < 25+20) {
+					//create a scroll of lightningbolt
+					Actor *scrollOfLightningBolt = new Actor(0,0,'?', "EMP Pulse",
+						TCODColor::lightYellow);
+					scrollOfLightningBolt->type = 2;
+					scrollOfLightningBolt->blocks = false;
+					scrollOfLightningBolt->pickable = new LightningBolt(5,20);
+					engine.actors.push(scrollOfLightningBolt);
+					scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
+				} else if(rnd2 < 25+20+25) {
+					//create a scroll of fireball
+					Actor *scrollOfFireball = new Actor(0,0,'?',"Firebomb",
+						TCODColor::lightOrange);
+					scrollOfFireball->type = 2;
+					scrollOfFireball->blocks = false;
+					scrollOfFireball->pickable = new Fireball(3,12,8);
+					engine.actors.push(scrollOfFireball);
+					scrollOfFireball->pickable->pick(scrollOfFireball,owner);
+				} else{
+					//create a scroll of confusion
+					Actor *scrollOfConfusion = new Actor(0,0,'?',"Flashbang",
+						TCODColor::lighterGreen);
+					scrollOfConfusion->type = 2;
+					scrollOfConfusion->blocks = false;
+					scrollOfConfusion->pickable = new Confuser(10,8);
+					engine.actors.push(scrollOfConfusion);
+					scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+				}
+		}
+		}
+	}
+}

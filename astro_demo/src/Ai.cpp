@@ -169,19 +169,95 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		case 'i': //display inventory
 		{ 
 			engine.map->computeFov();
-			Actor *actor = choseFromInventory(owner);
-			if (actor) {
-				bool used;
-				used = actor->pickable->use(actor,owner);
-				if (used) {
-					engine.gameStatus = Engine::NEW_TURN;
+			engine.gui->menu.clear();
+			engine.gui->menu.addItem(Menu::ITEMS, "Items");
+			engine.gui->menu.addItem(Menu::TECH, "Tech");
+			engine.gui->menu.addItem(Menu::ARMOR, "Armor");
+			engine.gui->menu.addItem(Menu::WEAPONS, "Weapons");
+			engine.gui->menu.addItem(Menu::EXIT, "Exit");
+			//Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
+			Actor *actor;
+			bool choice = true;
+			while(choice){
+			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
+				switch (menuItem) {
+					case Menu::ITEMS :
+						actor = choseFromInventory(owner, 1);
+						if(actor)
+							choice = false;
+						break;
+					case Menu::TECH :
+						actor = choseFromInventory(owner, 2);
+						if(actor)
+							choice = false;
+						break;
+					case Menu::ARMOR:
+						actor = choseFromInventory(owner, 2);
+						if(actor)
+							choice = false;
+						break;
+					case Menu::WEAPONS:
+						actor = choseFromInventory(owner, 2);
+						if(actor)
+							choice = false;
+						break;
+					case Menu::NO_CHOICE:
+						break;
+					case Menu::EXIT:
+						choice = false;
+					default: break;
 				}
 			}
+				if (actor) {
+					bool used;
+					used = actor->pickable->use(actor,owner);
+					if (used) {
+						engine.gameStatus = Engine::NEW_TURN;
+					}
+				}
 		}break;
 		case 'd': //drop an item
 		{
 			engine.map->computeFov();
-			Actor *actor = choseFromInventory(owner);
+			engine.gui->menu.clear();
+			engine.gui->menu.addItem(Menu::ITEMS, "Items");
+			engine.gui->menu.addItem(Menu::TECH, "Tech");
+			engine.gui->menu.addItem(Menu::ARMOR, "Armor");
+			engine.gui->menu.addItem(Menu::WEAPONS, "Weapons");
+			engine.gui->menu.addItem(Menu::EXIT, "Exit");
+			//Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
+			Actor *actor;
+			bool choice = true;
+			while(choice){
+			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
+				switch (menuItem) {
+					case Menu::ITEMS :
+						actor = choseFromInventory(owner, 1);
+						if(actor)
+							choice = false;
+						break;
+					case Menu::TECH :
+						actor = choseFromInventory(owner, 2);
+						if(actor)
+							choice = false;
+						break;
+					case Menu::ARMOR:
+						actor = choseFromInventory(owner, 2);
+						if(actor)
+							choice = false;
+						break;
+					case Menu::WEAPONS:
+						actor = choseFromInventory(owner, 2);
+						if(actor)
+							choice = false;
+						break;
+					case Menu::NO_CHOICE:
+						break;
+					case Menu::EXIT:
+						choice = false;
+					default: break;
+				}
+			}
 			if (actor) {
 				actor->pickable->drop(actor,owner);
 				engine.gameStatus = Engine::NEW_TURN;
@@ -212,39 +288,88 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 	}
 }
 
-Actor *PlayerAi::choseFromInventory(Actor *owner) {
-	static const int INVENTORY_WIDTH = 50;
+Actor *PlayerAi::choseFromInventory(Actor *owner, int type) {
+	static const int INVENTORY_WIDTH = 38;
 	static const int INVENTORY_HEIGHT = 28;
 	static TCODConsole con(INVENTORY_WIDTH, INVENTORY_HEIGHT);
 	
 	//display the inventory frame
 	con.setDefaultForeground(TCODColor(200,180,50));
-	con.printFrame(0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,true,TCOD_BKGND_DEFAULT, "Inventory");
+	con.printFrame(0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,true,TCOD_BKGND_DEFAULT);
 	
 	//display the items with their keyboard shortcut
 	con.setDefaultForeground(TCODColor::white);
-	int shortcut = 'a';
-	int y = 1;
-	for (Actor **it = owner->container->inventory.begin();
+	
+	;
+	/*for (Actor **it = owner->container->inventory.begin();
 		it != owner->container->inventory.end(); it++) {
 		Actor *actor = *it;
 		con.print(2,y,"(%c) %s",shortcut,actor->name);
 		y++;
 		shortcut++;
+	}*/
+	if(type == 1){
+		int shortcut = 'a';
+		int y = 1;
+		for(std::map<const char*, float>::iterator ii=owner->container->Itemstacks.begin(); ii!=owner->container->Itemstacks.end(); ++ii){
+			con.print(2,y,"(%c) %s(%g)",shortcut,(*ii).first,(*ii).second);
+			owner->container->select[shortcut] = (*ii).first;
+			y++;
+			shortcut++;
 	}
+	}else if(type == 2){
+		int shortcut1 = 'a';
+		int j = 1;
+		for(std::map<const char*, float>::iterator ij=owner->container->Techstacks.begin(); ij!=owner->container->Techstacks.end(); ++ij){
+			con.print(2,j,"(%c) %s(%g)",shortcut1,(*ij).first,(*ij).second);
+			owner->container->select[shortcut1] = (*ij).first;
+			j++;
+			shortcut1++;
+		}
+	}else if(type == 3){
+	}else{
+	}
+	
+	
+
 	//blit the inventory console on the root console
 	TCODConsole::blit(&con,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
 		TCODConsole::root, engine.screenWidth/2 - INVENTORY_WIDTH/2,
-		engine.screenHeight/2 - INVENTORY_HEIGHT/2);
+		engine.screenHeight/2 - INVENTORY_HEIGHT/2 - 4);
 	TCODConsole::flush();
 	
 	//wait for a key press
 	TCOD_key_t key;
 	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
 	if (key.vk == TCODK_CHAR) {
-		int actorIndex = key.c - 'a';
+		/*int actorIndex = key.c - 'a';
 		if (actorIndex >= 0 && actorIndex < owner->container->inventory.size()) {
 			return owner->container->inventory.get(actorIndex);
+		}*/
+		if(type == 1){
+			if(owner->container->select[key.c]){
+				int actorIndex = 0;
+				for (Actor **it = owner->container->inventory.begin(); it != owner->container->inventory.end(); it++) {
+					Actor *actor = *it;
+					if(strcmp(actor->name, owner->container->select[key.c]) == 0){
+						return owner->container->inventory.get(actorIndex);
+					}
+					actorIndex++;
+				}
+			}
+		}else if(type == 2){
+			if(owner->container->select[key.c]){
+				int actorIndex = 0;
+				for (Actor **it = owner->container->inventory.begin(); it != owner->container->inventory.end(); it++) {
+					Actor *actor = *it;
+					if(strcmp(actor->name, owner->container->select[key.c]) == 0){
+						return owner->container->inventory.get(actorIndex);
+					}
+					actorIndex++;
+				}
+			}
+		}else if(type == 3){
+		}else{
 		}
 	}
 	return NULL;
