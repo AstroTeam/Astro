@@ -3,7 +3,7 @@ $ cat .gitignore
 *MakeFile
 
 #Screenshots
-*.png
+
 
 #Object Files
 *.o
