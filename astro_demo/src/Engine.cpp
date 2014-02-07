@@ -1,4 +1,5 @@
 #include "main.hpp"
+#include "SDL/SDL.h"
 #include <math.h>
 
 /* Engine::Engine() : gameStatus(STARTUP), fovRadius(3)
@@ -15,9 +16,13 @@ Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	screenWidth(screenWidth),screenHeight(screenHeight),level(1),turnCount(0) {
 	mapWidth = 100;
 	mapHeight = 100;
-	TCODConsole::initRoot(screenWidth,screenHeight,"Astro", false);
+	TCODConsole::initRoot(screenWidth,screenHeight,"Astro", false,TCOD_RENDERER_SDL);
+	//TCODSystem::registerSDLRenderer(new Renderer());
+	//TCODSystem::registerSDLRenderer(new blengine());
 	mapcon = new TCODConsole(mapWidth,mapHeight);
+	mapconCpy = new TCODConsole(mapWidth, mapHeight);
 	gui = new Gui();
+//	rend = new Renderer();
 }
 
 Engine::~Engine() {
@@ -44,7 +49,8 @@ void Engine::init() {
 	map = new Map(mapWidth, mapHeight);
 	map->init(true);
 	gui->message(TCODColor::red, 
-    	"Welcome stranger! Prepare to face a ship of unknown horror");
+
+    	"Welcome stranger! Prepare to face a horde of Astrocephalytes and Spores Creatures!");
 	gameStatus = STARTUP;
 }
 
@@ -161,12 +167,21 @@ void Engine::update() {
 		load(true);
 	} 
 	player->update();
+	if (map->isInfected(player->x, player->y)) {
+		player->susceptible = true;
+	}
+	else {
+		player->susceptible = false;
+	}
 	if (gameStatus == NEW_TURN){
 		engine.turnCount++;
 		for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 			Actor *actor = *iterator;
 			if ( actor != player) {
 				actor->update();
+				if (actor->infected) {
+					map->infectFloor(actor->x, actor->y);
+				}
 			}
 		}
 	}
@@ -185,6 +200,15 @@ void Engine::render()
 
 	//draw the map
 	map->render();
+	TCODConsole::blit(mapcon, 0, 0, 0, 0, mapconCpy, 0, 0);
+	//^this sets a lot of chars down on mapcon
+	//currently renders the floors as ' ' space chars
+	
+	//render the floors!
+	//we need to take the chars off mapcon and render them as the png's from floortile.png
+//	rend->renderMap();
+	//floors now rendered
+	//WE MAY NEED TO SET A LOT OF KEYCOLORS FOR THE BLITS OF ITEMS AND SUCH
 	
 	//draw the actors
 	for (Actor **iterator=actors.begin(); iterator != actors.end(); iterator++) {
@@ -200,10 +224,14 @@ void Engine::render()
 			}
 		}
 	}
+	//^this blits the actors onto the mapcon as chars
+	
 	player->render();
 	//show the player's stats
 	
 	gui->render();
+	//^blits the sidebars onto the console
+	
 	
 	int mapx1 = 0, mapy1 = 0, mapy2 = 0, mapx2 = 0;
 	
@@ -248,8 +276,14 @@ void Engine::render()
 	//if (mapx2 > TCODConsole::root->getWidth() - 22) mapx2 = TCODConsole::root->getWidth() - 22;
 	if (mapy2 > TCODConsole::root->getHeight() - 12) mapy2 = TCODConsole::root->getHeight() - 12;
 	
+	//need to make a list of '.' under other chars, that there would be a difference between mapcon and mapconCpy
+	//then need to make some sort of flag
+	
+	
+	//blitting of the map onto the screen...maybe blit onto temp root copy, then render and blit back
 	TCODConsole::blit(mapcon, mapx1, mapy1, mapx2, mapy2, 
 		TCODConsole::root, 22, 0);
+	
 	
 	//the comment below is the old gui code
 	/* TCODConsole::root->print(1, screenHeight-2, "HP: %d/%d", 
@@ -301,7 +335,7 @@ Actor *Engine::getClosestMonster(int x, int y, float range) const {
 	return closest;
 }
 
-bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {
+bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {   //need to make middle tile unique 
 	while (!TCODConsole::isWindowClosed()) {
 		int dx = 0, dy = 0;
 		render();
@@ -330,18 +364,41 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {
 		if (*y > 99) *y = 99;
 		if (*y < 0) *y = 0;
 		
-		for (int i = 0; i < map->height; i++) {
-			for (int j = 0; j < map->width; j++) {
-				if ( distance(*x,j,*y,i) <= AOE ) {
-					if ( distance(*x,player->x,*y,player->y) >= maxRange && maxRange != 0) {
-						mapcon->setCharBackground(j,i,TCODColor::desaturatedPink);
-					} else {
-						mapcon->setCharBackground(j,i,TCODColor::pink);
+		//things with AOE > 1 need to have a more unique middle color so i can render them
+		if (AOE > 1.0 )
+		{
+			//make center unique
+			for (int i = 0; i < map->height; i++) {
+				for (int j = 0; j < map->width; j++) {
+					if ( distance(*x,j,*y,i) <= AOE ) {
+						if (distance(*x,j,*y,i) < 1.0) {//middle
+							mapcon->setCharBackground(j,i,TCODColor::darkerPink);
+							
+						}
+						else if ( distance(*x,player->x,*y,player->y) >= maxRange && maxRange != 0) {
+							mapcon->setCharBackground(j,i,TCODColor::desaturatedPink);
+						
+						} else {
+							mapcon->setCharBackground(j,i,TCODColor::pink);
+						}
 					}
 				}
 			}
 		}
-		
+		else
+		{
+			for (int i = 0; i < map->height; i++) {
+				for (int j = 0; j < map->width; j++) {
+					if ( distance(*x,j,*y,i) <= AOE ) {
+						if ( distance(*x,player->x,*y,player->y) >= maxRange && maxRange != 0) {
+							mapcon->setCharBackground(j,i,TCODColor::desaturatedPink);
+						} else {
+							mapcon->setCharBackground(j,i,TCODColor::pink);
+						}
+					}
+				}
+			}
+		}
 	int mapx1 = 0, mapy1 = 0, mapy2 = 0, mapx2 = 0;
 	
 	mapx1 = *x - ((screenWidth -22)/2);

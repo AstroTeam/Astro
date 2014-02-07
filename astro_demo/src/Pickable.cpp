@@ -14,7 +14,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 }
 
 bool Pickable::pick(Actor *owner, Actor *wearer) {
-	if (wearer->container && wearer->container->add(owner)) {
+	if (wearer->container && wearer->container->add(owner,owner->type)) {
 		engine.actors.remove(owner);
 		return true;
 	}
@@ -74,11 +74,15 @@ bool LightningBolt::use(Actor *owner, Actor *wearer) {
 		return false;
 	}
 	//hit the closest monster for <damage> hit points;
+	float damageTaken = closestMonster->destructible->takeDamage(closestMonster,damage);
+	if (!closestMonster->destructible->isDead()) {
 	engine.gui->message(TCODColor::lightBlue,
 		"A lightning bolt strikes the %s with a loud crack"
 		"for %g damage.",
-		closestMonster->name,damage);
-	closestMonster->destructible->takeDamage(closestMonster,damage);
+		closestMonster->name,damageTaken);
+	} else {
+		engine.gui->message(TCODColor::orange,"The %s crackles with electricity, twitching slightly as it falls.",closestMonster->name);
+	}
 	return Pickable::use(owner,wearer);
 }
 
@@ -113,10 +117,14 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 		Actor *actor = *it;
 		if (actor->destructible && !actor->destructible->isDead()
 			&&actor->getDistance(x,y) <= range) {
-			engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damage);
-			actor->destructible->takeDamage(actor,damage);
-
+			float damageTaken = actor->destructible->takeDamage(actor,damage);
+			if (!actor->destructible->isDead()) {
+				engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damageTaken);
 			}
+		else {
+			engine.gui->message(TCODColor::orange,"The %s is an ashen mound, crumbling under its own weight.",actor->name);
+		}
+		}
 	}
 	return Pickable::use(owner,wearer);
 }
@@ -170,10 +178,11 @@ void Pickable::drop(Actor *owner, Actor *wearer) {
 		engine.actors.push(owner);
 		owner->x = wearer->x;
 		owner->y = wearer->y;
+		engine.sendToBack(owner);
 		if (wearer == engine.player){
 			engine.gui->message(TCODColor::lightGrey,"You drop a %s",owner->name);
 		}else {
-			engine.gui->message(TCODColor::lightGrey,"%s drops a %S",wearer->name,owner->name);
+			engine.gui->message(TCODColor::lightGrey,"%s drops a %s",wearer->name,owner->name);
 		}
 	}
 }

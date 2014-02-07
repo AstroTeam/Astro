@@ -9,4 +9,7 @@ class Actor;
 #include "Actor.hpp"
 #include "Map.hpp"
 #include "Gui.hpp"
+#include "Renderer.hpp"
+//#include "EngineRend.hpp"
+//#include "blengine.cpp"
 #include "Engine.hpp"

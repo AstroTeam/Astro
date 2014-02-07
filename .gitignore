@@ -1,10 +1,18 @@
 $ cat .gitignore
 #MakeFile
 *MakeFile
+
+#Screenshots
+
+
 #Object Files
 *.o
+
 #Game Save Files
 *.sav
+
+#objects files
+*.o
 
 # Executables
 *.exe

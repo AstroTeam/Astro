@@ -26,33 +26,67 @@ void Container::save(TCODZip &zip) {
 	}
 }
 
-bool Container::add(Actor *actor) {
+bool Container::add(Actor *actor, int type) {
 	if (size > 0 && inventory.size() >= size) {
 		//inventory full
 		return false;
 	}
 	inventory.push(actor);
 	std::map<const char*, float>::iterator ii;
-	if(stacks[actor->name]){
-		stacks[actor->name] = stacks[actor->name] + 1;
-		//ii = stacks.find(actor->name);
-		//engine.gui->message(TCODColor::white,"The item is %s and the ammount is %g",(*ii).first,(*ii).second);
-	}else{
-		stacks[actor->name] = 1;
-		//ii = stacks.find(actor->name);
-		//engine.gui->message(TCODColor::white,"The item is %s and the ammount is %g",(*ii).first,(*ii).second);
+	if(type == 1){
+		if(Itemstacks[actor->name]){
+			Itemstacks[actor->name] = Itemstacks[actor->name] + 1;
+			//ii = Itemstacks.find(actor->name);
+			//engine.gui->message(TCODColor::white,"The item is %s and the ammount is %g",(*ii).first,(*ii).second);
+		}else{
+			Itemstacks[actor->name] = 1;
+			//ii = Itemstacks.find(actor->name);
+			//engine.gui->message(TCODColor::white,"The item is %s and the ammount is %g",(*ii).first,(*ii).second);
+		}
+	}else if(type == 2){
+		if(Techstacks[actor->name]){
+			Techstacks[actor->name] = Techstacks[actor->name] + 1;
+			//ii = Techstacks.find(actor->name);
+			//engine.gui->message(TCODColor::white,"The item is %s and the ammount is %g",(*ii).first,(*ii).second);
+		}else{
+			Techstacks[actor->name] = 1;
+			//ii = Techstacks.find(actor->name);
+			//engine.gui->message(TCODColor::white,"The item is %s and the ammount is %g",(*ii).first,(*ii).second);
+		}
+	}else if(type == 3){
+	}else if(type == 4){
 	}
+	
 	return true;
 }
 
 void Container::remove(Actor *actor) {
 	inventory.remove(actor);
-	if(stacks[actor->name] == 1){
-		stacks.erase(actor->name);
-		for(std::map<char,const char*>::iterator ii = select.begin(); ii != select.end(); ++ii){\
-			if(strcmp(actor->name, (*ii).second) == 0)
-				select.erase(ii);
+	if(Itemstacks[actor->name]){
+		if(Itemstacks[actor->name] == 1){
+			Itemstacks.erase(actor->name);
+			Techstacks.erase(actor->name);
+			for(std::map<char,const char*>::iterator ii= select.begin(); ii != select.end(); ++ii){
+				if(strcmp(actor->name, (*ii).second) == 0)
+					select.erase(ii);
+			}
+		}else{
+			Itemstacks[actor->name] = Itemstacks[actor->name] - 1;
+			Techstacks.erase(actor->name);
 		}
-	}else
-		stacks[actor->name] = stacks[actor->name] - 1;
+	}else if(Techstacks[actor->name]){
+		if(Techstacks[actor->name] == 1){
+			Techstacks.erase(actor->name);
+			Itemstacks.erase(actor->name);
+			for(std::map<char,const char*>::iterator ij= select.begin(); ij != select.end(); ++ij){
+				if(strcmp(actor->name, (*ij).second) == 0)
+					//engine.gui->message(TCODColor::white,"The item is %s and the ammount is %g",(*ij).first,(*ij).second);
+					select.erase(ij);
+			}
+		}else{
+			Techstacks[actor->name] = Techstacks[actor->name] - 1;
+			Itemstacks.erase(actor->name);
+		}
+	}
+	
 }

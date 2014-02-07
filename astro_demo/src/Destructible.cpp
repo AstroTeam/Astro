@@ -82,6 +82,14 @@ void MonsterDestructible::die(Actor *owner) {
 	//doesnt block, cant be attacked, doesnt move
 	engine.gui->message(TCODColor::lightGrey,"The %s is dead! You feel a rush as it sputters its last breath.", owner->name);
 	engine.player->destructible->xp += xp;
+	if(!owner->container->inventory.isEmpty()){
+		for(Actor **iterator=owner->container->inventory.begin(); iterator != owner->container->inventory.end(); ++iterator){
+			Actor *actor = *iterator;
+			if(actor){
+				actor->pickable->drop(actor,owner);
+			}
+		}
+	}
 	Destructible::die(owner);
 }
 

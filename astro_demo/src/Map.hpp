@@ -1,6 +1,7 @@
 struct Tile {
 	bool explored;
-	Tile() : explored(false) {}
+	bool infected;
+	Tile() : explored(false),  infected (false) {}
 	
 };
 
@@ -14,6 +15,8 @@ public:
 	bool canWalk(int x, int y) const;
 	bool isInFov(int x, int y) const;
 	bool isExplored(int x, int y) const;
+	bool isInfected(int x, int y) const;
+	void infectFloor(int x, int y);
 	void computeFov();
 	void render() const;
 	void init(bool withActors);
@@ -31,5 +34,5 @@ protected:
 	void createRoom(bool first, int x1, int y1, int x2, int y2, bool withActors);
 	void addMonster(int x, int y);
 	void addItem(int x, int y);
-	
+	void generateRandom(Actor *owner, int ascii);
 };
