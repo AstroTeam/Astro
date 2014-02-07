@@ -6,6 +6,8 @@ static const int PANEL_HEIGHT = 12;
 static const int BAR_WIDTH = 20;
 static const int MSG_X = BAR_WIDTH + 2;
 static const int MSG_HEIGHT = PANEL_HEIGHT-1;
+const int CON_WIDTH = 60; //sets the message console width. height is PANEL_HEIGHT
+const int TILE_INFO_WIDTH = engine.screenWidth - CON_WIDTH; //sets the tile info screen width. height is PANEL_HEIGHT
 
 const int PAUSE_MENU_WIDTH = 32;
 const int PAUSE_MENU_HEIGHT = 23;
@@ -14,13 +16,17 @@ const int INVENTORY_MENU_WIDTH = 38;
 const int INVENTORY_MENU_HEIGHT = 4;
 
 Gui::Gui() {
-	con = new TCODConsole(engine.screenWidth, PANEL_HEIGHT);
+	//added the tile info screen, which takes up a part of the bottom panel next to the console
+	con = new TCODConsole(CON_WIDTH, PANEL_HEIGHT);
 	sidebar = new TCODConsole(MSG_X, engine.screenHeight);
+	tileInfoScreen = new TCODConsole(TILE_INFO_WIDTH, PANEL_HEIGHT);
+	
 }
 
 Gui::~Gui() {
 	delete con;
 	delete sidebar;
+	delete tileInfoScreen;
 	clear();
 }
 
@@ -52,6 +58,8 @@ void Gui::render() {
 	con->clear();
 	sidebar->setDefaultBackground(TCODColor::black);
 	sidebar->clear();
+	tileInfoScreen->setDefaultBackground(TCODColor::black);
+	tileInfoScreen->clear();
 	
 	
 	
@@ -116,11 +124,21 @@ void Gui::render() {
 		}
 	}
 	
-	//blit the GUI consoles (sidebar and message log) 
-	TCODConsole::blit(sidebar, 0, 0, MSG_X, engine.screenHeight, 
-		TCODConsole::root, 0, 0);
-	TCODConsole::blit(con, 0, 0, engine.screenWidth, PANEL_HEIGHT, 
-		TCODConsole::root, 0, engine.screenHeight - PANEL_HEIGHT);
+	//draw the tileInfoScreen
+
+	tileInfoScreen->setDefaultForeground(TCODColor(200,180,50));
+	tileInfoScreen->printFrame(0, 0, TILE_INFO_WIDTH, PANEL_HEIGHT, false, TCOD_BKGND_ALPHA(50),"TILE INFO");
+	tileInfoScreen->print(1, 2, "Tile Info goes here");
+	
+	
+	
+	//blit the GUI consoles (sidebar and message log and tile info screen) 
+	TCODConsole::blit(con, 0, 0, CON_WIDTH, PANEL_HEIGHT, TCODConsole::root, 0, engine.screenHeight - PANEL_HEIGHT);
+	TCODConsole::blit(tileInfoScreen, 0, 0, TILE_INFO_WIDTH, PANEL_HEIGHT, TCODConsole::root, engine.screenWidth - TILE_INFO_WIDTH, engine.screenHeight - PANEL_HEIGHT);	
+	TCODConsole::blit(sidebar, 0, 0, MSG_X, engine.screenHeight-PANEL_HEIGHT, TCODConsole::root, 0, 0);	
+		
+		
+		
 }
 
 void Gui::renderBar(int x, int y, int width, const char *name,
