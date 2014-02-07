@@ -36,25 +36,25 @@ bool Container::add(Actor *actor, int type) {
 	if(type == 1){
 		if(Itemstacks[actor->name]){
 			Itemstacks[actor->name] = Itemstacks[actor->name] + 1;
-			ii = Itemstacks.find(actor->name);
-			engine.gui->message(TCODColor::white,"The item is %s and the ammount is %g",(*ii).first,(*ii).second);
+			//ii = Itemstacks.find(actor->name);
+			//engine.gui->message(TCODColor::white,"The item is %s and the ammount is %g",(*ii).first,(*ii).second);
 		}else{
 			Itemstacks[actor->name] = 1;
-			ii = Itemstacks.find(actor->name);
-			engine.gui->message(TCODColor::white,"The item is %s and the ammount is %g",(*ii).first,(*ii).second);
+			//ii = Itemstacks.find(actor->name);
+			//engine.gui->message(TCODColor::white,"The item is %s and the ammount is %g",(*ii).first,(*ii).second);
 		}
 	}else if(type == 2){
 		if(Techstacks[actor->name]){
 			Techstacks[actor->name] = Techstacks[actor->name] + 1;
-			//ii = stacks.find(actor->name);
+			//ii = Techstacks.find(actor->name);
 			//engine.gui->message(TCODColor::white,"The item is %s and the ammount is %g",(*ii).first,(*ii).second);
 		}else{
 			Techstacks[actor->name] = 1;
-			//ii = stacks.find(actor->name);
+			//ii = Techstacks.find(actor->name);
 			//engine.gui->message(TCODColor::white,"The item is %s and the ammount is %g",(*ii).first,(*ii).second);
 		}
-	}else if(actor->type == 3){
-	}else{
+	}else if(type == 3){
+	}else if(type == 4){
 	}
 	
 	return true;
