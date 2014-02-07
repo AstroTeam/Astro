@@ -5,25 +5,18 @@
 //g++ src/*.cpp -o tuto -lmingw32 -lSDLmain -lSDL -Iinclude -Llib -ltcod-mingw -static-libgcc -static-libstdc++ -Wall
 
 
-<<<<<<< HEAD
-=======
-//Engine engine(120/1.875,75/1.875);
->>>>>>> origin/master
+
 Engine engine(85,47);
 //SDL_Init( SDL_INIT_EVERYTHING );
 
 
 
-<<<<<<< HEAD
 
-int main() {
-=======
 int main( int argc, char* args[] ) {
 	SDL_Init( SDL_INIT_EVERYTHING );
 	TCODSystem::registerSDLRenderer(new Renderer());
 
 	//TCODSystem::registerSDLRenderer(new EngineRend());
->>>>>>> origin/master
 	engine.load(false);
 	while (!TCODConsole::isWindowClosed()) {
 		engine.update();
