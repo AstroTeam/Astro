@@ -5,7 +5,7 @@ public:
 	TCODColor col; //color for representation
 	const char *name;  //the actor's name
 	bool blocks; //can you walk over this guy?
-	bool infected; //is this guy infected?
+	bool oozing; //is this guy infected?
 	bool susceptible; //is this guy susceptible to the infection?
 	int type; //Actor type (1 = Item, 2 = Tech, 3 = Armor, 4 = Weapon)
 	//bool fovOnly; //only display when in FOV (maybe add this later)
@@ -14,6 +14,7 @@ public:
 	Ai *ai; //something self-updating
 	Pickable *pickable; //something that can be picked and used
 	Container *container; //something that can contain items/have an inventory
+	Map *enviroment;//if the actor can affect the enviroment
 
 	Actor(int x, int y, int ch, const char *name, const TCODColor &col);
 	~Actor();

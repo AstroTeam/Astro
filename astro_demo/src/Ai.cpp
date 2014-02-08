@@ -424,6 +424,9 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
 			owner->y += stepdy;
 		}
+		if (owner->oozing) {
+			owner->enviroment->infectFloor(owner->x, owner->y);
+		}
 	} else if (owner->attacker) {
 		owner->attacker->attack(owner,engine.player);
 	}

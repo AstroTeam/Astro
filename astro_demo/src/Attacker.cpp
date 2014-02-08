@@ -15,7 +15,7 @@ void Attacker::save(TCODZip &zip) {
 void Attacker::attack(Actor *owner, Actor *target) {
 	if (target->destructible && !target->destructible->isDead() ) {
 		if (power - target->destructible->defense > 0) {
-			if (owner->infected && target->susceptible) {
+			if (owner->oozing && target->susceptible) {
 				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!\n",owner->name, target->name,power+1 - target->destructible->defense);
 			}
 			else {

@@ -178,9 +178,6 @@ void Engine::update() {
 			Actor *actor = *iterator;
 			if ( actor != player) {
 				actor->update();
-				if (actor->infected) {
-					map->infectFloor(actor->x, actor->y);
-				}
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 struct Tile {
 	bool explored;
-	bool infected;
-	Tile() : explored(false),  infected (false) {}
+	float infection;
+	Tile() : explored(false),  infection (false) {}
 	
 };
 

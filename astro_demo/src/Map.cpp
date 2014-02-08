@@ -54,12 +54,16 @@ void Map::init(bool withActors) {
 	map = new TCODMap(width, height);
 
 	//randomly infect tiles
-	for (int i = 0; i < width*height; i++) {
+	/*for (int i = 0; i < width*height; i++) {
 		if (rng->getInt(0,4)==0) {
-			tiles[i].infected = true;
+			tiles[i].infection = true;
 		}
+	}*/
+	int epiLocation = rng->getInt(0, width*height);
+	Actor * epicenter = new Actor(epiLocation/width, epiLocation%width, 31, "Infection Epicenter", TCODColor::green);
+	for (int i = 0; i < width*height; i++) {
+		tiles[i].infection = 1 / ((rng->getDouble(.01,1.0))*epicenter->getDistance(i/width, i%width));
 	}
-
 	TCODBsp bsp(0,0,width,height);
 	bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
 	BspListener listener(*this);
@@ -136,7 +140,6 @@ void Map::addMonster(int x, int y) {
 		infectedCrewMember->attacker = new Attacker(infectedCrewMemAtk);
 		infectedCrewMember->container = new Container(2);
 		infectedCrewMember->ai = new MonsterAi();
-		infectedCrewMember->infected = true;
 		generateRandom(infectedCrewMember, 164);
 		engine.actors.push(infectedCrewMember);
 	}
@@ -147,7 +150,8 @@ void Map::addMonster(int x, int y) {
 		sporeCreature->attacker = new Attacker(sporeCreatureAtk);
 		sporeCreature->container = new Container(2);
 		sporeCreature->ai = new MonsterAi();
-		sporeCreature->infected = true;
+		sporeCreature->oozing = true;
+		sporeCreature->enviroment = this;
 		generateRandom(sporeCreature, 165);
 		engine.actors.push(sporeCreature);
 	}
@@ -210,7 +214,7 @@ void Map::createRoom(bool first, int x1, int y1, int x2, int y2, bool withActors
 	//add monsters
 	//horde chance
 	int nbMonsters;
-	if (rng->getInt(0,19) == 0) {
+	if (!first && rng->getInt(0,19) == 0) {
 		nbMonsters = rng->getInt(10, 25);
 	}
 	else {
@@ -264,11 +268,11 @@ bool Map::isExplored(int x, int y) const {
 }
 
 bool Map::isInfected(int x, int y) const {
-	return tiles[x+y*width].infected;
+	return (bool)((int)tiles[x+y*width].infection);
 }
 
 void Map::infectFloor(int x, int y) {
-	tiles[x+y*width].infected = true;
+	tiles[x+y*width].infection = true;
 }
 
 bool Map::isInFov(int x, int y) const {
