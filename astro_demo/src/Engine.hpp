@@ -16,6 +16,10 @@ public:
 	Map *map;
 	//Map *mapCpy;
 	//Renderer *rend;
+	int mapx1;
+	int mapx2;
+	int mapy1;
+	int mapy2;
 	int fovRadius;
 	int screenWidth;
 	int screenHeight;
