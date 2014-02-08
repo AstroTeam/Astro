@@ -53,17 +53,18 @@ void Map::init(bool withActors) {
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
 
-	//randomly infect tiles
-	/*for (int i = 0; i < width*height; i++) {
-		if (rng->getInt(0,4)==0) {
-			tiles[i].infection = true;
-		}
-	}*/
+	//give this level an epicenter of the infection
 	int epiLocation = rng->getInt(0, width*height);
 	Actor * epicenter = new Actor(epiLocation/width, epiLocation%width, 31, "Infection Epicenter", TCODColor::green);
+	epicenter->enviroment=this;
+	epicenter->ai= new EpicenterAi;
+	engine.actors.push(epicenter);
+
+	//intial infection, concentrated at the epicenter
 	for (int i = 0; i < width*height; i++) {
 		tiles[i].infection = 1 / ((rng->getDouble(.01,1.0))*epicenter->getDistance(i/width, i%width));
 	}
+
 	TCODBsp bsp(0,0,width,height);
 	bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
 	BspListener listener(*this);
@@ -290,23 +291,22 @@ bool Map::isInFov(int x, int y) const {
 void Map::computeFov() {
 	map->computeFov(engine.player->x,engine.player->y, engine.fovRadius);
 }
-
 void Map::render() const {
-	
+
 	static const TCODColor darkWall(0,0,100);
 	static const TCODColor darkGround(50,50,150);
 	static const TCODColor lightWall(30,110,50);
 	static const TCODColor lightGround(200,180,50);
-	
+
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
 			if (isInFov(x,y)) {
 				//TCODConsole::root->setCharBackground(x,y,isWall(x,y) ? lightWall : lightGround);
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
-				
+
 				//this is going to have to be changed if we add more environment tiles
-				
-				
+
+
 				if (isWall(x,y)) {
 					if (isInfected(x,y)) {
 						engine.mapcon->setChar(x, y, '^');
@@ -355,9 +355,9 @@ void Map::render() const {
 			}
 		}
 	}
-	
-	
-	
+
+
+
 }
 void Map::generateRandom(Actor *owner, int ascii){
 	TCODRandom *rng = TCODRandom::getInstance();

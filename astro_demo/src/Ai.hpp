@@ -4,7 +4,7 @@ public:
 	static Ai *create(TCODZip &zip);
 protected:
 	enum AiType {
-		MONSTER, CONFUSED_ACTOR, PLAYER
+		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER
 	};
 };
 
@@ -33,6 +33,18 @@ protected:
 	int moveCount;
 	
 	void moveOrAttack(Actor *owner, int targetx, int targety);
+};
+
+class EpicenterAi : public Ai {
+public:
+	EpicenterAi();
+	void update(Actor * owner);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+
+protected:
+	int turnCount;
+	void infectLevel(Actor * owner);
 };
 
 class ConfusedActorAi : public Ai {

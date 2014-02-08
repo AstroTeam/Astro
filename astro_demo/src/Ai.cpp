@@ -9,6 +9,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case PLAYER: ai = new PlayerAi(); break;
 		case MONSTER: ai = new MonsterAi(); break;
 		case CONFUSED_ACTOR: ai = new ConfusedActorAi(0,NULL); break;
+	    case EPICENTER: ai = new EpicenterAi(); break;
 	}
 	ai->load(zip);
 	return ai;
@@ -431,6 +432,36 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 		owner->attacker->attack(owner,engine.player);
 	}
 	
+}
+
+EpicenterAi::EpicenterAi() : turnCount(0) {
+}
+
+void EpicenterAi::load(TCODZip &zip) {
+	turnCount = zip.getInt();
+}
+
+void EpicenterAi::update(Actor *owner) {
+	turnCount++;
+	if (turnCount % 500 == 0) {
+		infectLevel(owner);
+	}
+}
+
+void EpicenterAi::infectLevel(Actor *owner) {
+	int width = owner->enviroment->width;
+	int height = owner->enviroment->height;
+	TCODRandom *rng = TCODRandom::getInstance();
+
+	for (int i = 0; i < width*height; i++) {
+		owner->enviroment->tiles[i].infection += 1 / (rng->getDouble(.01,1.0)*owner->getDistance(i/width, i%width));
+	}
+	engine.gui->message(TCODColor::green,"You feel uneasy as the infection seems to spread.");
+}
+
+void EpicenterAi::save(TCODZip &zip) {
+	zip.putInt(EPICENTER);
+	zip.putInt(turnCount);
 }
 
 ConfusedActorAi::ConfusedActorAi(int nbTurns, Ai *oldAi)

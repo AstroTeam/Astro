@@ -2,6 +2,8 @@ struct Tile {
 	bool explored;
 	float infection;
 	Tile() : explored(false),  infection (false) {}
+	const TCODColor * lastColor;//if color changed offscreen
+	char lastChar;//if the char changed
 	
 };
 
@@ -22,9 +24,9 @@ public:
 	void init(bool withActors);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
+	Tile *tiles;
 	
 protected:
-	Tile *tiles;
 	TCODMap *map;
 	long seed;
 	TCODRandom *rng;
