@@ -49,6 +49,7 @@ void Engine::init() {
 	map = new Map(mapWidth, mapHeight);
 	map->init(true);
 	gui->message(TCODColor::red, 
+
     	"Welcome stranger! Prepare to face a horde of Astrocephalytes and Spores Creatures!");
 	gameStatus = STARTUP;
 }
@@ -251,7 +252,24 @@ void Engine::render()
 	if (mapy2 > 100) {
 		mapy1 += (100-mapy2);
 		mapy2 = 100;
+	} 
+	 /*
+	 //non hard coded values
+	 //worked with 100 by 100, don't know if this would work besides that
+	if (mapx2 > mapWidth) {
+		mapx1 += (mapWidth-mapx2);
+		mapx2 = mapWidth;
 	}
+	if (mapy2 > mapHeight) {
+		mapy1 += (mapHeight-mapy2);
+		mapy2 = mapHeight;
+	}
+	*/
+	
+	
+	
+	
+	
 	//if (mapx2 > TCODConsole::root->getWidth() - 22) mapx2 = TCODConsole::root->getWidth() - 22;
 	if (mapy2 > TCODConsole::root->getHeight() - 12) mapy2 = TCODConsole::root->getHeight() - 12;
 	

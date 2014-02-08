@@ -5,9 +5,10 @@
 //g++ src/*.cpp -o tuto -lmingw32 -lSDLmain -lSDL -Iinclude -Llib -ltcod-mingw -static-libgcc -static-libstdc++ -Wall
 
 
-//Engine engine(120/1.875,75/1.875);
+
 Engine engine(85,47);
 //SDL_Init( SDL_INIT_EVERYTHING );
+
 
 
 

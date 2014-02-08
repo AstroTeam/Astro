@@ -65,6 +65,7 @@ public:
 protected:
 	TCODConsole *con;
 	TCODConsole *sidebar;
+	TCODConsole *tileInfoScreen;
 	//void renderMouseLook(); remove me to remove mouse look
 	struct Message {
 		char *text;
