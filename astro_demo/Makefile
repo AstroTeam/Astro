@@ -11,7 +11,7 @@ endif
 
 # linker options : OS dependant
 ifeq ($(shell sh -c 'uname -s'),Linux)
-  LIBFLAGS=-L. -ltcod -ltcodxx -Wl,-rpath=.
+  LIBFLAGS=-L. -ltcod -ltcodxx -Wl,-rpath=. -lSDL
 else
   LIBFLAGS=-Llib -ltcod-mingw -static-libgcc -static-libstdc++ -mwindows -lmingw32 -lSDLMain -lSDL
 endif
