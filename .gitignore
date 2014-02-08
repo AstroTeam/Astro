@@ -1,4 +1,4 @@
-$ cat .gitignore
+
 #MakeFile
 *MakeFile
 
@@ -18,3 +18,10 @@ $ cat .gitignore
 *.exe
 *.out
 *.app
+
+# Unecessary Text Files
+stderr.txt
+stdout.txt
+
+#Ignore .psds
+*.psd
