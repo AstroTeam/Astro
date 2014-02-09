@@ -410,32 +410,43 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {   //need to 
 			}
 		}
 	//int mapx1 = 0, mapy1 = 0, mapy2 = 0, mapx2 = 0;
-	
 	mapx1 = *x - ((screenWidth -22)/2);
 	mapy1 = *y - ((screenHeight -12)/2);
 	mapx2 = *x + ((screenWidth -22)/2);
 	mapy2 = *y + ((screenHeight -12)/2);
 	
-if (mapx1 < 0) {
+	
+	if (mapx1 <= 0) {// <= lets it catch the time when it needs to stop scrolling
 		mapx2 += (0-mapx1);
 		mapx1 = 0;
+		mapx2 += 1; //allows it to render the whole screen
 	}	
-	if (mapy1 < 0) { 
+	if (mapy1 <= 0) { 
 		mapy2 += (0-mapy1);
 		mapy1 = 0;
+		mapy2 += 1;
 	}
-	if (mapx2 > 100) {
+	if (mapx2 >= 100) {
 		mapx1 += (100-mapx2);
+		//gui->message(TCODColor::green, "******************************************");
 		mapx2 = 100;
+		mapx1 -= 1;
 	}
-	if (mapy2 > 100) {
+	if (mapy2 >= 100) {
 		mapy1 += (100-mapy2);
 		mapy2 = 100;
+		mapy1 -= 1;
 	}
-	//if (mapx2 > TCODConsole::root->getWidth() - 22) mapx2 = TCODConsole::root->getWidth() - 14;
-	if (mapy2 > TCODConsole::root->getHeight() - 12) mapy2 = TCODConsole::root->getHeight() - 12;
-	 
-	TCODConsole::blit(mapcon, mapx1, mapy1, mapx2, mapy2, 
+	//stops the map from spilling into the console
+	int mapy2a = mapy2;
+	if (mapy2a > TCODConsole::root->getHeight() - 12) mapy2a = TCODConsole::root->getHeight() - 12;
+	//gui->message(TCODColor::red, "y2a is %d",mapy2a);
+	//need to make a list of '.' under other chars, that there would be a difference between mapcon and mapconCpy
+	//then need to make some sort of flag
+	
+	
+	//blitting of the map onto the screen...maybe blit onto temp root copy, then render and blit back
+	TCODConsole::blit(mapcon, mapx1, mapy1, mapx2, mapy2a, 
 		TCODConsole::root, 22, 0);
 		
 	TCODConsole::flush();
