@@ -10,6 +10,7 @@
 void Renderer::render(void *sdlSurface){
 /////////////////////////////////////////////////////////////////////rendering doubled up objects
 	SDL_Surface *screen=(SDL_Surface *)sdlSurface;
+	//SDL_Surface *titleScreen = SDL_LoadBMP("titleScreenHiRes.bmp");
 	//floors
 	SDL_Surface *floor = SDL_LoadBMP("tile_assets/floorTile.bmp");
 	SDL_Surface *infectedFloor = SDL_LoadBMP("tile_assets/floorTile_infected.bmp");
@@ -41,6 +42,8 @@ void Renderer::render(void *sdlSurface){
 	//background
 	//SDL_Surface *map = SDL_LoadBMP("starmap.bmp");
 	SDL_Surface *floorMap = SDL_LoadBMP("starmap2.bmp");
+	
+	
 	static bool first=true;
 	if ( first ) {
 			first=false;
@@ -182,8 +185,12 @@ void Renderer::render(void *sdlSurface){
 	//SDL_BlitSurface(floorMap,&srcRect1,screen,&dstRect1);	
 	//GOES BLUE ON DEATH, UPDATE ON DEATH status?
 	if (engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN){
-	SDL_BlitSurface(floorMap,NULL,screen,&dstRect1);	
+		SDL_BlitSurface(floorMap,NULL,screen,&dstRect1);	
 	}
+	//else
+	//{
+	//	SDL_BlitSurface(titleScreen,NULL,screen,NULL);	
+	//}
 	//SDL_Flip(floorMap);
 
 	
@@ -194,6 +201,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(flashShadow);
 	SDL_FreeSurface(infectedFloor);
 	SDL_FreeSurface(infectedFloorDark);
+	//SDL_FreeSurface(titleScreen);
 	//SDL_FreeSurface(humanShadow);
 	
 }

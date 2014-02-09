@@ -242,7 +242,10 @@ void Engine::render()
 	mapy1 = player->y - ((screenHeight -12)/2);
 	mapx2 = player->x + ((screenWidth -22)/2);
 	mapy2 = player->y + ((screenHeight -12)/2);
-	
+	//engine.gui->message(TCODColor::red, "mapx delta  %d",mapx2-mapx1);
+	//engine.gui->message(TCODColor::red, "mapy delta  %d",mapy2-mapy1);
+	//engine.gui->message(TCODColor::red, "mapy1 %d",mapy1);
+	//engine.gui->message(TCODColor::red, "mapy2  %d",mapy2);
 	
 	if (mapx1 <= 0) {// <= lets it catch the time when it needs to stop scrolling
 		mapx2 += (0-mapx1);
