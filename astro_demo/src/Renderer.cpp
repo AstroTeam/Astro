@@ -82,12 +82,12 @@ void Renderer::render(void *sdlSurface){
 		}
 	}
 	
-	engine.gui->message(TCODColor::red, "x dist is  %d",engine.mapx2-engine.mapx1);
-	engine.gui->message(TCODColor::red, "y dist is  %d",engine.mapy2-engine.mapy1);
-	//engine.gui->message(TCODColor::red, "mapx1  %d",mapx1);
-	//engine.gui->message(TCODColor::red, "mapx2  %d",mapx2);
-	engine.gui->message(TCODColor::red, "mapy1  %d",engine.mapy1);
-	engine.gui->message(TCODColor::red, "mapy2  %d",engine.mapy2);
+	engine.gui->message(TCODColor::red, "x1 is %d",engine.mapx1);
+	engine.gui->message(TCODColor::red, "x2 is %d",engine.mapx2);
+	engine.gui->message(TCODColor::red, "y1 is %d",engine.mapy1);
+	engine.gui->message(TCODColor::red, "y2 is %d",engine.mapy2);
+	//engine.gui->message(TCODColor::red, "playerx  %d",plyx);
+	//engine.gui->message(TCODColor::red, "playery  %d",plyy);
 	int x = 0, y = 2;
 	
 	for (int xM = engine.mapx1; xM < engine.mapx2+16; xM++) {

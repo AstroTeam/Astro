@@ -19,7 +19,9 @@ Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	TCODConsole::initRoot(screenWidth,screenHeight,"Astro", false,TCOD_RENDERER_SDL);
 	//TCODSystem::registerSDLRenderer(new Renderer());
 	//TCODSystem::registerSDLRenderer(new blengine());
+	
 	mapcon = new TCODConsole(mapWidth,mapHeight);
+	//engine.mapcon->setDefaultBackground(TCODColor::blue);
 	mapconCpy = new TCODConsole(mapWidth, mapHeight);
 	gui = new Gui();
 	mapx1 = 0;
@@ -241,25 +243,27 @@ void Engine::render()
 	mapx2 = player->x + ((screenWidth -22)/2);
 	mapy2 = player->y + ((screenHeight -12)/2);
 	
-	if (mapx1 < 0) {
+	
+	if (mapx1 <= 0) {// <= lets it catch the time when it needs to stop scrolling
 		mapx2 += (0-mapx1);
 		mapx1 = 0;
-		mapx2 += 1;
+		mapx2 += 1; //allows it to render the whole screen
 	}	
-	if (mapy1 < 0) { 
+	if (mapy1 <= 0) { 
 		mapy2 += (0-mapy1);
 		mapy1 = 0;
 		mapy2 += 1;
 	}
-	if (mapx2 > 99) {
-		mapx1 += (99-mapx2);
-		mapx2 = 99;
-		mapx1 += 1;
+	if (mapx2 >= 100) {
+		mapx1 += (100-mapx2);
+		gui->message(TCODColor::green, "******************************************");
+		mapx2 = 100;
+		mapx1 -= 1;
 	}
-	if (mapy2 > 99) {
-		mapy1 += (99-mapy2);
-		mapy2 = 99;
-		mapy1 += 1;
+	if (mapy2 >= 100) {
+		mapy1 += (100-mapy2);
+		mapy2 = 100;
+		mapy1 -= 1;
 	}
 	 /*
 	 //non hard coded values
@@ -278,16 +282,16 @@ void Engine::render()
 	
 	
 	
-	//if (mapx2 > TCODConsole::root->getWidth() - 22) mapx2 = TCODConsole::root->getWidth() - 22;
+	//stops the map from spilling into the console
 	int mapy2a = mapy2;
 	if (mapy2a > TCODConsole::root->getHeight() - 12) mapy2a = TCODConsole::root->getHeight() - 12;
-	
+	gui->message(TCODColor::red, "y2a is %d",mapy2a);
 	//need to make a list of '.' under other chars, that there would be a difference between mapcon and mapconCpy
 	//then need to make some sort of flag
 	
 	
 	//blitting of the map onto the screen...maybe blit onto temp root copy, then render and blit back
-	TCODConsole::blit(mapcon, mapx1, mapy1, mapx2, mapy2, 
+	TCODConsole::blit(mapcon, mapx1, mapy1, mapx2, mapy2a, 
 		TCODConsole::root, 22, 0);
 	
 	
@@ -405,7 +409,7 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {   //need to 
 				}
 			}
 		}
-	int mapx1 = 0, mapy1 = 0, mapy2 = 0, mapx2 = 0;
+	//int mapx1 = 0, mapy1 = 0, mapy2 = 0, mapx2 = 0;
 	
 	mapx1 = *x - ((screenWidth -22)/2);
 	mapy1 = *y - ((screenHeight -12)/2);
