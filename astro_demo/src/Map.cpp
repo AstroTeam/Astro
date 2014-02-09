@@ -121,16 +121,11 @@ void Map::addMonster(int x, int y) {
 	float sporeCreatureAtk = 7;
 	float sporeCreatureXp = 20;
 	
-	//Certain enemies' strength scales up as you go down a dungeon level
-	if(level != 0 && level % 2 == 0)
-	{
-		infectedCrewMemMaxHp += level/2; //infectedCrewMemMaxHp increases by 1 hp every other level (even)
-	}
-	else if(level != 0 && level % 2 != 0)
-	{
-		infectedCrewMemAtk += (level-1)/2; //infectedCrewMemAtk increased by 1 point every other level (odd)
-	}
+	//Certain enemies' strength scales up as you go down a dungeon 
 	
+	infectedCrewMemMaxHp += level/2; //increment infected crew member's MaxHp by 1 every even level
+	infectedCrewMemAtk += (level-1)/2; //increment infected crew member's Atk by 1 every odd level
+		
 	
 	//The percent of spore creatures starts at 20% and increases by 5 percent as you go down each level, but going no higher than 50%	
 	float percentInfectedCrewMembers =  ( (85 - 5*level) > 50 ? (85 - 5*level) : 50 ); 
