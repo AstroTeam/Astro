@@ -127,6 +127,9 @@ void Map::addMonster(int x, int y) {
 	infectedCrewMemAtk += (level-1)/2; //increment infected crew member's Atk by 1 every odd level
 	infectedCrewMemXp += (level-1)/2; //increment infected crew member's Xp by 1 every odd level
 		
+	sporeCreatureMaxHp += level/3; //increment spore creature's MaxHp by 1 every third level (starting at 3)
+	sporeCreatureAtk += (level+2)/3; //increment spore creature's Atk by 1 every third level (starting at 4)
+	sporeCreatureXp += level/3; //increment spore creature's Xp by 1 every third level (starting at 3)
 	
 	//The percent of spore creatures starts at 20% and increases by 5 percent as you go down each level, but going no higher than 50%	
 	float percentInfectedCrewMembers =  ( (85 - 5*level) > 50 ? (85 - 5*level) : 50 ); 
