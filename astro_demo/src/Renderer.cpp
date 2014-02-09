@@ -55,7 +55,7 @@ void Renderer::render(void *sdlSurface){
 	//SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
 	//background
 	//SDL_Surface *map = SDL_LoadBMP("starmap.bmp");
-	SDL_Surface *floorMap = SDL_LoadBMP("starmap2_debug.bmp");
+	SDL_Surface *floorMap = SDL_LoadBMP("starmap2.bmp");
 	static bool first=true;
 	if ( first ) {
 			first=false;
@@ -71,21 +71,21 @@ void Renderer::render(void *sdlSurface){
 	
 	//engine.mapconCpy is the map copy to be rendered with SDL as a background
 	//scan mapconCpy and blit on good tile images
-	int plyx = 0, plyy = 0;
-	for (int x = 0; x < engine.mapconCpy->getWidth(); x++) {
-		for (int y = 0; y < engine.mapconCpy->getHeight(); y++) {
-			if(engine.mapcon->getChar(x,y) == 64)
-			{
-				plyx = x;
-				plyy = y;
-			}
-		}
-	}
+	//int plyx = 0, plyy = 0;
+	//for (int x = 0; x < engine.mapconCpy->getWidth(); x++) {
+	//	for (int y = 0; y < engine.mapconCpy->getHeight(); y++) {
+	//		if(engine.mapcon->getChar(x,y) == 64)
+	//		{
+	//			plyx = x;
+	//			plyy = y;
+	//		}
+	//	}
+	//}
 	
-	engine.gui->message(TCODColor::red, "x1 is %d",engine.mapx1);
-	engine.gui->message(TCODColor::red, "x2 is %d",engine.mapx2);
-	engine.gui->message(TCODColor::red, "y1 is %d",engine.mapy1);
-	engine.gui->message(TCODColor::red, "y2 is %d",engine.mapy2);
+	//engine.gui->message(TCODColor::red, "x1 is %d",engine.mapx1);
+	//engine.gui->message(TCODColor::red, "x2 is %d",engine.mapx2);
+	//engine.gui->message(TCODColor::red, "y1 is %d",engine.mapy1);
+	//engine.gui->message(TCODColor::red, "y2 is %d",engine.mapy2);
 	//engine.gui->message(TCODColor::red, "playerx  %d",plyx);
 	//engine.gui->message(TCODColor::red, "playery  %d",plyy);
 	int x = 0, y = 0;
@@ -206,7 +206,7 @@ void Renderer::render(void *sdlSurface){
 	
 	//if the game is running add if statement sometime							
 	//SDL_BlitSurface(floorMap,&srcRect1,screen,&dstRect1);	
-	if (engine.gameStatus == IDLE){
+	if (engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN){
 	SDL_BlitSurface(floorMap,NULL,screen,&dstRect1);	
 	}
 	//SDL_Flip(floorMap);
