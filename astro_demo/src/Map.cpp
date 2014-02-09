@@ -55,7 +55,7 @@ void Map::init(bool withActors) {
 
 	//give this level an epicenter of the infection
 	int epiLocation = rng->getInt(0, width*height);
-	Actor * epicenter = new Actor(epiLocation/width, epiLocation%width, 31, "Infection Epicenter", TCODColor::green);
+	Actor * epicenter = new Actor(epiLocation/width, epiLocation%width, 3, "Infection Epicenter", TCODColor::green);
 	epicenter->enviroment=this;
 	epicenter->ai= new EpicenterAi;
 	engine.actors.push(epicenter);
@@ -272,7 +272,7 @@ bool Map::isInfected(int x, int y) const {
 }
 
 void Map::infectFloor(int x, int y) {
-	tiles[x+y*width].infection = true;
+	tiles[x+y*width].infection += rng->getFloat(.1, 2);
 }
 
 bool Map::isInFov(int x, int y) const {
