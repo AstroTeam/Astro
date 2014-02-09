@@ -8,6 +8,7 @@
 
 
 void Renderer::render(void *sdlSurface){
+/////////////////////////////////////////////////////////////////////rendering doubled up objects
 	SDL_Surface *screen=(SDL_Surface *)sdlSurface;
 	//floors
 	SDL_Surface *floor = SDL_LoadBMP("tile_assets/floorTile.bmp");
@@ -16,33 +17,15 @@ void Renderer::render(void *sdlSurface){
 	SDL_Surface *darkFloor = SDL_LoadBMP("tile_assets/floorTileDark.bmp");
 	//flashbang
 	SDL_Surface *flashGlow = SDL_LoadBMP("tile_assets/flashbang_alpha_glow_50.bmp");
-	/*static int alpha = 255*.5;
-	static bool Down = true;
-	if (alpha > 0 && Down)
-	{
-		alpha = alpha-10;
-		if (alpha < 0)
-			alpha = 0;
-	}
-	else if (alpha == 0 && Down)
-	{
-		Down = false;
-	}
-	else if (alpha < 255*.5 )
-	{
-		alpha = alpha+10;
-	}
-	else if (alpha > 255*.5)
-	{
-		Down = true;
-	}
-	engine.gui->message(TCODColor::red, "alpha is  %d",alpha);*/
 	SDL_SetAlpha( flashGlow, SDL_SRCALPHA, 255*.5);
-	//SDL_SetAlpha( flashGlow, SDL_SRCALPHA, alpha);
 	SDL_SetColorKey(flashGlow,SDL_SRCCOLORKEY,255);
 	SDL_Surface *flashShadow = SDL_LoadBMP("tile_assets/flashbang_alpha_shadow_25.bmp");
 	SDL_SetAlpha( flashShadow, SDL_SRCALPHA, 255*.25);
 	SDL_SetColorKey(flashShadow,SDL_SRCCOLORKEY,255);
+	//firebomb
+	SDL_Surface *fireGlow = SDL_LoadBMP("tile_assets/firebomb_alpha_glow_50.bmp");
+	SDL_SetAlpha( fireGlow, SDL_SRCALPHA, 255*.25);
+	SDL_SetColorKey(fireGlow,SDL_SRCCOLORKEY,255);
 	//EMP glow
 	SDL_Surface *EMPGlow = SDL_LoadBMP("tile_assets/EMP_alpha_glow_33.bmp");
 	SDL_SetAlpha( EMPGlow, SDL_SRCALPHA, 255*.33);
@@ -52,8 +35,8 @@ void Renderer::render(void *sdlSurface){
 	SDL_SetAlpha( medShadow, SDL_SRCALPHA, 255*.25);
 	SDL_SetColorKey(medShadow,SDL_SRCCOLORKEY,255);
 	//human Shadow
-	//SDL_Surface *humanShadow = SDL_LoadBMP("tile_assets/human_alpha_shadow_25.bmp");
-	//SDL_SetAlpha( humanShadow, SDL_SRCALPHA, 255*.25);
+	SDL_Surface *humanShadow = SDL_LoadBMP("tile_assets/human_alpha_shadow_25.bmp");
+	SDL_SetAlpha( humanShadow, SDL_SRCALPHA, 255*.25);
 	//SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
 	//background
 	//SDL_Surface *map = SDL_LoadBMP("starmap.bmp");
@@ -67,23 +50,7 @@ void Renderer::render(void *sdlSurface){
 			
 	}
 	
-	/////////if processor power becomes an issue, we could modify the loops to not start from 0 and end at width/height, instead just render the final box dimensions
 	///////////////if there is a tile with multiple items, we need to render them both, ask garret how to detect this
-	
-	
-	//engine.mapconCpy is the map copy to be rendered with SDL as a background
-	//scan mapconCpy and blit on good tile images
-	//int plyx = 0, plyy = 0;
-	//for (int x = 0; x < engine.mapconCpy->getWidth(); x++) {
-	//	for (int y = 0; y < engine.mapconCpy->getHeight(); y++) {
-	//		if(engine.mapcon->getChar(x,y) == 64)
-	//		{
-	//			plyx = x;
-	//			plyy = y;
-	//		}
-	//	}
-	//}
-	
 	//engine.gui->message(TCODColor::red, "x1 is %d",engine.mapx1);
 	//engine.gui->message(TCODColor::red, "x2 is %d",engine.mapx2);
 	//engine.gui->message(TCODColor::red, "y1 is %d",engine.mapy1);
@@ -101,17 +68,12 @@ void Renderer::render(void *sdlSurface){
 			//SDL_Rect srcRect = {};
 			if(engine.mapconCpy->getChar(xM,yM) == 31) 
 			{ //replace 'down arrow thing' (31 ascii) with basic floor tiles
-				//SDL_BlitSurface(floor,NULL,floorMap,&dstRect);	
-				//engine.gui->message(TCODColor::red, "tile x %d", xM);
-				//engine.gui->message(TCODColor::red, "tile y %d", yM);
-				//if (engine.mapcon->getChar(x,y) == 64)  // set playerx playery, updated later if you are looking/using item
-				//{
-				//	plyx = x;
-				//	plyy = y;
-				//}
 				SDL_BlitSurface(floor,NULL,floorMap,&dstRect);
-				
-				
+			}
+			//replace 'up arrow thing' with darker floor tiles
+			if(engine.mapconCpy->getChar(xM,yM) == 30)
+			{
+				SDL_BlitSurface(darkFloor,NULL,floorMap,&dstRect);
 			}
 			//replace infected tiles lit
 			if(engine.mapconCpy->getChar(xM,yM) == 29){
@@ -121,60 +83,62 @@ void Renderer::render(void *sdlSurface){
 			if(engine.mapconCpy->getChar(xM,yM) == 28){
 				SDL_BlitSurface(infectedFloorDark,NULL,floorMap,&dstRect);
 			}
-			if(engine.mapconCpy->getChar(xM,yM) == 30) //replace 'up arrow thing' with darker floor tiles
+			
+			//shadows, always after tiles
+			//flashbang shadow and glow
+			if (engine.mapcon->getChar(xM,yM) == 181)  
 			{
-				SDL_BlitSurface(darkFloor,NULL,floorMap,&dstRect);
+				SDL_BlitSurface(flashGlow,NULL,floorMap,&dstRect);	
+				SDL_BlitSurface(flashShadow,NULL,floorMap,&dstRect);	
 			}
+			//firebomb shadow and glow
+			if (engine.mapcon->getChar(xM,yM) == 182)  
+			{
+				SDL_BlitSurface(fireGlow,NULL,floorMap,&dstRect);	
+				SDL_BlitSurface(flashShadow,NULL,floorMap,&dstRect);	
+			}
+			//EMP glow
+			if (engine.mapcon->getChar(xM,yM) == 183)  
+			{
+				//SDL_Rect dstRect={x*16,y*16,16,16};
+				SDL_BlitSurface(EMPGlow,NULL,floorMap,&dstRect);
+			}
+			//Medkit shadow
+			if (engine.mapcon->getChar(xM,yM) == 184)  
+			{
+				//SDL_Rect dstRect={x*16,y*16,16,16};
+				SDL_BlitSurface(medShadow,NULL,floorMap,&dstRect);
+			}
+			
+			
 			y++;
 		}
 		y=0;
 		x++;
 	}
-	
-	
-	
-	
-	
-	/*bool AOE = false;
-	
-	//AOE scanning loop and the alpha items loop
-	for (int x = 0; x < engine.mapconCpy->getWidth(); x++) {
-		for (int y = 0; y < engine.mapconCpy->getHeight(); y++) {
-		//ALPHA LAYERS for items should be rendered after floors & infection but before items are placed (so just in this loop)
-		//add the flashbang's alpha layer!  along with the firebomb!
-		if (engine.mapcon->getChar(x,y) == 181 || engine.mapcon->getChar(x,y) == 182)  
-		{
-			//SDL_Rect dstRect={x*16,y*16,16,16};
-			//SDL_BlitSurface(flashGlow,NULL,map,&dstRect);	
-			//SDL_BlitSurface(flashShadow,NULL,map,&dstRect);	
+				
+	int x1 = 0, y1 = 0;
+	for (int xM = engine.mapx1; xM < engine.mapx2+16; xM++) {
+		for (int yM = engine.mapy1; yM < engine.mapy2+16; yM++) {
+			//Player Shadow
+			int yN = yM - 1;
+			if (engine.mapcon->getChar(xM,yN) == 64)  
+			{
+				//int y2 = y1;
+				//y2 = y2*16;
+				//y2 += 16;
+				//SDL_Rect dstRectOffset={x1*16,y1*16,16,16};
+				//SDL_BlitSurface(humanShadow,NULL,floorMap,&dstRectOffset);
+				//SDL_BlitSurface(humanShadow,NULL,screen,&dstRectOffset);
+				//TCODConsole::flush();
+			}
+			
+			
+			y1++;
 		}
-		//EMP glow
-		if (engine.mapcon->getChar(x,y) == 183)  
-		{
-			//SDL_Rect dstRect={x*16,y*16,16,16};
-			//SDL_BlitSurface(EMPGlow,NULL,map,&dstRect);
-		}
-		//Medkit shadow
-		if (engine.mapcon->getChar(x,y) == 184)  
-		{
-			//SDL_Rect dstRect={x*16,y*16,16,16};
-			//SDL_BlitSurface(medShadow,NULL,map,&dstRect);
-		}
-		if (!AOE && (engine.mapcon->getCharBackground(x,y) == TCODColor::pink || engine.mapcon->getCharBackground(x,y) == TCODColor::desaturatedPink))
-				//exception for looking and for targetting
-		{
-			plyx = x;
-			plyy = y;
-		}
-		if (engine.mapcon->getCharBackground(x,y) == TCODColor::darkerPink)
-		{	//exception for center of an AOE effect
-			plyx = x;
-			plyy = y;
-			AOE = true;
-		}		
-		}
-		
-	}*/
+		y1=0;
+		x1++;
+	}
 	
 	
 	
@@ -216,6 +180,7 @@ void Renderer::render(void *sdlSurface){
 	
 	//if the game is running add if statement sometime							
 	//SDL_BlitSurface(floorMap,&srcRect1,screen,&dstRect1);	
+	//GOES BLUE ON DEATH, UPDATE ON DEATH status?
 	if (engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN){
 	SDL_BlitSurface(floorMap,NULL,screen,&dstRect1);	
 	}
@@ -233,4 +198,25 @@ void Renderer::render(void *sdlSurface){
 	
 }
 	
-	
+	/*static int alpha = 255*.5;
+	static bool Down = true;
+	if (alpha > 0 && Down)
+	{
+		alpha = alpha-10;
+		if (alpha < 0)
+			alpha = 0;
+	}
+	else if (alpha == 0 && Down)
+	{
+		Down = false;
+	}
+	else if (alpha < 255*.5 )
+	{
+		alpha = alpha+10;
+	}
+	else if (alpha > 255*.5)
+	{
+		Down = true;
+	}
+	engine.gui->message(TCODColor::red, "alpha is  %d",alpha);*/
+	//SDL_SetAlpha( flashGlow, SDL_SRCALPHA, alpha);

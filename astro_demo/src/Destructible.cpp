@@ -61,8 +61,17 @@ float Destructible::heal(float amount) {
 
 void Destructible::die(Actor *owner) {
 	//transform the actor into a corpse
-	owner->ch = '%';
-	owner->col = TCODColor::darkRed;
+	//check who owner was to decide what corpse they get
+	//if spore creature they get spore body
+	if (owner->ch == 165){
+		owner->ch = 162;
+	}
+	//else generic blood whale
+	else
+	{
+		owner->ch = 163;
+	}
+	owner->col = TCODColor::white;
 	owner->name = corpseName;
 	owner->blocks = false;
 	//make sure corpses are drawn before other important things
