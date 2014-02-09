@@ -64,10 +64,13 @@ void PlayerAi::update(Actor *owner) {
 				break;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			case Menu::AGILITY:
 				owner->destructible->baseDefense += 1;
 				owner->destructible->totalDefense += 1;
 =======
+=======
+>>>>>>> 4abb23f9812d0d1281b4c4c871d3a4837e0efb22
 =======
 >>>>>>> 4abb23f9812d0d1281b4c4c871d3a4837e0efb22
 			/*case Menu::AGILITY:
