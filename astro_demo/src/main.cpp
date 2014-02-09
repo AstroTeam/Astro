@@ -6,7 +6,7 @@
 
 
 
-Engine engine(85,47);
+Engine engine(85,44);
 //SDL_Init( SDL_INIT_EVERYTHING );
 
 

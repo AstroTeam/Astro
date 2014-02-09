@@ -48,7 +48,7 @@ void PlayerAi::update(Actor *owner) {
 		engine.gui->menu.clear();
 		engine.gui->menu.addItem(Menu::CONSTITUTION, "Constitution (+20hp)");
 		engine.gui->menu.addItem(Menu::STRENGTH, "Strength (+1 attack)");
-		engine.gui->menu.addItem(Menu::AGILITY, "Agility (+1 defence)");
+		//engine.gui->menu.addItem(Menu::AGILITY, "Agility (+1 defence)");
 		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::PAUSE);
 	
 		switch (menuItem) {
@@ -62,11 +62,16 @@ void PlayerAi::update(Actor *owner) {
 				owner->attacker->totalPower += 1;
 				choice_made = true;
 				break;
+<<<<<<< HEAD
 			case Menu::AGILITY:
 				owner->destructible->baseDefense += 1;
 				owner->destructible->totalDefense += 1;
+=======
+			/*case Menu::AGILITY:
+				owner->destructible->defense += 1;
+>>>>>>> 4abb23f9812d0d1281b4c4c871d3a4837e0efb22
 				choice_made = true;
-				break;
+				break;*/
 			case Menu::NO_CHOICE:
 				first = false;
 				break;
