@@ -21,7 +21,7 @@ Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	//TCODSystem::registerSDLRenderer(new blengine());
 	
 	mapcon = new TCODConsole(mapWidth,mapHeight);
-	//engine.mapcon->setDefaultBackground(TCODColor::blue);
+	engine.mapcon->setDefaultBackground(TCODColor::blue);
 	mapconCpy = new TCODConsole(mapWidth, mapHeight);
 	gui = new Gui();
 	mapx1 = 0;
@@ -256,7 +256,7 @@ void Engine::render()
 	}
 	if (mapx2 >= 100) {
 		mapx1 += (100-mapx2);
-		gui->message(TCODColor::green, "******************************************");
+		//gui->message(TCODColor::green, "******************************************");
 		mapx2 = 100;
 		mapx1 -= 1;
 	}
@@ -285,7 +285,7 @@ void Engine::render()
 	//stops the map from spilling into the console
 	int mapy2a = mapy2;
 	if (mapy2a > TCODConsole::root->getHeight() - 12) mapy2a = TCODConsole::root->getHeight() - 12;
-	gui->message(TCODColor::red, "y2a is %d",mapy2a);
+	//gui->message(TCODColor::red, "y2a is %d",mapy2a);
 	//need to make a list of '.' under other chars, that there would be a difference between mapcon and mapconCpy
 	//then need to make some sort of flag
 	
