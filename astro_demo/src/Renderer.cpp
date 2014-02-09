@@ -11,6 +11,8 @@ void Renderer::render(void *sdlSurface){
 	SDL_Surface *screen=(SDL_Surface *)sdlSurface;
 	//floors
 	SDL_Surface *floor = SDL_LoadBMP("tile_assets/floorTile.bmp");
+	SDL_Surface *infectedFloor = SDL_LoadBMP("tile_assets/floorTile_infected.bmp");
+	SDL_Surface *infectedFloorDark = SDL_LoadBMP("tile_assets/floorTileDark_infected.bmp");
 	SDL_Surface *darkFloor = SDL_LoadBMP("tile_assets/floorTileDark.bmp");
 	//flashbang
 	SDL_Surface *flashGlow = SDL_LoadBMP("tile_assets/flashbang_alpha_glow_50.bmp");
@@ -110,6 +112,14 @@ void Renderer::render(void *sdlSurface){
 				SDL_BlitSurface(floor,NULL,floorMap,&dstRect);
 				
 				
+			}
+			//replace infected tiles lit
+			if(engine.mapconCpy->getChar(xM,yM) == 29){
+				SDL_BlitSurface(infectedFloor,NULL,floorMap,&dstRect);
+			}
+			//replace unlit infected tiles
+			if(engine.mapconCpy->getChar(xM,yM) == 28){
+				SDL_BlitSurface(infectedFloorDark,NULL,floorMap,&dstRect);
 			}
 			if(engine.mapconCpy->getChar(xM,yM) == 30) //replace 'up arrow thing' with darker floor tiles
 			{
@@ -217,6 +227,8 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(darkFloor);
 	SDL_FreeSurface(flashGlow);
 	SDL_FreeSurface(flashShadow);
+	SDL_FreeSurface(infectedFloor);
+	SDL_FreeSurface(infectedFloorDark);
 	//SDL_FreeSurface(humanShadow);
 	
 }
