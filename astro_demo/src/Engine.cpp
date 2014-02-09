@@ -40,6 +40,7 @@ void Engine::term() {
 	actors.clearAndDelete();
 	if (map) delete map;
 	gui->clear();
+	engine.turnCount = 0;
 }
 
 void Engine::init() {

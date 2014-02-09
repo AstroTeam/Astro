@@ -1,30 +1,33 @@
 #include <stdio.h>
 #include "main.hpp"
 
-Attacker::Attacker(float power) : power(power), lastTarget(NULL) {
+Attacker::Attacker(float power) : basePower(power), totalPower(power), lastTarget(NULL) {
 }
 
 void Attacker::load(TCODZip &zip) {
-	power = zip.getFloat();
+	basePower = zip.getFloat();
+	totalPower = zip.getFloat();
 }
 
 void Attacker::save(TCODZip &zip) {
-	zip.putFloat(power);
+	zip.putFloat(basePower);
+	zip.putFloat(totalPower);
 }
 
 void Attacker::attack(Actor *owner, Actor *target) {
 	if (target->destructible && !target->destructible->isDead() ) {
-		if (power - target->destructible->defense > 0) {
+		float damageTaken = totalPower - target->destructible->totalDefense;
+		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
 			if (owner->oozing && target->susceptible) {
-				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!\n",owner->name, target->name,power+1 - target->destructible->defense);
+				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!\n",owner->name, target->name,damageTaken + 1);
+				target->destructible->takeDamage(target,damageTaken+1);
 			}
 			else {
-				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!\n",owner->name, target->name,power - target->destructible->defense);
-				target->destructible->takeDamage(target,power+1);
+				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!\n",owner->name, target->name,damageTaken);
+				target->destructible->takeDamage(target,damageTaken);
 			}
 		} else {
 			engine.gui->message(TCODColor::lightGrey,"The %s attacks the %s but it has no effect...\n",owner->name, target->name);
-			target->destructible->takeDamage(target,power);
 		}
 	} else {
 		engine.gui->message(TCODColor::lightGrey,"The %s attacks the %s in vain.\n", owner->name,target->name);

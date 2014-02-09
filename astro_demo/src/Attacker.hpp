@@ -1,6 +1,7 @@
 class Attacker : public Persistent {
 public:
-	float power; //attack power
+	float basePower; //attack power
+	float totalPower; //attack power
 	Actor *lastTarget;
 	
 	Attacker(float power);

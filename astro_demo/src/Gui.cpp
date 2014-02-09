@@ -87,13 +87,13 @@ void Gui::render() {
 	
 	//display the armor slots
 	sidebar->print(9,15,"Armor");
-	sidebar->print(3,17,"Head: ");
-	sidebar->print(3,19,"Chest: ");
-	sidebar->print(3,21,"Legs: ");
-	sidebar->print(3,23,"Feet: ");
-	sidebar->print(3,25,"Hand1: ");
-	sidebar->print(3,27,"Hand2: ");
-	sidebar->print(3,29,"Rangd: ");
+	sidebar->print(3,17,"Head: (%d)",engine.player->container->head);
+	sidebar->print(3,19,"Chest: (%d)",engine.player->container->chest);
+	sidebar->print(3,21,"Legs: (%d)",engine.player->container->legs);
+	sidebar->print(3,23,"Feet: (%d)",engine.player->container->feet);
+	sidebar->print(3,25,"Hand1: (%d)",engine.player->container->hand1);
+	sidebar->print(3,27,"Hand2: (%d)",engine.player->container->hand2);
+	sidebar->print(3,29,"Rangd: (%d)",engine.player->container->ranged);
 	
 	//display player xp bar
 	PlayerAi *ai = (PlayerAi *)engine.player->ai;
