@@ -55,7 +55,7 @@ void Renderer::render(void *sdlSurface){
 	//SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
 	//background
 	//SDL_Surface *map = SDL_LoadBMP("starmap.bmp");
-	SDL_Surface *floorMap = SDL_LoadBMP("starmap2.bmp");
+	SDL_Surface *floorMap = SDL_LoadBMP("starmap2_debug.bmp");
 	static bool first=true;
 	if ( first ) {
 			first=false;
@@ -82,13 +82,13 @@ void Renderer::render(void *sdlSurface){
 		}
 	}
 	
-	//engine.gui->message(TCODColor::red, "x1 is %d",engine.mapx1);
-	//engine.gui->message(TCODColor::red, "x2 is %d",engine.mapx2);
-	//engine.gui->message(TCODColor::red, "y1 is %d",engine.mapy1);
-	//engine.gui->message(TCODColor::red, "y2 is %d",engine.mapy2);
+	engine.gui->message(TCODColor::red, "x1 is %d",engine.mapx1);
+	engine.gui->message(TCODColor::red, "x2 is %d",engine.mapx2);
+	engine.gui->message(TCODColor::red, "y1 is %d",engine.mapy1);
+	engine.gui->message(TCODColor::red, "y2 is %d",engine.mapy2);
 	//engine.gui->message(TCODColor::red, "playerx  %d",plyx);
 	//engine.gui->message(TCODColor::red, "playery  %d",plyy);
-	int x = 0, y = 2;
+	int x = 0, y = 0;
 	
 	for (int xM = engine.mapx1; xM < engine.mapx2+16; xM++) {
 		for (int yM = engine.mapy1; yM < engine.mapy2+16; yM++) {
@@ -206,7 +206,9 @@ void Renderer::render(void *sdlSurface){
 	
 	//if the game is running add if statement sometime							
 	//SDL_BlitSurface(floorMap,&srcRect1,screen,&dstRect1);	
+	if (engine.gameStatus == IDLE){
 	SDL_BlitSurface(floorMap,NULL,screen,&dstRect1);	
+	}
 	//SDL_Flip(floorMap);
 
 	
