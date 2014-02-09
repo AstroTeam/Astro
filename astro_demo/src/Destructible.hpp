@@ -2,7 +2,8 @@ class Destructible : public Persistent {
 public:
 	float maxHp; //max health points
 	float hp; //current hit points
-	float defense; //damage deflected
+	float baseDefense; //damage deflected
+	float totalDefense; //damage deflected
 	char *corpseName; //the actor's name once dead/destroyed
 	int xp; //xp gained when killing this monster, or player xp
 	

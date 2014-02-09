@@ -2,7 +2,7 @@
 #include "main.hpp"
 
 Destructible::Destructible(float maxHp, float defense, const char *corpseName, int xp) :
-	maxHp(maxHp),hp(maxHp),defense(defense), xp(xp) {
+	maxHp(maxHp),hp(maxHp),baseDefense(defense),totalDefense(defense), xp(xp) {
 	this->corpseName = strdup(corpseName);
 }
 
@@ -13,7 +13,8 @@ Destructible::~Destructible() {
 void Destructible::load(TCODZip &zip) {
 	maxHp = zip.getFloat();
 	hp = zip.getFloat();
-	defense = zip.getFloat();
+	baseDefense = zip.getFloat();
+	totalDefense = zip.getFloat();
 	corpseName = strdup(zip.getString());
 	xp = zip.getInt();
 }
@@ -21,7 +22,8 @@ void Destructible::load(TCODZip &zip) {
 void Destructible::save(TCODZip &zip) {
 	zip.putFloat(maxHp);
 	zip.putFloat(hp);
-	zip.putFloat(defense);
+	zip.putFloat(baseDefense);
+	zip.putFloat(totalDefense);
 	zip.putString(corpseName);
 	zip.putInt(xp);
 }
@@ -38,7 +40,6 @@ Destructible *Destructible::create(TCODZip &zip) {
 }
 
 float Destructible::takeDamage(Actor *owner, float damage) {
-	damage -= defense;
 	if (damage > 0){
 		hp -= damage;
 		if (hp <= 0) {

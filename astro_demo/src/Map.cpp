@@ -160,8 +160,8 @@ void Map::addMonster(int x, int y) {
 void Map::addItem(int x, int y) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,100);
-	if (dice < 15) {
+	int dice = rng->getInt(0,140);
+	if (dice < 25) {
 		//create a health potion
 		Actor *healthPotion = new Actor(x,y,184,"Medkit", TCODColor::white);
 		healthPotion->type = 1;
@@ -169,7 +169,7 @@ void Map::addItem(int x, int y) {
 		healthPotion->pickable = new Healer(20);
 		engine.actors.push(healthPotion);
 		engine.sendToBack(healthPotion);
-	} else if(dice < 15+25) {
+	} else if(dice < 25+25) {
 		//create a scroll of lightningbolt
 		Actor *scrollOfLightningBolt = new Actor(x,y,183, "EMP Pulse",
 			TCODColor::white);
@@ -178,7 +178,7 @@ void Map::addItem(int x, int y) {
 		scrollOfLightningBolt->pickable = new LightningBolt(5,20);
 		engine.actors.push(scrollOfLightningBolt);
 		engine.sendToBack(scrollOfLightningBolt);
-	} else if(dice < 15+25+30) {
+	} else if(dice < 25+25+25) {
 		//create a scroll of fireball
 		Actor *scrollOfFireball = new Actor(x,y,182,"Firebomb",
 			TCODColor::white);
@@ -187,6 +187,15 @@ void Map::addItem(int x, int y) {
 		scrollOfFireball->pickable = new Fireball(3,12,8);
 		engine.actors.push(scrollOfFireball);
 		engine.sendToBack(scrollOfFireball);
+	} else if(dice < 25+25+25+50) {
+		//create a pair of mylar underpants
+		Actor *undies = new Actor(x,y,'[',"Mylar underpants",TCODColor::lightPink);
+		undies->blocks = false;
+		ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
+		undies->pickable = new Equipment(0,Equipment::LEGS,bonus);
+	
+		engine.actors.push(undies);
+		engine.sendToBack(undies);
 	} else {
 		//create a scroll of confusion
 		Actor *scrollOfConfusion = new Actor(x,y,181,"Flashbang",
