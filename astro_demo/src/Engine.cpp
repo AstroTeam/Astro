@@ -130,6 +130,7 @@ void Engine::load(bool pause) {
 	} else if (menuItem == Menu::MAIN_MENU) {
 		save();
 		TCODConsole::root->clear();
+		//engine.term();
 		load(false);
 	}else {
 		TCODZip zip;

@@ -382,7 +382,7 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 						selectedItem = (selectedItem +1) % items.size();
 					break;
 					case TCODK_ENTER: return items.get(selectedItem)->code;
-					case TCODK_ESCAPE:  return NO_CHOICE;
+					case TCODK_ESCAPE: return NO_CHOICE;
 					default: break;
 				}
 			
@@ -422,7 +422,9 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 						selectedItem = (selectedItem +1) % items.size();
 					break;
 					case TCODK_ENTER: return items.get(selectedItem)->code;
-					case TCODK_ESCAPE:  return NO_CHOICE;
+					case TCODK_ESCAPE: if (mode == PAUSE) {
+							 	return NO_CHOICE;
+							   }
 					default: break;
 				}
 			
@@ -456,7 +458,9 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 					selectedItem = (selectedItem +1) % items.size();
 				break;
 				case TCODK_ENTER: return items.get(selectedItem)->code;
-				case TCODK_ESCAPE: return NO_CHOICE;
+				case TCODK_ESCAPE: if (mode == PAUSE){
+							return NO_CHOICE;
+						    }
 				default: break;
 			}
 		}
