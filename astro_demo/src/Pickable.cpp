@@ -207,6 +207,7 @@ void Pickable::drop(Actor *owner, Actor *wearer) {
 			engine.actors.push(owner);
 			owner->x = wearer->x;
 			owner->y = wearer->y;
+			engine.sendToBack(owner);
 		}
 		else {
 			Actor *droppy = new Actor(wearer->x, wearer->y, owner->ch,owner->name,owner->col);
@@ -222,6 +223,7 @@ void Pickable::drop(Actor *owner, Actor *wearer) {
 			}
 			droppy->pickable->stackSize = numberDropped;
 			engine.actors.push(droppy);
+			engine.sendToBack(droppy);
 		}
 		if (wearer == engine.player){
 			engine.gui->message(TCODColor::lightGrey,"You drop %d %s",numberDropped,owner->name);
