@@ -111,48 +111,84 @@ void Map::addMonster(int x, int y) {
 	
 	int level = engine.level; //Note first engine.level = 1
 	
+	//Infected Crew Member Base Stats
 	float infectedCrewMemMaxHp = 10;
 	float infectedCrewMemDef = 0;
 	float infectedCrewMemAtk = 5;
 	float infectedCrewMemXp = 10;
+	float infectedCrewMemChance = 80;
+	int infectedCrewMemAscii = 164;
 	
-	float sporeCreatureMaxHp = 16;
+	//Infected NCO Base Stats
+	float infectedNCOMaxHp = 12;
+	float infectedNCODef = 1;
+	float infectedNCOAtk = 6;
+	float infectedNCOXp = 10;
+	float infectedNCOChance = 10;
+	int infectedNCOAscii = 132;
+	
+	//Infected Officer Base Stats
+	float infectedOfficerMaxHp = 15;
+	float infectedOfficerDef = 1;
+	float infectedOfficerAtk = 7;
+	float infectedOfficerXp = 20;
+	float infectedOfficerChance = 6;
+	int infectedOfficerAscii = 148;
+	
+	//Spore Creature Base Stats
+	float sporeCreatureMaxHp = 17;
 	float sporeCreatureDef = 1;
-	float sporeCreatureAtk = 7;
-	float sporeCreatureXp = 20;
+	float sporeCreatureAtk = 10;
+	float sporeCreatureXp = 25;
+	float sporeCreatureChance = 4;
+	int sporeCreatureAscii = 165;
 	
-	//Certain enemies' strength scales up as you go down a dungeon 
-	
-	infectedCrewMemMaxHp += level/2; //increment infected crew member's MaxHp by 1 every even level
-	infectedCrewMemAtk += (level-1)/2; //increment infected crew member's Atk by 1 every odd level
-	infectedCrewMemXp += (level-1)/2; //increment infected crew member's Xp by 1 every odd level
-		
-	sporeCreatureMaxHp += level/3; //increment spore creature's MaxHp by 1 every third level (starting at 3)
-	sporeCreatureAtk += (level+2)/3; //increment spore creature's Atk by 1 every third level (starting at 4)
-	sporeCreatureXp += level/3; //increment spore creature's Xp by 1 every third level (starting at 3)
-	
-	//The percent of spore creatures starts at 20% and increases by 5 percent as you go down each level, but going no higher than 50%	
-	float percentInfectedCrewMembers =  ( (85 - 5*level) > 50 ? (85 - 5*level) : 50 ); 
-	if (rng->getInt(0,100) < percentInfectedCrewMembers) {
+	int dice = rng->getInt(0,100);
+	if (dice < infectedCrewMemChance) {
 		//create an infected crew member
-		Actor *infectedCrewMember = new Actor(x,y,164,"Infected Crewmember",TCODColor::white);
+		Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Red Crewmember",TCODColor::white);
 		infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
 		infectedCrewMember->attacker = new Attacker(infectedCrewMemAtk);
 		infectedCrewMember->container = new Container(2);
 		infectedCrewMember->ai = new MonsterAi();
-		generateRandom(infectedCrewMember, 164);
+		generateRandom(infectedCrewMember, infectedCrewMemAscii);
 		engine.actors.push(infectedCrewMember);
 	}
-	else {	
+	else if(dice < infectedCrewMemChance + infectedNCOChance)	
+	{
+		//create an infected NCO
+		Actor *infectedNCO = new Actor(x,y,infectedNCOAscii,"Infected NCO",TCODColor::white);
+		infectedNCO->destructible = new MonsterDestructible(infectedNCOMaxHp,infectedNCODef,"infected corpse",infectedNCOXp);
+		infectedNCO->attacker = new Attacker(infectedNCOAtk);
+		infectedNCO->container = new Container(2);
+		infectedNCO->ai = new MonsterAi();
+		generateRandom(infectedNCO, infectedNCOAscii);
+		engine.actors.push(infectedNCO);
+	
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance)
+	{
+	
+		//create an infected officer
+		Actor *infectedOfficer = new Actor(x,y,infectedOfficerAscii,"Infected Officer",TCODColor::white);
+		infectedOfficer->destructible = new MonsterDestructible(infectedOfficerMaxHp,infectedOfficerDef,"infected corpse",infectedOfficerXp);
+		infectedOfficer->attacker = new Attacker(infectedOfficerAtk);
+		infectedOfficer->container = new Container(2);
+		infectedOfficer->ai = new MonsterAi();
+		generateRandom(infectedOfficer, infectedOfficerAscii);
+		engine.actors.push(infectedOfficer);
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance)
+	{
 		//create a spore creature
-		Actor *sporeCreature = new Actor(x,y,165,"Spore Creature",TCODColor::white);
+		Actor *sporeCreature = new Actor(x,y,sporeCreatureAscii,"Spore Creature",TCODColor::white);
 		sporeCreature->destructible = new MonsterDestructible(sporeCreatureMaxHp,sporeCreatureDef,"gross spore remains",sporeCreatureXp);
 		sporeCreature->attacker = new Attacker(sporeCreatureAtk);
 		sporeCreature->container = new Container(2);
 		sporeCreature->ai = new MonsterAi();
 		sporeCreature->oozing = true;
 		sporeCreature->enviroment = this;
-		generateRandom(sporeCreature, 165);
+		generateRandom(sporeCreature, sporeCreatureAscii);
 		engine.actors.push(sporeCreature);
 	}
 }
