@@ -155,7 +155,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				if (actor->pickable && actor->x == owner->x && actor->y == owner->y) {
 					if (actor->pickable->pick(actor,owner)) {
 						found = true;
-						engine.gui->message(TCODColor::lightGrey, "You pick up the %s.", actor->name);
+						engine.gui->message(TCODColor::lightGrey, "You pick up the %s and the sort value is %d.", actor->name, actor->sort);
 						break;
 					} else if (!found ) {
 						found = true;
@@ -309,7 +309,7 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type) {
 	for (Actor **it = owner->container->inventory.begin();
 		it != owner->container->inventory.end(); it++) {
 		Actor *actor = *it;
-		//if(actor->sort == type){
+		if(actor->sort == type){
 			con.print(2,y,"(%c) %s",shortcut,actor->name);
 			owner->container->select[shortcut] = actor->name;
 			if (actor->pickable->stacks) {
@@ -317,7 +317,7 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type) {
 			}
 			y++;
 			shortcut++;
-		//}
+		}
 	}
 	//blit the inventory console on the root console
 	TCODConsole::blit(&con,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
