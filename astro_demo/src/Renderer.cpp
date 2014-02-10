@@ -42,6 +42,7 @@ void Renderer::render(void *sdlSurface){
 	//background
 	//SDL_Surface *map = SDL_LoadBMP("starmap.bmp");
 	SDL_Surface *floorMap = SDL_LoadBMP("starmap2.bmp");
+	SDL_Surface *pink = SDL_LoadBMP("tile_assets/pink.bmp");
 	
 	
 	static bool first=true;
@@ -61,12 +62,16 @@ void Renderer::render(void *sdlSurface){
 	//engine.gui->message(TCODColor::red, "playerx  %d",plyx);
 	//engine.gui->message(TCODColor::red, "playery  %d",plyy);
 	int x = 0, y = 0;
-	
+	int plyx = 0, plyy = 0;
 	for (int xM = engine.mapx1; xM < engine.mapx2+16; xM++) {
 		for (int yM = engine.mapy1; yM < engine.mapy2+16; yM++) {
 			//if it needs to be rendered over, render it over
 			SDL_Rect dstRect={x*16,y*16,16,16};
-			
+			if(engine.mapcon->getChar(xM,yM) == 64)
+			{
+				plyx = x;
+				plyy = y;
+			}
 			//SDL_Rect dstRect2={0,0,0,0};
 			//SDL_Rect srcRect = {};
 			if(engine.mapconCpy->getChar(xM,yM) == 31) 
@@ -186,6 +191,22 @@ void Renderer::render(void *sdlSurface){
 	//SDL_BlitSurface(screen,&dstRect1,floorMap,&srcRect1);
 	SDL_BlitSurface(screen,&dstRect1,floorMap,NULL);
 	
+	
+	//SDL_Rect dstRectEquip={plyx*16,plyy*16,16,16};
+	if (engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN){
+		for (Actor **it = engine.player->container->inventory.begin();it != engine.player->container->inventory.end();it++)
+		{
+		
+			Actor *a = *it;
+			if (a->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(a->pickable))->equipped)
+			{
+				//SDL_BlitSurface(pink,NULL,floorMap,&dstRectEquip);
+			}
+		}
+	}
+	
+	
+	
 	//if the game is running add if statement sometime							
 	//SDL_BlitSurface(floorMap,&srcRect1,screen,&dstRect1);	
 	//GOES BLUE ON DEATH, UPDATE ON DEATH status?
@@ -206,6 +227,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(flashShadow);
 	SDL_FreeSurface(infectedFloor);
 	SDL_FreeSurface(infectedFloorDark);
+	SDL_FreeSurface(pink);
 	//SDL_FreeSurface(titleScreen);
 	//SDL_FreeSurface(humanShadow);
 	
