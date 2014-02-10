@@ -243,8 +243,8 @@ void Engine::render()
 	mapy1 = player->y - ((screenHeight -12)/2);
 	mapx2 = player->x + ((screenWidth -22)/2);
 	mapy2 = player->y + ((screenHeight -12)/2);
-	//engine.gui->message(TCODColor::red, "mapx delta  %d",mapx2-mapx1);
-	//engine.gui->message(TCODColor::red, "mapy delta  %d",mapy2-mapy1);
+	//engine.gui->message(TCODColor::red, "player x  %d",player->x);
+	//engine.gui->message(TCODColor::red, "player y  %d",player->y);
 	//engine.gui->message(TCODColor::red, "mapy1 %d",mapy1);
 	//engine.gui->message(TCODColor::red, "mapy2  %d",mapy2);
 	
@@ -258,15 +258,15 @@ void Engine::render()
 		mapy1 = 0;
 		mapy2 += 1;
 	}
-	if (mapx2 >= 100) {
-		mapx1 += (100-mapx2);
+	if (mapx2 >= 101) {
+		mapx1 += (101-mapx2);
 		//gui->message(TCODColor::green, "******************************************");
-		mapx2 = 100;
+		mapx2 = 101;
 		mapx1 -= 1;
 	}
-	if (mapy2 >= 100) {
-		mapy1 += (100-mapy2);
-		mapy2 = 100;
+	if (mapy2 >= 101) {
+		mapy1 += (101-mapy2);
+		mapy2 = 101;
 		mapy1 -= 1;
 	}
 	 /*

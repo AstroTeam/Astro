@@ -71,7 +71,10 @@ void Renderer::render(void *sdlSurface){
 			//SDL_Rect srcRect = {};
 			if(engine.mapconCpy->getChar(xM,yM) == 31) 
 			{ //replace 'down arrow thing' (31 ascii) with basic floor tiles
+				//SDL_UpdateRect(floorMap, x*16, y*16, 16, 16);
+				//SDL_FillRect(floorMap, &dstRect, 258);
 				SDL_BlitSurface(floor,NULL,floorMap,&dstRect);
+				//SDL_UpdateRect(floorMap, x*16, y*16, 16, 16);
 			}
 			//replace 'up arrow thing' with darker floor tiles
 			if(engine.mapconCpy->getChar(xM,yM) == 30)
@@ -80,7 +83,9 @@ void Renderer::render(void *sdlSurface){
 			}
 			//replace infected tiles lit
 			if(engine.mapconCpy->getChar(xM,yM) == 29){
+				//SDL_FillRect(floorMap, &dstRect, 258);
 				SDL_BlitSurface(infectedFloor,NULL,floorMap,&dstRect);
+				//SDL_FillRect(floorMap, &dstRect, 258);
 			}
 			//replace unlit infected tiles
 			if(engine.mapconCpy->getChar(xM,yM) == 28){
@@ -119,7 +124,7 @@ void Renderer::render(void *sdlSurface){
 		y=0;
 		x++;
 	}
-				
+	/*		
 	int x1 = 0, y1 = 0;
 	for (int xM = engine.mapx1; xM < engine.mapx2+16; xM++) {
 		for (int yM = engine.mapy1; yM < engine.mapy2+16; yM++) {
@@ -141,7 +146,7 @@ void Renderer::render(void *sdlSurface){
 		}
 		y1=0;
 		x1++;
-	}
+	}*/
 	
 	
 	
