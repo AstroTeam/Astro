@@ -224,14 +224,14 @@ void Map::addItem(int x, int y) {
 		engine.actors.push(scrollOfFireball);
 		engine.sendToBack(scrollOfFireball);
 	} else if(dice < 25+25+25+50) {
-		//create a pair of mylar underpants
-		Actor *undies = new Actor(x,y,'[',"Mylar-Lined Boots",TCODColor::lightPink);
-		undies->blocks = false;
+		//create a pair of mylar boots
+		Actor *myBoots = new Actor(x,y,'[',"Mylar-Lined Boots",TCODColor::lightPink);
+		myBoots->blocks = false;
 		ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
-		undies->pickable = new Equipment(0,Equipment::FEET,bonus);
-		undies->sort = 3;
-		engine.actors.push(undies);
-		engine.sendToBack(undies);
+		myBoots->pickable = new Equipment(0,Equipment::FEET,bonus);
+		myBoots->sort = 3;
+		engine.actors.push(myBoots);
+		engine.sendToBack(myBoots);
 	} else {
 		//create a scroll of confusion
 		Actor *scrollOfConfusion = new Actor(x,y,181,"Flashbang",
