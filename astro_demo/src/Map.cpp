@@ -192,23 +192,19 @@ void Map::addItem(int x, int y) {
 		Actor *myBoots = new Actor(x,y,'[',"Mylar-Lined Boots",TCODColor::lightPink);
 		myBoots->blocks = false;
 		ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
-<<<<<<< HEAD
-		undies->pickable = new Equipment(0,Equipment::LEGS,bonus);
-	
-		engine.actors.push(undies);
-		engine.sendToBack(undies);
+		myBoots->pickable = new Equipment(0,Equipment::LEGS,bonus);
+		myBoots->pickable = new Equipment(0,Equipment::FEET,bonus);
+		myBoots->sort = 3;
+		engine.actors.push(myBoots);
+		engine.sendToBack(myBoots);
 	} else if(dice < 25+25+25+50+10) {
 		//create a Modular Laser Rifle (MLR)
 		Actor *MLR = new Actor(x,y,'{',"MLR",TCODColor::darkerOrange);
 		MLR->blocks = false;
 		ItemBonus *bonus = new ItemBonus(ItemBonus::ATTACK,1);
 		MLR->pickable = new Equipment(0,Equipment::RANGED,bonus);
-=======
-		myBoots->pickable = new Equipment(0,Equipment::FEET,bonus);
-		myBoots->sort = 3;
-		engine.actors.push(myBoots);
-		engine.sendToBack(myBoots);
->>>>>>> afa50015ae310540c4f55a9bce74926ad006de09
+		engine.actors.push(MLR);
+		engine.sendToBack(MLR);
 	} else {
 		//create a scroll of confusion
 		Actor *scrollOfConfusion = new Actor(x,y,181,"Flashbang",
