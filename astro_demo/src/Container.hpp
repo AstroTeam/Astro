@@ -4,6 +4,7 @@ class Container : public Persistent {
 public:
 	int size;
 	TCODList<Actor *> inventory;
+	std::map <char,const char*> select;
 	//the following bools could be actor pointers instead, really
 	
 	bool head;

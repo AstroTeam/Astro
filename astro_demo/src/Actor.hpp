@@ -7,7 +7,7 @@ public:
 	bool blocks; //can you walk over this guy?
 	bool oozing; //is this guy infected?
 	bool susceptible; //is this guy susceptible to the infection?
-	int type; //Actor type (1 = Item, 2 = Tech, 3 = Armor, 4 = Weapon)
+	int sort; //Actor type (1 = Item, 2 = Tech, 3 = Armor, 4 = Weapon)
 	//bool fovOnly; //only display when in FOV (maybe add this later)
 	Attacker *attacker; //something that deals damage
 	Destructible *destructible; //something that can take damage

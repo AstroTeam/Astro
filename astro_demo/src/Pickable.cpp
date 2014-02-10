@@ -198,7 +198,7 @@ bool Confuser::use(Actor *owner, Actor *wearer) {
 
 void Pickable::drop(Actor *owner, Actor *wearer) {
 	if (wearer->container) {
-		if (((Equipment*)(owner->pickable))->equipped) {
+		if (owner->pickable->type == EQUIPMENT && ((Equipment*)(owner->pickable))->equipped) {
 			((Equipment*)(owner->pickable))->use(owner,wearer);
 		}
 		int numberDropped = 1;
@@ -207,21 +207,23 @@ void Pickable::drop(Actor *owner, Actor *wearer) {
 			engine.actors.push(owner);
 			owner->x = wearer->x;
 			owner->y = wearer->y;
+			engine.sendToBack(owner);
 		}
 		else {
 			Actor *droppy = new Actor(wearer->x, wearer->y, owner->ch,owner->name,owner->col);
 			PickableType type = owner->pickable->type;
 			owner->pickable->stackSize -= numberDropped;
 			switch(type) {
-				case HEALER: droppy->pickable = new Healer(((Healer*)owner->pickable)->amount); break;
-				case LIGHTNING_BOLT: droppy->pickable = new LightningBolt(((LightningBolt*)(owner->pickable))->range,((LightningBolt*)(owner->pickable))->damage); break;
-				case CONFUSER: droppy->pickable = new Confuser(((Confuser*)(owner->pickable))->nbTurns,((Confuser*)(owner->pickable))->range); break;
-				case FIREBALL: droppy->pickable = new Fireball(((Fireball*)(owner->pickable))->range,((Fireball*)(owner->pickable))->damage,((Fireball*)(owner->pickable))->maxRange); break;
+				case HEALER: droppy->pickable = new Healer(((Healer*)owner->pickable)->amount); droppy->sort = 1; break;
+				case LIGHTNING_BOLT: droppy->pickable = new LightningBolt(((LightningBolt*)(owner->pickable))->range,((LightningBolt*)(owner->pickable))->damage); droppy->sort = 2; break;
+				case CONFUSER: droppy->pickable = new Confuser(((Confuser*)(owner->pickable))->nbTurns,((Confuser*)(owner->pickable))->range); droppy->sort = 2; break;
+				case FIREBALL: droppy->pickable = new Fireball(((Fireball*)(owner->pickable))->range,((Fireball*)(owner->pickable))->damage,((Fireball*)(owner->pickable))->maxRange); droppy->sort = 2; break;
 				case EQUIPMENT: break;
 				case NONE: break;
 			}
 			droppy->pickable->stackSize = numberDropped;
 			engine.actors.push(droppy);
+			engine.sendToBack(droppy);
 		}
 		if (wearer == engine.player){
 			engine.gui->message(TCODColor::lightGrey,"You drop %d %s",numberDropped,owner->name);

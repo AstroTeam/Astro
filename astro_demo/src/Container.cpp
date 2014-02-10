@@ -52,7 +52,7 @@ bool Container::add(Actor *actor) {
 	if (actor->pickable->stacks) {
 		for (Actor **it = inventory.begin(); it != inventory.end(); it++) {
 			Actor *act2 = *it;
-			if(strncmp(act2->name,actor->name,16) == 0) {
+			if(strcmp(act2->name,actor->name) == 0) {
 				wasIn = true;
 				act2->pickable->stackSize += actor->pickable->stackSize;
 				delete actor;

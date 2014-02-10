@@ -154,7 +154,7 @@ void Map::addItem(int x, int y) {
 	if (dice < 25) {
 		//create a health potion
 		Actor *healthPotion = new Actor(x,y,184,"Medkit", TCODColor::white);
-		healthPotion->type = 1;
+		healthPotion->sort = 1;
 		healthPotion->blocks = false;
 		healthPotion->pickable = new Healer(20);
 		engine.actors.push(healthPotion);
@@ -163,7 +163,7 @@ void Map::addItem(int x, int y) {
 		//create a scroll of lightningbolt
 		Actor *scrollOfLightningBolt = new Actor(x,y,183, "EMP Pulse",
 			TCODColor::white);
-		scrollOfLightningBolt->type = 2;
+		scrollOfLightningBolt->sort = 2;
 		scrollOfLightningBolt->blocks = false;
 		scrollOfLightningBolt->pickable = new LightningBolt(5,20);
 		engine.actors.push(scrollOfLightningBolt);
@@ -172,25 +172,25 @@ void Map::addItem(int x, int y) {
 		//create a scroll of fireball
 		Actor *scrollOfFireball = new Actor(x,y,182,"Firebomb",
 			TCODColor::white);
-		scrollOfFireball->type = 2;
+		scrollOfFireball->sort = 2;
 		scrollOfFireball->blocks = false;
 		scrollOfFireball->pickable = new Fireball(3,12,8);
 		engine.actors.push(scrollOfFireball);
 		engine.sendToBack(scrollOfFireball);
 	} else if(dice < 25+25+25+50) {
-		//create a pair of mylar underpants
-		Actor *undies = new Actor(x,y,'[',"Mylar underpants",TCODColor::lightPink);
-		undies->blocks = false;
+		//create a pair of mylar boots
+		Actor *myBoots = new Actor(x,y,'[',"Mylar-Lined Boots",TCODColor::lightPink);
+		myBoots->blocks = false;
 		ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
-		undies->pickable = new Equipment(0,Equipment::LEGS,bonus);
-	
-		engine.actors.push(undies);
-		engine.sendToBack(undies);
+		myBoots->pickable = new Equipment(0,Equipment::FEET,bonus);
+		myBoots->sort = 3;
+		engine.actors.push(myBoots);
+		engine.sendToBack(myBoots);
 	} else {
 		//create a scroll of confusion
 		Actor *scrollOfConfusion = new Actor(x,y,181,"Flashbang",
 			TCODColor::white);
-		scrollOfConfusion->type = 2;
+		scrollOfConfusion->sort = 2;
 		scrollOfConfusion->blocks = false;
 		scrollOfConfusion->pickable = new Confuser(10,8);
 		engine.actors.push(scrollOfConfusion);
@@ -338,10 +338,14 @@ void Map::render() const {
 					if (isInfected(x,y)) {
 						engine.mapcon->setChar(x, y, 29);
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.mapconCpy->setChar(x, y, 29);
+						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}
 					else {
 						engine.mapcon->setChar(x, y, 31);
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.mapconCpy->setChar(x, y, 31);
+						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}
 				}
 			}
@@ -363,10 +367,14 @@ void Map::render() const {
 					if (isInfected(x,y)) {
 						engine.mapcon->setChar(x, y, 28);
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.mapconCpy->setChar(x, y, 28);
+						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}
 					else {
 						engine.mapcon->setChar(x, y, 30);
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.mapconCpy->setChar(x, y, 30);
+						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}
 				}
 			}
@@ -388,7 +396,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 				if (rnd < 30) {
 					//create a health potion
 					Actor *healthPotion = new Actor(0,0,184,"Medkit", TCODColor::white);
-					healthPotion->type = 1;
+					healthPotion->sort = 1;
 					healthPotion->blocks = false;
 					healthPotion->pickable = new Healer(20);
 					engine.actors.push(healthPotion);
@@ -397,7 +405,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 					//create a scroll of lightningbolt
 					Actor *scrollOfLightningBolt = new Actor(0,0,183, "EMP Pulse",
 						TCODColor::white);
-					scrollOfLightningBolt->type = 2;
+					scrollOfLightningBolt->sort = 2;
 					scrollOfLightningBolt->blocks = false;
 					scrollOfLightningBolt->pickable = new LightningBolt(5,20);
 					engine.actors.push(scrollOfLightningBolt);
@@ -406,7 +414,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 					//create a scroll of fireball
 					Actor *scrollOfFireball = new Actor(0,0,182,"Firebomb",
 						TCODColor::white);
-					scrollOfFireball->type = 2;
+					scrollOfFireball->sort = 2;
 					scrollOfFireball->blocks = false;
 					scrollOfFireball->pickable = new Fireball(3,12,8);
 					engine.actors.push(scrollOfFireball);
@@ -415,7 +423,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 					//create a scroll of confusion
 					Actor *scrollOfConfusion = new Actor(0,0,181,"Flashbang",
 						TCODColor::white);
-					scrollOfConfusion->type = 2;
+					scrollOfConfusion->sort = 2;
 					scrollOfConfusion->blocks = false;
 					scrollOfConfusion->pickable = new Confuser(10,8);
 					engine.actors.push(scrollOfConfusion);
@@ -428,7 +436,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 				if (rnd2 < 25) {
 					//create a health potion
 					Actor *healthPotion = new Actor(0,0,184,"Medkit", TCODColor::white);
-					healthPotion->type = 1;
+					healthPotion->sort = 1;
 					healthPotion->blocks = false;
 					healthPotion->pickable = new Healer(20);
 					engine.actors.push(healthPotion);
@@ -437,7 +445,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 					//create a scroll of lightningbolt
 					Actor *scrollOfLightningBolt = new Actor(0,0,183, "EMP Pulse",
 						TCODColor::white);
-					scrollOfLightningBolt->type = 2;
+					scrollOfLightningBolt->sort = 2;
 					scrollOfLightningBolt->blocks = false;
 					scrollOfLightningBolt->pickable = new LightningBolt(5,20);
 					engine.actors.push(scrollOfLightningBolt);
@@ -446,7 +454,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 					//create a scroll of fireball
 					Actor *scrollOfFireball = new Actor(0,0,182,"Firebomb",
 						TCODColor::white);
-					scrollOfFireball->type = 2;
+					scrollOfFireball->sort = 2;
 					scrollOfFireball->blocks = false;
 					scrollOfFireball->pickable = new Fireball(3,12,8);
 					engine.actors.push(scrollOfFireball);
@@ -455,7 +463,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 					//create a scroll of confusion
 					Actor *scrollOfConfusion = new Actor(0,0,181,"Flashbang",
 						TCODColor::white);
-					scrollOfConfusion->type = 2;
+					scrollOfConfusion->sort = 2;
 					scrollOfConfusion->blocks = false;
 					scrollOfConfusion->pickable = new Confuser(10,8);
 					engine.actors.push(scrollOfConfusion);
