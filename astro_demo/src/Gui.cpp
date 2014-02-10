@@ -15,7 +15,7 @@ const int PAUSE_MENU_HEIGHT = 23;
 const int INVENTORY_MENU_WIDTH = 38;
 const int INVENTORY_MENU_HEIGHT = 4;
 
-const int CLASS_MENU_WIDTH = 84;
+const int CLASS_MENU_WIDTH = 85;
 const int CLASS_MENU_HEIGHT = 4;
 
 const int RACE_MENU_HEIGHT = 52;
@@ -318,7 +318,7 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
 		TCODConsole::root->setDefaultForeground(TCODColor(50,180,50));
-		TCODConsole::root->printFrame(menux + 1,0/*menuy - 20*/,CLASS_MENU_WIDTH,
+		TCODConsole::root->printFrame(menux,0/*menuy - 20*/,CLASS_MENU_WIDTH,
 			CLASS_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"CHARACTER");
 	}/*else if(mode == RACE){
 		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
@@ -398,9 +398,9 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
 				}
 				if(currentItem == 2){
-					TCODConsole::root->print(menux+currentItem*12+16,menuy-19,(*it)->label);
+					TCODConsole::root->print(menux+currentItem*12+14,menuy-18,(*it)->label);
 				}else{
-					TCODConsole::root->print(menux+currentItem*12+18,menuy-19,(*it)->label);
+					TCODConsole::root->print(menux+currentItem*12+16,menuy-18,(*it)->label);
 				}
 				currentItem++;
 			}
