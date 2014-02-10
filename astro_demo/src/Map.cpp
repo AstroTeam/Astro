@@ -189,10 +189,10 @@ void Map::addItem(int x, int y) {
 		engine.sendToBack(scrollOfFireball);
 	} else if(dice < 25+25+25+50) {
 		//create a pair of mylar underpants
-		Actor *undies = new Actor(x,y,'[',"Mylar underpants",TCODColor::lightPink);
+		Actor *undies = new Actor(x,y,'[',"Mylar-Lined Boots",TCODColor::lightPink);
 		undies->blocks = false;
 		ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
-		undies->pickable = new Equipment(0,Equipment::LEGS,bonus);
+		undies->pickable = new Equipment(0,Equipment::FEET,bonus);
 		undies->sort = 3;
 		engine.actors.push(undies);
 		engine.sendToBack(undies);
@@ -329,10 +329,14 @@ void Map::render() const {
 					if (isInfected(x,y)) {
 						engine.mapcon->setChar(x, y, 29);
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.mapconCpy->setChar(x, y, 29);
+						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}
 					else {
 						engine.mapcon->setChar(x, y, 31);
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.mapconCpy->setChar(x, y, 31);
+						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}
 				}
 			}
@@ -354,10 +358,14 @@ void Map::render() const {
 					if (isInfected(x,y)) {
 						engine.mapcon->setChar(x, y, 28);
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.mapconCpy->setChar(x, y, 28);
+						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}
 					else {
 						engine.mapcon->setChar(x, y, 30);
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.mapconCpy->setChar(x, y, 30);
+						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}
 				}
 			}
