@@ -414,7 +414,7 @@ void EpicenterAi::infectLevel(Actor *owner) {
 	TCODRandom *rng = TCODRandom::getInstance();
 
 	for (int i = 0; i < width*height; i++) {
-		owner->enviroment->tiles[i].infection += 1 / (rng->getDouble(.01,1.0)*owner->getDistance(i/width, i%width));
+		owner->enviroment->tiles[i].infection += 1 / (rng->getDouble(.01,1.0)*owner->getDistance(i%width, i/width));
 	}
 	engine.gui->message(TCODColor::green,"You feel uneasy as the infection seems to spread.");
 }

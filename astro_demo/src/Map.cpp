@@ -4,12 +4,14 @@ static const int ROOM_MAX_SIZE = 12;
 static const int ROOM_MIN_SIZE = 6;
 static const int MAX_ROOM_MONSTERS = 3;
 static const int MAX_ROOM_ITEMS = 2;
+
 class BspListener : public ITCODBspCallback {
 private:
 	Map &map; //a map to dig
 	int roomNum; //room number
 	int lastx, lasty; // center of the last room
 	
+
 public:
 	BspListener(Map &map) : map(map), roomNum(0) {}
 	
@@ -22,7 +24,7 @@ public:
 			h=map.rng->getInt(ROOM_MIN_SIZE, node->h-2);
 			x=map.rng->getInt(node->x+1, node->x+node->w-w-1);
 			y=map.rng->getInt(node->y+1, node->y+node->h-h-1);
-			map.createRoom(roomNum == 0, x, y, x+w-1, y+h-1, withActors);
+			map.createRoom(roomNum, x, y, x+w-1, y+h-1, withActors);
 			
 			if (roomNum != 0) {
 				//dig a corridor from last room
@@ -39,7 +41,7 @@ public:
 	}
 };
 
-Map::Map(int width, int height): width(width),height(height) {
+Map::Map(int width, int height, short epicenterAmount): width(width),height(height),epicenterAmount(epicenterAmount) {
 	seed = TCODRandom::getInstance()->getInt(0,0x7FFFFFFF);
 }
 
@@ -52,18 +54,6 @@ void Map::init(bool withActors) {
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
-
-	//give this level an epicenter of the infection
-	int epiLocation = rng->getInt(0, width*height);
-	Actor * epicenter = new Actor(epiLocation/width, epiLocation%width, 3, "Infection Epicenter", TCODColor::green);
-	epicenter->enviroment=this;
-	epicenter->ai= new EpicenterAi;
-	engine.actors.push(epicenter);
-
-	//intial infection, concentrated at the epicenter
-	for (int i = 0; i < width*height; i++) {
-		tiles[i].infection = 1 / ((rng->getDouble(.01,1.0))*epicenter->getDistance(i/width, i%width));
-	}
 
 	TCODBsp bsp(0,0,width,height);
 	bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
@@ -208,13 +198,13 @@ void Map::addItem(int x, int y) {
 	}
 }
 
-void Map::createRoom(bool first, int x1, int y1, int x2, int y2, bool withActors) {
+void Map::createRoom(int roomNum, int x1, int y1, int x2, int y2, bool withActors) {
 	dig(x1,y1,x2,y2);
 	
 	if (!withActors) {
 		return;
 	}
-	if (first) {
+	if (roomNum == 0) {
 		//put the player in the first room
 		engine.player->x = (x1+x2)/2;
 		engine.player->y = (y1+y2)/2;
@@ -223,7 +213,7 @@ void Map::createRoom(bool first, int x1, int y1, int x2, int y2, bool withActors
 	//add monsters
 	//horde chance
 	int nbMonsters;
-	if (!first && rng->getInt(0,19) == 0) {
+	if (roomNum >0 && rng->getInt(0,19) == 0) {
 		nbMonsters = rng->getInt(10, 25);
 	}
 	else {
@@ -238,6 +228,25 @@ void Map::createRoom(bool first, int x1, int y1, int x2, int y2, bool withActors
 			nbMonsters--;
 		}
 	}
+	//try to place an epicenter
+	if (epicenterAmount > 0 && roomNum == 5 ) {
+		int x = rng->getInt(x1, x2);
+		int y = rng->getInt(y1, y2);
+
+		if(canWalk(x,y)) {
+			Actor * epicenter = new Actor(x, y, 3, "Infection Epicenter", TCODColor::green);
+			epicenter->enviroment=this;
+			epicenter->ai=new EpicenterAi;
+			engine.actors.push(epicenter);
+
+			//intial infection, concentrated at the epicenter
+			for (int i = 0; i < width*height; i++) {
+				tiles[i].infection = 1 / ((rng->getDouble(.01,1.0))*epicenter->getDistance(i%width, i/width));
+			}
+		}
+		epicenterAmount--;
+	}
+ 
 	//add items
 	int nbItems = rng->getInt(0, MAX_ROOM_ITEMS);
 	while (nbItems > 0) {
