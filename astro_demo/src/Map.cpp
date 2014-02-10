@@ -160,7 +160,7 @@ void Map::addMonster(int x, int y) {
 void Map::addItem(int x, int y) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,140);
+	int dice = rng->getInt(0,150);
 	if (dice < 25) {
 		//create a health potion
 		Actor *healthPotion = new Actor(x,y,184,"Medkit", TCODColor::white);
@@ -196,6 +196,12 @@ void Map::addItem(int x, int y) {
 	
 		engine.actors.push(undies);
 		engine.sendToBack(undies);
+	} else if(dice < 25+25+25+50+10) {
+		//create a Modular Laser Rifle (MLR)
+		Actor *MLR = new Actor(x,y,'{',"MLR",TCODColor::darkerOrange);
+		MLR->blocks = false;
+		ItemBonus *bonus = new ItemBonus(ItemBonus::ATTACK,1);
+		MLR->pickable = new Equipment(0,Equipment::RANGED,bonus);
 	} else {
 		//create a scroll of confusion
 		Actor *scrollOfConfusion = new Actor(x,y,181,"Flashbang",

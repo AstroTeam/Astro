@@ -214,13 +214,13 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					default: break;
 				}
 			}
-				if (actor) {
-					bool used;
-					used = actor->pickable->use(actor,owner);
-					if (used) {
-						engine.gameStatus = Engine::NEW_TURN;
-					}
+			if (actor) {
+				bool used;
+				used = actor->pickable->use(actor,owner);
+				if (used) {
+					engine.gameStatus = Engine::NEW_TURN;
 				}
+			}
 		}break;
 		case 'd': //drop an item
 		{
@@ -290,6 +290,16 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			engine.gui->message(TCODColor::darkerPink,"minimizing");
 			TCODConsole::initRoot(engine.screenWidth,engine.screenHeight, "Astro", false);
 		}
+		break;
+		case 'f':
+			//shooty shooty bang bang -Mitchell
+			//need to figure out how to check if the user has a gun
+			if(engine.player->container->ranged){
+				engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
+			}
+			else{
+				engine.gui->message(TCODColor::lightGrey,"You do not have a ranged weapon equipped");
+			}
 		break;
 	}
 }
