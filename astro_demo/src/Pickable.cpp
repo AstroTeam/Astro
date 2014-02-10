@@ -198,7 +198,7 @@ bool Confuser::use(Actor *owner, Actor *wearer) {
 
 void Pickable::drop(Actor *owner, Actor *wearer) {
 	if (wearer->container) {
-		if (((Equipment*)(owner->pickable))->equipped) {
+		if (owner->pickable->type == EQUIPMENT && ((Equipment*)(owner->pickable))->equipped) {
 			((Equipment*)(owner->pickable))->use(owner,wearer);
 		}
 		int numberDropped = 1;

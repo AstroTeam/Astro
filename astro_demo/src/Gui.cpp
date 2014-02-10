@@ -290,7 +290,7 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - PAUSE_MENU_HEIGHT / 2;
 		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
-		TCODConsole::root->printFrame(menux,menuy,PAUSE_MENU_WIDTH,
+		TCODConsole::root->printFrame(menux,menuy - 4,PAUSE_MENU_WIDTH,
 			PAUSE_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"PAUSE MENU");
 		
 	/* 	//This code is an alternative way to render a pause menu, with a background
@@ -362,7 +362,7 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 				} else {
 					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
 				}
-				TCODConsole::root->print(menux,menuy+currentItem*3,(*it)->label);
+				TCODConsole::root->print(menux,menuy+currentItem*3-4,(*it)->label);
 				currentItem++;
 			}
 			TCODConsole::flush();
