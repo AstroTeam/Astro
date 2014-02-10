@@ -14,12 +14,17 @@ public:
 	ITEMS,
 	TECH,
 	ARMOR,
-	WEAPONS
+	WEAPONS,
+	RACE,
+	CLASS,
+	SUB_CLASS,
+	STATS
 	};
 	enum DisplayMode {
 		MAIN,
 		PAUSE,
-		INVENTORY
+		INVENTORY,
+		CLASS_SELECT
 	};
 	~Menu();
 	void clear();
@@ -32,26 +37,35 @@ protected:
 	};
 	TCODList<MenuItem *> items;
 };
-/*class InventoryMenu : public Menu{
+/*class ClassMenu : public Menu{
 public:
 	enum MenuItemCode{
 		NONE,
 		NO_CHOICE,
-		ITEMS,
-		TECH,
-		WEAPONS,
-		ARMOR
+		HUMAN,
+		ALIEN,
+		MARINE,
+		SOLDIER,
+		CONSTITUTION,
+		STRENGTH
+	};
+	enum DisplayMode {
+		RACE,
+		CLASS,
+		SUB_CLASS,
+		STATS
 	};
 	~InventoryMenu(){clear();}
 	void clear(){Menu::clear();}
 	void addItem(MenuItemCode code, const char *label){Menu::addItem(code,label);}
-	MenuItemCode pick();
+	MenuItemCode pick(DisplayMode mode){Menu::pick(mode)};
 
 };*/
 
 class Gui : public Persistent {
 public: 
 	Menu menu;
+	//ClassMenu classMenu;
 
 	Gui();
 	~Gui();

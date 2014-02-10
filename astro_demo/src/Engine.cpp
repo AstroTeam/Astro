@@ -57,7 +57,7 @@ void Engine::init() {
 	map->init(true);
 	gui->message(TCODColor::red, 
 
-    	"Welcome stranger! Prepare to face a horde of Astrocephalytes and Spores Creatures!");
+    	"Welcome to Astroverius Station! Warning unknown alien life form detected!");
 	gameStatus = STARTUP;
 }
 
@@ -121,8 +121,9 @@ void Engine::load(bool pause) {
 		exit(0);
 	} else if (menuItem == Menu::NEW_GAME) {
 		//new game 
-		engine.term();
-		engine.init();
+		engine.classMenu();
+		//engine.term();
+		//engine.init();
 	} else if (menuItem == Menu::SAVE) {
 		save();
 	} else if (menuItem == Menu::NO_CHOICE) {
@@ -483,4 +484,39 @@ Actor *Engine::getAnyActor(int x, int y) const {
 void Engine::win() {
 	gui->message(TCODColor::darkRed,"You win!");
 	gameStatus=Engine::VICTORY;
+}
+void Engine::classMenu(){
+	engine.term();
+	engine.gui->menu.clear();
+	engine.gui->menu.addItem(Menu::RACE, "RACE");
+	engine.gui->menu.addItem(Menu::CLASS, "CLASS");
+	engine.gui->menu.addItem(Menu::SUB_CLASS, "SUBCLASS");
+	engine.gui->menu.addItem(Menu::STATS, "STATS");
+	engine.gui->menu.addItem(Menu::EXIT, "DONE");
+	bool choice = true;
+			while(choice){
+			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::CLASS_SELECT);
+			//Menu::MenuItemCode selection;
+				switch (menuItem) {
+					case Menu::RACE :
+						//selection = engine.gui->menu.pick(Menu::RACE);
+						break;
+					case Menu::CLASS :
+						
+						break;
+					case Menu::SUB_CLASS:
+						
+						break;
+					case Menu::STATS:
+						
+						break;
+					case Menu::NO_CHOICE:
+						break;
+					case Menu::EXIT:
+						choice = false;
+						engine.term();
+						engine.init();
+					default: break;
+				}
+			}
 }
