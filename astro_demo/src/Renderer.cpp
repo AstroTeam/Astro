@@ -38,6 +38,10 @@ void Renderer::render(void *sdlSurface){
 	//human Shadow
 	SDL_Surface *humanShadow = SDL_LoadBMP("tile_assets/human_alpha_shadow_25.bmp");
 	SDL_SetAlpha( humanShadow, SDL_SRCALPHA, 255*.25);
+	//EQUIPMENT
+	//Mylar Boots
+	SDL_Surface *mylarBoots = SDL_LoadBMP("tile_assets/Mylar_Boots.bmp");
+	SDL_SetColorKey(mylarBoots,SDL_SRCCOLORKEY,255);
 	//SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
 	//background
 	//SDL_Surface *map = SDL_LoadBMP("starmap.bmp");
@@ -192,15 +196,15 @@ void Renderer::render(void *sdlSurface){
 	SDL_BlitSurface(screen,&dstRect1,floorMap,NULL);
 	
 	
-	//SDL_Rect dstRectEquip={plyx*16,plyy*16,16,16};
+	SDL_Rect dstRectEquip={plyx*16,plyy*16,16,16};
 	if (engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN){
 		for (Actor **it = engine.player->container->inventory.begin();it != engine.player->container->inventory.end();it++)
 		{
 		
 			Actor *a = *it;
-			if (a->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(a->pickable))->equipped)
+			if (a->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(a->pickable))->equipped )//add case to not blit if inventory is open
 			{
-				//SDL_BlitSurface(pink,NULL,floorMap,&dstRectEquip);
+				SDL_BlitSurface(mylarBoots,NULL,floorMap,&dstRectEquip);
 			}
 		}
 	}
@@ -213,6 +217,8 @@ void Renderer::render(void *sdlSurface){
 	if (engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN){
 		SDL_BlitSurface(floorMap,NULL,screen,&dstRect1);	
 	}
+	
+	//engine.gui->render();
 	//else
 	//{
 	//	SDL_BlitSurface(titleScreen,NULL,screen,NULL);	
