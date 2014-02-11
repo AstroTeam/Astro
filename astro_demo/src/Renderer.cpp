@@ -42,6 +42,8 @@ void Renderer::render(void *sdlSurface){
 	//Mylar Boots
 	SDL_Surface *mylarBoots = SDL_LoadBMP("tile_assets/Mylar_Boots.bmp");
 	SDL_SetColorKey(mylarBoots,SDL_SRCCOLORKEY,255);
+	SDL_Surface *titanMail = SDL_LoadBMP("tile_assets/Titanium_nanoChainmail.bmp");
+	SDL_SetColorKey(titanMail,SDL_SRCCOLORKEY,255);
 	//SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
 	//background
 	//SDL_Surface *map = SDL_LoadBMP("starmap.bmp");
@@ -204,7 +206,16 @@ void Renderer::render(void *sdlSurface){
 			Actor *a = *it;
 			if (a->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(a->pickable))->equipped )//add case to not blit if inventory is open
 			{
-				SDL_BlitSurface(mylarBoots,NULL,floorMap,&dstRectEquip);
+				if (strcmp(a->name,"Mylar-Lined Boots") == 0)
+				{
+					SDL_BlitSurface(mylarBoots,NULL,floorMap,&dstRectEquip);
+				}
+				
+				if (strcmp(a->name,"Titan-mail") == 0)
+				{
+					SDL_BlitSurface(titanMail,NULL,floorMap,&dstRectEquip);
+				}
+				
 			}
 		}
 	}
@@ -233,6 +244,8 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(flashShadow);
 	SDL_FreeSurface(infectedFloor);
 	SDL_FreeSurface(infectedFloorDark);
+	SDL_FreeSurface(mylarBoots);
+	SDL_FreeSurface(titanMail);
 	SDL_FreeSurface(pink);
 	//SDL_FreeSurface(titleScreen);
 	//SDL_FreeSurface(humanShadow);
