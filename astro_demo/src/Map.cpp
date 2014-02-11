@@ -232,7 +232,7 @@ void Map::addItem(int x, int y) {
 		myBoots->sort = 3;
 		engine.actors.push(myBoots);
 		engine.sendToBack(myBoots);
-	}else if(dice < 25+25+25+10+10){
+	}else if(dice < 25+25+25+10+5){
 		//create Titanium Micro Chain-mail
 		Actor *chainMail = new Actor(x,y,210,"Titanium Micro Chainmail",TCODColor::lightPink);
 		chainMail->blocks = false;
