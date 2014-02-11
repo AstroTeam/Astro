@@ -521,3 +521,12 @@ void Engine::classMenu(){
 				}
 			}
 }
+void Engine::classSelectMenu(int cat){
+if(cat == 1){
+engine.gui->classMenu.clear();
+//bool choice = true;
+}else if(cat == 2){
+}else if(cat == 3){
+}else{
+}
+}

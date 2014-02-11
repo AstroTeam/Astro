@@ -44,7 +44,12 @@ void Container::save(TCODZip &zip) {
 }
 
 bool Container::add(Actor *actor) {
-	if (size > 0 && inventory.size() >= size) {
+	int amount = 0;
+	for(Actor **it = inventory.begin(); it != inventory.end(); it++){
+		Actor *actor = *it;
+		amount += actor->pickable->stackSize;
+	}
+	if (size > 0 && amount >= size) {
 		//inventory full
 		return false;
 	}

@@ -65,7 +65,7 @@ public:
 class Gui : public Persistent {
 public: 
 	Menu menu;
-	//ClassMenu classMenu;
+	Menu classMenu;
 
 	Gui();
 	~Gui();
