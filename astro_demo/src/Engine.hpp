@@ -48,6 +48,8 @@ public:
 	void save();
 	void term();
 	void win();
+	void classMenu();
+	void selectClass();
 };
 
 extern Engine engine;

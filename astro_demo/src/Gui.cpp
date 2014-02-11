@@ -15,6 +15,11 @@ const int PAUSE_MENU_HEIGHT = 23;
 const int INVENTORY_MENU_WIDTH = 38;
 const int INVENTORY_MENU_HEIGHT = 4;
 
+const int CLASS_MENU_WIDTH = 85;
+const int CLASS_MENU_HEIGHT = 4;
+
+const int RACE_MENU_HEIGHT = 52;
+
 Gui::Gui() {
 	//added the tile info screen, which takes up a part of the bottom panel next to the console
 	con = new TCODConsole(CON_WIDTH, PANEL_HEIGHT);
@@ -309,7 +314,37 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
 		TCODConsole::root->printFrame(menux,menuy - 20,INVENTORY_MENU_WIDTH,
 			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"INVENTORY");
-	} else {
+	} else if(mode == CLASS_SELECT){
+		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
+		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
+		TCODConsole::root->setDefaultForeground(TCODColor(50,180,50));
+		TCODConsole::root->printFrame(menux,0/*menuy - 20*/,CLASS_MENU_WIDTH,
+			CLASS_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"CHARACTER");
+	}/*else if(mode == RACE){
+		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
+		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
+		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
+		TCODConsole::root->printFrame(menux - 20,menuy - 20,CLASS_MENU_WIDTH,
+			SELECT_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"CHARACTER");
+	}else if(mode == CLASS){
+		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
+		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
+		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
+		TCODConsole::root->printFrame(menux - 20,4menuy - 20,CLASS_MENU_WIDTH,
+			SELECT_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"CHARACTER");
+	}else if(mode == SUB_CLASS){
+		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
+		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
+		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
+		TCODConsole::root->printFrame(menux - 20,4menuy - 20,CLASS_MENU_WIDTH,
+			SELECT_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"CHARACTER");
+	}else if(mode == STATS){
+		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
+		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
+		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
+		TCODConsole::root->printFrame(menux - 20,4menuy - 20,CLASS_MENU_WIDTH,
+			SELECT_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"CHARACTER");
+	}*/else {
 		static TCODImage img("background.png");
 		img.blit2x(TCODConsole::root,0,6);
 		menux = 35;
@@ -347,7 +382,49 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 						selectedItem = (selectedItem +1) % items.size();
 					break;
 					case TCODK_ENTER: return items.get(selectedItem)->code;
-					case TCODK_ESCAPE:  return NO_CHOICE;
+					case TCODK_ESCAPE: return NO_CHOICE;
+					default: break;
+				}
+			
+		}
+	}else if(mode == CLASS_SELECT){
+		while (!TCODConsole::isWindowClosed()) {
+		
+			int currentItem = 0;
+			for (MenuItem **it = items.begin(); it != items.end(); it++) {
+				if (currentItem == selectedItem) {
+					TCODConsole::root->setDefaultForeground(TCODColor::orange);
+				} else {
+					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
+				}
+				if(currentItem == 2){
+					TCODConsole::root->print(menux+currentItem*12+14,menuy-18,(*it)->label);
+				}else{
+					TCODConsole::root->print(menux+currentItem*12+16,menuy-18,(*it)->label);
+				}
+				currentItem++;
+			}
+			TCODConsole::flush();
+			
+			//check key presses
+			
+			
+				TCOD_key_t key;
+				TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
+				switch(key.vk) {
+					case TCODK_LEFT:
+						selectedItem--;
+						if(selectedItem < 0) {
+							selectedItem = items.size()-1;
+						}
+					break;
+					case TCODK_RIGHT:
+						selectedItem = (selectedItem +1) % items.size();
+					break;
+					case TCODK_ENTER: return items.get(selectedItem)->code;
+					case TCODK_ESCAPE: if (mode == PAUSE) {
+							 	return NO_CHOICE;
+							   }
 					default: break;
 				}
 			
@@ -381,7 +458,9 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 					selectedItem = (selectedItem +1) % items.size();
 				break;
 				case TCODK_ENTER: return items.get(selectedItem)->code;
-				case TCODK_ESCAPE: return NO_CHOICE;
+				case TCODK_ESCAPE: if (mode == PAUSE){
+							return NO_CHOICE;
+						    }
 				default: break;
 			}
 		}
