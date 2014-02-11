@@ -38,6 +38,7 @@ void Renderer::render(void *sdlSurface){
 	//human Shadow
 	SDL_Surface *humanShadow = SDL_LoadBMP("tile_assets/human_alpha_shadow_25.bmp");
 	SDL_SetAlpha( humanShadow, SDL_SRCALPHA, 255*.25);
+	SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
 	//EQUIPMENT
 	//Mylar Boots
 	SDL_Surface *mylarBoots = SDL_LoadBMP("tile_assets/Mylar_Boots.bmp");
@@ -143,19 +144,19 @@ void Renderer::render(void *sdlSurface){
 		y=0;
 		x++;
 	}
-	/*		
+			
 	int x1 = 0, y1 = 0;
 	for (int xM = engine.mapx1; xM < engine.mapx2+16; xM++) {
 		for (int yM = engine.mapy1; yM < engine.mapy2+16; yM++) {
 			//Player Shadow
 			int yN = yM - 1;
-			if (engine.mapcon->getChar(xM,yN) == 64)  
+			if (engine.mapcon->getChar(xM,yN) == 64 || engine.mapcon->getChar(xM,yN) == 164 || engine.mapcon->getChar(xM,yN) == 148 || engine.mapcon->getChar(xM,yN) == 132)  
 			{
-				//int y2 = y1;
-				//y2 = y2*16;
-				//y2 += 16;
-				//SDL_Rect dstRectOffset={x1*16,y1*16,16,16};
-				//SDL_BlitSurface(humanShadow,NULL,floorMap,&dstRectOffset);
+				int y2 = y1;
+				y2 = y2*16;
+				y2 += 16;
+				SDL_Rect dstRectOffset={x1*16,y1*16,16,16};
+				SDL_BlitSurface(humanShadow,NULL,floorMap,&dstRectOffset);
 				//SDL_BlitSurface(humanShadow,NULL,screen,&dstRectOffset);
 				//TCODConsole::flush();
 			}
@@ -165,7 +166,7 @@ void Renderer::render(void *sdlSurface){
 		}
 		y1=0;
 		x1++;
-	}*/
+	}
 	
 	
 	
@@ -186,6 +187,7 @@ void Renderer::render(void *sdlSurface){
 			
 		}
 	}
+	
 	engine.gui->message(TCODColor::red, "player x is  %d",plyx);
 	engine.gui->message(TCODColor::red, "player y is %d",plyy);
 	engine.gui->message(TCODColor::red, "calc player x is  %d",plyx*16);
