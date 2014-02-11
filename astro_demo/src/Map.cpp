@@ -223,7 +223,7 @@ void Map::addItem(int x, int y) {
 		scrollOfFireball->pickable = new Fireball(3,12,8);
 		engine.actors.push(scrollOfFireball);
 		engine.sendToBack(scrollOfFireball);
-	} else if(dice < 25+25+25+50) {
+	} else if(dice < 25+25+25+25) {
 		//create a pair of mylar boots
 		Actor *myBoots = new Actor(x,y,'[',"Mylar-Lined Boots",TCODColor::lightPink);
 		myBoots->blocks = false;
@@ -232,7 +232,16 @@ void Map::addItem(int x, int y) {
 		myBoots->sort = 3;
 		engine.actors.push(myBoots);
 		engine.sendToBack(myBoots);
-	} else {
+	}else if(dice < 25+25+25+25+15){
+		//create Titanium Micro Chain-mail
+		Actor *chainMail = new Actor(x,y,210,"Titanium Micro Chainmail",TCODColor::lightPink);
+		chainMail->blocks = false;
+		ItemBonus *bonus = new ItemBonus(ItemBonus::DEFENSE,3);
+		chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus);
+		chainMail->sort = 3;
+		engine.actors.push(chainMail);
+		engine.sendToBack(chainMail);
+	}else {
 		//create a scroll of confusion
 		Actor *scrollOfConfusion = new Actor(x,y,181,"Flashbang",
 			TCODColor::white);

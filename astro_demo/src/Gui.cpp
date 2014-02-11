@@ -296,7 +296,7 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		menuy = engine.screenHeight / 2 - PAUSE_MENU_HEIGHT / 2;
 		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
 		TCODConsole::root->printFrame(menux,menuy - 4,PAUSE_MENU_WIDTH,
-			PAUSE_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"PAUSE MENU");
+			PAUSE_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"PAUSE MENU");
 		
 	/* 	//This code is an alternative way to render a pause menu, with a background
 		//image, preferably a 60x60 PNG
@@ -313,13 +313,13 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		menuy = engine.screenHeight / 2 - INVENTORY_MENU_HEIGHT / 2;
 		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
 		TCODConsole::root->printFrame(menux,menuy - 20,INVENTORY_MENU_WIDTH,
-			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"INVENTORY");
+			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"INVENTORY");
 	} else if(mode == CLASS_SELECT){
 		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
 		TCODConsole::root->setDefaultForeground(TCODColor(50,180,50));
 		TCODConsole::root->printFrame(menux,0/*menuy - 20*/,CLASS_MENU_WIDTH,
-			CLASS_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"CHARACTER");
+			CLASS_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"CHARACTER");
 	}/*else if(mode == RACE){
 		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
