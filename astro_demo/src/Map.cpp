@@ -125,7 +125,7 @@ void Map::addMonster(int x, int y) {
 	float infectedNCOAtk = 6;
 	float infectedNCOXp = 10;
 	float infectedNCOChance = 10;
-	int infectedNCOAscii = 132;
+	int infectedNCOAscii = 148;
 	
 	//Infected Officer Base Stats
 	float infectedOfficerMaxHp = 15;
@@ -133,7 +133,7 @@ void Map::addMonster(int x, int y) {
 	float infectedOfficerAtk = 7;
 	float infectedOfficerXp = 20;
 	float infectedOfficerChance = 6;
-	int infectedOfficerAscii = 148;
+	int infectedOfficerAscii = 132;
 	
 	//Spore Creature Base Stats
 	float sporeCreatureMaxHp = 17;
