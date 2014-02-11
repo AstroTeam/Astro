@@ -196,7 +196,7 @@ void Map::addMonster(int x, int y) {
 void Map::addItem(int x, int y) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,140);
+	int dice = rng->getInt(0,120);
 	if (dice < 25) {
 		//create a health potion
 		Actor *healthPotion = new Actor(x,y,184,"Medkit", TCODColor::white);
@@ -223,7 +223,7 @@ void Map::addItem(int x, int y) {
 		scrollOfFireball->pickable = new Fireball(3,12,8);
 		engine.actors.push(scrollOfFireball);
 		engine.sendToBack(scrollOfFireball);
-	} else if(dice < 25+25+25+25) {
+	} else if(dice < 25+25+25+10) {
 		//create a pair of mylar boots
 		Actor *myBoots = new Actor(x,y,'[',"Mylar-Lined Boots",TCODColor::lightPink);
 		myBoots->blocks = false;
@@ -232,7 +232,7 @@ void Map::addItem(int x, int y) {
 		myBoots->sort = 3;
 		engine.actors.push(myBoots);
 		engine.sendToBack(myBoots);
-	}else if(dice < 25+25+25+25+15){
+	}else if(dice < 25+25+25+10+10){
 		//create Titanium Micro Chain-mail
 		Actor *chainMail = new Actor(x,y,210,"Titanium Micro Chainmail",TCODColor::lightPink);
 		chainMail->blocks = false;
@@ -506,6 +506,104 @@ void Map::generateRandom(Actor *owner, int ascii){
 					scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
 				}
 		}
+		}else if(ascii == 148){
+			for(int i = 0; i < owner->container->size; i++){
+					int rnd = rng->getInt(0,120);
+					if (rnd < 30) {
+						//create a health potion
+						Actor *healthPotion = new Actor(0,0,184,"Medkit", TCODColor::white);
+						healthPotion->sort = 1;
+						healthPotion->blocks = false;
+						healthPotion->pickable = new Healer(20);
+						engine.actors.push(healthPotion);
+						healthPotion->pickable->pick(healthPotion,owner);
+					} else if(rnd < 10+30) {
+						//create a scroll of lightningbolt
+						Actor *scrollOfLightningBolt = new Actor(0,0,183, "EMP Pulse",
+							TCODColor::white);
+						scrollOfLightningBolt->sort = 2;
+						scrollOfLightningBolt->blocks = false;
+						scrollOfLightningBolt->pickable = new LightningBolt(5,20);
+						engine.actors.push(scrollOfLightningBolt);
+						scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
+					} else if(rnd < 10+30+20) {
+						//create a scroll of fireball
+						Actor *scrollOfFireball = new Actor(0,0,182,"Firebomb",
+							TCODColor::white);
+						scrollOfFireball->sort = 2;
+						scrollOfFireball->blocks = false;
+						scrollOfFireball->pickable = new Fireball(3,12,8);
+						engine.actors.push(scrollOfFireball);
+						scrollOfFireball->pickable->pick(scrollOfFireball,owner);
+					}else if(rnd < 10+30+20+20){
+						//create a pair of mylar boots
+						Actor *myBoots = new Actor(0,0,'[',"Mylar-Lined Boots",TCODColor::lightPink);
+						myBoots->blocks = false;
+						ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
+						myBoots->pickable = new Equipment(0,Equipment::FEET,bonus);
+						myBoots->sort = 3;
+						engine.actors.push(myBoots);
+						myBoots->pickable->pick(myBoots,owner);
+					}else{
+						//create a scroll of confusion
+						Actor *scrollOfConfusion = new Actor(0,0,181,"Flashbang",
+							TCODColor::white);
+						scrollOfConfusion->sort = 2;
+						scrollOfConfusion->blocks = false;
+						scrollOfConfusion->pickable = new Confuser(10,8);
+						engine.actors.push(scrollOfConfusion);
+						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+					}
+				}
+		}else if(ascii == 132){
+			for(int i = 0; i < owner->container->size; i++){
+					int rnd = rng->getInt(0,100);
+					if (rnd < 30) {
+						//create a health potion
+						Actor *healthPotion = new Actor(0,0,184,"Medkit", TCODColor::white);
+						healthPotion->sort = 1;
+						healthPotion->blocks = false;
+						healthPotion->pickable = new Healer(20);
+						engine.actors.push(healthPotion);
+						healthPotion->pickable->pick(healthPotion,owner);
+					} else if(rnd < 10+30) {
+						//create a scroll of lightningbolt
+						Actor *scrollOfLightningBolt = new Actor(0,0,183, "EMP Pulse",
+							TCODColor::white);
+						scrollOfLightningBolt->sort = 2;
+						scrollOfLightningBolt->blocks = false;
+						scrollOfLightningBolt->pickable = new LightningBolt(5,20);
+						engine.actors.push(scrollOfLightningBolt);
+						scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
+					} else if(rnd < 10+30+20) {
+						//create a scroll of fireball
+						Actor *scrollOfFireball = new Actor(0,0,182,"Firebomb",
+							TCODColor::white);
+						scrollOfFireball->sort = 2;
+						scrollOfFireball->blocks = false;
+						scrollOfFireball->pickable = new Fireball(3,12,8);
+						engine.actors.push(scrollOfFireball);
+						scrollOfFireball->pickable->pick(scrollOfFireball,owner);
+					}else if(rnd < 10+30+20+10){
+						//create Titanium Micro Chain-mail
+						Actor *chainMail = new Actor(0,0,210,"Titanium Micro Chainmail",TCODColor::lightPink);
+						chainMail->blocks = false;
+						ItemBonus *bonus = new ItemBonus(ItemBonus::DEFENSE,3);
+						chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus);
+						chainMail->sort = 3;
+						engine.actors.push(chainMail);
+						chainMail->pickable->pick(chainMail,owner);
+					}else{
+						//create a scroll of confusion
+						Actor *scrollOfConfusion = new Actor(0,0,181,"Flashbang",
+							TCODColor::white);
+						scrollOfConfusion->sort = 2;
+						scrollOfConfusion->blocks = false;
+						scrollOfConfusion->pickable = new Confuser(10,8);
+						engine.actors.push(scrollOfConfusion);
+						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+					}
+			}
 		}
 	}
 }
