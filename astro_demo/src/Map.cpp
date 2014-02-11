@@ -251,7 +251,7 @@ void Map::addItem(int x, int y) {
 		engine.sendToBack(myBoots);
 	}else if(dice < 25+25+25+10+5){
 		//create Titanium Micro Chain-mail
-		Actor *chainMail = new Actor(x,y,210,"Titanium Micro Chainmail",TCODColor::lightPink);
+		Actor *chainMail = new Actor(x,y,210,"Titan-mail",TCODColor::lightPink);
 		chainMail->blocks = false;
 		ItemBonus *bonus = new ItemBonus(ItemBonus::DEFENSE,3);
 		chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus);
@@ -603,7 +603,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 						scrollOfFireball->pickable->pick(scrollOfFireball,owner);
 					}else if(rnd < 10+30+20+10){
 						//create Titanium Micro Chain-mail
-						Actor *chainMail = new Actor(0,0,210,"Titanium Micro Chainmail",TCODColor::lightPink);
+						Actor *chainMail = new Actor(0,0,210,"Titan-mail",TCODColor::lightPink);
 						chainMail->blocks = false;
 						ItemBonus *bonus = new ItemBonus(ItemBonus::DEFENSE,3);
 						chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus);
