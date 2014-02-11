@@ -142,11 +142,29 @@ void Map::addMonster(int x, int y) {
 	float sporeCreatureXp = 25;
 	float sporeCreatureChance = 4;
 	int sporeCreatureAscii = 165;
+
+	
+	if(infectedCrewMemChance - 10*(level-1) <= 20) //lowerbound for infectedCrewMemChance = 20
+	{
+		infectedCrewMemChance = 20;
+		infectedNCOChance = infectedNCOChance + 30;
+		infectedOfficerChance = infectedOfficerChance + 18;
+		sporeCreatureChance = sporeCreatureChance + 12;
+		
+	}
+	else
+	{
+		infectedCrewMemChance -= 10*(level-1); //decrement infectedCrewMemChance by 10% each level
+		infectedNCOChance += 5*(level-1); //increment infectedNCOMemChance by 5% each level
+		infectedOfficerChance += 3*(level-1); //increment infectedOfficerMemChance by 3% each level
+		sporeCreatureChance += 2*(level-1); //increment sporeCreatureChance by 2% each level
+	}
 	
 	int dice = rng->getInt(0,100);
-	if (dice < infectedCrewMemChance) {
+	if (dice < infectedCrewMemChance) 
+	{
 		//create an infected crew member
-		Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Red Crewmember",TCODColor::white);
+		Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
 		infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
 		infectedCrewMember->attacker = new Attacker(infectedCrewMemAtk);
 		infectedCrewMember->container = new Container(2);
@@ -168,7 +186,6 @@ void Map::addMonster(int x, int y) {
 	}
 	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance)
 	{
-	
 		//create an infected officer
 		Actor *infectedOfficer = new Actor(x,y,infectedOfficerAscii,"Infected Officer",TCODColor::white);
 		infectedOfficer->destructible = new MonsterDestructible(infectedOfficerMaxHp,infectedOfficerDef,"infected corpse",infectedOfficerXp);
