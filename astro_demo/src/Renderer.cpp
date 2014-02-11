@@ -47,6 +47,7 @@ void Renderer::render(void *sdlSurface){
 	//SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
 	//background
 	//SDL_Surface *map = SDL_LoadBMP("starmap.bmp");
+	
 	SDL_Surface *floorMap = SDL_LoadBMP("starmap2.bmp");
 	SDL_Surface *pink = SDL_LoadBMP("tile_assets/pink.bmp");
 	
@@ -60,6 +61,7 @@ void Renderer::render(void *sdlSurface){
 			
 	}
 	
+	
 	///////////////if there is a tile with multiple items, we need to render them both, ask garret how to detect this
 	//engine.gui->message(TCODColor::red, "x1 is %d",engine.mapx1);
 	//engine.gui->message(TCODColor::red, "x2 is %d",engine.mapx2);
@@ -67,6 +69,8 @@ void Renderer::render(void *sdlSurface){
 	//engine.gui->message(TCODColor::red, "y2 is %d",engine.mapy2);
 	//engine.gui->message(TCODColor::red, "playerx  %d",plyx);
 	//engine.gui->message(TCODColor::red, "playery  %d",plyy);
+	
+	
 	int x = 0, y = 0;
 	int plyx = 0, plyy = 0;
 	for (int xM = engine.mapx1; xM < engine.mapx2+16; xM++) {
@@ -77,6 +81,10 @@ void Renderer::render(void *sdlSurface){
 			{
 				plyx = x;
 				plyy = y;
+				if (engine.mapcon->getChar(xM,yM) != 163){
+					TCODConsole::root->clear();	
+				}
+				
 			}
 			//SDL_Rect dstRect2={0,0,0,0};
 			//SDL_Rect srcRect = {};
@@ -129,7 +137,7 @@ void Renderer::render(void *sdlSurface){
 				SDL_BlitSurface(medShadow,NULL,floorMap,&dstRect);
 			}
 			
-			
+			//SDL_Delay(100);
 			y++;
 		}
 		y=0;
@@ -219,7 +227,8 @@ void Renderer::render(void *sdlSurface){
 			}
 		}
 	}
-	
+	SDL_UpdateRect(floorMap, plyx*16, plyy*16, 16, 16);
+	//SDL_UpdateRect(screen, plyx*16, plyy*16, 16, 16);
 	
 	
 	//if the game is running add if statement sometime							
@@ -228,7 +237,7 @@ void Renderer::render(void *sdlSurface){
 	if (engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN){
 		SDL_BlitSurface(floorMap,NULL,screen,&dstRect1);	
 	}
-	
+	TCODConsole::root->setDirty(22*16,0,(engine.mapx2-engine.mapx1)*16+16,(engine.mapy2-engine.mapy1)*16+16);
 	//engine.gui->render();
 	//else
 	//{
@@ -236,7 +245,6 @@ void Renderer::render(void *sdlSurface){
 	//}
 	//SDL_Flip(floorMap);
 
-	
 	SDL_FreeSurface(floorMap);
 	SDL_FreeSurface(floor);
 	SDL_FreeSurface(darkFloor);
