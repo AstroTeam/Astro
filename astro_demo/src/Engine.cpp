@@ -260,10 +260,10 @@ void Engine::render()
 		mapy1 = 0;
 		mapy2 += 1;
 	}
-	if (mapx2 >= 101) {
-		mapx1 += (101-mapx2);
+	if (mapx2 >= 100) {
+		mapx1 += (100-mapx2);
 		//gui->message(TCODColor::green, "******************************************");
-		mapx2 = 101;
+		mapx2 = 100;
 		mapx1 -= 1;
 	}
 	if (mapy2 >= 101) {
@@ -438,9 +438,9 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {   //need to 
 		mapx2 = 100;
 		mapx1 -= 1;
 	}
-	if (mapy2 >= 100) {
-		mapy1 += (100-mapy2);
-		mapy2 = 100;
+	if (mapy2 >= 101) {
+		mapy1 += (101-mapy2);
+		mapy2 = 101;
 		mapy1 -= 1;
 	}
 	//stops the map from spilling into the console
