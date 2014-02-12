@@ -15,10 +15,13 @@ const int PAUSE_MENU_HEIGHT = 23;
 const int INVENTORY_MENU_WIDTH = 38;
 const int INVENTORY_MENU_HEIGHT = 4;
 
-const int CLASS_MENU_WIDTH = 85;
+const int CLASS_MENU_WIDTH = 65;
 const int CLASS_MENU_HEIGHT = 4;
 
 const int RACE_MENU_HEIGHT = 52;
+
+const int CLASS_SELECT_WIDTH = 65;
+const int CLASS_SELECT_HEIGHT = 40;
 
 Gui::Gui() {
 	//added the tile info screen, which takes up a part of the bottom panel next to the console
@@ -290,6 +293,7 @@ void Menu::addItem(MenuItemCode code, const char *label) {
 Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 	int selectedItem = 0;
 	int menux = 0, menuy = 0;
+	int menu2x = 0, menu2y = 0;
 	
 	if (mode == PAUSE) {
 		menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
@@ -314,37 +318,20 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
 		TCODConsole::root->printFrame(menux,menuy - 20,INVENTORY_MENU_WIDTH,
 			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"INVENTORY");
-	} else if(mode == CLASS_SELECT){
+	} else if(mode == CLASS_MENU){
 		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
 		TCODConsole::root->setDefaultForeground(TCODColor(50,180,50));
-		TCODConsole::root->printFrame(menux,0/*menuy - 20*/,CLASS_MENU_WIDTH,
-			CLASS_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"CHARACTER");
-	}/*else if(mode == RACE){
-		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
-		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
+		TCODConsole::root->printFrame(menux + 10,0,CLASS_MENU_WIDTH,
+			CLASS_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(100),"CHARACTER");
+	}else if(mode == CLASS_SELECT){
+		menu2x = engine.screenWidth/2 - CLASS_SELECT_WIDTH / 2;
+		menu2y = engine.screenHeight/2 - CLASS_SELECT_HEIGHT / 2;
 		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
-		TCODConsole::root->printFrame(menux - 20,menuy - 20,CLASS_MENU_WIDTH,
-			SELECT_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"CHARACTER");
-	}else if(mode == CLASS){
-		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
-		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
-		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
-		TCODConsole::root->printFrame(menux - 20,4menuy - 20,CLASS_MENU_WIDTH,
-			SELECT_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"CHARACTER");
-	}else if(mode == SUB_CLASS){
-		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
-		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
-		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
-		TCODConsole::root->printFrame(menux - 20,4menuy - 20,CLASS_MENU_WIDTH,
-			SELECT_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"CHARACTER");
-	}else if(mode == STATS){
-		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
-		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
-		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
-		TCODConsole::root->printFrame(menux - 20,4menuy - 20,CLASS_MENU_WIDTH,
-			SELECT_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"CHARACTER");
-	}*/else {
+		TCODConsole::root->printFrame(menu2x + 10,menu2y + 2,CLASS_SELECT_WIDTH,
+			CLASS_SELECT_HEIGHT,true,TCOD_BKGND_ALPHA(100));
+	
+	}else {
 		static TCODImage img("background.png");
 		img.blit2x(TCODConsole::root,0,6);
 		menux = 35;
@@ -387,7 +374,7 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 				}
 			
 		}
-	}else if(mode == CLASS_SELECT){
+	}else if(mode == CLASS_MENU){
 		while (!TCODConsole::isWindowClosed()) {
 		
 			int currentItem = 0;
@@ -428,6 +415,42 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 					default: break;
 				}
 			
+		}
+	}else if(mode == CLASS_SELECT){
+		menu2x = engine.screenWidth - CLASS_SELECT_WIDTH / 2;
+		while (!TCODConsole::isWindowClosed()) {
+		
+			int currentItem = 0;
+			for (MenuItem **it = items.begin(); it != items.end(); it++) {
+				if (currentItem == selectedItem) {
+					TCODConsole::root->setDefaultForeground(TCODColor::orange);
+				} else {
+					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
+				}
+				TCODConsole::root->print(menu2x - 4,12+currentItem*3-4,(*it)->label);
+				currentItem++;
+			}
+			TCODConsole::flush();
+			
+			//check key presses
+			TCOD_key_t key;
+			TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
+			switch(key.vk) {
+				case TCODK_UP:
+					selectedItem--;
+					if(selectedItem < 0) {
+						selectedItem = items.size()-1;
+					}
+				break;
+				case TCODK_DOWN:
+					selectedItem = (selectedItem +1) % items.size();
+				break;
+				case TCODK_ENTER: return items.get(selectedItem)->code;
+				case TCODK_ESCAPE: if (mode == PAUSE){
+							return NO_CHOICE;
+						    }
+				default: break;
+			}
 		}
 	}else{
 		while (!TCODConsole::isWindowClosed()) {

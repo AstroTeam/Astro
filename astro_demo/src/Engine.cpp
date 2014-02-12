@@ -496,20 +496,20 @@ void Engine::classMenu(){
 	engine.gui->menu.addItem(Menu::EXIT, "DONE");
 	bool choice = true;
 			while(choice){
-			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::CLASS_SELECT);
+			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::CLASS_MENU);
 			//Menu::MenuItemCode selection;
 				switch (menuItem) {
 					case Menu::RACE :
-						//selection = engine.gui->menu.pick(Menu::RACE);
+						classSelectMenu(1);
 						break;
 					case Menu::CLASS :
-						
+						classSelectMenu(2);
 						break;
 					case Menu::SUB_CLASS:
-						
+						classSelectMenu(3);
 						break;
 					case Menu::STATS:
-						
+						classSelectMenu(4);
 						break;
 					case Menu::NO_CHOICE:
 						break;
@@ -523,10 +523,89 @@ void Engine::classMenu(){
 }
 void Engine::classSelectMenu(int cat){
 if(cat == 1){
-engine.gui->classMenu.clear();
-//bool choice = true;
+	engine.gui->classMenu.clear();
+	engine.gui->classMenu.addItem(Menu::HUMAN, "HUMAN");
+	engine.gui->classMenu.addItem(Menu::ALIEN, "ALIEN");
+	bool choice = true;
+	while(choice){
+				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
+				
+					switch (menuItem) {
+						case Menu::HUMAN :
+							choice = false;
+							break;
+						case Menu::ALIEN :
+							choice = false;
+							break;
+						case Menu::NO_CHOICE:
+							choice = false;
+							break;
+						default: break;
+					}
+	}
+
 }else if(cat == 2){
+	engine.gui->classMenu.clear();
+	engine.gui->classMenu.addItem(Menu::MARINE, "MARINE");
+	bool choice = true;
+	while(choice){
+				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
+				
+					switch (menuItem) {
+						case Menu::MARINE :
+							choice = false;
+							break;
+						case Menu::NO_CHOICE:
+							choice = false;
+							break;
+						default: break;
+					}
+	}
 }else if(cat == 3){
+	engine.gui->classMenu.clear();
+	engine.gui->classMenu.addItem(Menu::GUN_FONDLER, "GUN FONDLER");
+	bool choice = true;
+	while(choice){
+				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
+				
+					switch (menuItem) {
+						case Menu::GUN_FONDLER :
+							choice = false;
+							break;
+						case Menu::NO_CHOICE:
+							choice = false;
+							break;
+						default: break;
+					}
+	}
 }else{
+	engine.gui->classMenu.clear();
+	engine.gui->classMenu.addItem(Menu::CONSTITUTION, "CONSTITUTION");
+	engine.gui->classMenu.addItem(Menu::STRENGTH, "STRENGTH");
+	engine.gui->classMenu.addItem(Menu::AGILITY, "AGILITY");
+	engine.gui->classMenu.addItem(Menu::EXIT, "DONE");
+	bool choice = true;
+	while(choice){
+				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
+				
+					switch (menuItem) {
+						case Menu::CONSTITUTION :
+							
+							break;
+						case Menu::STRENGTH :
+							
+							break;
+						case Menu::AGILITY :
+							
+							break;
+						case Menu::EXIT :
+							choice = false;
+							break;
+						case Menu::NO_CHOICE:
+							choice = false;
+							break;
+						default: break;
+					}
+	}
 }
 }

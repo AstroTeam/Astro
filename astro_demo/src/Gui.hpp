@@ -18,12 +18,17 @@ public:
 	RACE,
 	CLASS,
 	SUB_CLASS,
-	STATS
+	STATS,
+	HUMAN,
+	ALIEN,
+	MARINE,
+	GUN_FONDLER
 	};
 	enum DisplayMode {
 		MAIN,
 		PAUSE,
 		INVENTORY,
+		CLASS_MENU,
 		CLASS_SELECT
 	};
 	~Menu();
