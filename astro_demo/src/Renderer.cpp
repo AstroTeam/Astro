@@ -68,7 +68,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_SetColorKey(flashShadow,SDL_SRCCOLORKEY,255);
 	//firebomb
 	SDL_Surface *fireGlow = SDL_LoadBMP("tile_assets/firebomb_alpha_glow_50.bmp");
-	SDL_SetAlpha( fireGlow, SDL_SRCALPHA, alpha);
+	SDL_SetAlpha( fireGlow, SDL_SRCALPHA, alpha*.5);
 	SDL_SetColorKey(fireGlow,SDL_SRCCOLORKEY,255);
 	//EMP glow
 	SDL_Surface *EMPGlow = SDL_LoadBMP("tile_assets/EMP_alpha_glow_33.bmp");
