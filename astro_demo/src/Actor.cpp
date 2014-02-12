@@ -51,9 +51,9 @@ void Actor::load(TCODZip &zip) {
 	oozing = zip.getInt();
 	susceptible = zip.getInt();
 	sort = zip.getInt();
-	race = zip.getInt(race);
-	role = zip.getInt(role);
-	job = zip.getInt(job);
+	race = zip.getInt();
+	role = zip.getInt();
+	job = zip.getInt();
 	bool hasAttacker = zip.getInt();
 	bool hasDestructible = zip.getInt();
 	bool hasAi = zip.getInt();
