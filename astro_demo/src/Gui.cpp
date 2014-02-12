@@ -125,10 +125,13 @@ void Gui::render() {
 	}
 	
 	//draw the tileInfoScreen
-
+	
+	const char* testChar = "Tile info goes here";
+	
 	tileInfoScreen->setDefaultForeground(TCODColor(200,180,50));
 	tileInfoScreen->printFrame(0, 0, TILE_INFO_WIDTH, PANEL_HEIGHT, false, TCOD_BKGND_ALPHA(50),"TILE INFO");
-	tileInfoScreen->print(1, 2, "Tile Info goes here");
+	Message test = Message(testChar, TCODColor::white);
+	tileInfoScreen->print(4, 2, testChar);
 	
 	
 	
