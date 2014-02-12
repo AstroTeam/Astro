@@ -160,7 +160,7 @@ void Map::addMonster(int x, int y) {
 void Map::addItem(int x, int y) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,150);
+	int dice = rng->getInt(0,175);
 	if (dice < 25) {
 		//create a health potion
 		Actor *healthPotion = new Actor(x,y,184,"Medkit", TCODColor::white);
@@ -203,6 +203,7 @@ void Map::addItem(int x, int y) {
 		MLR->blocks = false;
 		ItemBonus *bonus = new ItemBonus(ItemBonus::ATTACK,1);
 		MLR->pickable = new Equipment(0,Equipment::RANGED,bonus);
+		MLR->sort = 4;
 		engine.actors.push(MLR);
 		engine.sendToBack(MLR);
 	} else {

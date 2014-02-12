@@ -293,8 +293,35 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		case 'f':
 			//shooty shooty bang bang -Mitchell
 			//need to figure out how to check if the user has a gun
-			if(engine.player->container->ranged){
-				engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
+			if(owner->container->ranged){
+				//engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
+				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,3);
+				if (!closestMonster) {
+					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
+					//return false;
+				}
+				//hit the closest monster for <damage> hit points;
+				else{
+					if(false){
+						/////////TO-DO Battery
+					}
+					else{
+						owner->attacker->shoot(owner, closestMonster);
+						engine.gameStatus = Engine::NEW_TURN;
+					}
+				}
+				/*
+				float damageTaken = closestMonster->destructible->takeDamage(closestMonster,damage);
+				if (!closestMonster->destructible->isDead()) {
+				engine.gui->message(TCODColor::lightBlue,
+					"A lightning bolt strikes the %s with a loud crack"
+					"for %g damage.",
+					closestMonster->name,damageTaken);
+				} else {
+					engine.gui->message(TCODColor::orange,"The %s crackles with electricity, twitching slightly.",closestMonster->name);
+				}
+				return Pickable::use(owner,wearer);
+				*/
 			}
 			else{
 				engine.gui->message(TCODColor::lightGrey,"You do not have a ranged weapon equipped");
