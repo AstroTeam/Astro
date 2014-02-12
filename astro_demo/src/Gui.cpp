@@ -81,7 +81,7 @@ void Gui::render() {
 		engine.player->destructible->maxHp, TCODColor::lightRed, 
 		TCODColor::darkerRed);
 	//draw the battery bar
-	renderBar(1,5,BAR_WIDTH, "Battery",10,20,TCODColor::yellow, TCODColor::darkerYellow);
+	renderBar(1,5,BAR_WIDTH, "Battery",10,20,TCODColor::blue, TCODColor::darkerBlue);
 	//draw the last target's hp bar
 	if (engine.player->attacker->lastTarget != NULL) {		renderBar(1,11,BAR_WIDTH, "target's HP",engine.player->attacker->lastTarget->destructible->hp,
 			engine.player->attacker->lastTarget->destructible->maxHp,TCODColor::lightRed, TCODColor::darkerRed);

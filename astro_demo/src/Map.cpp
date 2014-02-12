@@ -53,18 +53,18 @@ void Map::init(bool withActors) {
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
 
-	//give this level an epicenter of the infection
-	int epiLocation = rng->getInt(0, width*height);
-	Actor * epicenter = new Actor(epiLocation/width, epiLocation%width, 3, "Infection Epicenter", TCODColor::green);
-	epicenter->enviroment=this;
-	epicenter->ai= new EpicenterAi;
-	engine.actors.push(epicenter);
+	if (withActors) {
+		//give this level an epicenter of the infection
+		int epiLocation = rng->getInt(0, width*height);
+		Actor * epicenter = new Actor(epiLocation/width, epiLocation%width, 3, "Infection Epicenter", TCODColor::green);
+		epicenter->ai= new EpicenterAi();
+		engine.actors.push(epicenter);
 
-	//intial infection, concentrated at the epicenter
-	for (int i = 0; i < width*height; i++) {
-		tiles[i].infection = 1 / ((rng->getDouble(.01,1.0))*epicenter->getDistance(i/width, i%width));
+		//intial infection, concentrated at the epicenter
+		for (int i = 0; i < width*height; i++) {
+			tiles[i].infection = 1 / ((rng->getDouble(.01,1.0))*epicenter->getDistance(i/width, i%width));
+		}
 	}
-
 	TCODBsp bsp(0,0,width,height);
 	bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
 	BspListener listener(*this);
@@ -75,6 +75,7 @@ void Map::save(TCODZip &zip) {
 	zip.putInt(seed);
 	for (int i = 0; i < width*height; i++) {
 		zip.putInt(tiles[i].explored);
+		zip.putFloat(tiles[i].infection);
 	}
 }
 
@@ -83,6 +84,7 @@ void Map::load(TCODZip &zip) {
 	init(false);
 	for (int i = 0; i <width*height; i++) {
 		tiles[i].explored = zip.getInt();
+		tiles[i].infection = zip.getFloat();
 	}
 }
 	
@@ -204,7 +206,6 @@ void Map::addMonster(int x, int y) {
 		sporeCreature->container = new Container(2);
 		sporeCreature->ai = new MonsterAi();
 		sporeCreature->oozing = true;
-		sporeCreature->enviroment = this;
 		generateRandom(sporeCreature, sporeCreatureAscii);
 		engine.actors.push(sporeCreature);
 	}
