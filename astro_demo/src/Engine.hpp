@@ -49,7 +49,7 @@ public:
 	void term();
 	void win();
 	void classMenu();
-	void selectClass();
+	void classSelectMenu(int cat);
 };
 
 extern Engine engine;

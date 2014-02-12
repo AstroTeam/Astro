@@ -22,6 +22,9 @@ void Actor::save(TCODZip &zip) {
 	zip.putColor(&col);
 	zip.putString(name);
 	zip.putInt(blocks);
+	zip.putInt(oozing);
+	zip.putInt(susceptible);
+	zip.putInt(sort);
 	zip.putInt(attacker != NULL);
 	zip.putInt(destructible != NULL);
 	zip.putInt(ai != NULL);
@@ -42,6 +45,9 @@ void Actor::load(TCODZip &zip) {
 	col= zip.getColor();
 	name = strdup(zip.getString());
 	blocks = zip.getInt();
+	oozing = zip.getInt();
+	susceptible = zip.getInt();
+	sort = zip.getInt();
 	bool hasAttacker = zip.getInt();
 	bool hasDestructible = zip.getInt();
 	bool hasAi = zip.getInt();

@@ -111,48 +111,101 @@ void Map::addMonster(int x, int y) {
 	
 	int level = engine.level; //Note first engine.level = 1
 	
+	//Infected Crew Member Base Stats
 	float infectedCrewMemMaxHp = 10;
 	float infectedCrewMemDef = 0;
 	float infectedCrewMemAtk = 5;
 	float infectedCrewMemXp = 10;
+	float infectedCrewMemChance = 80;
+	int infectedCrewMemAscii = 164;
 	
-	float sporeCreatureMaxHp = 16;
+	//Infected NCO Base Stats
+	float infectedNCOMaxHp = 12;
+	float infectedNCODef = 1;
+	float infectedNCOAtk = 6;
+	float infectedNCOXp = 10;
+	float infectedNCOChance = 10;
+	int infectedNCOAscii = 148;
+	
+	//Infected Officer Base Stats
+	float infectedOfficerMaxHp = 15;
+	float infectedOfficerDef = 1;
+	float infectedOfficerAtk = 7;
+	float infectedOfficerXp = 20;
+	float infectedOfficerChance = 6;
+	int infectedOfficerAscii = 132;
+	
+	//Spore Creature Base Stats
+	float sporeCreatureMaxHp = 17;
 	float sporeCreatureDef = 1;
-	float sporeCreatureAtk = 7;
-	float sporeCreatureXp = 20;
+	float sporeCreatureAtk = 10;
+	float sporeCreatureXp = 25;
+	float sporeCreatureChance = 4;
+	int sporeCreatureAscii = 165;
+
 	
-	//Certain enemies' strength scales up as you go down a dungeon 
-	
-	infectedCrewMemMaxHp += level/2; //increment infected crew member's MaxHp by 1 every even level
-	infectedCrewMemAtk += (level-1)/2; //increment infected crew member's Atk by 1 every odd level
-	infectedCrewMemXp += (level-1)/2; //increment infected crew member's Xp by 1 every odd level
+	if(infectedCrewMemChance - 10*(level-1) <= 20) //lowerbound for infectedCrewMemChance = 20
+	{
+		infectedCrewMemChance = 20;
+		infectedNCOChance = infectedNCOChance + 30;
+		infectedOfficerChance = infectedOfficerChance + 18;
+		sporeCreatureChance = sporeCreatureChance + 12;
 		
-	sporeCreatureMaxHp += level/3; //increment spore creature's MaxHp by 1 every third level (starting at 3)
-	sporeCreatureAtk += (level+2)/3; //increment spore creature's Atk by 1 every third level (starting at 4)
-	sporeCreatureXp += level/3; //increment spore creature's Xp by 1 every third level (starting at 3)
+	}
+	else
+	{
+		infectedCrewMemChance -= 10*(level-1); //decrement infectedCrewMemChance by 10% each level
+		infectedNCOChance += 5*(level-1); //increment infectedNCOMemChance by 5% each level
+		infectedOfficerChance += 3*(level-1); //increment infectedOfficerMemChance by 3% each level
+		sporeCreatureChance += 2*(level-1); //increment sporeCreatureChance by 2% each level
+	}
 	
-	//The percent of spore creatures starts at 20% and increases by 5 percent as you go down each level, but going no higher than 50%	
-	float percentInfectedCrewMembers =  ( (85 - 5*level) > 50 ? (85 - 5*level) : 50 ); 
-	if (rng->getInt(0,100) < percentInfectedCrewMembers) {
+	int dice = rng->getInt(0,100);
+	if (dice < infectedCrewMemChance) 
+	{
 		//create an infected crew member
-		Actor *infectedCrewMember = new Actor(x,y,164,"Infected Crewmember",TCODColor::white);
+		Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
 		infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
 		infectedCrewMember->attacker = new Attacker(infectedCrewMemAtk);
 		infectedCrewMember->container = new Container(2);
 		infectedCrewMember->ai = new MonsterAi();
-		generateRandom(infectedCrewMember, 164);
+		generateRandom(infectedCrewMember, infectedCrewMemAscii);
 		engine.actors.push(infectedCrewMember);
 	}
-	else {	
+	else if(dice < infectedCrewMemChance + infectedNCOChance)	
+	{
+		//create an infected NCO
+		Actor *infectedNCO = new Actor(x,y,infectedNCOAscii,"Infected NCO",TCODColor::white);
+		infectedNCO->destructible = new MonsterDestructible(infectedNCOMaxHp,infectedNCODef,"infected corpse",infectedNCOXp);
+		infectedNCO->attacker = new Attacker(infectedNCOAtk);
+		infectedNCO->container = new Container(2);
+		infectedNCO->ai = new MonsterAi();
+		generateRandom(infectedNCO, infectedNCOAscii);
+		engine.actors.push(infectedNCO);
+	
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance)
+	{
+		//create an infected officer
+		Actor *infectedOfficer = new Actor(x,y,infectedOfficerAscii,"Infected Officer",TCODColor::white);
+		infectedOfficer->destructible = new MonsterDestructible(infectedOfficerMaxHp,infectedOfficerDef,"infected corpse",infectedOfficerXp);
+		infectedOfficer->attacker = new Attacker(infectedOfficerAtk);
+		infectedOfficer->container = new Container(2);
+		infectedOfficer->ai = new MonsterAi();
+		generateRandom(infectedOfficer, infectedOfficerAscii);
+		engine.actors.push(infectedOfficer);
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance)
+	{
 		//create a spore creature
-		Actor *sporeCreature = new Actor(x,y,165,"Spore Creature",TCODColor::white);
+		Actor *sporeCreature = new Actor(x,y,sporeCreatureAscii,"Spore Creature",TCODColor::white);
 		sporeCreature->destructible = new MonsterDestructible(sporeCreatureMaxHp,sporeCreatureDef,"gross spore remains",sporeCreatureXp);
 		sporeCreature->attacker = new Attacker(sporeCreatureAtk);
 		sporeCreature->container = new Container(2);
 		sporeCreature->ai = new MonsterAi();
 		sporeCreature->oozing = true;
 		sporeCreature->enviroment = this;
-		generateRandom(sporeCreature, 165);
+		generateRandom(sporeCreature, sporeCreatureAscii);
 		engine.actors.push(sporeCreature);
 	}
 }
@@ -161,7 +214,7 @@ void Map::addItem(int x, int y) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
 	int dice = rng->getInt(0,175);
-	if (dice < 25) {
+	if (dice < 40) {
 		//create a health potion
 		Actor *healthPotion = new Actor(x,y,184,"Medkit", TCODColor::white);
 		healthPotion->sort = 1;
@@ -169,7 +222,7 @@ void Map::addItem(int x, int y) {
 		healthPotion->pickable = new Healer(20);
 		engine.actors.push(healthPotion);
 		engine.sendToBack(healthPotion);
-	} else if(dice < 25+25) {
+	} else if(dice < 40+40) {
 		//create a scroll of lightningbolt
 		Actor *scrollOfLightningBolt = new Actor(x,y,183, "EMP Pulse",
 			TCODColor::white);
@@ -178,7 +231,7 @@ void Map::addItem(int x, int y) {
 		scrollOfLightningBolt->pickable = new LightningBolt(5,20);
 		engine.actors.push(scrollOfLightningBolt);
 		engine.sendToBack(scrollOfLightningBolt);
-	} else if(dice < 25+25+25) {
+	} else if(dice < 40+40+40) {
 		//create a scroll of fireball
 		Actor *scrollOfFireball = new Actor(x,y,182,"Firebomb",
 			TCODColor::white);
@@ -187,7 +240,7 @@ void Map::addItem(int x, int y) {
 		scrollOfFireball->pickable = new Fireball(3,12,8);
 		engine.actors.push(scrollOfFireball);
 		engine.sendToBack(scrollOfFireball);
-	} else if(dice < 25+25+25+50) {
+	} else if(dice < 40+40+40+15) {
 		//create a pair of mylar boots
 		Actor *myBoots = new Actor(x,y,'[',"Mylar-Lined Boots",TCODColor::lightPink);
 		myBoots->blocks = false;
@@ -197,7 +250,7 @@ void Map::addItem(int x, int y) {
 		myBoots->sort = 3;
 		engine.actors.push(myBoots);
 		engine.sendToBack(myBoots);
-	} else if(dice < 25+25+25+50+10) {
+	} else if(dice < 40+40+40+15+10) {
 		//create a Modular Laser Rifle (MLR)
 		Actor *MLR = new Actor(x,y,'{',"MLR",TCODColor::darkerOrange);
 		MLR->blocks = false;
@@ -206,7 +259,16 @@ void Map::addItem(int x, int y) {
 		MLR->sort = 4;
 		engine.actors.push(MLR);
 		engine.sendToBack(MLR);
-	} else {
+	}else if(dice < 40+40+40+15+10+5){
+		//create Titanium Micro Chain-mail
+		Actor *chainMail = new Actor(x,y,210,"Titan-mail",TCODColor::lightPink);
+		chainMail->blocks = false;
+		ItemBonus *bonus = new ItemBonus(ItemBonus::DEFENSE,3);
+		chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus);
+		chainMail->sort = 3;
+		engine.actors.push(chainMail);
+		engine.sendToBack(chainMail);
+	}else {
 		//create a scroll of confusion
 		Actor *scrollOfConfusion = new Actor(x,y,181,"Flashbang",
 			TCODColor::white);
@@ -318,7 +380,7 @@ void Map::render() const {
 
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
-			if (isInFov(x,y)) {
+			if (isInFov(x,y)){// || true) {
 				//TCODConsole::root->setCharBackground(x,y,isWall(x,y) ? lightWall : lightGround);
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
 
@@ -471,6 +533,104 @@ void Map::generateRandom(Actor *owner, int ascii){
 					scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
 				}
 		}
+		}else if(ascii == 148){
+			for(int i = 0; i < owner->container->size; i++){
+					int rnd = rng->getInt(0,120);
+					if (rnd < 30) {
+						//create a health potion
+						Actor *healthPotion = new Actor(0,0,184,"Medkit", TCODColor::white);
+						healthPotion->sort = 1;
+						healthPotion->blocks = false;
+						healthPotion->pickable = new Healer(20);
+						engine.actors.push(healthPotion);
+						healthPotion->pickable->pick(healthPotion,owner);
+					} else if(rnd < 10+30) {
+						//create a scroll of lightningbolt
+						Actor *scrollOfLightningBolt = new Actor(0,0,183, "EMP Pulse",
+							TCODColor::white);
+						scrollOfLightningBolt->sort = 2;
+						scrollOfLightningBolt->blocks = false;
+						scrollOfLightningBolt->pickable = new LightningBolt(5,20);
+						engine.actors.push(scrollOfLightningBolt);
+						scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
+					} else if(rnd < 10+30+20) {
+						//create a scroll of fireball
+						Actor *scrollOfFireball = new Actor(0,0,182,"Firebomb",
+							TCODColor::white);
+						scrollOfFireball->sort = 2;
+						scrollOfFireball->blocks = false;
+						scrollOfFireball->pickable = new Fireball(3,12,8);
+						engine.actors.push(scrollOfFireball);
+						scrollOfFireball->pickable->pick(scrollOfFireball,owner);
+					}else if(rnd < 10+30+20+20){
+						//create a pair of mylar boots
+						Actor *myBoots = new Actor(0,0,'[',"Mylar-Lined Boots",TCODColor::lightPink);
+						myBoots->blocks = false;
+						ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
+						myBoots->pickable = new Equipment(0,Equipment::FEET,bonus);
+						myBoots->sort = 3;
+						engine.actors.push(myBoots);
+						myBoots->pickable->pick(myBoots,owner);
+					}else{
+						//create a scroll of confusion
+						Actor *scrollOfConfusion = new Actor(0,0,181,"Flashbang",
+							TCODColor::white);
+						scrollOfConfusion->sort = 2;
+						scrollOfConfusion->blocks = false;
+						scrollOfConfusion->pickable = new Confuser(10,8);
+						engine.actors.push(scrollOfConfusion);
+						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+					}
+				}
+		}else if(ascii == 132){
+			for(int i = 0; i < owner->container->size; i++){
+					int rnd = rng->getInt(0,100);
+					if (rnd < 30) {
+						//create a health potion
+						Actor *healthPotion = new Actor(0,0,184,"Medkit", TCODColor::white);
+						healthPotion->sort = 1;
+						healthPotion->blocks = false;
+						healthPotion->pickable = new Healer(20);
+						engine.actors.push(healthPotion);
+						healthPotion->pickable->pick(healthPotion,owner);
+					} else if(rnd < 10+30) {
+						//create a scroll of lightningbolt
+						Actor *scrollOfLightningBolt = new Actor(0,0,183, "EMP Pulse",
+							TCODColor::white);
+						scrollOfLightningBolt->sort = 2;
+						scrollOfLightningBolt->blocks = false;
+						scrollOfLightningBolt->pickable = new LightningBolt(5,20);
+						engine.actors.push(scrollOfLightningBolt);
+						scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
+					} else if(rnd < 10+30+20) {
+						//create a scroll of fireball
+						Actor *scrollOfFireball = new Actor(0,0,182,"Firebomb",
+							TCODColor::white);
+						scrollOfFireball->sort = 2;
+						scrollOfFireball->blocks = false;
+						scrollOfFireball->pickable = new Fireball(3,12,8);
+						engine.actors.push(scrollOfFireball);
+						scrollOfFireball->pickable->pick(scrollOfFireball,owner);
+					}else if(rnd < 10+30+20+10){
+						//create Titanium Micro Chain-mail
+						Actor *chainMail = new Actor(0,0,210,"Titan-mail",TCODColor::lightPink);
+						chainMail->blocks = false;
+						ItemBonus *bonus = new ItemBonus(ItemBonus::DEFENSE,3);
+						chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus);
+						chainMail->sort = 3;
+						engine.actors.push(chainMail);
+						chainMail->pickable->pick(chainMail,owner);
+					}else{
+						//create a scroll of confusion
+						Actor *scrollOfConfusion = new Actor(0,0,181,"Flashbang",
+							TCODColor::white);
+						scrollOfConfusion->sort = 2;
+						scrollOfConfusion->blocks = false;
+						scrollOfConfusion->pickable = new Confuser(10,8);
+						engine.actors.push(scrollOfConfusion);
+						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+					}
+			}
 		}
 	}
 }

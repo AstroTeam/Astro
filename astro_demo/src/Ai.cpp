@@ -347,7 +347,11 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type) {
 		it != owner->container->inventory.end(); it++) {
 		Actor *actor = *it;
 		if(actor->sort == type){
-			con.print(2,y,"(%c) %s",shortcut,actor->name);
+			if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
+				con.print(2,y,"(%c) %s(E)",shortcut,actor->name);
+			}else{
+				con.print(2,y,"(%c) %s",shortcut,actor->name);
+			}
 			owner->container->select[shortcut] = actor->name;
 			if (actor->pickable->stacks) {
 				con.print(17, y, "(%d)",actor->pickable->stackSize);
