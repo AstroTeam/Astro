@@ -25,6 +25,9 @@ void Actor::save(TCODZip &zip) {
 	zip.putInt(oozing);
 	zip.putInt(susceptible);
 	zip.putInt(sort);
+	zip.putInt(race);
+	zip.putInt(role);
+	zip.putInt(job);
 	zip.putInt(attacker != NULL);
 	zip.putInt(destructible != NULL);
 	zip.putInt(ai != NULL);
@@ -48,6 +51,9 @@ void Actor::load(TCODZip &zip) {
 	oozing = zip.getInt();
 	susceptible = zip.getInt();
 	sort = zip.getInt();
+	race = zip.getInt(race);
+	role = zip.getInt(role);
+	job = zip.getInt(job);
 	bool hasAttacker = zip.getInt();
 	bool hasDestructible = zip.getInt();
 	bool hasAi = zip.getInt();
