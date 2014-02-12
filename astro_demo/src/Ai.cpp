@@ -436,7 +436,7 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 			owner->y += stepdy;
 		}
 		if (owner->oozing) {
-			owner->enviroment->infectFloor(owner->x, owner->y);
+			engine.map->infectFloor(owner->x, owner->y);
 		}
 	} else if (owner->attacker) {
 		owner->attacker->attack(owner,engine.player);
@@ -459,12 +459,12 @@ void EpicenterAi::update(Actor *owner) {
 }
 
 void EpicenterAi::infectLevel(Actor *owner) {
-	int width = owner->enviroment->width;
-	int height = owner->enviroment->height;
+	int width = engine.map->width;
+	int height = engine.map->height;
 	TCODRandom *rng = TCODRandom::getInstance();
 
 	for (int i = 0; i < width*height; i++) {
-		owner->enviroment->tiles[i].infection += 1 / (rng->getDouble(.01,1.0)*owner->getDistance(i/width, i%width));
+		engine.map->tiles[i].infection += 1 / (rng->getDouble(.01,1.0)*owner->getDistance(i/width, i%width));
 	}
 	engine.gui->message(TCODColor::green,"You feel uneasy as the infection seems to spread.");
 }

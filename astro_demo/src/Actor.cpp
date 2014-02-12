@@ -4,7 +4,7 @@
 
 Actor::Actor(int x, int y, int ch, const char *name, const TCODColor &col):
 	x(x),y(y),ch(ch),col(col),name(name),  blocks(true), oozing(false), susceptible(false), sort(0), attacker(NULL),destructible(NULL),ai(NULL),
-	pickable(NULL), container(NULL), enviroment(NULL) {
+	pickable(NULL), container(NULL) {
 }
 
 Actor::~Actor() {
