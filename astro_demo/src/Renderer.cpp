@@ -19,7 +19,28 @@ void Renderer::render(void *sdlSurface){
 	//flashbang
 	SDL_Surface *flashGlow = SDL_LoadBMP("tile_assets/flashbang_alpha_glow_50.bmp");
 	static int alpha = 255*.5;
+	static int alphaStars = 255;
 	static bool Down = true;
+	static bool StarsDown = true;
+	if (alphaStars > 0 && StarsDown)
+	{
+		alphaStars -= 1;
+		if (alphaStars < 0)
+			alphaStars = 0;
+	}
+	else if (alphaStars == 0 && StarsDown)
+	{
+		StarsDown = false;
+	}
+	else if (alphaStars < 255)
+	{
+		alphaStars += 1;
+	}
+	else if (alphaStars >= 255)
+	{
+		StarsDown = true;
+	}
+	
 	if (alpha > 0 && Down)
 	{
 		alpha = alpha-5;
@@ -71,7 +92,15 @@ void Renderer::render(void *sdlSurface){
 	//background
 	//SDL_Surface *map = SDL_LoadBMP("starmap.bmp");
 	
-	SDL_Surface *floorMap = SDL_LoadBMP("starmap2.bmp");
+	SDL_Surface *floorMap = SDL_LoadBMP("starmap2_blank.bmp");
+	SDL_Surface *floorMapStars = SDL_LoadBMP("starmap2.bmp");
+	SDL_Surface *floorMapStarsAlt = SDL_LoadBMP("starmap2_alt.bmp");
+	SDL_SetAlpha( floorMapStars, SDL_SRCALPHA, alphaStars);
+	SDL_SetAlpha( floorMapStarsAlt, SDL_SRCALPHA, 255-alphaStars);
+	SDL_BlitSurface(floorMapStars,NULL,floorMap,NULL);
+	SDL_BlitSurface(floorMapStarsAlt,NULL,floorMap,NULL);
+	
+	
 	SDL_Surface *pink = SDL_LoadBMP("tile_assets/pink.bmp");
 	
 	
@@ -270,6 +299,8 @@ void Renderer::render(void *sdlSurface){
 	//SDL_Flip(floorMap);
 
 	SDL_FreeSurface(floorMap);
+	SDL_FreeSurface(floorMapStars);
+	SDL_FreeSurface(floorMapStarsAlt);
 	SDL_FreeSurface(floor);
 	SDL_FreeSurface(darkFloor);
 	SDL_FreeSurface(flashGlow);
