@@ -18,14 +18,36 @@ void Renderer::render(void *sdlSurface){
 	SDL_Surface *darkFloor = SDL_LoadBMP("tile_assets/floorTileDark.bmp");
 	//flashbang
 	SDL_Surface *flashGlow = SDL_LoadBMP("tile_assets/flashbang_alpha_glow_50.bmp");
-	SDL_SetAlpha( flashGlow, SDL_SRCALPHA, 255*.5);
+	static int alpha = 255*.5;
+	static bool Down = true;
+	if (alpha > 0 && Down)
+	{
+		alpha = alpha-5;
+		if (alpha < 0)
+			alpha = 0;
+	}
+	else if (alpha == 0 && Down)
+	{
+		Down = false;
+	}
+	else if (alpha < 255*.5 )
+	{
+		alpha = alpha+10;
+	}
+	else if (alpha > 255*.5)
+	{
+		Down = true;
+	}
+	//engine.gui->message(TCODColor::red, "alpha is  %d",alpha);
+	//SDL_SetAlpha( flashGlow, SDL_SRCALPHA, alpha);
+	SDL_SetAlpha( flashGlow, SDL_SRCALPHA, alpha);
 	SDL_SetColorKey(flashGlow,SDL_SRCCOLORKEY,255);
 	SDL_Surface *flashShadow = SDL_LoadBMP("tile_assets/flashbang_alpha_shadow_25.bmp");
 	SDL_SetAlpha( flashShadow, SDL_SRCALPHA, 255*.25);
 	SDL_SetColorKey(flashShadow,SDL_SRCCOLORKEY,255);
 	//firebomb
 	SDL_Surface *fireGlow = SDL_LoadBMP("tile_assets/firebomb_alpha_glow_50.bmp");
-	SDL_SetAlpha( fireGlow, SDL_SRCALPHA, 255*.25);
+	SDL_SetAlpha( fireGlow, SDL_SRCALPHA, alpha);
 	SDL_SetColorKey(fireGlow,SDL_SRCCOLORKEY,255);
 	//EMP glow
 	SDL_Surface *EMPGlow = SDL_LoadBMP("tile_assets/EMP_alpha_glow_33.bmp");
@@ -262,25 +284,4 @@ void Renderer::render(void *sdlSurface){
 	
 }
 	
-	/*static int alpha = 255*.5;
-	static bool Down = true;
-	if (alpha > 0 && Down)
-	{
-		alpha = alpha-10;
-		if (alpha < 0)
-			alpha = 0;
-	}
-	else if (alpha == 0 && Down)
-	{
-		Down = false;
-	}
-	else if (alpha < 255*.5 )
-	{
-		alpha = alpha+10;
-	}
-	else if (alpha > 255*.5)
-	{
-		Down = true;
-	}
-	engine.gui->message(TCODColor::red, "alpha is  %d",alpha);*/
-	//SDL_SetAlpha( flashGlow, SDL_SRCALPHA, alpha);
+	
