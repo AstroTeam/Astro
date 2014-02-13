@@ -99,7 +99,8 @@ void Renderer::render(void *sdlSurface){
 	SDL_SetAlpha( floorMapStarsAlt, SDL_SRCALPHA, 255-alphaStars);
 	SDL_BlitSurface(floorMapStars,NULL,floorMap,NULL);
 	SDL_BlitSurface(floorMapStarsAlt,NULL,floorMap,NULL);
-	
+	SDL_Surface *terminal = SDL_LoadBMP("tile_assets/terminal.bmp");
+	SDL_SetColorKey(terminal,SDL_SRCCOLORKEY,255);
 	
 	SDL_Surface *pink = SDL_LoadBMP("tile_assets/pink.bmp");
 	
@@ -133,7 +134,7 @@ void Renderer::render(void *sdlSurface){
 			{
 				plyx = x;
 				plyy = y;
-				if (engine.mapcon->getChar(xM,yM) != 163){
+				if (engine.mapcon->getChar(xM,yM) != 163){//|| engine.gameStatus != engine.MAIN_MENU){
 					TCODConsole::root->clear();	
 				}
 				
@@ -162,6 +163,26 @@ void Renderer::render(void *sdlSurface){
 			if(engine.mapconCpy->getChar(xM,yM) == 28){
 				SDL_BlitSurface(infectedFloorDark,NULL,floorMap,&dstRect);
 			}
+			
+			//check for doubles
+			
+			for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+				Actor *actor = *it;
+				if (actor->x == xM && actor->y == yM && actor->destructible && actor->destructible->isDead()) {
+					//doubles += 1;
+					SDL_Rect srcRect={10*16,3*16,16,16};
+					SDL_Rect dstRect={x*16,y*16,16,16};
+					//10 width 3 height for standard bodies
+					//if they are spore bodies
+					if (actor->ch == 162){
+						srcRect.y = 2*16;
+					}
+					
+					SDL_BlitSurface(terminal,&srcRect,floorMap,&dstRect);
+				}
+			}
+			
+			
 			
 			//shadows, always after tiles
 			//flashbang shadow and glow
@@ -310,6 +331,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(mylarBoots);
 	SDL_FreeSurface(titanMail);
 	SDL_FreeSurface(pink);
+	SDL_FreeSurface(terminal);
 	//SDL_FreeSurface(titleScreen);
 	//SDL_FreeSurface(humanShadow);
 	
