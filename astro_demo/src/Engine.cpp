@@ -663,7 +663,7 @@ if(cat == 1){
 								choice = false;
 							else{
 								engine.gui->statPoints = engine.gui->statPoints - 1;
-								engine.gui->conValue += 10;
+								engine.gui->conValue += 20;
 							}
 							break;
 						case Menu::STRENGTH :
