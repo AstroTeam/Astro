@@ -86,8 +86,13 @@ void Renderer::render(void *sdlSurface){
 	//Mylar Boots
 	SDL_Surface *mylarBoots = SDL_LoadBMP("tile_assets/Mylar_Boots.bmp");
 	SDL_SetColorKey(mylarBoots,SDL_SRCCOLORKEY,255);
+	//Titan-mail
 	SDL_Surface *titanMail = SDL_LoadBMP("tile_assets/Titanium_nanoChainmail.bmp");
 	SDL_SetColorKey(titanMail,SDL_SRCCOLORKEY,255);
+	//MLR
+	SDL_Surface *MLR = SDL_LoadBMP("tile_assets/MLR.bmp");
+	SDL_SetColorKey(MLR,SDL_SRCCOLORKEY,255);
+	
 	//SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
 	//background
 	//SDL_Surface *map = SDL_LoadBMP("starmap.bmp");
@@ -298,6 +303,11 @@ void Renderer::render(void *sdlSurface){
 					SDL_BlitSurface(titanMail,NULL,floorMap,&dstRectEquip);
 				}
 				
+				if (strcmp(a->name, "MLR") == 0)
+				{
+					SDL_BlitSurface(MLR,NULL,floorMap,&dstRectEquip);
+				}
+				
 			}
 		}
 	}
@@ -332,6 +342,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(titanMail);
 	SDL_FreeSurface(pink);
 	SDL_FreeSurface(terminal);
+	SDL_FreeSurface(MLR);
 	//SDL_FreeSurface(titleScreen);
 	//SDL_FreeSurface(humanShadow);
 	

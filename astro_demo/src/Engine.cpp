@@ -487,7 +487,10 @@ void Engine::win() {
 	gameStatus=Engine::VICTORY;
 }
 void Engine::classMenu(){
-	engine.term();
+	engine.gui->statPoints = 5;
+	engine.gui->conValue = 100;
+	engine.gui->strValue = 5;
+	engine.gui->agValue = 2;
 	engine.gui->menu.clear();
 	engine.gui->menu.addItem(Menu::RACE, "RACE");
 	engine.gui->menu.addItem(Menu::CLASS, "CLASS");
@@ -496,6 +499,8 @@ void Engine::classMenu(){
 	engine.gui->menu.addItem(Menu::EXIT, "DONE");
 	bool choice = true;
 			while(choice){
+			engine.gui->classSidebar();
+			
 			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::CLASS_MENU);
 			//Menu::MenuItemCode selection;
 				switch (menuItem) {
@@ -525,6 +530,7 @@ void Engine::classSelectMenu(int cat){
 if(cat == 1){
 	engine.gui->classMenu.clear();
 	engine.gui->classMenu.addItem(Menu::HUMAN, "HUMAN");
+	engine.gui->classMenu.addItem(Menu::ROBOT, "ROBOT");
 	engine.gui->classMenu.addItem(Menu::ALIEN, "ALIEN");
 	bool choice = true;
 	while(choice){
@@ -532,9 +538,15 @@ if(cat == 1){
 				
 					switch (menuItem) {
 						case Menu::HUMAN :
+							engine.gui->raceSelection = 1;
+							choice = false;
+							break;
+						case Menu::ROBOT :
+							engine.gui->raceSelection = 2;
 							choice = false;
 							break;
 						case Menu::ALIEN :
+							engine.gui->raceSelection = 3;
 							choice = false;
 							break;
 						case Menu::NO_CHOICE:
@@ -547,12 +559,23 @@ if(cat == 1){
 }else if(cat == 2){
 	engine.gui->classMenu.clear();
 	engine.gui->classMenu.addItem(Menu::MARINE, "MARINE");
+	engine.gui->classMenu.addItem(Menu::EXPLORER, "EXPLORER");
+	engine.gui->classMenu.addItem(Menu::MERCENARY, "MERCENARY");
 	bool choice = true;
 	while(choice){
 				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
 				
 					switch (menuItem) {
 						case Menu::MARINE :
+							engine.gui->roleSelection = 1;
+							choice = false;
+							break;
+						case Menu::EXPLORER :
+							engine.gui->roleSelection = 2;
+							choice = false;
+							break;
+						case Menu::MERCENARY :
+							engine.gui->roleSelection = 3;
 							choice = false;
 							break;
 						case Menu::NO_CHOICE:
@@ -563,13 +586,63 @@ if(cat == 1){
 	}
 }else if(cat == 3){
 	engine.gui->classMenu.clear();
-	engine.gui->classMenu.addItem(Menu::GUN_FONDLER, "GUN FONDLER");
+	if(engine.gui->roleSelection == 1){
+		engine.gui->classMenu.addItem(Menu::INFANTRY, "INFANTRY");
+		engine.gui->classMenu.addItem(Menu::MEDIC, "MEDIC");
+		engine.gui->classMenu.addItem(Menu::QUARTERMASTER, "QUARTERMASTER");
+	}else if(engine.gui->roleSelection == 2){
+		engine.gui->classMenu.addItem(Menu::SURVIVALIST, "SURVIVALIST");
+		engine.gui->classMenu.addItem(Menu::PIRATE, "PIRATE");
+		engine.gui->classMenu.addItem(Menu::MERCHANT, "MERCHANT");
+	}else if(engine.gui->roleSelection == 3){
+		engine.gui->classMenu.addItem(Menu::ASSASSIN, "ASSASSIN");
+		engine.gui->classMenu.addItem(Menu::BRUTE, "BRUTE");
+		engine.gui->classMenu.addItem(Menu::HACKER, "HACKER");
+	}else{
+		engine.gui->classMenu.addItem(Menu::EXIT,"CHOOSE A CLASS");
+	}
 	bool choice = true;
 	while(choice){
 				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
 				
 					switch (menuItem) {
-						case Menu::GUN_FONDLER :
+						case Menu::INFANTRY :
+							engine.gui->jobSelection = 1;
+							choice = false;
+							break;
+						case Menu::MEDIC :
+							engine.gui->jobSelection = 2;
+							choice = false;
+							break;
+						case Menu::QUARTERMASTER :
+							engine.gui->jobSelection = 3;
+							choice = false;
+							break;
+						case Menu::SURVIVALIST :
+							engine.gui->jobSelection = 4;
+							choice = false;
+							break;
+						case Menu::PIRATE :
+							engine.gui->jobSelection = 5;
+							choice = false;
+							break;
+						case Menu::MERCHANT :
+							engine.gui->jobSelection = 6;
+							choice = false;
+							break;
+						case Menu::ASSASSIN :
+							engine.gui->jobSelection = 7;
+							choice = false;
+							break;
+						case Menu::BRUTE :
+							engine.gui->jobSelection = 8;
+							choice = false;
+							break;
+						case Menu::HACKER :
+							engine.gui->jobSelection = 9;
+							choice = false;
+							break;
+						case Menu::EXIT :
 							choice = false;
 							break;
 						case Menu::NO_CHOICE:
@@ -583,6 +656,7 @@ if(cat == 1){
 	engine.gui->classMenu.addItem(Menu::CONSTITUTION, "CONSTITUTION");
 	engine.gui->classMenu.addItem(Menu::STRENGTH, "STRENGTH");
 	engine.gui->classMenu.addItem(Menu::AGILITY, "AGILITY");
+	engine.gui->classMenu.addItem(Menu::RESET,"RESET SELECTIONS");
 	engine.gui->classMenu.addItem(Menu::EXIT, "DONE");
 	bool choice = true;
 	while(choice){
@@ -590,16 +664,41 @@ if(cat == 1){
 				
 					switch (menuItem) {
 						case Menu::CONSTITUTION :
-							
+							if(engine.gui->statPoints == 0)
+								choice = false;
+							else{
+								engine.gui->statPoints = engine.gui->statPoints - 1;
+								engine.gui->conValue += 20;
+								engine.gui->classSidebar();
+							}
 							break;
 						case Menu::STRENGTH :
-							
+							if(engine.gui->statPoints == 0)
+								choice = false;
+							else{
+								engine.gui->statPoints = engine.gui->statPoints - 1;
+								engine.gui->strValue += 1;
+								engine.gui->classSidebar();
+							}
 							break;
 						case Menu::AGILITY :
-							
+							if(engine.gui->statPoints == 0)
+								choice = false;
+							else{
+								engine.gui->statPoints = engine.gui->statPoints - 1;
+								engine.gui->agValue += 1;
+								engine.gui->classSidebar();
+							}
 							break;
 						case Menu::EXIT :
 							choice = false;
+							break;
+						case Menu::RESET:
+							engine.gui->statPoints = 5;
+							engine.gui->conValue = 100;
+							engine.gui->strValue = 5;
+							engine.gui->agValue = 2;
+							engine.gui->classSidebar();
 							break;
 						case Menu::NO_CHOICE:
 							choice = false;

@@ -53,18 +53,23 @@ void Map::init(bool withActors) {
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
 
-	//give this level an epicenter of the infection
-	int epiLocation = rng->getInt(0, width*height);
-	Actor *epicenter = new Actor(epiLocation/width, epiLocation%width, 3, "Infection Epicenter", TCODColor::green);
-	epicenter->ai= new EpicenterAi();
-	engine.actors.push(epicenter);
-	
-		
-	//intial infection, concentrated at the epicenter
-	for (int i = 0; i < width*height; i++) {
-		tiles[i].infection = 1 / ((rng->getDouble(.01,1.0))*epicenter->getDistance(i/width, i%width));
-	}
 
+		//give this level an epicenter of the infection
+		int epiLocation = rng->getInt(0, width*height);
+		Actor *epicenter = new Actor(epiLocation/width, epiLocation%width, 3, "Infection Epicenter", TCODColor::green);
+		epicenter->ai= new EpicenterAi();
+	if (withActors) {	
+		engine.actors.push(epicenter);
+	}	
+		//intial infection, concentrated at the epicenter
+		for (int i = 0; i < width*height; i++) {
+			tiles[i].infection = 1 / ((rng->getDouble(.01,1.0))*epicenter->getDistance(i/width, i%width));
+		}
+	
+	if(!withActors) {
+		delete epicenter;
+	}
+	
 	TCODBsp bsp(0,0,width,height);
 	bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
 	BspListener listener(*this);

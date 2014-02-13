@@ -427,7 +427,11 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 				} else {
 					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
 				}
-				TCODConsole::root->print(menu2x - 4,12+currentItem*3-4,(*it)->label);
+				if(strcmp((*it)->label,"CONSTITUTION") == 0){
+					TCODConsole::root->print(menu2x - 7,12+currentItem*3-4,(*it)->label);
+				}else{
+					TCODConsole::root->print(menu2x - 6,12+currentItem*3-4,(*it)->label);
+				}
 				currentItem++;
 			}
 			TCODConsole::flush();
@@ -489,4 +493,83 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		}
 	}
 	return NONE;
+}
+void Gui::classSidebar(){
+			//Create Character Race/Class information sidebar
+			TCODConsole classBar(20,engine.screenHeight);
+			classBar.setDefaultBackground(TCODColor::black);
+			classBar.clear();
+			classBar.setDefaultForeground(TCODColor(200,180,50));
+			classBar.printFrame(0,0,20,
+			engine.screenHeight,true,TCOD_BKGND_ALPHA(50),"CHARACTER INFO");
+			//renderBar(1,3,20, "HP", engine.player->destructible->hp,
+			//engine.player->destructible->maxHp, TCODColor::lightRed, 
+			//TCODColor::darkerRed);
+			
+			//Display Race/Class Info
+			//classBar.setDefaultForeground(TCODColor::white);
+			classBar.print(1,5,"RACE: ");
+			switch(raceSelection){
+				case 1:
+					classBar.print(7,5,"HUMAN");
+				break;
+				case 2:
+					classBar.print(7,5,"ROBOT");
+				break;
+				case 3:
+					classBar.print(7,5,"ALIEN");
+				break;
+				default: break;
+			}
+			classBar.print(1,7,"CLASS: ");
+			switch(roleSelection){
+				case 1:
+					classBar.print(8,7,"MARINE");
+				break;
+				case 2:
+					classBar.print(8,7,"EXPLORER");
+				break;
+				case 3:
+					classBar.print(8,7,"MERCENARY");
+				break;
+				default: break;
+			}
+			classBar.print(6,9,"SUBCLASS: ");
+			switch(jobSelection){
+				case 1:
+					classBar.print(6,11,"INFANTRY");
+				break;
+				case 2:
+					classBar.print(6,11,"MEDIC");
+				break;
+				case 3:
+					classBar.print(3,11,"QUARTERMASTER");
+				break;
+				case 4:
+					classBar.print(3,11,"SURVIVALIST");
+				break;
+				case 5:
+					classBar.print(6,11,"PIRATE");
+				break;
+				case 6:
+					classBar.print(6,11,"MERCHANT");
+				break;
+				case 7:
+					classBar.print(6,11,"ASSASSIN");
+				break;
+				case 8:
+					classBar.print(6,11,"BRUTE");
+				break;
+				case 9:
+					classBar.print(6,11,"HACKER");
+				break;
+				default: break;
+			}
+			classBar.print(7,15,"STATS");
+			classBar.print(1,17,"AVAIL. POINTS: %d",statPoints);
+			classBar.print(1,19,"CONSTITUTION: %d",conValue);
+			classBar.print(1,21,"STRENGTH: %d",strValue);
+			classBar.print(1,23,"AGILITY: %d",agValue);
+			
+			TCODConsole::blit(&classBar, 0, 0, 20, engine.screenHeight, TCODConsole::root, 0, 0);
 }
