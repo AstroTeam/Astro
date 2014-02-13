@@ -541,6 +541,10 @@ if(cat == 1){
 							engine.gui->raceSelection = 1;
 							choice = false;
 							break;
+						case Menu::ROBOT :
+							engine.gui->raceSelection = 2;
+							choice = false;
+							break;
 						case Menu::ALIEN :
 							engine.gui->raceSelection = 3;
 							choice = false;
@@ -664,6 +668,7 @@ if(cat == 1){
 							else{
 								engine.gui->statPoints = engine.gui->statPoints - 1;
 								engine.gui->conValue += 20;
+								engine.gui->classSidebar();
 							}
 							break;
 						case Menu::STRENGTH :
@@ -672,6 +677,7 @@ if(cat == 1){
 							else{
 								engine.gui->statPoints = engine.gui->statPoints - 1;
 								engine.gui->strValue += 1;
+								engine.gui->classSidebar();
 							}
 							break;
 						case Menu::AGILITY :
@@ -680,6 +686,7 @@ if(cat == 1){
 							else{
 								engine.gui->statPoints = engine.gui->statPoints - 1;
 								engine.gui->agValue += 1;
+								engine.gui->classSidebar();
 							}
 							break;
 						case Menu::EXIT :
