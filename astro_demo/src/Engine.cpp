@@ -656,6 +656,7 @@ if(cat == 1){
 	engine.gui->classMenu.addItem(Menu::CONSTITUTION, "CONSTITUTION");
 	engine.gui->classMenu.addItem(Menu::STRENGTH, "STRENGTH");
 	engine.gui->classMenu.addItem(Menu::AGILITY, "AGILITY");
+	engine.gui->classMenu.addItem(Menu::RESET,"RESET SELECTIONS");
 	engine.gui->classMenu.addItem(Menu::EXIT, "DONE");
 	bool choice = true;
 	while(choice){
@@ -691,6 +692,13 @@ if(cat == 1){
 							break;
 						case Menu::EXIT :
 							choice = false;
+							break;
+						case Menu::RESET:
+							engine.gui->statPoints = 5;
+							engine.gui->conValue = 100;
+							engine.gui->strValue = 5;
+							engine.gui->agValue = 2;
+							engine.gui->classSidebar();
 							break;
 						case Menu::NO_CHOICE:
 							choice = false;

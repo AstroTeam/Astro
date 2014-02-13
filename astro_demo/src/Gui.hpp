@@ -33,7 +33,8 @@ public:
 	MERCHANT,
 	ASSASSIN,
 	BRUTE,
-	HACKER
+	HACKER,
+	RESET
 	};
 	enum DisplayMode {
 		MAIN,
@@ -90,6 +91,11 @@ public:
 	int conValue;
 	int strValue;
 	int agValue;
+	//Values that save the last selection made in Race/Class Menus
+	/*int raceChosen;
+	int classChosen;
+	int subClassChosen;
+	int statChosen;*/
 
 	Gui();
 	~Gui();
