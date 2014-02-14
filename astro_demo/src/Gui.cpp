@@ -90,7 +90,6 @@ void Gui::render() {
 	//dungeon level
 	//sidebar->setDefaultForeground(TCODColor::white);
 	sidebar->print(3,7,"Dungeon level %d", engine.level);
-	//con->print(3,9,"FPS : %d",TCODSystem::getFps());
 	sidebar->print(3,13,"Turn count: %d",engine.turnCount);
 	sidebar->print(3,15,"Kill Count: %d",engine.killCount);
 	
@@ -115,7 +114,11 @@ void Gui::render() {
 	//display an ability cooldown bar
 	sidebar->print(1,21,"Ability Cooldown: ");
 	renderBar(1,23, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
+
 	
+	//display FPS
+	sidebar->print(3,25,"FPS : %d",TCODSystem::getFps());
+
 
 	//mouse look
 	//renderMouseLook();
