@@ -44,6 +44,7 @@ void Engine::term() {
 }
 
 void Engine::init() {
+	engine.killCount = 0;
 	player = new Actor(40,25,'@', "player",TCODColor::white);
 	player->destructible = new PlayerDestructible(100, 2, "your cadaver");
 	player->attacker = new Attacker(5);
@@ -54,7 +55,7 @@ void Engine::init() {
 	stairs->blocks = false;
 	actors.push(stairs);
 	map = new Map(mapWidth, mapHeight);
-	map->init(true);
+	map->init(true, Param::GENERIC);
 	gui->message(TCODColor::red, 
 
     	"Welcome to Astroverius Station! Warning unknown alien life form detected!");
@@ -68,6 +69,7 @@ void Engine::save() {
 		TCODZip zip;
 		zip.putInt(level);
 		zip.putInt(turnCount);
+		zip.putInt(killCount);
 		//save the map first
 		zip.putInt(map->width);
 		zip.putInt(map->height);
@@ -139,6 +141,7 @@ void Engine::load(bool pause) {
 		zip.loadFromFile("game.sav");
 		level = zip.getInt();
 		turnCount = zip.getInt();
+		killCount = zip.getInt();
 		//load the map
 		int width = zip.getInt();
 		int height = zip.getInt();
@@ -323,7 +326,7 @@ void Engine::nextLevel() {
 	}
 	//create a new map
 	map = new Map(mapWidth,mapHeight);
-	map->init(true);
+	map->init(true, Param::GENERIC);
 	gameStatus = STARTUP;
 	save();
 }

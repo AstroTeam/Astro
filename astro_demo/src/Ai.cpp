@@ -119,9 +119,10 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 	for (Actor **iterator = engine.actors.begin();
 		iterator != engine.actors.end(); iterator++) {
 		Actor *actor = *iterator;
-		if (actor->destructible && !actor->destructible->isDead()
-			&& actor->x == targetx &&actor->y == targety) {
-			owner->attacker->attack(owner, actor);
+		if (actor->blocks && actor->x == targetx &&actor->y == targety) {
+			if (actor->destructible && !actor->destructible->isDead()) {
+				owner->attacker->attack(owner, actor);
+			}
 			return false;
 		}
 	}
@@ -462,7 +463,7 @@ void EpicenterAi::infectLevel(Actor *owner) {
 	TCODRandom *rng = TCODRandom::getInstance();
 
 	for (int i = 0; i < width*height; i++) {
-		engine.map->tiles[i].infection += 1 / (rng->getDouble(.01,1.0)*owner->getDistance(i/width, i%width));
+		engine.map->tiles[i].infection += 1 / (rng->getDouble(.01,1.0)*owner->getDistance(i%width, i/width));
 	}
 	engine.gui->message(TCODColor::green,"You feel uneasy as the infection seems to spread.");
 }
