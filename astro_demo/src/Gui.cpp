@@ -92,16 +92,17 @@ void Gui::render() {
 	sidebar->print(3,7,"Dungeon level %d", engine.level);
 	//con->print(3,9,"FPS : %d",TCODSystem::getFps());
 	sidebar->print(3,13,"Turn count: %d",engine.turnCount);
+	sidebar->print(3,15,"Kill Count: %d",engine.killCount);
 	
 	//display the armor slots
-	sidebar->print(9,15,"Armor");
-	if (engine.player->container->head)sidebar->print(2,17,"He",engine.player->container->head);
-	if (engine.player->container->chest)sidebar->print(5,17,"C",engine.player->container->chest);
-	if (engine.player->container->legs)sidebar->print(7,17,"L",engine.player->container->legs);
-	if (engine.player->container->feet)sidebar->print(9,17,"F",engine.player->container->feet);
-	if (engine.player->container->hand1)sidebar->print(12,17,"H1",engine.player->container->hand1);
-	if (engine.player->container->hand2)sidebar->print(16,17,"H2",engine.player->container->hand2);
-	if (engine.player->container->ranged)sidebar->print(19,17,"R",engine.player->container->ranged);
+	sidebar->print(9,17,"Armor");
+	if (engine.player->container->head)sidebar->print(2,19,"He",engine.player->container->head);
+	if (engine.player->container->chest)sidebar->print(5,19,"C",engine.player->container->chest);
+	if (engine.player->container->legs)sidebar->print(7,19,"L",engine.player->container->legs);
+	if (engine.player->container->feet)sidebar->print(9,19,"F",engine.player->container->feet);
+	if (engine.player->container->hand1)sidebar->print(12,19,"H1",engine.player->container->hand1);
+	if (engine.player->container->hand2)sidebar->print(16,19,"H2",engine.player->container->hand2);
+	if (engine.player->container->ranged)sidebar->print(19,19,"R",engine.player->container->ranged);
 	
 	//display player xp bar
 	PlayerAi *ai = (PlayerAi *)engine.player->ai;
