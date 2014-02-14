@@ -152,6 +152,21 @@ void Renderer::render(void *sdlSurface){
 				//SDL_FillRect(floorMap, &dstRect, 258);
 				SDL_BlitSurface(floor,NULL,floorMap,&dstRect);
 				//SDL_UpdateRect(floorMap, x*16, y*16, 16, 16);
+				for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+					Actor *actor = *it;
+					if (actor->x == xM && actor->y == yM && actor->destructible && actor->destructible->isDead()) {
+						//doubles += 1;
+						SDL_Rect srcRect={10*16,3*16,16,16};
+						SDL_Rect dstRect={x*16,y*16,16,16};
+						//10 width 3 height for standard bodies
+						//if they are spore bodies
+						if (actor->ch == 162){
+							srcRect.y = 2*16;
+						}
+						
+						SDL_BlitSurface(terminal,&srcRect,floorMap,&dstRect);
+					}
+				}
 			}
 			//replace 'up arrow thing' with darker floor tiles
 			if(engine.mapconCpy->getChar(xM,yM) == 30)
@@ -171,21 +186,7 @@ void Renderer::render(void *sdlSurface){
 			
 			//check for doubles
 			
-			for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
-				Actor *actor = *it;
-				if (actor->x == xM && actor->y == yM && actor->destructible && actor->destructible->isDead()) {
-					//doubles += 1;
-					SDL_Rect srcRect={10*16,3*16,16,16};
-					SDL_Rect dstRect={x*16,y*16,16,16};
-					//10 width 3 height for standard bodies
-					//if they are spore bodies
-					if (actor->ch == 162){
-						srcRect.y = 2*16;
-					}
-					
-					SDL_BlitSurface(terminal,&srcRect,floorMap,&dstRect);
-				}
-			}
+			
 			
 			
 			
