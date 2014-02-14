@@ -46,6 +46,11 @@ void Renderer::render(void *sdlSurface){
 	SDL_Surface *equipment = SDL_LoadBMP("tile_assets/equipment.bmp");
 	SDL_SetColorKey(equipment,SDL_SRCCOLORKEY,255);
 	
+	//DECORATIONS
+	SDL_Surface *decor = SDL_LoadBMP("tile_assets/decorations.bmp");
+	SDL_SetColorKey(decor,SDL_SRCCOLORKEY,255);
+	
+	
 	//SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
 	//background
 	//SDL_Surface *map = SDL_LoadBMP("starmap.bmp");
@@ -186,6 +191,12 @@ void Renderer::render(void *sdlSurface){
 				srcRect.y = 0;
 				SDL_BlitSurface(shadows,&srcRect,floorMap,&dstRect);
 			}
+			/*else if (engine.mapcon->getChar(xM,yM) == 240)
+			{
+				srcRect.x = 16;
+				srcRect.y = 32;
+				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+			}*/
 			
 			//SDL_Delay(100);
 			y++;
@@ -317,6 +328,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(shadows);
 	SDL_FreeSurface(equipment);
 	SDL_FreeSurface(terminal);
+	SDL_FreeSurface(decor);
 	
 }
 	
