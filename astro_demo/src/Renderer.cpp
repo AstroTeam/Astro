@@ -116,7 +116,7 @@ void Renderer::render(void *sdlSurface){
 							//10 width 3 height for standard bodies
 							//if they are spore bodies
 							if (actor->ch == 162){
-								srcRect.y = 2*16;
+								srcRect2.y = 2*16;
 							}
 							
 							SDL_BlitSurface(terminal,&srcRect2,floorMap,&dstRect);
