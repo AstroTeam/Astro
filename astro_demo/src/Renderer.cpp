@@ -97,13 +97,13 @@ void Renderer::render(void *sdlSurface){
 	//background
 	//SDL_Surface *map = SDL_LoadBMP("starmap.bmp");
 	
-	SDL_Surface *floorMap = SDL_LoadBMP("starmap2_blank.bmp");
-	SDL_Surface *floorMapStars = SDL_LoadBMP("starmap2.bmp");
-	SDL_Surface *floorMapStarsAlt = SDL_LoadBMP("starmap2_alt.bmp");
-	SDL_SetAlpha( floorMapStars, SDL_SRCALPHA, alphaStars);
-	SDL_SetAlpha( floorMapStarsAlt, SDL_SRCALPHA, 255-alphaStars);
-	SDL_BlitSurface(floorMapStars,NULL,floorMap,NULL);
-	SDL_BlitSurface(floorMapStarsAlt,NULL,floorMap,NULL);
+	//SDL_Surface *floorMap = SDL_LoadBMP("starmap2_blank.bmp");
+	SDL_Surface *floorMap = SDL_LoadBMP("starmap2.bmp");
+	//SDL_Surface *floorMapStarsAlt = SDL_LoadBMP("starmap2_alt.bmp");
+	//SDL_SetAlpha( floorMapStars, SDL_SRCALPHA, alphaStars);
+	//SDL_SetAlpha( floorMapStarsAlt, SDL_SRCALPHA, 255-alphaStars);
+	//SDL_BlitSurface(floorMapStars,NULL,floorMap,NULL);
+	//SDL_BlitSurface(floorMapStarsAlt,NULL,floorMap,NULL);
 	SDL_Surface *terminal = SDL_LoadBMP("tile_assets/terminal.bmp");
 	SDL_SetColorKey(terminal,SDL_SRCCOLORKEY,255);
 	
@@ -330,8 +330,8 @@ void Renderer::render(void *sdlSurface){
 	//SDL_Flip(floorMap);
 
 	SDL_FreeSurface(floorMap);
-	SDL_FreeSurface(floorMapStars);
-	SDL_FreeSurface(floorMapStarsAlt);
+	//SDL_FreeSurface(floorMapStars);
+	//SDL_FreeSurface(floorMapStarsAlt);
 	SDL_FreeSurface(floor);
 	SDL_FreeSurface(darkFloor);
 	SDL_FreeSurface(flashGlow);
