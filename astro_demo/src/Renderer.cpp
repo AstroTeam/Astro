@@ -47,8 +47,8 @@ void Renderer::render(void *sdlSurface){
 	SDL_SetColorKey(equipment,SDL_SRCCOLORKEY,255);
 	
 	//DECORATIONS
-	SDL_Surface *decor = SDL_LoadBMP("tile_assets/decorations.bmp");
-	SDL_SetColorKey(decor,SDL_SRCCOLORKEY,255);
+	//SDL_Surface *decor = SDL_LoadBMP("tile_assets/decorations.bmp");
+	//SDL_SetColorKey(decor,SDL_SRCCOLORKEY,255);
 	
 	
 	//SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
@@ -328,7 +328,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(shadows);
 	SDL_FreeSurface(equipment);
 	SDL_FreeSurface(terminal);
-	SDL_FreeSurface(decor);
+	//SDL_FreeSurface(decor);
 	
 }
 	
