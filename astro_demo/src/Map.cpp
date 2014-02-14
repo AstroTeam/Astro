@@ -381,11 +381,9 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	//custom room feature
 	if (room->type == OFFICE) {
 		//place a cabient by the wall as a place holder
-		Actor * cabinet = new Actor(x1,y1,180,"A filing cabinet", TCODColor::white);
+		Actor * cabinet = new Actor(x1+1,y1+1,180,"A filing cabinet", TCODColor::white);
 		engine.actors.push(cabinet);
 
-		cabinet = new Actor(x1+1,y1,180,"A filing cabinet", TCODColor::white);
-		engine.actors.push(cabinet);
 
 	}
 
