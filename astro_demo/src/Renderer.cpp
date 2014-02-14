@@ -32,34 +32,19 @@ void Renderer::render(void *sdlSurface){
 	{
 		Down = true;
 	}
+	//glows
 	SDL_Surface *itemsGlow = SDL_LoadBMP("tile_assets/alphaGlow.bmp");
 	SDL_SetAlpha( itemsGlow, SDL_SRCALPHA, alpha);
 	SDL_SetColorKey(itemsGlow,SDL_SRCCOLORKEY,255);
-	
+	//shadows
 	SDL_Surface *shadows = SDL_LoadBMP("tile_assets/itemShadows.bmp");
 	SDL_SetAlpha(shadows, SDL_SRCALPHA, 255*.25);
 	SDL_SetColorKey(shadows,SDL_SRCCOLORKEY,255);
 	
-	//SDL_Surface *flashShadow = SDL_LoadBMP("tile_assets/flashbang_alpha_shadow_25.bmp");
-	//SDL_SetAlpha( flashShadow, SDL_SRCALPHA, 255*.25);
-	//SDL_SetColorKey(flashShadow,SDL_SRCCOLORKEY,255);
-	//SDL_Surface *medShadow = SDL_LoadBMP("tile_assets/medkit_alpha_shadow_25.bmp");
-	//SDL_SetAlpha( medShadow, SDL_SRCALPHA, 255*.25);
-	//SDL_SetColorKey(medShadow,SDL_SRCCOLORKEY,255);
-	//human Shadow
-	//SDL_Surface *humanShadow = SDL_LoadBMP("tile_assets/human_alpha_shadow_25.bmp");
-	//SDL_SetAlpha( humanShadow, SDL_SRCALPHA, 255*.25);
-	//SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
+
 	//EQUIPMENT
-	//Mylar Boots
-	SDL_Surface *mylarBoots = SDL_LoadBMP("tile_assets/Mylar_Boots.bmp");
-	SDL_SetColorKey(mylarBoots,SDL_SRCCOLORKEY,255);
-	//Titan-mail
-	SDL_Surface *titanMail = SDL_LoadBMP("tile_assets/Titanium_nanoChainmail.bmp");
-	SDL_SetColorKey(titanMail,SDL_SRCCOLORKEY,255);
-	//MLR
-	SDL_Surface *MLR = SDL_LoadBMP("tile_assets/MLR.bmp");
-	SDL_SetColorKey(MLR,SDL_SRCCOLORKEY,255);
+	SDL_Surface *equipment = SDL_LoadBMP("tile_assets/equipment.bmp");
+	SDL_SetColorKey(equipment,SDL_SRCCOLORKEY,255);
 	
 	//SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
 	//background
@@ -67,16 +52,9 @@ void Renderer::render(void *sdlSurface){
 	
 	//SDL_Surface *floorMap = SDL_LoadBMP("starmap2_blank.bmp");
 	SDL_Surface *floorMap = SDL_LoadBMP("starmap2.bmp");
-	//floorMap = SDL_DisplayFormat(screen);
-	//SDL_Surface *floorMapStarsAlt = SDL_LoadBMP("starmap2_alt.bmp");
-	//SDL_SetAlpha( floorMapStars, SDL_SRCALPHA, alphaStars);
-	//SDL_SetAlpha( floorMapStarsAlt, SDL_SRCALPHA, 255-alphaStars);
-	//SDL_BlitSurface(floorMapStars,NULL,floorMap,NULL);
-	//SDL_BlitSurface(floorMapStarsAlt,NULL,floorMap,NULL);
 	SDL_Surface *terminal = SDL_LoadBMP("tile_assets/terminal.bmp");
 	SDL_SetColorKey(terminal,SDL_SRCCOLORKEY,255);
-	
-	SDL_Surface *pink = SDL_LoadBMP("tile_assets/pink.bmp");
+
 	
 	
 	static bool first=true;
@@ -292,17 +270,23 @@ void Renderer::render(void *sdlSurface){
 			{
 				if (strcmp(a->name,"Mylar-Lined Boots") == 0)
 				{
-					SDL_BlitSurface(mylarBoots,NULL,floorMap,&dstRectEquip);
+					srcRect.x = 0;
+					srcRect.y = 0;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
 				}
 				
 				if (strcmp(a->name,"Titan-mail") == 0)
 				{
-					SDL_BlitSurface(titanMail,NULL,floorMap,&dstRectEquip);
+					srcRect.x = 32;
+					srcRect.y = 0;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
 				}
 				
 				if (strcmp(a->name, "MLR") == 0)
 				{
-					SDL_BlitSurface(MLR,NULL,floorMap,&dstRectEquip);
+					srcRect.x = 16;
+					srcRect.y = 0;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
 				}
 				
 			}
@@ -328,25 +312,11 @@ void Renderer::render(void *sdlSurface){
 
 	SDL_FreeSurface(floorMap);
 	SDL_FreeSurface(screen);
-	//SDL_FreeSurface(floorMapStars);
-	//SDL_FreeSurface(floorMapStarsAlt);
 	SDL_FreeSurface(floorTiles);
-	//SDL_FreeSurface(darkFloor);
 	SDL_FreeSurface(itemsGlow);
 	SDL_FreeSurface(shadows);
-	//SDL_FreeSurface(fireGlow);
-	//SDL_FreeSurface(EMPGlow);
-	//SDL_FreeSurface(medShadow);
-	
-	//SDL_FreeSurface(infectedFloor);
-	//SDL_FreeSurface(infectedFloorDark);
-	SDL_FreeSurface(mylarBoots);
-	SDL_FreeSurface(titanMail);
-	SDL_FreeSurface(pink);
+	SDL_FreeSurface(equipment);
 	SDL_FreeSurface(terminal);
-	SDL_FreeSurface(MLR);
-	//SDL_FreeSurface(titleScreen);
-	//SDL_FreeSurface(humanShadow);
 	
 }
 	
