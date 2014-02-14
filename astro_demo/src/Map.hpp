@@ -1,7 +1,7 @@
 struct Tile {
 	bool explored;
 	float infection;
-	Tile() : explored(true),  infection (false) {}
+	Tile() : explored(false),  infection (0) {}
 	const TCODColor * lastColor;//if color changed offscreen
 	char lastChar;//if the char changed
 };

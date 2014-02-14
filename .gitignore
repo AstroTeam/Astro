@@ -25,3 +25,4 @@ stdout.txt
 
 #Ignore .psds
 *.psd
+*.png

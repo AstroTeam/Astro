@@ -20,9 +20,21 @@ public:
 	SUB_CLASS,
 	STATS,
 	HUMAN,
+	ROBOT,
 	ALIEN,
 	MARINE,
-	GUN_FONDLER
+	EXPLORER,
+	MERCENARY,
+	INFANTRY,
+	MEDIC,
+	QUARTERMASTER,
+	SURVIVALIST,
+	PIRATE,
+	MERCHANT,
+	ASSASSIN,
+	BRUTE,
+	HACKER,
+	RESET
 	};
 	enum DisplayMode {
 		MAIN,
@@ -71,6 +83,19 @@ class Gui : public Persistent {
 public: 
 	Menu menu;
 	Menu classMenu;
+	// Race\Class Selection Values
+	int jobSelection;
+	int roleSelection;
+	int raceSelection;
+	int statPoints;
+	int conValue;
+	int strValue;
+	int agValue;
+	//Values that save the last selection made in Race/Class Menus
+	/*int raceChosen;
+	int classChosen;
+	int subClassChosen;
+	int statChosen;*/
 
 	Gui();
 	~Gui();
@@ -80,6 +105,7 @@ public:
 	void load(TCODZip &zip);
 	void save (TCODZip &zip);
 	void clear();
+	void classSidebar();
 	
 protected:
 	TCODConsole *con;

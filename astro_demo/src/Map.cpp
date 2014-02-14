@@ -99,6 +99,7 @@ void Map::save(TCODZip &zip) {
 	zip.putInt(seed);
 	for (int i = 0; i < width*height; i++) {
 		zip.putInt(tiles[i].explored);
+		zip.putFloat(tiles[i].infection);
 	}
 }
 
@@ -107,6 +108,7 @@ void Map::load(TCODZip &zip) {
 	init(false);
 	for (int i = 0; i <width*height; i++) {
 		tiles[i].explored = zip.getInt();
+		tiles[i].infection = zip.getFloat();
 	}
 }
 	
@@ -228,7 +230,6 @@ void Map::addMonster(int x, int y) {
 		sporeCreature->container = new Container(2);
 		sporeCreature->ai = new MonsterAi();
 		sporeCreature->oozing = true;
-		sporeCreature->enviroment = this;
 		generateRandom(sporeCreature, sporeCreatureAscii);
 		engine.actors.push(sporeCreature);
 	}
@@ -237,8 +238,8 @@ void Map::addMonster(int x, int y) {
 void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,120);
-	if (dice < 25) {
+	int dice = rng->getInt(0,175);
+	if (dice < 40) {
 		//create a health potion
 		Actor *healthPotion = new Actor(x,y,184,"Medkit", TCODColor::white);
 		healthPotion->sort = 1;
@@ -246,7 +247,7 @@ void Map::addItem(int x, int y, RoomType roomType) {
 		healthPotion->pickable = new Healer(20);
 		engine.actors.push(healthPotion);
 		engine.sendToBack(healthPotion);
-	} else if(dice < 25+25) {
+	} else if(dice < 40+40) {
 		//create a scroll of lightningbolt
 		Actor *scrollOfLightningBolt = new Actor(x,y,183, "EMP Pulse",
 			TCODColor::white);
@@ -255,7 +256,7 @@ void Map::addItem(int x, int y, RoomType roomType) {
 		scrollOfLightningBolt->pickable = new LightningBolt(5,20);
 		engine.actors.push(scrollOfLightningBolt);
 		engine.sendToBack(scrollOfLightningBolt);
-	} else if(dice < 25+25+25) {
+	} else if(dice < 40+40+40) {
 		//create a scroll of fireball
 		Actor *scrollOfFireball = new Actor(x,y,182,"Firebomb",
 			TCODColor::white);
@@ -264,16 +265,26 @@ void Map::addItem(int x, int y, RoomType roomType) {
 		scrollOfFireball->pickable = new Fireball(3,12,8);
 		engine.actors.push(scrollOfFireball);
 		engine.sendToBack(scrollOfFireball);
-	} else if(dice < 25+25+25+10) {
+	} else if(dice < 40+40+40+15) {
 		//create a pair of mylar boots
 		Actor *myBoots = new Actor(x,y,'[',"Mylar-Lined Boots",TCODColor::lightPink);
 		myBoots->blocks = false;
 		ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
+		myBoots->pickable = new Equipment(0,Equipment::LEGS,bonus);
 		myBoots->pickable = new Equipment(0,Equipment::FEET,bonus);
 		myBoots->sort = 3;
 		engine.actors.push(myBoots);
 		engine.sendToBack(myBoots);
-	}else if(dice < 25+25+25+10+5){
+	} else if(dice < 40+40+40+15+10) {
+		//create a Modular Laser Rifle (MLR)
+		Actor *MLR = new Actor(x,y,'{',"MLR",TCODColor::darkerOrange);
+		MLR->blocks = false;
+		ItemBonus *bonus = new ItemBonus(ItemBonus::ATTACK,1);
+		MLR->pickable = new Equipment(0,Equipment::RANGED,bonus);
+		MLR->sort = 4;
+		engine.actors.push(MLR);
+		engine.sendToBack(MLR);
+	}else if(dice < 40+40+40+15+10+5){
 		//create Titanium Micro Chain-mail
 		Actor *chainMail = new Actor(x,y,210,"Titan-mail",TCODColor::lightPink);
 		chainMail->blocks = false;

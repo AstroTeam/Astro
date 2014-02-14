@@ -86,8 +86,13 @@ void Renderer::render(void *sdlSurface){
 	//Mylar Boots
 	SDL_Surface *mylarBoots = SDL_LoadBMP("tile_assets/Mylar_Boots.bmp");
 	SDL_SetColorKey(mylarBoots,SDL_SRCCOLORKEY,255);
+	//Titan-mail
 	SDL_Surface *titanMail = SDL_LoadBMP("tile_assets/Titanium_nanoChainmail.bmp");
 	SDL_SetColorKey(titanMail,SDL_SRCCOLORKEY,255);
+	//MLR
+	SDL_Surface *MLR = SDL_LoadBMP("tile_assets/MLR.bmp");
+	SDL_SetColorKey(MLR,SDL_SRCCOLORKEY,255);
+	
 	//SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
 	//background
 	//SDL_Surface *map = SDL_LoadBMP("starmap.bmp");
@@ -99,7 +104,8 @@ void Renderer::render(void *sdlSurface){
 	SDL_SetAlpha( floorMapStarsAlt, SDL_SRCALPHA, 255-alphaStars);
 	SDL_BlitSurface(floorMapStars,NULL,floorMap,NULL);
 	SDL_BlitSurface(floorMapStarsAlt,NULL,floorMap,NULL);
-	
+	SDL_Surface *terminal = SDL_LoadBMP("tile_assets/terminal.bmp");
+	SDL_SetColorKey(terminal,SDL_SRCCOLORKEY,255);
 	
 	SDL_Surface *pink = SDL_LoadBMP("tile_assets/pink.bmp");
 	
@@ -133,7 +139,7 @@ void Renderer::render(void *sdlSurface){
 			{
 				plyx = x;
 				plyy = y;
-				if (engine.mapcon->getChar(xM,yM) != 163){
+				if (engine.mapcon->getChar(xM,yM) != 163){//|| engine.gameStatus != engine.MAIN_MENU){
 					TCODConsole::root->clear();	
 				}
 				
@@ -162,6 +168,26 @@ void Renderer::render(void *sdlSurface){
 			if(engine.mapconCpy->getChar(xM,yM) == 28){
 				SDL_BlitSurface(infectedFloorDark,NULL,floorMap,&dstRect);
 			}
+			
+			//check for doubles
+			
+			for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+				Actor *actor = *it;
+				if (actor->x == xM && actor->y == yM && actor->destructible && actor->destructible->isDead()) {
+					//doubles += 1;
+					SDL_Rect srcRect={10*16,3*16,16,16};
+					SDL_Rect dstRect={x*16,y*16,16,16};
+					//10 width 3 height for standard bodies
+					//if they are spore bodies
+					if (actor->ch == 162){
+						srcRect.y = 2*16;
+					}
+					
+					SDL_BlitSurface(terminal,&srcRect,floorMap,&dstRect);
+				}
+			}
+			
+			
 			
 			//shadows, always after tiles
 			//flashbang shadow and glow
@@ -277,6 +303,11 @@ void Renderer::render(void *sdlSurface){
 					SDL_BlitSurface(titanMail,NULL,floorMap,&dstRectEquip);
 				}
 				
+				if (strcmp(a->name, "MLR") == 0)
+				{
+					SDL_BlitSurface(MLR,NULL,floorMap,&dstRectEquip);
+				}
+				
 			}
 		}
 	}
@@ -310,6 +341,8 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(mylarBoots);
 	SDL_FreeSurface(titanMail);
 	SDL_FreeSurface(pink);
+	SDL_FreeSurface(terminal);
+	SDL_FreeSurface(MLR);
 	//SDL_FreeSurface(titleScreen);
 	//SDL_FreeSurface(humanShadow);
 	

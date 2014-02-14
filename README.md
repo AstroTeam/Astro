@@ -8,10 +8,27 @@ Upon investing you find that there are weird aliens all over the ship.  These al
 *sidenote: could implement a system where different enemies attack each other, human vs infected human*
 *sidenote: could implement friendly/passive human crew/robot crew who help the player*
 
-The player upon startup can choose between a certain race+class combo, each class has 3 “specialty” tech trees that have powerups, skills, etc.  So you pick 1 race, 1 class, and 1 specialty
+Stats
+-----
+    ○ Strength - Base melee weapon damage and carrying capacity. 
+    Governs axes, swords, and maces. A large enough value may be required for some weapons and armor.
+
+    ○ Dexterity - Base ranged weapon damage and combat mobility. Governs laser weapons. 
+    Increases accuracy with all lasers and melee weapon types. 
+    Increases chance of dodging enemy attacks. A large enough value may be required for some weapons.
+
+    ○ Intelligence - Base tech usefulness and damage. 
+    Governs cryo-weapons, flamethrowers, telekinesis, and explosives. 
+    Gives bonus damage against tech-based enemies. Required for certain powerful weapons and tech.
+
+    ○ Vitality - Base health. Potency of food. Resistance to astrocephaly.
+
+
 
 Races
 -----
+The player upon startup can choose between a certain race+class combo, each class has 3 “specialty” tech trees that have powerups, skills, etc.  So you pick 1 race, 1 role, and 1 job.
+
 ● Human - Base class. Flat starting stats with no innate specialization. 
 Adequate at everything. Ability: Greed: doubles the chance of money 
 drops for 10 turns. Requires many kills to refresh. 
@@ -30,7 +47,7 @@ Classes & Subclasses
 Ability: Barricade: drops a small wall to block a hallway that lasts two 
 turns. Requires many kills to refresh. 
 
-    ○ Infantry - 10% more laser weapon damage. 
+    ○ Infantry - Bonus starting dexterity. 
 
     ○ Medic - Intelligence increases chance of keeping a health pack after using it. 
 
