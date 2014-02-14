@@ -211,6 +211,7 @@ void Pickable::drop(Actor *owner, Actor *wearer) {
 		}
 		else {
 			Actor *droppy = new Actor(wearer->x, wearer->y, owner->ch,owner->name,owner->col);
+			droppy->blocks = false;
 			PickableType type = owner->pickable->type;
 			owner->pickable->stackSize -= numberDropped;
 			switch(type) {
