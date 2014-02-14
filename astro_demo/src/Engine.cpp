@@ -54,7 +54,7 @@ void Engine::init() {
 	stairs->blocks = false;
 	actors.push(stairs);
 	map = new Map(mapWidth, mapHeight);
-	map->init(true);
+	map->init(true, Param::GENERIC);
 	gui->message(TCODColor::red, 
 
     	"Welcome to Astroverius Station! Warning unknown alien life form detected!");
@@ -323,7 +323,7 @@ void Engine::nextLevel() {
 	}
 	//create a new map
 	map = new Map(mapWidth,mapHeight);
-	map->init(true);
+	map->init(true, Param::GENERIC);
 	gameStatus = STARTUP;
 	save();
 }

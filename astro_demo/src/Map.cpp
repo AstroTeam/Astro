@@ -1,11 +1,20 @@
 #include "main.hpp"
+#include <iostream>
+using namespace Param;
+using namespace std;
 
 static const int ROOM_MAX_SIZE = 12;
 static const int ROOM_MIN_SIZE = 6;
 static const int MAX_ROOM_MONSTERS = 3;
 static const int MAX_ROOM_ITEMS = 2;
 
+
 class BspListener : public ITCODBspCallback {
+public:
+	bool bspActors;
+	TCODList<RoomType> * roomList;
+
+	
 private:
 	Map &map; //a map to dig
 	int roomNum; //room number
@@ -17,14 +26,35 @@ public:
 	
 	bool visitNode(TCODBsp *node, void *userData) {
 		if (node->isLeaf()) {
+
 			int x,y,w,h;
-			bool withActors = (bool)userData;
+			bool withActors = bspActors;
+
 			//dig a room
 			w=map.rng->getInt(ROOM_MIN_SIZE, node->w-2);
 			h=map.rng->getInt(ROOM_MIN_SIZE, node->h-2);
 			x=map.rng->getInt(node->x+1, node->x+node->w-w-1);
 			y=map.rng->getInt(node->y+1, node->y+node->h-h-1);
-			map.createRoom(roomNum, x, y, x+w-1, y+h-1, withActors);
+		
+			//save info in a Room struct
+			Room * room = new Room();
+			room->x1 = x;
+			room->y1 = y;
+			room->x2 = x+w-1;
+			room->y2 = y+h-1;
+
+			//will this room be special?
+			int index = map.rng->getInt(0, 10);
+			if (index < roomList->size()) {
+				room->type = roomList->get(index);
+				cout << "OFFICE MADE" << endl;
+				roomList->remove(room->type);
+			}
+			else {
+				room->type = STANDARD;
+			}
+
+			map.createRoom(roomNum, withActors, room);
 			
 			if (roomNum != 0) {
 				//dig a corridor from last room
@@ -34,6 +64,7 @@ public:
 			
 			lastx = x+w/2;
 			lasty = y+h/2;
+			cout << roomList->size() << endl;
 			roomNum++;
 			
 		}
@@ -50,15 +81,18 @@ Map::~Map() {
 	delete map;
 }
 
-void Map::init(bool withActors) {
+void Map::init(bool withActors, LevelType levelType) {
+	cout << levelType << endl << endl;
+
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
-
 	TCODBsp bsp(0,0,width,height);
 	bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
 	BspListener listener(*this);
-	bsp.traverseInvertedLevelOrder(&listener,(void *)withActors);
+	listener.bspActors = withActors;
+	listener.roomList = getRoomTypes(levelType);
+	bsp.traverseInvertedLevelOrder(&listener, (void *)withActors);
 }
 
 void Map::save(TCODZip &zip) {
@@ -200,7 +234,7 @@ void Map::addMonster(int x, int y) {
 	}
 }
 
-void Map::addItem(int x, int y) {
+void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
 	int dice = rng->getInt(0,120);
@@ -260,9 +294,34 @@ void Map::addItem(int x, int y) {
 	}
 }
 
-void Map::createRoom(int roomNum, int x1, int y1, int x2, int y2, bool withActors) {
+TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
+	TCODList<RoomType> * roomList = new TCODList<RoomType>();
+		switch (levelType) {
+			case GENERIC:
+				//small amount of office rooms
+				for (int i = 0; i <= rng->getInt(1,5); i++) {
+					roomList->push(OFFICE);
+				}	
+				break;
+			case OFFICE_FLOOR:
+				for (int i = 0; i <= rng->getInt(3,9); i++) {
+					roomList->push(OFFICE);
+				}
+				break;
+		}
+
+		return roomList;
+}
+
+
+void Map::createRoom(int roomNum, bool withActors, Room * room) {
+	int x1 = room->x1;
+	int y1 = room->y1;
+	int x2 = room->x2;
+	int y2 = room->y2;
+
 	dig(x1,y1,x2,y2);
-	
+
 	if (!withActors) {
 		return;
 	}
@@ -284,7 +343,7 @@ void Map::createRoom(int roomNum, int x1, int y1, int x2, int y2, bool withActor
 	while (nbMonsters > 0) {
 		int x = rng->getInt(x1, x2);
 		int y = rng->getInt(y1, y2);
-			
+
 		if(canWalk(x,y) && (x != engine.player->x && y!= engine.player->y)) {
 			addMonster(x,y);
 			nbMonsters--;
@@ -295,7 +354,7 @@ void Map::createRoom(int roomNum, int x1, int y1, int x2, int y2, bool withActor
 		int x = rng->getInt(x1, x2);
 		int y = rng->getInt(y1, y2);
 
-		if(canWalk(x,y)) {
+		if(canWalk(x,y) && !isWall(x,y)) {
 			Actor * epicenter = new Actor(x, y, 3, "Infection Epicenter", TCODColor::green);
 			epicenter->enviroment=this;
 			epicenter->ai=new EpicenterAi;
@@ -308,20 +367,32 @@ void Map::createRoom(int roomNum, int x1, int y1, int x2, int y2, bool withActor
 		}
 		epicenterAmount--;
 	}
- 
+
+	//custom room feature
+	if (room->type == OFFICE) {
+		//place a cabient by the wall as a place holder
+		Actor * cabinet = new Actor(x1,y1,180,"A filing cabinet", TCODColor::white);
+		engine.actors.push(cabinet);
+
+		cabinet = new Actor(x1+1,y1,180,"A filing cabinet", TCODColor::white);
+		engine.actors.push(cabinet);
+
+	}
+
 	//add items
 	int nbItems = rng->getInt(0, MAX_ROOM_ITEMS);
 	while (nbItems > 0) {
 		int x = rng->getInt(x1,x2);
 		int y = rng->getInt(y1,y2);
 		if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y)) {
-			addItem(x,y);
+			addItem(x,y, room->type);
 			nbItems--;
 		}
+
 		//set the stairs position
 		engine.stairs->x = (x1+x2)/2;
 		engine.stairs->y = (y1+y2)/2;
-		}
+	}
 }
 
 bool Map::isWall(int x, int y) const {
