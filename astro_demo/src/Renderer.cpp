@@ -10,37 +10,10 @@
 void Renderer::render(void *sdlSurface){
 /////////////////////////////////////////////////////////////////////rendering doubled up objects
 	SDL_Surface *screen=(SDL_Surface *)sdlSurface;
-	//SDL_Surface *titleScreen = SDL_LoadBMP("titleScreenHiRes.bmp");
 	//floors
-	SDL_Surface *floor = SDL_LoadBMP("tile_assets/floorTile.bmp");
-	SDL_Surface *infectedFloor = SDL_LoadBMP("tile_assets/floorTile_infected.bmp");
-	SDL_Surface *infectedFloorDark = SDL_LoadBMP("tile_assets/floorTileDark_infected.bmp");
-	SDL_Surface *darkFloor = SDL_LoadBMP("tile_assets/floorTileDark.bmp");
-	//flashbang
-	SDL_Surface *flashGlow = SDL_LoadBMP("tile_assets/flashbang_alpha_glow_50.bmp");
+	SDL_Surface *floorTiles = SDL_LoadBMP("tile_assets/tiles.bmp");
 	static int alpha = 255*.5;
-	static int alphaStars = 255;
 	static bool Down = true;
-	static bool StarsDown = true;
-	if (alphaStars > 0 && StarsDown)
-	{
-		alphaStars -= 1;
-		if (alphaStars < 0)
-			alphaStars = 0;
-	}
-	else if (alphaStars == 0 && StarsDown)
-	{
-		StarsDown = false;
-	}
-	else if (alphaStars < 255)
-	{
-		alphaStars += 1;
-	}
-	else if (alphaStars >= 255)
-	{
-		StarsDown = true;
-	}
-	
 	if (alpha > 0 && Down)
 	{
 		alpha = alpha-5;
@@ -53,35 +26,30 @@ void Renderer::render(void *sdlSurface){
 	}
 	else if (alpha < 255*.5 )
 	{
-		alpha = alpha+10;
+		alpha = alpha+5;
 	}
 	else if (alpha > 255*.5)
 	{
 		Down = true;
 	}
-	//engine.gui->message(TCODColor::red, "alpha is  %d",alpha);
-	//SDL_SetAlpha( flashGlow, SDL_SRCALPHA, alpha);
-	SDL_SetAlpha( flashGlow, SDL_SRCALPHA, alpha);
-	SDL_SetColorKey(flashGlow,SDL_SRCCOLORKEY,255);
-	SDL_Surface *flashShadow = SDL_LoadBMP("tile_assets/flashbang_alpha_shadow_25.bmp");
-	SDL_SetAlpha( flashShadow, SDL_SRCALPHA, 255*.25);
-	SDL_SetColorKey(flashShadow,SDL_SRCCOLORKEY,255);
-	//firebomb
-	SDL_Surface *fireGlow = SDL_LoadBMP("tile_assets/firebomb_alpha_glow_50.bmp");
-	SDL_SetAlpha( fireGlow, SDL_SRCALPHA, alpha*.5);
-	SDL_SetColorKey(fireGlow,SDL_SRCCOLORKEY,255);
-	//EMP glow
-	SDL_Surface *EMPGlow = SDL_LoadBMP("tile_assets/EMP_alpha_glow_33.bmp");
-	SDL_SetAlpha( EMPGlow, SDL_SRCALPHA, 255*.33);
-	SDL_SetColorKey(EMPGlow,SDL_SRCCOLORKEY,255);
-	//medkit shadow
-	SDL_Surface *medShadow = SDL_LoadBMP("tile_assets/medkit_alpha_shadow_25.bmp");
-	SDL_SetAlpha( medShadow, SDL_SRCALPHA, 255*.25);
-	SDL_SetColorKey(medShadow,SDL_SRCCOLORKEY,255);
+	SDL_Surface *itemsGlow = SDL_LoadBMP("tile_assets/alphaGlow.bmp");
+	SDL_SetAlpha( itemsGlow, SDL_SRCALPHA, alpha);
+	SDL_SetColorKey(itemsGlow,SDL_SRCCOLORKEY,255);
+	
+	SDL_Surface *shadows = SDL_LoadBMP("tile_assets/itemShadows.bmp");
+	SDL_SetAlpha(shadows, SDL_SRCALPHA, 255*.25);
+	SDL_SetColorKey(shadows,SDL_SRCCOLORKEY,255);
+	
+	//SDL_Surface *flashShadow = SDL_LoadBMP("tile_assets/flashbang_alpha_shadow_25.bmp");
+	//SDL_SetAlpha( flashShadow, SDL_SRCALPHA, 255*.25);
+	//SDL_SetColorKey(flashShadow,SDL_SRCCOLORKEY,255);
+	//SDL_Surface *medShadow = SDL_LoadBMP("tile_assets/medkit_alpha_shadow_25.bmp");
+	//SDL_SetAlpha( medShadow, SDL_SRCALPHA, 255*.25);
+	//SDL_SetColorKey(medShadow,SDL_SRCCOLORKEY,255);
 	//human Shadow
-	SDL_Surface *humanShadow = SDL_LoadBMP("tile_assets/human_alpha_shadow_25.bmp");
-	SDL_SetAlpha( humanShadow, SDL_SRCALPHA, 255*.25);
-	SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
+	//SDL_Surface *humanShadow = SDL_LoadBMP("tile_assets/human_alpha_shadow_25.bmp");
+	//SDL_SetAlpha( humanShadow, SDL_SRCALPHA, 255*.25);
+	//SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
 	//EQUIPMENT
 	//Mylar Boots
 	SDL_Surface *mylarBoots = SDL_LoadBMP("tile_assets/Mylar_Boots.bmp");
@@ -129,7 +97,7 @@ void Renderer::render(void *sdlSurface){
 	//engine.gui->message(TCODColor::red, "playerx  %d",plyx);
 	//engine.gui->message(TCODColor::red, "playery  %d",plyy);
 	
-	
+	SDL_Rect srcRect={0,0,16,16};
 	int x = 0, y = 0;
 	int plyx = 0, plyy = 0;
 	for (int xM = engine.mapx1; xM < engine.mapx2+16; xM++) {
@@ -151,7 +119,9 @@ void Renderer::render(void *sdlSurface){
 			{ //replace 'down arrow thing' (31 ascii) with basic floor tiles
 				//SDL_UpdateRect(floorMap, x*16, y*16, 16, 16);
 				//SDL_FillRect(floorMap, &dstRect, 258);
-				SDL_BlitSurface(floor,NULL,floorMap,&dstRect);
+				srcRect.x = 0;
+				srcRect.y = 0;
+				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				//SDL_UpdateRect(floorMap, x*16, y*16, 16, 16);
 				
 				//everything bodies to render behind
@@ -163,7 +133,7 @@ void Renderer::render(void *sdlSurface){
 						Actor *actor = *it;
 						if (actor->x == xM && actor->y == yM && actor->destructible && actor->destructible->isDead()) {
 							//doubles += 1;
-							SDL_Rect srcRect={10*16,3*16,16,16};
+							SDL_Rect srcRect2={10*16,3*16,16,16};
 							SDL_Rect dstRect={x*16,y*16,16,16};
 							//10 width 3 height for standard bodies
 							//if they are spore bodies
@@ -171,26 +141,32 @@ void Renderer::render(void *sdlSurface){
 								srcRect.y = 2*16;
 							}
 							
-							SDL_BlitSurface(terminal,&srcRect,floorMap,&dstRect);
+							SDL_BlitSurface(terminal,&srcRect2,floorMap,&dstRect);
 						}
 					}
 				}
 				
 			}
 			//replace 'up arrow thing' with darker floor tiles
-			if(engine.mapconCpy->getChar(xM,yM) == 30)
+			else if(engine.mapconCpy->getChar(xM,yM) == 30)
 			{
-				SDL_BlitSurface(darkFloor,NULL,floorMap,&dstRect);
+				srcRect.x = 0;
+				srcRect.y = 16;
+				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 			}
 			//replace infected tiles lit
-			if(engine.mapconCpy->getChar(xM,yM) == 29){
+			else if(engine.mapconCpy->getChar(xM,yM) == 29){
 				//SDL_FillRect(floorMap, &dstRect, 258);
-				SDL_BlitSurface(infectedFloor,NULL,floorMap,&dstRect);
+				srcRect.x = 16;
+				srcRect.y = 0;
+				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				//SDL_FillRect(floorMap, &dstRect, 258);
 			}
 			//replace unlit infected tiles
-			if(engine.mapconCpy->getChar(xM,yM) == 28){
-				SDL_BlitSurface(infectedFloorDark,NULL,floorMap,&dstRect);
+			else if(engine.mapconCpy->getChar(xM,yM) == 28){
+				srcRect.x = 16;
+				srcRect.y = 16;
+				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 			}
 			
 			//check for doubles
@@ -203,26 +179,34 @@ void Renderer::render(void *sdlSurface){
 			//flashbang shadow and glow
 			if (engine.mapcon->getChar(xM,yM) == 181)  
 			{
-				SDL_BlitSurface(flashGlow,NULL,floorMap,&dstRect);	
-				SDL_BlitSurface(flashShadow,NULL,floorMap,&dstRect);	
+				srcRect.x = 16;
+				srcRect.y = 0;
+				SDL_BlitSurface(itemsGlow,&srcRect,floorMap,&dstRect);
+				srcRect.x = 0;
+				srcRect.y = 0;				
+				SDL_BlitSurface(shadows,&srcRect,floorMap,&dstRect);	
 			}
 			//firebomb shadow and glow
-			if (engine.mapcon->getChar(xM,yM) == 182)  
+			else if (engine.mapcon->getChar(xM,yM) == 182)  
 			{
-				SDL_BlitSurface(fireGlow,NULL,floorMap,&dstRect);	
-				SDL_BlitSurface(flashShadow,NULL,floorMap,&dstRect);	
+				srcRect.x = 0;
+				srcRect.y = 0;
+				SDL_BlitSurface(itemsGlow,&srcRect,floorMap,&dstRect);		
+				SDL_BlitSurface(shadows,&srcRect,floorMap,&dstRect);	
 			}
 			//EMP glow
-			if (engine.mapcon->getChar(xM,yM) == 183)  
+			else if (engine.mapcon->getChar(xM,yM) == 183)  
 			{
-				//SDL_Rect dstRect={x*16,y*16,16,16};
-				SDL_BlitSurface(EMPGlow,NULL,floorMap,&dstRect);
+				srcRect.x = 32;
+				srcRect.y = 0;
+				SDL_BlitSurface(itemsGlow,&srcRect,floorMap,&dstRect);
 			}
 			//Medkit shadow
-			if (engine.mapcon->getChar(xM,yM) == 184)  
+			else if (engine.mapcon->getChar(xM,yM) == 184)  
 			{
-				//SDL_Rect dstRect={x*16,y*16,16,16};
-				SDL_BlitSurface(medShadow,NULL,floorMap,&dstRect);
+				srcRect.x = 16;
+				srcRect.y = 0;
+				SDL_BlitSurface(shadows,&srcRect,floorMap,&dstRect);
 			}
 			
 			//SDL_Delay(100);
@@ -243,7 +227,10 @@ void Renderer::render(void *sdlSurface){
 				y2 = y2*16;
 				y2 += 16;
 				SDL_Rect dstRectOffset={x1*16,y1*16,16,16};
-				SDL_BlitSurface(humanShadow,NULL,floorMap,&dstRectOffset);
+				srcRect.x = 32;
+				srcRect.y = 0;
+				SDL_BlitSurface(shadows,&srcRect,floorMap,&dstRectOffset);
+				//SDL_BlitSurface(humanShadow,NULL,floorMap,&dstRectOffset);
 				//SDL_BlitSurface(humanShadow,NULL,screen,&dstRectOffset);
 				//TCODConsole::flush();
 			}
@@ -343,23 +330,23 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(screen);
 	//SDL_FreeSurface(floorMapStars);
 	//SDL_FreeSurface(floorMapStarsAlt);
-	SDL_FreeSurface(floor);
-	SDL_FreeSurface(darkFloor);
-	SDL_FreeSurface(flashGlow);
-	SDL_FreeSurface(flashShadow);
-	SDL_FreeSurface(fireGlow);
-	SDL_FreeSurface(EMPGlow);
-	SDL_FreeSurface(medShadow);
+	SDL_FreeSurface(floorTiles);
+	//SDL_FreeSurface(darkFloor);
+	SDL_FreeSurface(itemsGlow);
+	SDL_FreeSurface(shadows);
+	//SDL_FreeSurface(fireGlow);
+	//SDL_FreeSurface(EMPGlow);
+	//SDL_FreeSurface(medShadow);
 	
-	SDL_FreeSurface(infectedFloor);
-	SDL_FreeSurface(infectedFloorDark);
+	//SDL_FreeSurface(infectedFloor);
+	//SDL_FreeSurface(infectedFloorDark);
 	SDL_FreeSurface(mylarBoots);
 	SDL_FreeSurface(titanMail);
 	SDL_FreeSurface(pink);
 	SDL_FreeSurface(terminal);
 	SDL_FreeSurface(MLR);
 	//SDL_FreeSurface(titleScreen);
-	SDL_FreeSurface(humanShadow);
+	//SDL_FreeSurface(humanShadow);
 	
 }
 	
