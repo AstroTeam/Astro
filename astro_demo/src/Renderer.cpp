@@ -99,6 +99,7 @@ void Renderer::render(void *sdlSurface){
 	
 	//SDL_Surface *floorMap = SDL_LoadBMP("starmap2_blank.bmp");
 	SDL_Surface *floorMap = SDL_LoadBMP("starmap2.bmp");
+	//floorMap = SDL_DisplayFormat(screen);
 	//SDL_Surface *floorMapStarsAlt = SDL_LoadBMP("starmap2_alt.bmp");
 	//SDL_SetAlpha( floorMapStars, SDL_SRCALPHA, alphaStars);
 	//SDL_SetAlpha( floorMapStarsAlt, SDL_SRCALPHA, 255-alphaStars);
@@ -152,21 +153,29 @@ void Renderer::render(void *sdlSurface){
 				//SDL_FillRect(floorMap, &dstRect, 258);
 				SDL_BlitSurface(floor,NULL,floorMap,&dstRect);
 				//SDL_UpdateRect(floorMap, x*16, y*16, 16, 16);
-				for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
-					Actor *actor = *it;
-					if (actor->x == xM && actor->y == yM && actor->destructible && actor->destructible->isDead()) {
-						//doubles += 1;
-						SDL_Rect srcRect={10*16,3*16,16,16};
-						SDL_Rect dstRect={x*16,y*16,16,16};
-						//10 width 3 height for standard bodies
-						//if they are spore bodies
-						if (actor->ch == 162){
-							srcRect.y = 2*16;
+				
+				//everything bodies to render behind
+				if (engine.mapcon->getChar(xM,yM) == 181 || engine.mapcon->getChar(xM,yM) == 182 || engine.mapcon->getChar(xM,yM) == 183 || 
+				engine.mapcon->getChar(xM,yM) == 184 || engine.mapcon->getChar(xM,yM) == 64 || engine.mapcon->getChar(xM,yM) == 164 || 
+				engine.mapcon->getChar(xM,yM) == 165 || engine.mapcon->getChar(xM,yM) == 148 || engine.mapcon->getChar(xM,yM) == 132) 
+				{
+					for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+						Actor *actor = *it;
+						if (actor->x == xM && actor->y == yM && actor->destructible && actor->destructible->isDead()) {
+							//doubles += 1;
+							SDL_Rect srcRect={10*16,3*16,16,16};
+							SDL_Rect dstRect={x*16,y*16,16,16};
+							//10 width 3 height for standard bodies
+							//if they are spore bodies
+							if (actor->ch == 162){
+								srcRect.y = 2*16;
+							}
+							
+							SDL_BlitSurface(terminal,&srcRect,floorMap,&dstRect);
 						}
-						
-						SDL_BlitSurface(terminal,&srcRect,floorMap,&dstRect);
 					}
 				}
+				
 			}
 			//replace 'up arrow thing' with darker floor tiles
 			if(engine.mapconCpy->getChar(xM,yM) == 30)
@@ -331,12 +340,17 @@ void Renderer::render(void *sdlSurface){
 	//SDL_Flip(floorMap);
 
 	SDL_FreeSurface(floorMap);
+	SDL_FreeSurface(screen);
 	//SDL_FreeSurface(floorMapStars);
 	//SDL_FreeSurface(floorMapStarsAlt);
 	SDL_FreeSurface(floor);
 	SDL_FreeSurface(darkFloor);
 	SDL_FreeSurface(flashGlow);
 	SDL_FreeSurface(flashShadow);
+	SDL_FreeSurface(fireGlow);
+	SDL_FreeSurface(EMPGlow);
+	SDL_FreeSurface(medShadow);
+	
 	SDL_FreeSurface(infectedFloor);
 	SDL_FreeSurface(infectedFloorDark);
 	SDL_FreeSurface(mylarBoots);
@@ -345,7 +359,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(terminal);
 	SDL_FreeSurface(MLR);
 	//SDL_FreeSurface(titleScreen);
-	//SDL_FreeSurface(humanShadow);
+	SDL_FreeSurface(humanShadow);
 	
 }
 	
