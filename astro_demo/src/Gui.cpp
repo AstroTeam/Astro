@@ -90,10 +90,6 @@ void Gui::render() {
 	//dungeon level
 	//sidebar->setDefaultForeground(TCODColor::white);
 	sidebar->print(3,7,"Dungeon level %d", engine.level);
-<<<<<<< HEAD
-=======
-	
->>>>>>> 6d97ccb1e8cceb8781778fe32c303b0e12b3fe73
 	sidebar->print(3,13,"Turn count: %d",engine.turnCount);
 	sidebar->print(3,15,"Kill Count: %d",engine.killCount);
 	
@@ -122,7 +118,6 @@ void Gui::render() {
 	
 	//display FPS
 	sidebar->print(3,25,"FPS : %d",TCODSystem::getFps());
-	
 
 
 	//mouse look
