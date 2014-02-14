@@ -45,7 +45,7 @@ void Engine::term() {
 
 void Engine::init() {
 	engine.killCount = 0;
-	player = new Actor(40,25,'@', "player",TCODColor::white);
+	player = new Actor(40,25,'@', "player","Human","Marine","Infantry",TCODColor::white);
 	player->destructible = new PlayerDestructible(100, 2, "your cadaver");
 	player->attacker = new Attacker(5);
 	player->ai = new PlayerAi();
@@ -59,6 +59,9 @@ void Engine::init() {
 	gui->message(TCODColor::red, 
 
     	"Welcome to Astroverius Station! Warning unknown alien life form detected!");
+	gui->message(TCODColor::blue, player->race);
+	gui->message(TCODColor::blue, player->role);
+	gui->message(TCODColor::blue, player->job);
 	gameStatus = STARTUP;
 }
 
@@ -571,14 +574,17 @@ if(cat == 1){
 					switch (menuItem) {
 						case Menu::MARINE :
 							engine.gui->roleSelection = 1;
+							engine.gui->jobSelection = 1;
 							choice = false;
 							break;
 						case Menu::EXPLORER :
 							engine.gui->roleSelection = 2;
+							engine.gui->jobSelection = 4;
 							choice = false;
 							break;
 						case Menu::MERCENARY :
 							engine.gui->roleSelection = 3;
+							engine.gui->jobSelection = 7;
 							choice = false;
 							break;
 						case Menu::NO_CHOICE:

@@ -3,7 +3,12 @@
 #include "main.hpp"
 
 Actor::Actor(int x, int y, int ch, const char *name, const TCODColor &col):
-	x(x),y(y),ch(ch),col(col),name(name),  blocks(true), oozing(false), susceptible(false), sort(0), attacker(NULL),destructible(NULL),ai(NULL),
+	x(x),y(y),ch(ch),col(col),name(name),race("Human"),role("Marine"),job("Infantry"), blocks(true), oozing(false), susceptible(false), sort(0), attacker(NULL),destructible(NULL),ai(NULL),
+	pickable(NULL), container(NULL) {
+}
+
+Actor::Actor(int x, int y, int ch, const char *name, const char *race, const char *role, const char *job, const TCODColor &col):
+	x(x),y(y),ch(ch),col(col),name(name),race(race),role(role),job(job), blocks(true), oozing(false), susceptible(false), sort(0), attacker(NULL),destructible(NULL),ai(NULL),
 	pickable(NULL), container(NULL) {
 }
 
@@ -21,13 +26,13 @@ void Actor::save(TCODZip &zip) {
 	zip.putInt(ch);
 	zip.putColor(&col);
 	zip.putString(name);
+	zip.putString(race);
+	zip.putString(role);
+	zip.putString(job);
 	zip.putInt(blocks);
 	zip.putInt(oozing);
 	zip.putInt(susceptible);
 	zip.putInt(sort);
-	zip.putInt(race);
-	zip.putInt(role);
-	zip.putInt(job);
 	zip.putInt(attacker != NULL);
 	zip.putInt(destructible != NULL);
 	zip.putInt(ai != NULL);
@@ -47,13 +52,13 @@ void Actor::load(TCODZip &zip) {
 	ch = zip.getInt();
 	col= zip.getColor();
 	name = strdup(zip.getString());
+	race = strdup(zip.getString());
+	role = strdup(zip.getString());
+	job = strdup(zip.getString());
 	blocks = zip.getInt();
 	oozing = zip.getInt();
 	susceptible = zip.getInt();
 	sort = zip.getInt();
-	race = zip.getInt();
-	role = zip.getInt();
-	job = zip.getInt();
 	bool hasAttacker = zip.getInt();
 	bool hasDestructible = zip.getInt();
 	bool hasAi = zip.getInt();

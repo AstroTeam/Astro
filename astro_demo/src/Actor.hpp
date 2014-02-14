@@ -14,13 +14,14 @@ public:
 	Ai *ai; //something self-updating
 	Pickable *pickable; //something that can be picked and used
 	Container *container; //something that can contain items/have an inventory
-	int race; //1=human, 2=robot, 3=alien
-	int role; //1=marine, 2=explorer, 3=mercenary
-	int job;  //1=infantry, 2=medic, 3=quartermaster
+	const char *race; //1=human, 2=robot, 3=alien
+	const char *role; //1=marine, 2=explorer, 3=mercenary
+	const char *job;  //1=infantry, 2=medic, 3=quartermaster
 			  //4=survivalist, 5=pirate, 6=merchant
 			  //7=assassin, 8=brute, 9=hacker
 
 	Actor(int x, int y, int ch, const char *name, const TCODColor &col);
+	Actor(int x, int y, int ch, const char *name, const char *race, const char *role, const char *job, const TCODColor &col);
 	~Actor();
 	void render() const;
 	void update();
