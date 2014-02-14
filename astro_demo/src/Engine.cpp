@@ -46,6 +46,55 @@ void Engine::term() {
 void Engine::init() {
 	engine.killCount = 0;
 	player = new Actor(40,25,'@', "player","Human","Marine","Infantry",TCODColor::white);
+	switch(engine.gui->raceSelection){
+		case 1:
+			player->race="Human";
+			break;
+		case 2:
+			player->race="Robot";
+			break;
+		case 3:
+			player->race="Alien";
+			break;
+	}
+	switch(engine.gui->jobSelection){
+		case 1:
+			player->role="Marine";
+			player->job="Infantry";
+			break;
+		case 2:
+			player->role="Marine";
+			player->job="Medic";
+			break;
+		case 3:
+			player->role="Marine";
+			player->job="Quartermaster";
+			break;
+		case 4:
+			player->role="Explorer";
+			player->job="Survivalist";
+			break;
+		case 5:
+			player->role="Explorer";
+			player->job="Pirate";
+			break;
+		case 6:
+			player->role="Explorer";
+			player->job="Merchant";
+			break;
+		case 7:
+			player->role="Mercenary";
+			player->job="Assassin";
+			break;
+		case 8:
+			player->role="Mercenary";
+			player->job="Brute";
+			break;
+		case 9:
+			player->role="Mercenary";
+			player->job="Hacker";
+			break;
+	}
 	player->destructible = new PlayerDestructible(100, 2, "your cadaver");
 	player->attacker = new Attacker(5);
 	player->ai = new PlayerAi();
