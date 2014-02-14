@@ -45,6 +45,14 @@ public:
 	void init(bool withActors, LevelType levelType = GENERIC);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
+	Actor *createHealthPotion(int x, int y);
+	Actor *createFlashBang(int x, int y);
+	Actor *createFireBomb(int x, int y);
+	Actor *createEMP(int x,int y);
+	Actor *createTitanMail(int x, int y);
+	Actor *createMylarBoots(int x, int y);
+	Actor *createMLR(int x, int y);
+	
 	Tile *tiles;
 
 	
