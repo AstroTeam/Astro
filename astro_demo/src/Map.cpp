@@ -367,7 +367,6 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 
 		if(canWalk(x,y) && !isWall(x,y)) {
 			Actor * epicenter = new Actor(x, y, 3, "Infection Epicenter", TCODColor::green);
-			epicenter->enviroment=this;
 			epicenter->ai=new EpicenterAi;
 			engine.actors.push(epicenter);
 
