@@ -353,6 +353,34 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	//custom room feature
 	if (room->type == OFFICE) {
 		//place a cabient by the wall as a place holder
+		//x1 is the left side of room
+		//y1 is top of room
+		//x2 is right side of room
+		//y2 is bottom of room
+		
+		//filingCabinetX
+		//filingCabinetY
+		//choose which wall to put it on, x1, y1, y2, y3
+		//new random 1-4
+		//case 1 = filing cabinet is on side x1 (left), filingCabinetX is set = x1
+		//case 2 = filing cabinet is on side y1 (top), filingCabinetY is set = y1
+		//... expand for all 4 cases
+		//now we have chosen the wall side
+		//new random = NULL
+		//if we are on a left/right wall random between y1-y2, because we have the x at this point but need a y
+		//if we are on a bottom/top wall random between x1-x2, because we have the y at this point but need an x
+		//now we have chosen a point somewhere in the middle of the wall to place the cabinet
+		
+		//we now have values for filingCabinetX and filingCabinetY
+		//now check if we are blocking a hallway
+		//if we are on a left wall check the left 3 tiles adjacent
+		//if we are on a top wall check the upper 3 tiles adjacent
+		//... expand for all 4 cases
+		//checking the tiles:  if any of the tiles to check are floors then stop placing this cabinet.
+		//we can try to place another, or just stop, whatever is good
+		
+		
+		
 		Actor * cabinet = new Actor(x1+1,y1+1,240,"A filing cabinet", TCODColor::white);
 		engine.actors.push(cabinet);
 	}
