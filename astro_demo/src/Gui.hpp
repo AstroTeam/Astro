@@ -14,12 +14,34 @@ public:
 	ITEMS,
 	TECH,
 	ARMOR,
-	WEAPONS
+	WEAPONS,
+	RACE,
+	CLASS,
+	SUB_CLASS,
+	STATS,
+	HUMAN,
+	ROBOT,
+	ALIEN,
+	MARINE,
+	EXPLORER,
+	MERCENARY,
+	INFANTRY,
+	MEDIC,
+	QUARTERMASTER,
+	SURVIVALIST,
+	PIRATE,
+	MERCHANT,
+	ASSASSIN,
+	BRUTE,
+	HACKER,
+	RESET
 	};
 	enum DisplayMode {
 		MAIN,
 		PAUSE,
-		INVENTORY
+		INVENTORY,
+		CLASS_MENU,
+		CLASS_SELECT
 	};
 	~Menu();
 	void clear();
@@ -32,26 +54,48 @@ protected:
 	};
 	TCODList<MenuItem *> items;
 };
-/*class InventoryMenu : public Menu{
+/*class ClassMenu : public Menu{
 public:
 	enum MenuItemCode{
 		NONE,
 		NO_CHOICE,
-		ITEMS,
-		TECH,
-		WEAPONS,
-		ARMOR
+		HUMAN,
+		ALIEN,
+		MARINE,
+		SOLDIER,
+		CONSTITUTION,
+		STRENGTH
+	};
+	enum DisplayMode {
+		RACE,
+		CLASS,
+		SUB_CLASS,
+		STATS
 	};
 	~InventoryMenu(){clear();}
 	void clear(){Menu::clear();}
 	void addItem(MenuItemCode code, const char *label){Menu::addItem(code,label);}
-	MenuItemCode pick();
+	MenuItemCode pick(DisplayMode mode){Menu::pick(mode)};
 
 };*/
 
 class Gui : public Persistent {
 public: 
 	Menu menu;
+	Menu classMenu;
+	// Race\Class Selection Values
+	int jobSelection;
+	int roleSelection;
+	int raceSelection;
+	int statPoints;
+	int conValue;
+	int strValue;
+	int agValue;
+	//Values that save the last selection made in Race/Class Menus
+	/*int raceChosen;
+	int classChosen;
+	int subClassChosen;
+	int statChosen;*/
 
 	Gui();
 	~Gui();
@@ -61,6 +105,7 @@ public:
 	void load(TCODZip &zip);
 	void save (TCODZip &zip);
 	void clear();
+	void classSidebar();
 	
 protected:
 	TCODConsole *con;

@@ -43,7 +43,7 @@ public:
 	void save(TCODZip &zip);
 
 protected:
-	int turnCount;
+	//int turnCount;
 	void infectLevel(Actor * owner);
 };
 

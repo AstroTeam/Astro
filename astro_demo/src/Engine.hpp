@@ -27,6 +27,7 @@ public:
 	int mapHeight;
 	int level;
 	int turnCount;
+	int killCount;
 	Gui *gui;
 	TCOD_key_t lastKey;
 	//TCOD_mouse_t mouse; comment this out to remove mouse look
@@ -48,6 +49,8 @@ public:
 	void save();
 	void term();
 	void win();
+	void classMenu();
+	void classSelectMenu(int cat);
 };
 
 extern Engine engine;

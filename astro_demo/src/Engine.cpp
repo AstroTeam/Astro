@@ -44,20 +44,73 @@ void Engine::term() {
 }
 
 void Engine::init() {
-	player = new Actor(40,25,'@', "player",TCODColor::white);
+	engine.killCount = 0;
+	player = new Actor(40,25,'@', "player","Human","Marine","Infantry",TCODColor::white);
+	switch(engine.gui->raceSelection){
+		case 1:
+			player->race="Human";
+			break;
+		case 2:
+			player->race="Robot";
+			break;
+		case 3:
+			player->race="Alien";
+			break;
+	}
+	switch(engine.gui->jobSelection){
+		case 1:
+			player->role="Marine";
+			player->job="Infantry";
+			break;
+		case 2:
+			player->role="Marine";
+			player->job="Medic";
+			break;
+		case 3:
+			player->role="Marine";
+			player->job="Quartermaster";
+			break;
+		case 4:
+			player->role="Explorer";
+			player->job="Survivalist";
+			break;
+		case 5:
+			player->role="Explorer";
+			player->job="Pirate";
+			break;
+		case 6:
+			player->role="Explorer";
+			player->job="Merchant";
+			break;
+		case 7:
+			player->role="Mercenary";
+			player->job="Assassin";
+			break;
+		case 8:
+			player->role="Mercenary";
+			player->job="Brute";
+			break;
+		case 9:
+			player->role="Mercenary";
+			player->job="Hacker";
+			break;
+	}
 	player->destructible = new PlayerDestructible(100, 2, "your cadaver");
 	player->attacker = new Attacker(5);
 	player->ai = new PlayerAi();
-	player->container = new Container(26);
+	player->container = new Container(50);
 	actors.push(player);
 	stairs = new Actor(0,0,'>', "stairs", TCODColor::white);
 	stairs->blocks = false;
 	actors.push(stairs);
 	map = new Map(mapWidth, mapHeight);
-	map->init(true);
+	map->init(true, Param::GENERIC);
 	gui->message(TCODColor::red, 
 
-    	"Welcome stranger! Prepare to face a horde of Astrocephalytes and Spores Creatures!");
+    	"Welcome to Astroverius Station! Warning unknown alien life form detected!");
+	gui->message(TCODColor::blue, player->race);
+	gui->message(TCODColor::blue, player->role);
+	gui->message(TCODColor::blue, player->job);
 	gameStatus = STARTUP;
 }
 
@@ -68,6 +121,7 @@ void Engine::save() {
 		TCODZip zip;
 		zip.putInt(level);
 		zip.putInt(turnCount);
+		zip.putInt(killCount);
 		//save the map first
 		zip.putInt(map->width);
 		zip.putInt(map->height);
@@ -121,14 +175,16 @@ void Engine::load(bool pause) {
 		exit(0);
 	} else if (menuItem == Menu::NEW_GAME) {
 		//new game 
-		engine.term();
-		engine.init();
+		engine.classMenu();
+		//engine.term();
+		//engine.init();
 	} else if (menuItem == Menu::SAVE) {
 		save();
 	} else if (menuItem == Menu::NO_CHOICE) {
 	} else if (menuItem == Menu::MAIN_MENU) {
 		save();
 		TCODConsole::root->clear();
+		//engine.term();
 		load(false);
 	}else {
 		TCODZip zip;
@@ -137,6 +193,7 @@ void Engine::load(bool pause) {
 		zip.loadFromFile("game.sav");
 		level = zip.getInt();
 		turnCount = zip.getInt();
+		killCount = zip.getInt();
 		//load the map
 		int width = zip.getInt();
 		int height = zip.getInt();
@@ -243,8 +300,8 @@ void Engine::render()
 	mapy1 = player->y - ((screenHeight -12)/2);
 	mapx2 = player->x + ((screenWidth -22)/2);
 	mapy2 = player->y + ((screenHeight -12)/2);
-	//engine.gui->message(TCODColor::red, "mapx delta  %d",mapx2-mapx1);
-	//engine.gui->message(TCODColor::red, "mapy delta  %d",mapy2-mapy1);
+	//engine.gui->message(TCODColor::red, "player x  %d",player->x);
+	//engine.gui->message(TCODColor::red, "player y  %d",player->y);
 	//engine.gui->message(TCODColor::red, "mapy1 %d",mapy1);
 	//engine.gui->message(TCODColor::red, "mapy2  %d",mapy2);
 	
@@ -264,9 +321,9 @@ void Engine::render()
 		mapx2 = 100;
 		mapx1 -= 1;
 	}
-	if (mapy2 >= 100) {
-		mapy1 += (100-mapy2);
-		mapy2 = 100;
+	if (mapy2 >= 101) {
+		mapy1 += (101-mapy2);
+		mapy2 = 101;
 		mapy1 -= 1;
 	}
 	 /*
@@ -321,7 +378,7 @@ void Engine::nextLevel() {
 	}
 	//create a new map
 	map = new Map(mapWidth,mapHeight);
-	map->init(true);
+	map->init(true, Param::GENERIC);
 	gameStatus = STARTUP;
 	save();
 }
@@ -436,9 +493,9 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {   //need to 
 		mapx2 = 100;
 		mapx1 -= 1;
 	}
-	if (mapy2 >= 100) {
-		mapy1 += (100-mapy2);
-		mapy2 = 100;
+	if (mapy2 >= 101) {
+		mapy1 += (101-mapy2);
+		mapy2 = 101;
 		mapy1 -= 1;
 	}
 	//stops the map from spilling into the console
@@ -483,4 +540,229 @@ Actor *Engine::getAnyActor(int x, int y) const {
 void Engine::win() {
 	gui->message(TCODColor::darkRed,"You win!");
 	gameStatus=Engine::VICTORY;
+}
+void Engine::classMenu(){
+	engine.gui->statPoints = 5;
+	engine.gui->conValue = 100;
+	engine.gui->strValue = 5;
+	engine.gui->agValue = 2;
+	engine.gui->menu.clear();
+	engine.gui->menu.addItem(Menu::RACE, "RACE");
+	engine.gui->menu.addItem(Menu::CLASS, "CLASS");
+	engine.gui->menu.addItem(Menu::SUB_CLASS, "SUBCLASS");
+	engine.gui->menu.addItem(Menu::STATS, "STATS");
+	engine.gui->menu.addItem(Menu::EXIT, "DONE");
+	bool choice = true;
+			while(choice){
+			engine.gui->classSidebar();
+			
+			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::CLASS_MENU);
+			//Menu::MenuItemCode selection;
+				switch (menuItem) {
+					case Menu::RACE :
+						classSelectMenu(1);
+						break;
+					case Menu::CLASS :
+						classSelectMenu(2);
+						break;
+					case Menu::SUB_CLASS:
+						classSelectMenu(3);
+						break;
+					case Menu::STATS:
+						classSelectMenu(4);
+						break;
+					case Menu::NO_CHOICE:
+						break;
+					case Menu::EXIT:
+						choice = false;
+						engine.term();
+						engine.init();
+					default: break;
+				}
+			}
+}
+void Engine::classSelectMenu(int cat){
+if(cat == 1){
+	engine.gui->classMenu.clear();
+	engine.gui->classMenu.addItem(Menu::HUMAN, "HUMAN");
+	engine.gui->classMenu.addItem(Menu::ROBOT, "ROBOT");
+	engine.gui->classMenu.addItem(Menu::ALIEN, "ALIEN");
+	bool choice = true;
+	while(choice){
+				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
+				
+					switch (menuItem) {
+						case Menu::HUMAN :
+							engine.gui->raceSelection = 1;
+							choice = false;
+							break;
+						case Menu::ROBOT :
+							engine.gui->raceSelection = 2;
+							choice = false;
+							break;
+						case Menu::ALIEN :
+							engine.gui->raceSelection = 3;
+							choice = false;
+							break;
+						case Menu::NO_CHOICE:
+							choice = false;
+							break;
+						default: break;
+					}
+	}
+
+}else if(cat == 2){
+	engine.gui->classMenu.clear();
+	engine.gui->classMenu.addItem(Menu::MARINE, "MARINE");
+	engine.gui->classMenu.addItem(Menu::EXPLORER, "EXPLORER");
+	engine.gui->classMenu.addItem(Menu::MERCENARY, "MERCENARY");
+	bool choice = true;
+	while(choice){
+				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
+				
+					switch (menuItem) {
+						case Menu::MARINE :
+							engine.gui->roleSelection = 1;
+							engine.gui->jobSelection = 1;
+							choice = false;
+							break;
+						case Menu::EXPLORER :
+							engine.gui->roleSelection = 2;
+							engine.gui->jobSelection = 4;
+							choice = false;
+							break;
+						case Menu::MERCENARY :
+							engine.gui->roleSelection = 3;
+							engine.gui->jobSelection = 7;
+							choice = false;
+							break;
+						case Menu::NO_CHOICE:
+							choice = false;
+							break;
+						default: break;
+					}
+	}
+}else if(cat == 3){
+	engine.gui->classMenu.clear();
+	if(engine.gui->roleSelection == 1){
+		engine.gui->classMenu.addItem(Menu::INFANTRY, "INFANTRY");
+		engine.gui->classMenu.addItem(Menu::MEDIC, "MEDIC");
+		engine.gui->classMenu.addItem(Menu::QUARTERMASTER, "QUARTERMASTER");
+	}else if(engine.gui->roleSelection == 2){
+		engine.gui->classMenu.addItem(Menu::SURVIVALIST, "SURVIVALIST");
+		engine.gui->classMenu.addItem(Menu::PIRATE, "PIRATE");
+		engine.gui->classMenu.addItem(Menu::MERCHANT, "MERCHANT");
+	}else if(engine.gui->roleSelection == 3){
+		engine.gui->classMenu.addItem(Menu::ASSASSIN, "ASSASSIN");
+		engine.gui->classMenu.addItem(Menu::BRUTE, "BRUTE");
+		engine.gui->classMenu.addItem(Menu::HACKER, "HACKER");
+	}else{
+		engine.gui->classMenu.addItem(Menu::EXIT,"CHOOSE A CLASS");
+	}
+	bool choice = true;
+	while(choice){
+				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
+				
+					switch (menuItem) {
+						case Menu::INFANTRY :
+							engine.gui->jobSelection = 1;
+							choice = false;
+							break;
+						case Menu::MEDIC :
+							engine.gui->jobSelection = 2;
+							choice = false;
+							break;
+						case Menu::QUARTERMASTER :
+							engine.gui->jobSelection = 3;
+							choice = false;
+							break;
+						case Menu::SURVIVALIST :
+							engine.gui->jobSelection = 4;
+							choice = false;
+							break;
+						case Menu::PIRATE :
+							engine.gui->jobSelection = 5;
+							choice = false;
+							break;
+						case Menu::MERCHANT :
+							engine.gui->jobSelection = 6;
+							choice = false;
+							break;
+						case Menu::ASSASSIN :
+							engine.gui->jobSelection = 7;
+							choice = false;
+							break;
+						case Menu::BRUTE :
+							engine.gui->jobSelection = 8;
+							choice = false;
+							break;
+						case Menu::HACKER :
+							engine.gui->jobSelection = 9;
+							choice = false;
+							break;
+						case Menu::EXIT :
+							choice = false;
+							break;
+						case Menu::NO_CHOICE:
+							choice = false;
+							break;
+						default: break;
+					}
+	}
+}else{
+	engine.gui->classMenu.clear();
+	engine.gui->classMenu.addItem(Menu::CONSTITUTION, "CONSTITUTION");
+	engine.gui->classMenu.addItem(Menu::STRENGTH, "STRENGTH");
+	engine.gui->classMenu.addItem(Menu::AGILITY, "AGILITY");
+	engine.gui->classMenu.addItem(Menu::RESET,"RESET SELECTIONS");
+	engine.gui->classMenu.addItem(Menu::EXIT, "DONE");
+	bool choice = true;
+	while(choice){
+				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
+				
+					switch (menuItem) {
+						case Menu::CONSTITUTION :
+							if(engine.gui->statPoints == 0)
+								choice = false;
+							else{
+								engine.gui->statPoints = engine.gui->statPoints - 1;
+								engine.gui->conValue += 20;
+								engine.gui->classSidebar();
+							}
+							break;
+						case Menu::STRENGTH :
+							if(engine.gui->statPoints == 0)
+								choice = false;
+							else{
+								engine.gui->statPoints = engine.gui->statPoints - 1;
+								engine.gui->strValue += 1;
+								engine.gui->classSidebar();
+							}
+							break;
+						case Menu::AGILITY :
+							if(engine.gui->statPoints == 0)
+								choice = false;
+							else{
+								engine.gui->statPoints = engine.gui->statPoints - 1;
+								engine.gui->agValue += 1;
+								engine.gui->classSidebar();
+							}
+							break;
+						case Menu::EXIT :
+							choice = false;
+							break;
+						case Menu::RESET:
+							engine.gui->statPoints = 5;
+							engine.gui->conValue = 100;
+							engine.gui->strValue = 5;
+							engine.gui->agValue = 2;
+							engine.gui->classSidebar();
+							break;
+						case Menu::NO_CHOICE:
+							choice = false;
+							break;
+						default: break;
+					}
+	}
+}
 }

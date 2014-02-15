@@ -1,28 +1,60 @@
 #include "main.hpp"
+#include <iostream>
+using namespace Param;
+using namespace std;
 
 static const int ROOM_MAX_SIZE = 12;
 static const int ROOM_MIN_SIZE = 6;
 static const int MAX_ROOM_MONSTERS = 3;
 static const int MAX_ROOM_ITEMS = 2;
+
+
 class BspListener : public ITCODBspCallback {
+public:
+	bool bspActors;
+	TCODList<RoomType> * roomList;
+
+	
 private:
 	Map &map; //a map to dig
 	int roomNum; //room number
 	int lastx, lasty; // center of the last room
 	
+
 public:
 	BspListener(Map &map) : map(map), roomNum(0) {}
 	
 	bool visitNode(TCODBsp *node, void *userData) {
 		if (node->isLeaf()) {
+
 			int x,y,w,h;
-			bool withActors = (bool)userData;
+			bool withActors = bspActors;
+
 			//dig a room
 			w=map.rng->getInt(ROOM_MIN_SIZE, node->w-2);
 			h=map.rng->getInt(ROOM_MIN_SIZE, node->h-2);
 			x=map.rng->getInt(node->x+1, node->x+node->w-w-1);
 			y=map.rng->getInt(node->y+1, node->y+node->h-h-1);
-			map.createRoom(roomNum == 0, x, y, x+w-1, y+h-1, withActors);
+		
+			//save info in a Room struct
+			Room * room = new Room();
+			room->x1 = x;
+			room->y1 = y;
+			room->x2 = x+w-1;
+			room->y2 = y+h-1;
+
+			//will this room be special?
+			int index = map.rng->getInt(0, 10);
+			if (index < roomList->size()) {
+				room->type = roomList->get(index);
+				cout << "OFFICE MADE" << endl;
+				roomList->remove(room->type);
+			}
+			else {
+				room->type = STANDARD;
+			}
+
+			map.createRoom(roomNum, withActors, room);
 			
 			if (roomNum != 0) {
 				//dig a corridor from last room
@@ -32,6 +64,7 @@ public:
 			
 			lastx = x+w/2;
 			lasty = y+h/2;
+			cout << roomList->size() << endl;
 			roomNum++;
 			
 		}
@@ -39,7 +72,7 @@ public:
 	}
 };
 
-Map::Map(int width, int height): width(width),height(height) {
+Map::Map(int width, int height, short epicenterAmount): width(width),height(height),epicenterAmount(epicenterAmount) {
 	seed = TCODRandom::getInstance()->getInt(0,0x7FFFFFFF);
 }
 
@@ -48,33 +81,25 @@ Map::~Map() {
 	delete map;
 }
 
-void Map::init(bool withActors) {
+void Map::init(bool withActors, LevelType levelType) {
+	cout << levelType << endl << endl;
+
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
-
-	//give this level an epicenter of the infection
-	int epiLocation = rng->getInt(0, width*height);
-	Actor * epicenter = new Actor(epiLocation/width, epiLocation%width, 3, "Infection Epicenter", TCODColor::green);
-	epicenter->enviroment=this;
-	epicenter->ai= new EpicenterAi;
-	engine.actors.push(epicenter);
-
-	//intial infection, concentrated at the epicenter
-	for (int i = 0; i < width*height; i++) {
-		tiles[i].infection = 1 / ((rng->getDouble(.01,1.0))*epicenter->getDistance(i/width, i%width));
-	}
-
 	TCODBsp bsp(0,0,width,height);
 	bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
 	BspListener listener(*this);
-	bsp.traverseInvertedLevelOrder(&listener,(void *)withActors);
+	listener.bspActors = withActors;
+	listener.roomList = getRoomTypes(levelType);
+	bsp.traverseInvertedLevelOrder(&listener, (void *)withActors);
 }
 
 void Map::save(TCODZip &zip) {
 	zip.putInt(seed);
 	for (int i = 0; i < width*height; i++) {
 		zip.putInt(tiles[i].explored);
+		zip.putFloat(tiles[i].infection);
 	}
 }
 
@@ -83,6 +108,7 @@ void Map::load(TCODZip &zip) {
 	init(false);
 	for (int i = 0; i <width*height; i++) {
 		tiles[i].explored = zip.getInt();
+		tiles[i].infection = zip.getFloat();
 	}
 }
 	
@@ -111,110 +137,178 @@ void Map::addMonster(int x, int y) {
 	
 	int level = engine.level; //Note first engine.level = 1
 	
+	//Infected Crew Member Base Stats
 	float infectedCrewMemMaxHp = 10;
 	float infectedCrewMemDef = 0;
 	float infectedCrewMemAtk = 5;
 	float infectedCrewMemXp = 10;
+	float infectedCrewMemChance = 80;
+	int infectedCrewMemAscii = 164;
 	
-	float sporeCreatureMaxHp = 16;
+	//Infected NCO Base Stats
+	float infectedNCOMaxHp = 12;
+	float infectedNCODef = 1;
+	float infectedNCOAtk = 6;
+	float infectedNCOXp = 10;
+	float infectedNCOChance = 10;
+	int infectedNCOAscii = 148;
+	
+	//Infected Officer Base Stats
+	float infectedOfficerMaxHp = 15;
+	float infectedOfficerDef = 1;
+	float infectedOfficerAtk = 7;
+	float infectedOfficerXp = 20;
+	float infectedOfficerChance = 6;
+	int infectedOfficerAscii = 132;
+	
+	//Spore Creature Base Stats
+	float sporeCreatureMaxHp = 17;
 	float sporeCreatureDef = 1;
-	float sporeCreatureAtk = 7;
-	float sporeCreatureXp = 20;
+	float sporeCreatureAtk = 10;
+	float sporeCreatureXp = 25;
+	float sporeCreatureChance = 4;
+	int sporeCreatureAscii = 165;
+
 	
-	//Certain enemies' strength scales up as you go down a dungeon 
-	
-	infectedCrewMemMaxHp += level/2; //increment infected crew member's MaxHp by 1 every even level
-	infectedCrewMemAtk += (level-1)/2; //increment infected crew member's Atk by 1 every odd level
-	infectedCrewMemXp += (level-1)/2; //increment infected crew member's Xp by 1 every odd level
+	if(infectedCrewMemChance - 10*(level-1) <= 20) //lowerbound for infectedCrewMemChance = 20
+	{
+		infectedCrewMemChance = 20;
+		infectedNCOChance = infectedNCOChance + 30;
+		infectedOfficerChance = infectedOfficerChance + 18;
+		sporeCreatureChance = sporeCreatureChance + 12;
 		
-	sporeCreatureMaxHp += level/3; //increment spore creature's MaxHp by 1 every third level (starting at 3)
-	sporeCreatureAtk += (level+2)/3; //increment spore creature's Atk by 1 every third level (starting at 4)
-	sporeCreatureXp += level/3; //increment spore creature's Xp by 1 every third level (starting at 3)
+	}
+	else
+	{
+		infectedCrewMemChance -= 10*(level-1); //decrement infectedCrewMemChance by 10% each level
+		infectedNCOChance += 5*(level-1); //increment infectedNCOMemChance by 5% each level
+		infectedOfficerChance += 3*(level-1); //increment infectedOfficerMemChance by 3% each level
+		sporeCreatureChance += 2*(level-1); //increment sporeCreatureChance by 2% each level
+	}
 	
-	//The percent of spore creatures starts at 20% and increases by 5 percent as you go down each level, but going no higher than 50%	
-	float percentInfectedCrewMembers =  ( (85 - 5*level) > 50 ? (85 - 5*level) : 50 ); 
-	if (rng->getInt(0,100) < percentInfectedCrewMembers) {
+	int dice = rng->getInt(0,100);
+	if (dice < infectedCrewMemChance) 
+	{
 		//create an infected crew member
-		Actor *infectedCrewMember = new Actor(x,y,164,"Infected Crewmember",TCODColor::white);
+		Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
 		infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
 		infectedCrewMember->attacker = new Attacker(infectedCrewMemAtk);
 		infectedCrewMember->container = new Container(2);
 		infectedCrewMember->ai = new MonsterAi();
-		generateRandom(infectedCrewMember, 164);
+		generateRandom(infectedCrewMember, infectedCrewMemAscii);
 		engine.actors.push(infectedCrewMember);
 	}
-	else {	
+	else if(dice < infectedCrewMemChance + infectedNCOChance)	
+	{
+		//create an infected NCO
+		Actor *infectedNCO = new Actor(x,y,infectedNCOAscii,"Infected NCO",TCODColor::white);
+		infectedNCO->destructible = new MonsterDestructible(infectedNCOMaxHp,infectedNCODef,"infected corpse",infectedNCOXp);
+		infectedNCO->attacker = new Attacker(infectedNCOAtk);
+		infectedNCO->container = new Container(2);
+		infectedNCO->ai = new MonsterAi();
+		generateRandom(infectedNCO, infectedNCOAscii);
+		engine.actors.push(infectedNCO);
+	
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance)
+	{
+		//create an infected officer
+		Actor *infectedOfficer = new Actor(x,y,infectedOfficerAscii,"Infected Officer",TCODColor::white);
+		infectedOfficer->destructible = new MonsterDestructible(infectedOfficerMaxHp,infectedOfficerDef,"infected corpse",infectedOfficerXp);
+		infectedOfficer->attacker = new Attacker(infectedOfficerAtk);
+		infectedOfficer->container = new Container(2);
+		infectedOfficer->ai = new MonsterAi();
+		generateRandom(infectedOfficer, infectedOfficerAscii);
+		engine.actors.push(infectedOfficer);
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance)
+	{
 		//create a spore creature
-		Actor *sporeCreature = new Actor(x,y,165,"Spore Creature",TCODColor::white);
+		Actor *sporeCreature = new Actor(x,y,sporeCreatureAscii,"Spore Creature",TCODColor::white);
 		sporeCreature->destructible = new MonsterDestructible(sporeCreatureMaxHp,sporeCreatureDef,"gross spore remains",sporeCreatureXp);
 		sporeCreature->attacker = new Attacker(sporeCreatureAtk);
 		sporeCreature->container = new Container(2);
 		sporeCreature->ai = new MonsterAi();
 		sporeCreature->oozing = true;
-		sporeCreature->enviroment = this;
-		generateRandom(sporeCreature, 165);
+		generateRandom(sporeCreature, sporeCreatureAscii);
 		engine.actors.push(sporeCreature);
 	}
 }
 
-void Map::addItem(int x, int y) {
+void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,140);
-	if (dice < 25) {
+	int dice = rng->getInt(0,175);
+	if (dice < 40) {
 		//create a health potion
-		Actor *healthPotion = new Actor(x,y,184,"Medkit", TCODColor::white);
-		healthPotion->sort = 1;
-		healthPotion->blocks = false;
-		healthPotion->pickable = new Healer(20);
+		Actor *healthPotion = createHealthPotion(x,y);
 		engine.actors.push(healthPotion);
 		engine.sendToBack(healthPotion);
-	} else if(dice < 25+25) {
+	} else if(dice < 40+40) {
 		//create a scroll of lightningbolt
-		Actor *scrollOfLightningBolt = new Actor(x,y,183, "EMP Pulse",
-			TCODColor::white);
-		scrollOfLightningBolt->sort = 2;
-		scrollOfLightningBolt->blocks = false;
-		scrollOfLightningBolt->pickable = new LightningBolt(5,20);
+		Actor *scrollOfLightningBolt = createEMP(x,y);
 		engine.actors.push(scrollOfLightningBolt);
 		engine.sendToBack(scrollOfLightningBolt);
-	} else if(dice < 25+25+25) {
+	} else if(dice < 40+40+40) {
 		//create a scroll of fireball
-		Actor *scrollOfFireball = new Actor(x,y,182,"Firebomb",
-			TCODColor::white);
-		scrollOfFireball->sort = 2;
-		scrollOfFireball->blocks = false;
-		scrollOfFireball->pickable = new Fireball(3,12,8);
+		Actor *scrollOfFireball = createFireBomb(x,y);
 		engine.actors.push(scrollOfFireball);
 		engine.sendToBack(scrollOfFireball);
-	} else if(dice < 25+25+25+50) {
-		//create a pair of mylar underpants
-		Actor *undies = new Actor(x,y,'[',"Mylar-Lined Boots",TCODColor::lightPink);
-		undies->blocks = false;
-		ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
-		undies->pickable = new Equipment(0,Equipment::FEET,bonus);
-		undies->sort = 3;
-		engine.actors.push(undies);
-		engine.sendToBack(undies);
-	} else {
+	} else if(dice < 40+40+40+15) {
+		//create a pair of mylar boots
+		Actor *myBoots = createMylarBoots(x,y);
+		engine.actors.push(myBoots);
+		engine.sendToBack(myBoots);
+	} else if(dice < 40+40+40+15+10) {
+		//create a Modular Laser Rifle (MLR)
+		Actor *MLR = createMLR(x,y);
+		engine.actors.push(MLR);
+		engine.sendToBack(MLR);
+	}else if(dice < 40+40+40+15+10+5){
+		//create Titanium Micro Chain-mail
+		Actor *chainMail = createTitanMail(x,y);
+		engine.actors.push(chainMail);
+		engine.sendToBack(chainMail);
+	}else {
 		//create a scroll of confusion
-		Actor *scrollOfConfusion = new Actor(x,y,181,"Flashbang",
-			TCODColor::white);
-		scrollOfConfusion->sort = 2;
-		scrollOfConfusion->blocks = false;
-		scrollOfConfusion->pickable = new Confuser(10,8);
+		Actor *scrollOfConfusion = createFlashBang(x,y);
 		engine.actors.push(scrollOfConfusion);
 		engine.sendToBack(scrollOfConfusion);
 	}
 }
 
-void Map::createRoom(bool first, int x1, int y1, int x2, int y2, bool withActors) {
+TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
+	TCODList<RoomType> * roomList = new TCODList<RoomType>();
+		switch (levelType) {
+			case GENERIC:
+				//small amount of office rooms
+				for (int i = 0; i <= rng->getInt(1,5); i++) {
+					roomList->push(OFFICE);
+				}	
+				break;
+			case OFFICE_FLOOR:
+				for (int i = 0; i <= rng->getInt(3,9); i++) {
+					roomList->push(OFFICE);
+				}
+				break;
+		}
+
+		return roomList;
+}
+
+
+void Map::createRoom(int roomNum, bool withActors, Room * room) {
+	int x1 = room->x1;
+	int y1 = room->y1;
+	int x2 = room->x2;
+	int y2 = room->y2;
+
 	dig(x1,y1,x2,y2);
-	
+
 	if (!withActors) {
 		return;
 	}
-	if (first) {
+	if (roomNum == 0) {
 		//put the player in the first room
 		engine.player->x = (x1+x2)/2;
 		engine.player->y = (y1+y2)/2;
@@ -223,7 +317,7 @@ void Map::createRoom(bool first, int x1, int y1, int x2, int y2, bool withActors
 	//add monsters
 	//horde chance
 	int nbMonsters;
-	if (!first && rng->getInt(0,19) == 0) {
+	if (roomNum >0 && rng->getInt(0,19) == 0) {
 		nbMonsters = rng->getInt(10, 25);
 	}
 	else {
@@ -232,25 +326,51 @@ void Map::createRoom(bool first, int x1, int y1, int x2, int y2, bool withActors
 	while (nbMonsters > 0) {
 		int x = rng->getInt(x1, x2);
 		int y = rng->getInt(y1, y2);
-			
+
 		if(canWalk(x,y) && (x != engine.player->x && y!= engine.player->y)) {
 			addMonster(x,y);
 			nbMonsters--;
 		}
 	}
+	//try to place an epicenter
+	if (epicenterAmount > 0 && roomNum == 5 ) {
+		int x = rng->getInt(x1, x2);
+		int y = rng->getInt(y1, y2);
+
+		if(canWalk(x,y) && !isWall(x,y)) {
+			Actor * epicenter = new Actor(x, y, 3, "Infection Epicenter", TCODColor::green);
+			epicenter->ai=new EpicenterAi;
+			engine.actors.push(epicenter);
+
+			//intial infection, concentrated at the epicenter
+			for (int i = 0; i < width*height; i++) {
+				tiles[i].infection = 1 / ((rng->getDouble(.01,1.0))*epicenter->getDistance(i%width, i/width));
+			}
+		}
+		epicenterAmount--;
+	}
+
+	//custom room feature
+	if (room->type == OFFICE) {
+		//place a cabient by the wall as a place holder
+		Actor * cabinet = new Actor(x1+1,y1+1,240,"A filing cabinet", TCODColor::white);
+		engine.actors.push(cabinet);
+	}
+
 	//add items
 	int nbItems = rng->getInt(0, MAX_ROOM_ITEMS);
 	while (nbItems > 0) {
 		int x = rng->getInt(x1,x2);
 		int y = rng->getInt(y1,y2);
 		if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y)) {
-			addItem(x,y);
+			addItem(x,y, room->type);
 			nbItems--;
 		}
+
 		//set the stairs position
 		engine.stairs->x = (x1+x2)/2;
 		engine.stairs->y = (y1+y2)/2;
-		}
+	}
 }
 
 bool Map::isWall(int x, int y) const {
@@ -308,7 +428,7 @@ void Map::render() const {
 
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
-			if (isInFov(x,y)) {
+			if (isInFov(x,y)){// || true) {
 				//TCODConsole::root->setCharBackground(x,y,isWall(x,y) ? lightWall : lightGround);
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
 
@@ -386,37 +506,22 @@ void Map::generateRandom(Actor *owner, int ascii){
 				int rnd = rng->getInt(0,100);
 				if (rnd < 30) {
 					//create a health potion
-					Actor *healthPotion = new Actor(0,0,184,"Medkit", TCODColor::white);
-					healthPotion->sort = 1;
-					healthPotion->blocks = false;
-					healthPotion->pickable = new Healer(20);
+					Actor *healthPotion = createHealthPotion(0,0);
 					engine.actors.push(healthPotion);
 					healthPotion->pickable->pick(healthPotion,owner);
 				} else if(rnd < 10+30) {
 					//create a scroll of lightningbolt
-					Actor *scrollOfLightningBolt = new Actor(0,0,183, "EMP Pulse",
-						TCODColor::white);
-					scrollOfLightningBolt->sort = 2;
-					scrollOfLightningBolt->blocks = false;
-					scrollOfLightningBolt->pickable = new LightningBolt(5,20);
+					Actor *scrollOfLightningBolt = createEMP(0,0);
 					engine.actors.push(scrollOfLightningBolt);
 					scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
 				} else if(rnd < 10+30+20) {
 					//create a scroll of fireball
-					Actor *scrollOfFireball = new Actor(0,0,182,"Firebomb",
-						TCODColor::white);
-					scrollOfFireball->sort = 2;
-					scrollOfFireball->blocks = false;
-					scrollOfFireball->pickable = new Fireball(3,12,8);
+					Actor *scrollOfFireball = createFireBomb(0,0);
 					engine.actors.push(scrollOfFireball);
 					scrollOfFireball->pickable->pick(scrollOfFireball,owner);
 				} else{
 					//create a scroll of confusion
-					Actor *scrollOfConfusion = new Actor(0,0,181,"Flashbang",
-						TCODColor::white);
-					scrollOfConfusion->sort = 2;
-					scrollOfConfusion->blocks = false;
-					scrollOfConfusion->pickable = new Confuser(10,8);
+					Actor *scrollOfConfusion = createFlashBang(0,0);
 					engine.actors.push(scrollOfConfusion);
 					scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
 				}
@@ -426,41 +531,138 @@ void Map::generateRandom(Actor *owner, int ascii){
 				int rnd2 = rng->getInt(0,100);
 				if (rnd2 < 25) {
 					//create a health potion
-					Actor *healthPotion = new Actor(0,0,184,"Medkit", TCODColor::white);
-					healthPotion->sort = 1;
-					healthPotion->blocks = false;
-					healthPotion->pickable = new Healer(20);
+					Actor *healthPotion = createHealthPotion(0,0);
 					engine.actors.push(healthPotion);
 					healthPotion->pickable->pick(healthPotion,owner);
 				} else if(rnd2 < 25+20) {
 					//create a scroll of lightningbolt
-					Actor *scrollOfLightningBolt = new Actor(0,0,183, "EMP Pulse",
-						TCODColor::white);
-					scrollOfLightningBolt->sort = 2;
-					scrollOfLightningBolt->blocks = false;
-					scrollOfLightningBolt->pickable = new LightningBolt(5,20);
+					Actor *scrollOfLightningBolt = createEMP(0,0);
 					engine.actors.push(scrollOfLightningBolt);
 					scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
 				} else if(rnd2 < 25+20+25) {
 					//create a scroll of fireball
-					Actor *scrollOfFireball = new Actor(0,0,182,"Firebomb",
-						TCODColor::white);
-					scrollOfFireball->sort = 2;
-					scrollOfFireball->blocks = false;
-					scrollOfFireball->pickable = new Fireball(3,12,8);
+					Actor *scrollOfFireball = createFireBomb(0,0);
 					engine.actors.push(scrollOfFireball);
 					scrollOfFireball->pickable->pick(scrollOfFireball,owner);
 				} else{
 					//create a scroll of confusion
-					Actor *scrollOfConfusion = new Actor(0,0,181,"Flashbang",
-						TCODColor::white);
-					scrollOfConfusion->sort = 2;
-					scrollOfConfusion->blocks = false;
-					scrollOfConfusion->pickable = new Confuser(10,8);
+					Actor *scrollOfConfusion = createFlashBang(0,0);
 					engine.actors.push(scrollOfConfusion);
 					scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
 				}
 		}
+		}else if(ascii == 148){
+			for(int i = 0; i < owner->container->size; i++){
+					int rnd = rng->getInt(0,120);
+					if (rnd < 30) {
+						//create a health potion
+						Actor *healthPotion = createHealthPotion(0,0);
+						engine.actors.push(healthPotion);
+						healthPotion->pickable->pick(healthPotion,owner);
+					} else if(rnd < 10+30) {
+						//create a scroll of lightningbolt
+						Actor *scrollOfLightningBolt = createEMP(0,0);
+						engine.actors.push(scrollOfLightningBolt);
+						scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
+					} else if(rnd < 10+30+20) {
+						//create a scroll of fireball
+						Actor *scrollOfFireball = createFireBomb(0,0);
+						engine.actors.push(scrollOfFireball);
+						scrollOfFireball->pickable->pick(scrollOfFireball,owner);
+					}else if(rnd < 10+30+20+20){
+						//create a pair of mylar boots
+						Actor *myBoots = createMylarBoots(0,0);
+						engine.actors.push(myBoots);
+						myBoots->pickable->pick(myBoots,owner);
+					}else{
+						//create a scroll of confusion
+						Actor *scrollOfConfusion = createFlashBang(0,0);
+						engine.actors.push(scrollOfConfusion);
+						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+					}
+				}
+		}else if(ascii == 132){
+			for(int i = 0; i < owner->container->size; i++){
+					int rnd = rng->getInt(0,100);
+					if (rnd < 30) {
+						//create a health potion
+						Actor *healthPotion = createHealthPotion(0,0);
+						engine.actors.push(healthPotion);
+						healthPotion->pickable->pick(healthPotion,owner);
+					} else if(rnd < 10+30) {
+						//create a scroll of lightningbolt
+						Actor *scrollOfLightningBolt = createEMP(0,0);
+						engine.actors.push(scrollOfLightningBolt);
+						scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
+					} else if(rnd < 10+30+20) {
+						//create a scroll of fireball
+						Actor *scrollOfFireball = createFireBomb(0,0);
+						engine.actors.push(scrollOfFireball);
+						scrollOfFireball->pickable->pick(scrollOfFireball,owner);
+					}else if(rnd < 10+30+20+10){
+						//create Titanium Micro Chain-mail
+						Actor *chainMail = createTitanMail(0,0);
+						engine.actors.push(chainMail);
+						chainMail->pickable->pick(chainMail,owner);
+					}else{
+						//create a scroll of confusion
+						Actor *scrollOfConfusion = createFlashBang(0,0);
+						engine.actors.push(scrollOfConfusion);
+						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+					}
+			}
 		}
 	}
+}
+Actor *Map::createHealthPotion(int x,int y){
+	Actor *healthPotion = new Actor(x,y,184,"Medkit", TCODColor::white);
+	healthPotion->sort = 1;
+	healthPotion->blocks = false;
+	healthPotion->pickable = new Healer(20);
+	return healthPotion;
+}
+Actor *Map::createFlashBang(int x, int y){
+	Actor *scrollOfConfusion = new Actor(x,y,181,"Flashbang", TCODColor::white);
+	scrollOfConfusion->sort = 2;
+	scrollOfConfusion->blocks = false;
+	scrollOfConfusion->pickable = new Confuser(10,8);
+	return scrollOfConfusion;
+}
+Actor *Map::createFireBomb(int x, int y){
+	Actor *scrollOfFireball = new Actor(x,y,182,"Firebomb",TCODColor::white);
+	scrollOfFireball->sort = 2;
+	scrollOfFireball->blocks = false;
+	scrollOfFireball->pickable = new Fireball(3,12,8);
+	return scrollOfFireball;
+}
+Actor *Map::createEMP(int x, int y){
+	Actor *scrollOfLightningBolt = new Actor(x,y,183, "EMP Pulse",TCODColor::white);
+	scrollOfLightningBolt->sort = 2;
+	scrollOfLightningBolt->blocks = false;
+	scrollOfLightningBolt->pickable = new LightningBolt(5,20);
+	return scrollOfLightningBolt;
+}
+Actor *Map::createTitanMail(int x, int y){
+	Actor *chainMail = new Actor(x,y,210,"Titan-mail",TCODColor::lightPink);
+	chainMail->blocks = false;
+	ItemBonus *bonus = new ItemBonus(ItemBonus::DEFENSE,3);
+	chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus);
+	chainMail->sort = 3;
+	return chainMail;
+}
+Actor *Map::createMylarBoots(int x, int y){
+	Actor *myBoots = new Actor(x,y,'[',"Mylar-Lined Boots",TCODColor::lightPink);
+	myBoots->blocks = false;
+	ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
+	myBoots->pickable = new Equipment(0,Equipment::FEET,bonus);
+	myBoots->sort = 3;
+	return myBoots;
+}
+Actor *Map::createMLR(int x, int y){
+	Actor *MLR = new Actor(x,y,'{',"MLR",TCODColor::darkerOrange);
+	MLR->blocks = false;
+	ItemBonus *bonus = new ItemBonus(ItemBonus::ATTACK,1);
+	MLR->pickable = new Equipment(0,Equipment::RANGED,bonus);
+	MLR->sort = 4;
+	return MLR;
 }

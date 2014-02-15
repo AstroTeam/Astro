@@ -119,9 +119,10 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 	for (Actor **iterator = engine.actors.begin();
 		iterator != engine.actors.end(); iterator++) {
 		Actor *actor = *iterator;
-		if (actor->destructible && !actor->destructible->isDead()
-			&& actor->x == targetx &&actor->y == targety) {
-			owner->attacker->attack(owner, actor);
+		if (actor->blocks && actor->x == targetx &&actor->y == targety) {
+			if (actor->destructible && !actor->destructible->isDead()) {
+				owner->attacker->attack(owner, actor);
+			}
 			return false;
 		}
 	}
@@ -155,7 +156,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				if (actor->pickable && actor->x == owner->x && actor->y == owner->y) {
 					if (actor->pickable->pick(actor,owner)) {
 						found = true;
-						engine.gui->message(TCODColor::lightGrey, "You pick up the %s and the sort value is %d.", actor->name, actor->sort);
+						engine.gui->message(TCODColor::lightGrey, "You pick up the %s.", actor->name);
 						break;
 					} else if (!found ) {
 						found = true;
@@ -213,13 +214,13 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					default: break;
 				}
 			}
-				if (actor) {
-					bool used;
-					used = actor->pickable->use(actor,owner);
-					if (used) {
-						engine.gameStatus = Engine::NEW_TURN;
-					}
+			if (actor) {
+				bool used;
+				used = actor->pickable->use(actor,owner);
+				if (used) {
+					engine.gameStatus = Engine::NEW_TURN;
 				}
+			}
 		}break;
 		case 'd': //drop an item
 		{
@@ -290,6 +291,43 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			TCODConsole::initRoot(engine.screenWidth,engine.screenHeight, "Astro", false);
 		}
 		break;
+		case 'f':
+			//shooty shooty bang bang -Mitchell
+			//need to figure out how to check if the user has a gun
+			if(owner->container->ranged){
+				//engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
+				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,3);
+				if (!closestMonster) {
+					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
+					//return false;
+				}
+				//hit the closest monster for <damage> hit points;
+				else{
+					if(false){
+						/////////TO-DO Battery
+					}
+					else{
+						owner->attacker->shoot(owner, closestMonster);
+						engine.gameStatus = Engine::NEW_TURN;
+					}
+				}
+				/*
+				float damageTaken = closestMonster->destructible->takeDamage(closestMonster,damage);
+				if (!closestMonster->destructible->isDead()) {
+				engine.gui->message(TCODColor::lightBlue,
+					"A lightning bolt strikes the %s with a loud crack"
+					"for %g damage.",
+					closestMonster->name,damageTaken);
+				} else {
+					engine.gui->message(TCODColor::orange,"The %s crackles with electricity, twitching slightly.",closestMonster->name);
+				}
+				return Pickable::use(owner,wearer);
+				*/
+			}
+			else{
+				engine.gui->message(TCODColor::lightGrey,"You do not have a ranged weapon equipped");
+			}
+		break;
 	}
 }
 
@@ -310,7 +348,11 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type) {
 		it != owner->container->inventory.end(); it++) {
 		Actor *actor = *it;
 		if(actor->sort == type){
-			con.print(2,y,"(%c) %s",shortcut,actor->name);
+			if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
+				con.print(2,y,"(%c) %s(E)",shortcut,actor->name);
+			}else{
+				con.print(2,y,"(%c) %s",shortcut,actor->name);
+			}
 			owner->container->select[shortcut] = actor->name;
 			if (actor->pickable->stacks) {
 				con.print(17, y, "(%d)",actor->pickable->stackSize);
@@ -395,7 +437,7 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 			owner->y += stepdy;
 		}
 		if (owner->oozing) {
-			owner->enviroment->infectFloor(owner->x, owner->y);
+			engine.map->infectFloor(owner->x, owner->y);
 		}
 	} else if (owner->attacker) {
 		owner->attacker->attack(owner,engine.player);
@@ -403,34 +445,31 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	
 }
 
-EpicenterAi::EpicenterAi() : turnCount(0) {
+EpicenterAi::EpicenterAi() {
 }
 
 void EpicenterAi::load(TCODZip &zip) {
-	turnCount = zip.getInt();
 }
 
 void EpicenterAi::update(Actor *owner) {
-	turnCount++;
-	if (turnCount % 500 == 0) {
+	if (engine.turnCount % 500 == 0) {
 		infectLevel(owner);
 	}
 }
 
 void EpicenterAi::infectLevel(Actor *owner) {
-	int width = owner->enviroment->width;
-	int height = owner->enviroment->height;
+	int width = engine.map->width;
+	int height = engine.map->height;
 	TCODRandom *rng = TCODRandom::getInstance();
 
 	for (int i = 0; i < width*height; i++) {
-		owner->enviroment->tiles[i].infection += 1 / (rng->getDouble(.01,1.0)*owner->getDistance(i/width, i%width));
+		engine.map->tiles[i].infection += 1 / (rng->getDouble(.01,1.0)*owner->getDistance(i%width, i/width));
 	}
 	engine.gui->message(TCODColor::green,"You feel uneasy as the infection seems to spread.");
 }
 
 void EpicenterAi::save(TCODZip &zip) {
 	zip.putInt(EPICENTER);
-	zip.putInt(turnCount);
 }
 
 ConfusedActorAi::ConfusedActorAi(int nbTurns, Ai *oldAi)

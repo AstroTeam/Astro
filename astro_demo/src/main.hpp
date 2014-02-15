@@ -1,4 +1,5 @@
 #include "libtcod.hpp"
+#include "SDL/SDL.h"
 class Actor;
 #include "Persistent.hpp"
 #include "Destructible.hpp"

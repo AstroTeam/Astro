@@ -15,6 +15,14 @@ const int PAUSE_MENU_HEIGHT = 23;
 const int INVENTORY_MENU_WIDTH = 38;
 const int INVENTORY_MENU_HEIGHT = 4;
 
+const int CLASS_MENU_WIDTH = 65;
+const int CLASS_MENU_HEIGHT = 4;
+
+const int RACE_MENU_HEIGHT = 52;
+
+const int CLASS_SELECT_WIDTH = 65;
+const int CLASS_SELECT_HEIGHT = 40;
+
 Gui::Gui() {
 	//added the tile info screen, which takes up a part of the bottom panel next to the console
 	con = new TCODConsole(CON_WIDTH, PANEL_HEIGHT);
@@ -72,8 +80,8 @@ void Gui::render() {
 	renderBar(1,3,BAR_WIDTH, "HP", engine.player->destructible->hp,
 		engine.player->destructible->maxHp, TCODColor::lightRed, 
 		TCODColor::darkerRed);
-	//draw the mana bar
-	renderBar(1,5,BAR_WIDTH, "MANA",0,0,TCODColor::lightBlue, TCODColor::darkerBlue);
+	//draw the battery bar
+	renderBar(1,5,BAR_WIDTH, "Battery",10,20,TCODColor::blue, TCODColor::darkerBlue);
 	//draw the last target's hp bar
 	if (engine.player->attacker->lastTarget != NULL) {		renderBar(1,11,BAR_WIDTH, "target's HP",engine.player->attacker->lastTarget->destructible->hp,
 			engine.player->attacker->lastTarget->destructible->maxHp,TCODColor::lightRed, TCODColor::darkerRed);
@@ -82,18 +90,18 @@ void Gui::render() {
 	//dungeon level
 	//sidebar->setDefaultForeground(TCODColor::white);
 	sidebar->print(3,7,"Dungeon level %d", engine.level);
-	//con->print(3,9,"FPS : %d",TCODSystem::getFps());
 	sidebar->print(3,13,"Turn count: %d",engine.turnCount);
+	sidebar->print(3,15,"Kill Count: %d",engine.killCount);
 	
 	//display the armor slots
-	sidebar->print(9,15,"Armor");
-	sidebar->print(3,17,"Head: (%d)",engine.player->container->head);
-	sidebar->print(3,19,"Chest: (%d)",engine.player->container->chest);
-	sidebar->print(3,21,"Legs: (%d)",engine.player->container->legs);
-	sidebar->print(3,23,"Feet: (%d)",engine.player->container->feet);
-	sidebar->print(3,25,"Hand1: (%d)",engine.player->container->hand1);
-	sidebar->print(3,27,"Hand2: (%d)",engine.player->container->hand2);
-	sidebar->print(3,29,"Rangd: (%d)",engine.player->container->ranged);
+	sidebar->print(9,17,"Armor");
+	if (engine.player->container->head)sidebar->print(2,19,"He",engine.player->container->head);
+	if (engine.player->container->chest)sidebar->print(5,19,"C",engine.player->container->chest);
+	if (engine.player->container->legs)sidebar->print(7,19,"L",engine.player->container->legs);
+	if (engine.player->container->feet)sidebar->print(9,19,"F",engine.player->container->feet);
+	if (engine.player->container->hand1)sidebar->print(12,19,"H1",engine.player->container->hand1);
+	if (engine.player->container->hand2)sidebar->print(16,19,"H2",engine.player->container->hand2);
+	if (engine.player->container->ranged)sidebar->print(19,19,"R",engine.player->container->ranged);
 	
 	//display player xp bar
 	PlayerAi *ai = (PlayerAi *)engine.player->ai;
@@ -104,9 +112,13 @@ void Gui::render() {
 		
 		
 	//display an ability cooldown bar
-	sidebar->print(1,31,"Ability Cooldown: ");
-	renderBar(1,33, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
+	sidebar->print(1,21,"Ability Cooldown: ");
+	renderBar(1,23, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
+
 	
+	//display FPS
+	sidebar->print(3,25,"FPS : %d",TCODSystem::getFps());
+
 
 	//mouse look
 	//renderMouseLook();
@@ -288,13 +300,14 @@ void Menu::addItem(MenuItemCode code, const char *label) {
 Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 	int selectedItem = 0;
 	int menux = 0, menuy = 0;
+	int menu2x = 0, menu2y = 0;
 	
 	if (mode == PAUSE) {
 		menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - PAUSE_MENU_HEIGHT / 2;
 		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
 		TCODConsole::root->printFrame(menux,menuy - 4,PAUSE_MENU_WIDTH,
-			PAUSE_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"PAUSE MENU");
+			PAUSE_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"PAUSE MENU");
 		
 	/* 	//This code is an alternative way to render a pause menu, with a background
 		//image, preferably a 60x60 PNG
@@ -311,8 +324,21 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		menuy = engine.screenHeight / 2 - INVENTORY_MENU_HEIGHT / 2;
 		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
 		TCODConsole::root->printFrame(menux,menuy - 20,INVENTORY_MENU_WIDTH,
-			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(70),"INVENTORY");
-	} else {
+			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"INVENTORY");
+	} else if(mode == CLASS_MENU){
+		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
+		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
+		TCODConsole::root->setDefaultForeground(TCODColor(50,180,50));
+		TCODConsole::root->printFrame(menux + 10,0,CLASS_MENU_WIDTH,
+			CLASS_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(100),"CHARACTER");
+	}else if(mode == CLASS_SELECT){
+		menu2x = engine.screenWidth/2 - CLASS_SELECT_WIDTH / 2;
+		menu2y = engine.screenHeight/2 - CLASS_SELECT_HEIGHT / 2;
+		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
+		TCODConsole::root->printFrame(menu2x + 10,menu2y + 2,CLASS_SELECT_WIDTH,
+			CLASS_SELECT_HEIGHT,true,TCOD_BKGND_ALPHA(100));
+	
+	}else {
 		static TCODImage img("background.png");
 		img.blit2x(TCODConsole::root,0,6);
 		menux = 35;
@@ -350,10 +376,92 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 						selectedItem = (selectedItem +1) % items.size();
 					break;
 					case TCODK_ENTER: return items.get(selectedItem)->code;
-					case TCODK_ESCAPE:  return NO_CHOICE;
+					case TCODK_ESCAPE: return NO_CHOICE;
 					default: break;
 				}
 			
+		}
+	}else if(mode == CLASS_MENU){
+		while (!TCODConsole::isWindowClosed()) {
+		
+			int currentItem = 0;
+			for (MenuItem **it = items.begin(); it != items.end(); it++) {
+				if (currentItem == selectedItem) {
+					TCODConsole::root->setDefaultForeground(TCODColor::orange);
+				} else {
+					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
+				}
+				if(currentItem == 2){
+					TCODConsole::root->print(menux+currentItem*12+14,menuy-18,(*it)->label);
+				}else{
+					TCODConsole::root->print(menux+currentItem*12+16,menuy-18,(*it)->label);
+				}
+				currentItem++;
+			}
+			TCODConsole::flush();
+			
+			//check key presses
+			
+			
+				TCOD_key_t key;
+				TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
+				switch(key.vk) {
+					case TCODK_LEFT:
+						selectedItem--;
+						if(selectedItem < 0) {
+							selectedItem = items.size()-1;
+						}
+					break;
+					case TCODK_RIGHT:
+						selectedItem = (selectedItem +1) % items.size();
+					break;
+					case TCODK_ENTER: return items.get(selectedItem)->code;
+					case TCODK_ESCAPE: if (mode == PAUSE) {
+							 	return NO_CHOICE;
+							   }
+					default: break;
+				}
+			
+		}
+	}else if(mode == CLASS_SELECT){
+		menu2x = engine.screenWidth - CLASS_SELECT_WIDTH / 2;
+		while (!TCODConsole::isWindowClosed()) {
+		
+			int currentItem = 0;
+			for (MenuItem **it = items.begin(); it != items.end(); it++) {
+				if (currentItem == selectedItem) {
+					TCODConsole::root->setDefaultForeground(TCODColor::orange);
+				} else {
+					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
+				}
+				if(strcmp((*it)->label,"CONSTITUTION") == 0){
+					TCODConsole::root->print(menu2x - 7,12+currentItem*3-4,(*it)->label);
+				}else{
+					TCODConsole::root->print(menu2x - 6,12+currentItem*3-4,(*it)->label);
+				}
+				currentItem++;
+			}
+			TCODConsole::flush();
+			
+			//check key presses
+			TCOD_key_t key;
+			TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
+			switch(key.vk) {
+				case TCODK_UP:
+					selectedItem--;
+					if(selectedItem < 0) {
+						selectedItem = items.size()-1;
+					}
+				break;
+				case TCODK_DOWN:
+					selectedItem = (selectedItem +1) % items.size();
+				break;
+				case TCODK_ENTER: return items.get(selectedItem)->code;
+				case TCODK_ESCAPE: if (mode == PAUSE){
+							return NO_CHOICE;
+						    }
+				default: break;
+			}
 		}
 	}else{
 		while (!TCODConsole::isWindowClosed()) {
@@ -384,10 +492,91 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 					selectedItem = (selectedItem +1) % items.size();
 				break;
 				case TCODK_ENTER: return items.get(selectedItem)->code;
-				case TCODK_ESCAPE: return NO_CHOICE;
+				case TCODK_ESCAPE: if (mode == PAUSE){
+							return NO_CHOICE;
+						    }
 				default: break;
 			}
 		}
 	}
 	return NONE;
+}
+void Gui::classSidebar(){
+			//Create Character Race/Class information sidebar
+			TCODConsole classBar(20,engine.screenHeight);
+			classBar.setDefaultBackground(TCODColor::black);
+			classBar.clear();
+			classBar.setDefaultForeground(TCODColor(200,180,50));
+			classBar.printFrame(0,0,20,
+			engine.screenHeight,true,TCOD_BKGND_ALPHA(50),"CHARACTER INFO");
+			//renderBar(1,3,20, "HP", engine.player->destructible->hp,
+			//engine.player->destructible->maxHp, TCODColor::lightRed, 
+			//TCODColor::darkerRed);
+			
+			//Display Race/Class Info
+			//classBar.setDefaultForeground(TCODColor::white);
+			classBar.print(1,5,"RACE: ");
+			switch(raceSelection){
+				case 1:
+					classBar.print(7,5,"HUMAN");
+				break;
+				case 2:
+					classBar.print(7,5,"ROBOT");
+				break;
+				case 3:
+					classBar.print(7,5,"ALIEN");
+				break;
+				default: break;
+			}
+			classBar.print(1,7,"CLASS: ");
+			switch(roleSelection){
+				case 1:
+					classBar.print(8,7,"MARINE");
+				break;
+				case 2:
+					classBar.print(8,7,"EXPLORER");
+				break;
+				case 3:
+					classBar.print(8,7,"MERCENARY");
+				break;
+				default: break;
+			}
+			classBar.print(6,9,"SUBCLASS: ");
+			switch(jobSelection){
+				case 1:
+					classBar.print(6,11,"INFANTRY");
+				break;
+				case 2:
+					classBar.print(6,11,"MEDIC");
+				break;
+				case 3:
+					classBar.print(3,11,"QUARTERMASTER");
+				break;
+				case 4:
+					classBar.print(3,11,"SURVIVALIST");
+				break;
+				case 5:
+					classBar.print(6,11,"PIRATE");
+				break;
+				case 6:
+					classBar.print(6,11,"MERCHANT");
+				break;
+				case 7:
+					classBar.print(6,11,"ASSASSIN");
+				break;
+				case 8:
+					classBar.print(6,11,"BRUTE");
+				break;
+				case 9:
+					classBar.print(6,11,"HACKER");
+				break;
+				default: break;
+			}
+			classBar.print(7,15,"STATS");
+			classBar.print(1,17,"AVAIL. POINTS: %d",statPoints);
+			classBar.print(1,19,"CONSTITUTION: %d",conValue);
+			classBar.print(1,21,"STRENGTH: %d",strValue);
+			classBar.print(1,23,"AGILITY: %d",agValue);
+			
+			TCODConsole::blit(&classBar, 0, 0, 20, engine.screenHeight, TCODConsole::root, 0, 0);
 }
