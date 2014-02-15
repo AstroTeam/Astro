@@ -47,8 +47,8 @@ void Renderer::render(void *sdlSurface){
 	SDL_SetColorKey(equipment,SDL_SRCCOLORKEY,255);
 	
 	//DECORATIONS
-	//SDL_Surface *decor = SDL_LoadBMP("tile_assets/decorations.bmp");
-	//SDL_SetColorKey(decor,SDL_SRCCOLORKEY,255);
+	SDL_Surface *decor = SDL_LoadBMP("tile_assets/decorations.bmp");
+	SDL_SetColorKey(decor,SDL_SRCCOLORKEY,255);
 	
 	
 	//SDL_SetColorKey(humanShadow,SDL_SRCCOLORKEY,255);
@@ -191,12 +191,39 @@ void Renderer::render(void *sdlSurface){
 				srcRect.y = 0;
 				SDL_BlitSurface(shadows,&srcRect,floorMap,&dstRect);
 			}
-			/*else if (engine.mapcon->getChar(xM,yM) == 240)
+			//filing cabinet
+			else if (engine.mapcon->getChar(xM,yM) == 240)
 			{
-				srcRect.x = 16;
-				srcRect.y = 32;
+				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
+				{
+					srcRect.x = 0;
+				}
+				else
+				{
+					srcRect.x = 16;
+				}
+				if(engine.mapconCpy->getChar(xM,yM-1) == '^')//if wall above it is wall
+				{
+					srcRect.y = 0;
+				}
+				else if (engine.mapconCpy->getChar(xM-1,yM) == '^')//if there is a wall to the left
+				{
+					srcRect.y = 16;
+				}
+				else if (engine.mapconCpy->getChar(xM+1,yM) == '^')//if there si a wall to the right
+				{
+					srcRect.y = 32;
+				}
+				else if (engine.mapconCpy->getChar(xM,yM+1) == '^')//if wall below use the backwards filing cabinet
+				{
+					srcRect.y = 48;
+				}
+				else //if nothing else or an error just print out the standard one just in case
+				{
+					srcRect.y = 0;
+				}
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
-			}*/
+			}
 			
 			//SDL_Delay(100);
 			y++;
@@ -328,7 +355,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(shadows);
 	SDL_FreeSurface(equipment);
 	SDL_FreeSurface(terminal);
-	//SDL_FreeSurface(decor);
+	SDL_FreeSurface(decor);
 	
 }
 	
