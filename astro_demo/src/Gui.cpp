@@ -7,7 +7,7 @@ static const int BAR_WIDTH = 20;
 static const int MSG_X = BAR_WIDTH + 2;
 static const int MSG_HEIGHT = PANEL_HEIGHT-1;
 const int CON_WIDTH = 60; //sets the message console width. height is PANEL_HEIGHT
-const int TILE_INFO_WIDTH = engine.screenWidth - CON_WIDTH; //sets the tile info screen width. height is PANEL_HEIGHT
+const int TILE_INFO_WIDTH = 25; //sets the tile info screen width. height is PANEL_HEIGHT
 
 const int PAUSE_MENU_WIDTH = 32;
 const int PAUSE_MENU_HEIGHT = 23;
@@ -70,11 +70,10 @@ void Gui::render() {
 	tileInfoScreen->clear();
 	
 	
-	
 	//create the sidebar
 	sidebar->setDefaultForeground(TCODColor(200,180,50));
 	sidebar->printFrame(0,0,MSG_X,
-		engine.screenHeight-12,true,TCOD_BKGND_ALPHA(50),"CHARACTER INFO");
+		engine.screenHeight-PANEL_HEIGHT,true,TCOD_BKGND_ALPHA(50),"CHARACTER INFO");
 	
 	//draw the health bar
 	renderBar(1,3,BAR_WIDTH, "HP", engine.player->destructible->hp,
@@ -136,15 +135,14 @@ void Gui::render() {
 		}
 	}
 	
-	//draw the tileInfoScreen
-	
-	const char* testChar = "Tile info goes here";
-	
+	//draw the tile info screen
 	tileInfoScreen->setDefaultForeground(TCODColor(200,180,50));
-	tileInfoScreen->printFrame(0, 0, TILE_INFO_WIDTH, PANEL_HEIGHT, false, TCOD_BKGND_ALPHA(50),"TILE INFO");
-	Message test = Message(testChar, TCODColor::white);
-	tileInfoScreen->print(4, 2, testChar);
-	
+	tileInfoScreen->printFrame(0, 0, TILE_INFO_WIDTH, 
+		PANEL_HEIGHT, true,TCOD_BKGND_ALPHA(50),"TILE INFO");
+	//draw the message
+	if(tileInfoLog != NULL){
+		tileInfoScreen->print(2,3,tileInfoLog->text);
+	}
 	
 	
 	//blit the GUI consoles (sidebar and message log and tile info screen) 
@@ -194,9 +192,9 @@ void Gui::renderKeyLook() {
 	if (engine.pickATile(&x,&y)){
 		char buf[128] = ""; 
 		if (engine.map->isInFov(x,y)){
-			strcat(buf,"You see: ");
+			strcat(buf,"You see:\n");
 		}else {
-			strcat(buf,"You remember seeing: ");
+			strcat(buf,"You remember seeing:\n");
 		}
 		bool first = true;
 		for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
@@ -204,7 +202,7 @@ void Gui::renderKeyLook() {
 			//find actors under the mouse cursor
 			if (actor->x == x && actor->y == y) {
 				if (!first) {
-					strcat(buf, ", ");
+					strcat(buf, "\n");
 				} else {
 					first = false;
 				}
@@ -218,9 +216,9 @@ void Gui::renderKeyLook() {
 		Actor *actor = engine.getAnyActor(x, y);
 		if (!actor || !engine.map->isExplored(x,y)) {
 			memset(&buf[0], 0, sizeof(buf));
-			strcat(buf,"There is nothing interesting here.");
+			strcat(buf,"There is nothing\ninteresting here.");
 		} 
-		message(TCODColor::lightGrey,buf);
+		tileInfoLog = new Message(buf, TCODColor::lightGrey);
 	}
 }
 
