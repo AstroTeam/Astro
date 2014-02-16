@@ -128,6 +128,25 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 	for (int tilex = x1; tilex <=x2; tilex++) {
 		for (int tiley = y1; tiley <= y2; tiley++) {
 			map->setProperties(tilex,tiley,true,true);
+			Actor* a = NULL;
+			a = engine.getAnyActor(tilex,tiley);
+			
+			if (a != NULL)
+			{
+				cout << a->name << endl;
+				if (strcmp(a->name,"fc") == 0)
+				{
+					//engine.actors.remove(a);
+					//CHANGE THE SPRITE TO BROKEN CABINET
+					//CHANGE THE NAME TO BROKEN CABINET
+					
+					//engine.gui->message(TCODColor::red, "playery  %d",plyy);
+					cout << "breaking cabinet";
+					a->blocks = false;
+					//delete a;
+				}
+			}
+			//delete a;
 		}
 	}
 }
@@ -374,37 +393,111 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 
 	//custom room feature
 	if (room->type == OFFICE) {
-		//place a cabient by the wall as a place holder
-		//x1 is the left side of room
-		//y1 is top of room
-		//x2 is right side of room
-		//y2 is bottom of room
+		int files = 0;
+		while (files < 10)
+		{
+			//place a cabient by the wall as a place holder
+			//x1 is the left side of room
+			//y1 is top of room
+			//x2 is right side of room
+			//y2 is bottom of room
+			int filingCabX = 0, filingCabY = 0;
+			//filingCabinetX
+			//filingCabinetY
+			//choose which wall to put it on, x1, y1, y2, y3
+			//new random 1-4
+			TCODRandom *rng = TCODRandom::getInstance();
+			int wall = rng->getInt(0,3);
+			//case 1 = filing cabinet is on side x1 (left), filingCabinetX is set = x1
+			if (wall == 0)
+			{
+				filingCabX = x1;
+				filingCabY = rng->getInt(y1,y2);
+				if (isWall(filingCabX-1,filingCabY))
+				{
+					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"fc", TCODColor::white);
+					engine.actors.push(cabinet);
+				}
+			}
+			//case 2 = filing cabinet is on side y1 (top), filingCabinetY is set = y1
+			else if (wall == 1)
+			{
+				filingCabY = y1;
+				filingCabX = rng->getInt(x1,x2);
+				if (isWall(filingCabX,filingCabY-1))
+				{
+					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"fc", TCODColor::white);
+					engine.actors.push(cabinet);
+				}
+			}
+			//case 3 = filing cabinet is on side x2 (right), filingCabinetX is set = x2
+			else if (wall == 2)
+			{
+				filingCabX = x2;
+				filingCabY = rng->getInt(y1,y2);
+				if (isWall(filingCabX+1,filingCabY))
+				{
+					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"fc", TCODColor::white);
+					engine.actors.push(cabinet);
+				}
+			}
+			//case 4 = filing cabinet is on side y2 (bottom), filingCabinetY is set = y2
+			else //if (wall == 3)
+			{
+				filingCabY = y2;
+				filingCabX = rng->getInt(x1,x2);
+				if (isWall(filingCabX,filingCabY+1))
+				{
+					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"fc", TCODColor::white);
+					engine.actors.push(cabinet);
+				}
+			}
+			//now we have chosen the wall side
+			//new random = NULL
+			//if we are on a left/right wall random between y1-y2, because we have the x at this point but need a y
+			
+			//if we are on a bottom/top wall random between x1-x2, because we have the y at this point but need an x
+			
+			//now we have chosen a point somewhere in the middle of the wall to place the cabinet
+			//we now have values for filingCabinetX and filingCabinetY
+			//now check if we are blocking a hallway
+			//if we are on a left wall check the left 3 tiles adjacent
+			
+			//if we are on a top wall check the upper 3 tiles adjacent
+			//... expand for all 4 cases
+			//checking the tiles:  if any of the tiles to check are floors then stop placing this cabinet.
+			//we can try to place another, or just stop, whatever is good
+			//probably just make files--?  break?
+			
+			//check for doubles, check for corners
+			//if you're x,y's are the same as the x,y's then you are in a corner
+			//check all 4 corner cases
+			
+			
+			
+			//Actor * cabinet = new Actor(x1+1,y1+1,240,"A filing cabinet", TCODColor::white);
+			//Actor * cabinet = new Actor(filingCabX,filingCabY,240,"A filing cabinet", TCODColor::white);
+			//engine.actors.push(cabinet);
+			files++;
+		}
+		//add desks
 		
-		//filingCabinetX
-		//filingCabinetY
-		//choose which wall to put it on, x1, y1, y2, y3
-		//new random 1-4
-		//case 1 = filing cabinet is on side x1 (left), filingCabinetX is set = x1
-		//case 2 = filing cabinet is on side y1 (top), filingCabinetY is set = y1
-		//... expand for all 4 cases
-		//now we have chosen the wall side
-		//new random = NULL
-		//if we are on a left/right wall random between y1-y2, because we have the x at this point but need a y
-		//if we are on a bottom/top wall random between x1-x2, because we have the y at this point but need an x
-		//now we have chosen a point somewhere in the middle of the wall to place the cabinet
-		
-		//we now have values for filingCabinetX and filingCabinetY
-		//now check if we are blocking a hallway
-		//if we are on a left wall check the left 3 tiles adjacent
-		//if we are on a top wall check the upper 3 tiles adjacent
-		//... expand for all 4 cases
-		//checking the tiles:  if any of the tiles to check are floors then stop placing this cabinet.
-		//we can try to place another, or just stop, whatever is good
+		//random between x1+2 and x2-3(-2 if random 1x1) (so they can fit, leaving a 1 cell lining, if 2x2) 
+		//random between y1+2 and y2-3(-2 if random 1x1) (so they can fit, leaving a 1 cell lining, if 2x2)
+		//these are the two x,y's
+		//
+		//add a 2x2 of desks?  add random desks?
+		// ...D.D...
+		// .........  <- 3x3 of desks with spaces in-between?
+		// ...D.D...
+		//
 		
 		
+		//add papers
+		//replace items with paper description items
+		//or make some random floor tiles into papers, if they only spawn on office rooms/decks then could be unique floor tile
 		
-		Actor * cabinet = new Actor(x1+1,y1+1,240,"A filing cabinet", TCODColor::white);
-		engine.actors.push(cabinet);
+		
 	}
 
 	//add items
