@@ -527,11 +527,13 @@ RangedAi::RangedAi() : moveCount(0), range(3){
 
 void RangedAi::load(TCODZip &zip) {
 	moveCount = zip.getInt();
+	range = zip.getInt();
 }
 
 void RangedAi::save(TCODZip &zip) {
 	zip.putInt(RANGED);
 	zip.putInt(moveCount);
+	zip.putInt(range);
 }
 
 void RangedAi::update(Actor *owner) {
