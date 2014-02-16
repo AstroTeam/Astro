@@ -4,7 +4,7 @@ public:
 	static Ai *create(TCODZip &zip);
 protected:
 	enum AiType {
-		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER
+		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED
 	};
 };
 
@@ -33,6 +33,19 @@ protected:
 	int moveCount;
 	
 	void moveOrAttack(Actor *owner, int targetx, int targety);
+};
+
+class RangedAi : public Ai
+{
+	public:
+		RangedAi();
+		void update(Actor *owner);
+		void load(TCODZip &zip);
+		void save(TCODZip &zip);
+	protected:
+		int moveCount;
+		int range; //range
+		void moveOrAttack(Actor *owner, int targetx, int targety);
 };
 
 class EpicenterAi : public Ai {

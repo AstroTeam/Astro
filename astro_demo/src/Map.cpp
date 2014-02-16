@@ -145,6 +145,13 @@ void Map::addMonster(int x, int y) {
 	float infectedCrewMemChance = 80;
 	int infectedCrewMemAscii = 164;
 	
+	float infectedMarineMaxHp = 10;
+	float infectedMarineDef = 0;
+	float infectedMarineAtk = 5;
+	float infectedMarineXp = 10;
+//	float infectedMarineChance = 80;
+	int infectedMarineAscii = 169;
+	
 	//Infected NCO Base Stats
 	float infectedNCOMaxHp = 12;
 	float infectedNCODef = 1;
@@ -170,6 +177,8 @@ void Map::addMonster(int x, int y) {
 	int sporeCreatureAscii = 165;
 
 	
+	
+	
 	if(infectedCrewMemChance - 10*(level-1) <= 20) //lowerbound for infectedCrewMemChance = 20
 	{
 		infectedCrewMemChance = 20;
@@ -188,15 +197,28 @@ void Map::addMonster(int x, int y) {
 	
 	int dice = rng->getInt(0,100);
 	if (dice < infectedCrewMemChance) 
-	{
-		//create an infected crew member
-		Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
-		infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
-		infectedCrewMember->attacker = new Attacker(infectedCrewMemAtk);
-		infectedCrewMember->container = new Container(2);
-		infectedCrewMember->ai = new MonsterAi();
-		generateRandom(infectedCrewMember, infectedCrewMemAscii);
-		engine.actors.push(infectedCrewMember);
+	{//50% of infectedCrewMembers are infectedMarines
+		if(dice <= infectedCrewMemChance/2)
+		{
+			Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
+			infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
+			infectedCrewMember->attacker = new Attacker(infectedCrewMemAtk);
+			infectedCrewMember->container = new Container(2);
+			infectedCrewMember->ai = new MonsterAi();
+			generateRandom(infectedCrewMember, infectedCrewMemAscii);
+			engine.actors.push(infectedCrewMember);
+		}
+		else
+		{
+			Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
+			infectedMarine->destructible = new MonsterDestructible(infectedMarineMaxHp,infectedMarineDef,"infected corpse",infectedMarineXp);
+			infectedMarine->attacker = new Attacker(infectedMarineAtk);
+			infectedMarine->container = new Container(2);
+			infectedMarine->ai = new RangedAi();
+			generateRandom(infectedMarine, infectedMarineAscii);
+			engine.actors.push(infectedMarine);
+		}
+		
 	}
 	else if(dice < infectedCrewMemChance + infectedNCOChance)	
 	{
@@ -353,6 +375,34 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	//custom room feature
 	if (room->type == OFFICE) {
 		//place a cabient by the wall as a place holder
+		//x1 is the left side of room
+		//y1 is top of room
+		//x2 is right side of room
+		//y2 is bottom of room
+		
+		//filingCabinetX
+		//filingCabinetY
+		//choose which wall to put it on, x1, y1, y2, y3
+		//new random 1-4
+		//case 1 = filing cabinet is on side x1 (left), filingCabinetX is set = x1
+		//case 2 = filing cabinet is on side y1 (top), filingCabinetY is set = y1
+		//... expand for all 4 cases
+		//now we have chosen the wall side
+		//new random = NULL
+		//if we are on a left/right wall random between y1-y2, because we have the x at this point but need a y
+		//if we are on a bottom/top wall random between x1-x2, because we have the y at this point but need an x
+		//now we have chosen a point somewhere in the middle of the wall to place the cabinet
+		
+		//we now have values for filingCabinetX and filingCabinetY
+		//now check if we are blocking a hallway
+		//if we are on a left wall check the left 3 tiles adjacent
+		//if we are on a top wall check the upper 3 tiles adjacent
+		//... expand for all 4 cases
+		//checking the tiles:  if any of the tiles to check are floors then stop placing this cabinet.
+		//we can try to place another, or just stop, whatever is good
+		
+		
+		
 		Actor * cabinet = new Actor(x1+1,y1+1,240,"A filing cabinet", TCODColor::white);
 		engine.actors.push(cabinet);
 	}
@@ -501,7 +551,13 @@ void Map::generateRandom(Actor *owner, int ascii){
 	if(dice <= 40){
 			return;
 	}else{
-		if(ascii == 164){
+		if(ascii == 169 && false) //false since this doesn't currently works and I think it causes crashes
+		{
+				Actor *mlr = createMLR(0,0);
+				engine.actors.push(mlr);
+				mlr->pickable->pick(mlr,owner);
+		}
+		else if(ascii == 164){
 			for(int i = 0; i < owner->container->size; i++){
 				int rnd = rng->getInt(0,100);
 				if (rnd < 30) {
