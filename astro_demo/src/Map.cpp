@@ -134,7 +134,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 			if (a != NULL)
 			{
 				cout << a->name << endl;
-				if (strcmp(a->name,"fc") == 0)
+				if (strcmp(a->name,"a filing cabinet") == 0)
 				{
 					//engine.actors.remove(a);
 					//CHANGE THE SPRITE TO BROKEN CABINET
@@ -143,6 +143,8 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					//engine.gui->message(TCODColor::red, "playery  %d",plyy);
 					cout << "breaking cabinet";
 					a->blocks = false;
+					a->ch = 'B';
+					a->name = "a destroyed filing cabinet";
 					//delete a;
 				}
 			}
@@ -415,7 +417,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				filingCabY = rng->getInt(y1,y2);
 				if (isWall(filingCabX-1,filingCabY))
 				{
-					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"fc", TCODColor::white);
+					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
 					engine.actors.push(cabinet);
 				}
 			}
@@ -426,7 +428,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				filingCabX = rng->getInt(x1,x2);
 				if (isWall(filingCabX,filingCabY-1))
 				{
-					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"fc", TCODColor::white);
+					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
 					engine.actors.push(cabinet);
 				}
 			}
@@ -437,7 +439,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				filingCabY = rng->getInt(y1,y2);
 				if (isWall(filingCabX+1,filingCabY))
 				{
-					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"fc", TCODColor::white);
+					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
 					engine.actors.push(cabinet);
 				}
 			}
@@ -448,7 +450,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				filingCabX = rng->getInt(x1,x2);
 				if (isWall(filingCabX,filingCabY+1))
 				{
-					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"fc", TCODColor::white);
+					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
 					engine.actors.push(cabinet);
 				}
 			}
