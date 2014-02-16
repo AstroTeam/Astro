@@ -10,6 +10,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case MONSTER: ai = new MonsterAi(); break;
 		case CONFUSED_ACTOR: ai = new ConfusedActorAi(0,NULL); break;
 	    case EPICENTER: ai = new EpicenterAi(); break;
+		case RANGED: ai = new RangedAi(); break;
 	}
 	ai->load(zip);
 	return ai;
@@ -424,7 +425,7 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
 	float distance = sqrtf(dx*dx+dy*dy);
-	
+
 	if (distance >= 2) {
 		dx = (int) (round(dx / distance));
 		dy = (int)(round(dy / distance));
@@ -520,3 +521,66 @@ void ConfusedActorAi::update(Actor *owner) {
 		return;
 	}
 }
+
+RangedAi::RangedAi() : moveCount(0), range(3){
+}
+
+void RangedAi::load(TCODZip &zip) {
+	moveCount = zip.getInt();
+}
+
+void RangedAi::save(TCODZip &zip) {
+	zip.putInt(RANGED);
+	zip.putInt(moveCount);
+}
+
+void RangedAi::update(Actor *owner) {
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	if (engine.map->isInFov(owner->x,owner->y)) {
+		//can see the palyer, move towards him
+		moveCount = TRACKING_TURNS + 2; //give ranged characters longer tracking
+	} else {
+		moveCount--;
+	}
+	if (moveCount > 0) {
+		moveOrAttack(owner, engine.player->x, engine.player->y);
+	} else {
+		moveCount = 0;
+	}
+}
+void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
+{
+	int dx = targetx - owner->x;
+	int dy = targety - owner->y;
+	int stepdx = (dx > 0 ? 1:-1);
+	int stepdy = (dy > 0 ? 1:-1);
+	float distance = sqrtf(dx*dx+dy*dy);
+	//If the distance > range, then the rangedAi will move towards the player
+	//If the distance <= range, then the rangedAi will shoot the player unless the player is right next the rangedAi
+
+	if (distance > range) {
+
+		dx = (int) (round(dx / distance));
+		dy = (int)(round(dy / distance));
+		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+			owner->x+=dx;
+			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
+			owner->x += stepdx;
+		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
+			owner->y += stepdy;
+		}
+		if (owner->oozing) {
+			engine.map->infectFloor(owner->x, owner->y);
+		}
+	} else if (distance !=1 && owner->attacker) {
+		owner->attacker->shoot(owner,engine.player);
+	}
+	else if (owner->attacker) {
+		owner->attacker->attack(owner,engine.player);
+	}
+	
+}
+

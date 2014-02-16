@@ -145,6 +145,13 @@ void Map::addMonster(int x, int y) {
 	float infectedCrewMemChance = 80;
 	int infectedCrewMemAscii = 164;
 	
+	float infectedMarineMaxHp = 10;
+	float infectedMarineDef = 0;
+	float infectedMarineAtk = 5;
+	float infectedMarineXp = 10;
+//	float infectedMarineChance = 80;
+	int infectedMarineAscii = 169;
+	
 	//Infected NCO Base Stats
 	float infectedNCOMaxHp = 12;
 	float infectedNCODef = 1;
@@ -170,6 +177,8 @@ void Map::addMonster(int x, int y) {
 	int sporeCreatureAscii = 165;
 
 	
+	
+	
 	if(infectedCrewMemChance - 10*(level-1) <= 20) //lowerbound for infectedCrewMemChance = 20
 	{
 		infectedCrewMemChance = 20;
@@ -188,15 +197,28 @@ void Map::addMonster(int x, int y) {
 	
 	int dice = rng->getInt(0,100);
 	if (dice < infectedCrewMemChance) 
-	{
-		//create an infected crew member
-		Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
-		infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
-		infectedCrewMember->attacker = new Attacker(infectedCrewMemAtk);
-		infectedCrewMember->container = new Container(2);
-		infectedCrewMember->ai = new MonsterAi();
-		generateRandom(infectedCrewMember, infectedCrewMemAscii);
-		engine.actors.push(infectedCrewMember);
+	{//50% of infectedCrewMembers are infectedMarines
+		if(dice <= infectedCrewMemChance/2)
+		{
+			Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
+			infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
+			infectedCrewMember->attacker = new Attacker(infectedCrewMemAtk);
+			infectedCrewMember->container = new Container(2);
+			infectedCrewMember->ai = new MonsterAi();
+			generateRandom(infectedCrewMember, infectedCrewMemAscii);
+			engine.actors.push(infectedCrewMember);
+		}
+		else
+		{
+			Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
+			infectedMarine->destructible = new MonsterDestructible(infectedMarineMaxHp,infectedMarineDef,"infected corpse",infectedMarineXp);
+			infectedMarine->attacker = new Attacker(infectedMarineAtk);
+			infectedMarine->container = new Container(2);
+			infectedMarine->ai = new RangedAi();
+			generateRandom(infectedMarine, infectedMarineAscii);
+			engine.actors.push(infectedMarine);
+		}
+		
 	}
 	else if(dice < infectedCrewMemChance + infectedNCOChance)	
 	{
@@ -529,7 +551,13 @@ void Map::generateRandom(Actor *owner, int ascii){
 	if(dice <= 40){
 			return;
 	}else{
-		if(ascii == 164){
+		if(ascii == 169 && false) //false since this doesn't currently works and I think it causes crashes
+		{
+				Actor *mlr = createMLR(0,0);
+				engine.actors.push(mlr);
+				mlr->pickable->pick(mlr,owner);
+		}
+		else if(ascii == 164){
 			for(int i = 0; i < owner->container->size; i++){
 				int rnd = rng->getInt(0,100);
 				if (rnd < 30) {
