@@ -144,6 +144,26 @@ void Renderer::render(void *sdlSurface){
 				srcRect.y = 0;
 				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				//SDL_FillRect(floorMap, &dstRect, 258);
+				if (engine.mapcon->getChar(xM,yM) == 181 || engine.mapcon->getChar(xM,yM) == 182 || engine.mapcon->getChar(xM,yM) == 183 || 
+				engine.mapcon->getChar(xM,yM) == 184 || engine.mapcon->getChar(xM,yM) == 64 || engine.mapcon->getChar(xM,yM) == 164 || 
+				engine.mapcon->getChar(xM,yM) == 165 || engine.mapcon->getChar(xM,yM) == 148 || engine.mapcon->getChar(xM,yM) == 132) 
+				{
+					for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {//is walkable?
+						Actor *actor = *it;
+						if (actor->x == xM && actor->y == yM && actor->destructible && actor->destructible->isDead()) {
+							//doubles += 1;
+							SDL_Rect srcRect2={10*16,3*16,16,16};
+							SDL_Rect dstRect={x*16,y*16,16,16};
+							//10 width 3 height for standard bodies
+							//if they are spore bodies
+							if (actor->ch == 162){
+								srcRect2.y = 2*16;
+							}
+							
+							SDL_BlitSurface(terminal,&srcRect2,floorMap,&dstRect);
+						}
+					}
+				}
 			}
 			//replace unlit infected tiles
 			else if(engine.mapconCpy->getChar(xM,yM) == 28){

@@ -484,22 +484,31 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			files++;
 		}
 		//add desks
-		
+		TCODRandom *rng = TCODRandom::getInstance();
+			int place = 0;
 		//random between x1+2 and x2-3(-2 if random 1x1) (so they can fit, leaving a 1 cell lining, if 2x2) 
 		//random between y1+2 and y2-3(-2 if random 1x1) (so they can fit, leaving a 1 cell lining, if 2x2)
 		//these are the two x,y's
-		//
-		//add a 2x2 of desks?  add random desks?
-		// ...D.D...
-		// .........  <- 3x3 of desks with spaces in-between?
-		// ...D.D...
-		//
-		
-		
-		//add papers
-		//replace items with paper description items
-		//or make some random floor tiles into papers, if they only spawn on office rooms/decks then could be unique floor tile
-		
+		for (int xX = x1+1; xX <= x2-1;xX+=2)
+		{
+			for (int yY = y1+1; yY <= y2-1;yY+=2)
+			{
+				//add a 2x2 of desks?  add random desks?
+				// ...D.D...
+				// .........  <- 3x3 of desks with spaces in-between?
+				// ...D.D...
+				//
+				place = rng->getInt(1,10);
+				if (place > 4)
+				{
+					Actor * desk = new Actor(xX,yY,'D',"a desk", TCODColor::white);
+					engine.actors.push(desk);
+				}
+				//add papers
+				//replace items with paper description items
+				//or make some random floor tiles into papers, if they only spawn on office rooms/decks then could be unique floor tile
+			}
+		}
 		
 	}
 

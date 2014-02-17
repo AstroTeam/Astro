@@ -2,7 +2,12 @@
 #include "SDL/SDL.h"
 //#include "SDL/SDL_image.h"
 #include <string>
+
+
+//cd C:\Users\Shane\Documents\GitHub\Game\astro_demo
+ 
 //g++ src/*.cpp -o tuto -lmingw32 -lSDLmain -lSDL -Iinclude -Llib -ltcod-mingw -static-libgcc -static-libstdc++ -Wall
+
 
 
 
