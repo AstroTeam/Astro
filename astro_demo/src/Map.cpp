@@ -218,8 +218,8 @@ void Map::addMonster(int x, int y) {
 	
 	int dice = rng->getInt(0,100);
 	if (dice < infectedCrewMemChance) 
-	{//50% of infectedCrewMembers are infectedMarines
-		if(dice <= infectedCrewMemChance/2)
+	{//10% of infectedCrewMembers are infectedMarines
+		if(dice <= (infectedCrewMemChance*9)/10) 
 		{
 			Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
 			infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
@@ -229,7 +229,7 @@ void Map::addMonster(int x, int y) {
 			generateRandom(infectedCrewMember, infectedCrewMemAscii);
 			engine.actors.push(infectedCrewMember);
 		}
-		else
+		else 
 		{
 			Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
 			infectedMarine->destructible = new MonsterDestructible(infectedMarineMaxHp,infectedMarineDef,"infected corpse",infectedMarineXp);
