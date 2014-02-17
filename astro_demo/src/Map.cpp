@@ -647,13 +647,16 @@ void Map::generateRandom(Actor *owner, int ascii){
 	if(dice <= 40){
 			return;
 	}else{
-		if(ascii == 169 && false) //false since this doesn't currently works and I think it causes crashes
+		if(ascii == 169) //infectedMarines have 60% chance of dropping a MLR
 		{
-				Actor *mlr = createMLR(0,0);
-				engine.actors.push(mlr);
-				mlr->pickable->pick(mlr,owner);
-		}
-		else if(ascii == 164){
+			for(int i = 0; i < owner->container->size; i++)
+			{
+				Actor *MLR = createMLR(0,0);
+				engine.actors.push(MLR);
+				MLR->pickable->pick(MLR,owner);
+			}
+				
+		}else if(ascii == 164){
 			for(int i = 0; i < owner->container->size; i++){
 				int rnd = rng->getInt(0,100);
 				if (rnd < 30) {
