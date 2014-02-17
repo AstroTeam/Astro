@@ -143,7 +143,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					//engine.gui->message(TCODColor::red, "playery  %d",plyy);
 					cout << "breaking cabinet";
 					a->blocks = false;
-					a->ch = 'B';
+					a->ch = 241;
 					a->name = "a destroyed filing cabinet";
 					//delete a;
 				}
@@ -411,11 +411,12 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			TCODRandom *rng = TCODRandom::getInstance();
 			int wall = rng->getInt(0,3);
 			//case 1 = filing cabinet is on side x1 (left), filingCabinetX is set = x1
+			//DOUBLES
 			if (wall == 0)
 			{
 				filingCabX = x1;
 				filingCabY = rng->getInt(y1,y2);
-				if (isWall(filingCabX-1,filingCabY))
+				if (isWall(filingCabX-1,filingCabY) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
 					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
 					engine.actors.push(cabinet);
@@ -426,7 +427,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			{
 				filingCabY = y1;
 				filingCabX = rng->getInt(x1,x2);
-				if (isWall(filingCabX,filingCabY-1))
+				if (isWall(filingCabX,filingCabY-1) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
 					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
 					engine.actors.push(cabinet);
@@ -437,7 +438,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			{
 				filingCabX = x2;
 				filingCabY = rng->getInt(y1,y2);
-				if (isWall(filingCabX+1,filingCabY))
+				if (isWall(filingCabX+1,filingCabY ) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
 					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
 					engine.actors.push(cabinet);
@@ -448,7 +449,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			{
 				filingCabY = y2;
 				filingCabX = rng->getInt(x1,x2);
-				if (isWall(filingCabX,filingCabY+1))
+				if (isWall(filingCabX,filingCabY+1) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
 					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
 					engine.actors.push(cabinet);

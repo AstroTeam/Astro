@@ -8,7 +8,7 @@
 
 
 void Renderer::render(void *sdlSurface){
-/////////////////////////////////////////////////////////////////////rendering doubled up objects
+/////////////////////////////////////////////////////////////////////rendering doubled up walkable decor!
 	SDL_Surface *screen=(SDL_Surface *)sdlSurface;
 	//floors
 	SDL_Surface *floorTiles = SDL_LoadBMP("tile_assets/tiles.bmp");
@@ -112,7 +112,7 @@ void Renderer::render(void *sdlSurface){
 				engine.mapcon->getChar(xM,yM) == 184 || engine.mapcon->getChar(xM,yM) == 64 || engine.mapcon->getChar(xM,yM) == 164 || 
 				engine.mapcon->getChar(xM,yM) == 165 || engine.mapcon->getChar(xM,yM) == 148 || engine.mapcon->getChar(xM,yM) == 132) 
 				{
-					for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+					for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {//is walkable?
 						Actor *actor = *it;
 						if (actor->x == xM && actor->y == yM && actor->destructible && actor->destructible->isDead()) {
 							//doubles += 1;
@@ -222,6 +222,19 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.y = 0;
 				}
+				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+			}
+			else if (engine.mapcon->getChar(xM,yM) == 241)
+			{
+				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
+				{
+					srcRect.x = 0;
+				}
+				else
+				{
+					srcRect.x = 16;
+				}
+				srcRect.y = 64;
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 			}
 			
