@@ -373,14 +373,16 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type) {
 	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
 	
 	if (key.vk == TCODK_CHAR) {
-		int actorIndex = 0;
 		if(owner->container->select[key.c]){
+			int index = 0;
 			for(Actor **it = owner->container->inventory.begin(); it != owner->container->inventory.end(); ++it){
 				Actor *actor = *it;
-					if(strcmp(actor->name,owner->container->select[key.c]) == 0){
-						return owner->container->inventory.get(actorIndex);
-					}
-				actorIndex++;
+				if((index >= key.c - 'a') && strcmp(actor->name,owner->container->select[key.c]) == 0){
+					engine.gui->message(TCODColor::grey, "You picked the %s",actor->name);
+					owner->container->select.clear();
+					return actor;
+				}
+				index++;
 			}
 		}
 	}
