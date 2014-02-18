@@ -489,9 +489,9 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//random between x1+2 and x2-3(-2 if random 1x1) (so they can fit, leaving a 1 cell lining, if 2x2) 
 		//random between y1+2 and y2-3(-2 if random 1x1) (so they can fit, leaving a 1 cell lining, if 2x2)
 		//these are the two x,y's
-		for (int xX = x1+1; xX <= x2-1;xX+=2)
+		for (int xX = x1+2; xX <= x2-2;xX+=2)
 		{
-			for (int yY = y1+1; yY <= y2-1;yY+=2)
+			for (int yY = y1+2; yY <= y2-2;yY+=2)
 			{
 				//add a 2x2 of desks?  add random desks?
 				// ...D.D...
@@ -501,7 +501,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				place = rng->getInt(1,10);
 				if (place > 4)
 				{
-					Actor * desk = new Actor(xX,yY,'D',"a desk", TCODColor::white);
+					Actor * desk = new Actor(xX,yY,242,"a desk", TCODColor::white);
 					engine.actors.push(desk);
 				}
 				//add papers

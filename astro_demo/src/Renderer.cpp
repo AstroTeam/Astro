@@ -257,7 +257,19 @@ void Renderer::render(void *sdlSurface){
 				srcRect.y = 64;
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 			}
-			
+			else if (engine.mapcon->getChar(xM,yM) == 242)
+			{
+				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
+				{
+					srcRect.y = 0;
+				}
+				else
+				{
+					srcRect.y = 16;
+				}
+				srcRect.x = 32;
+				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+			}
 			//SDL_Delay(100);
 			y++;
 		}
