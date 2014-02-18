@@ -502,6 +502,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				if (place > 4)
 				{
 					Actor * desk = new Actor(xX,yY,242,"a desk", TCODColor::white);
+					int n = rng->getInt(1,4);
+					engine.mapconDec->setChar(xX, yY, n);
 					engine.actors.push(desk);
 				}
 				//add papers

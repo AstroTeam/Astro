@@ -23,6 +23,7 @@ Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	mapcon = new TCODConsole(mapWidth,mapHeight);
 	engine.mapcon->setDefaultBackground(TCODColor::blue);
 	mapconCpy = new TCODConsole(mapWidth, mapHeight);
+	mapconDec = new TCODConsole(mapWidth, mapHeight);
 	gui = new Gui();
 	mapx1 = 0;
 	mapx2 = 0;

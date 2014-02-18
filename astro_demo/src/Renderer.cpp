@@ -277,16 +277,16 @@ void Renderer::render(void *sdlSurface){
 				//n = 1.0 - ( (n * (n * n * 15731 + 789221) + 1376312589)) / 1073741824.0;   
 				
 				//int n = xM | yM;
-				int n = xM | yM;
-				n = n ^ 1376312589;
+				//int n = xM | yM;
+				//n = n ^ 1376312589;
 				
-				if(n%4 == 0)
+				if(engine.mapconDec->getChar(xM,yM) == 1)
 				{
 					srcRect.x=32+48;
-				} else if (n%3 == 0)
+				} else if (engine.mapconDec->getChar(xM,yM) == 2)
 				{
 					srcRect.x=32+16;
-				}else if (n%17 == 0)
+				}else if (engine.mapconDec->getChar(xM,yM) == 3)
 				{
 					srcRect.x=32+32;
 				}else
