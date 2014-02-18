@@ -377,6 +377,7 @@ void Engine::nextLevel() {
 			it = actors.remove(it);
 		}
 	}
+	engine.mapconDec->clear();
 	//create a new map
 	map = new Map(mapWidth,mapHeight);
 	map->init(true, Param::GENERIC);

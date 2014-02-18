@@ -93,6 +93,7 @@ void Map::init(bool withActors, LevelType levelType) {
 	listener.bspActors = withActors;
 	listener.roomList = getRoomTypes(levelType);
 	bsp.traverseInvertedLevelOrder(&listener, (void *)withActors);
+	
 }
 
 void Map::save(TCODZip &zip) {
@@ -124,7 +125,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 		y2 = y1;
 		y1 = tmp;
 	}
-
+	TCODRandom *rng = TCODRandom::getInstance();
 	for (int tilex = x1; tilex <=x2; tilex++) {
 		for (int tiley = y1; tiley <= y2; tiley++) {
 			map->setProperties(tilex,tiley,true,true);
@@ -141,10 +142,35 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					//CHANGE THE NAME TO BROKEN CABINET
 					
 					//engine.gui->message(TCODColor::red, "playery  %d",plyy);
-					cout << "breaking cabinet";
+					//cout << "breaking cabinet";
 					a->blocks = false;
 					a->ch = 241;
 					a->name = "a destroyed filing cabinet";
+					
+					int n = rng->getInt(5,8);
+					int x = a->x;
+					int y = a->y;
+					int add = rng->getInt(0,10);
+					for (int xxx = -1; xxx <= 1; xxx++)/////////////////////9x9 for loop to add papers
+					{
+						for (int yyy = -1; yyy <= 1; yyy++)
+						{
+							if (add > 3 )
+							{
+								engine.mapconDec->setChar(x+xxx, y+yyy, n);
+							}
+							n = rng->getInt(5,8);
+							add = rng->getInt(0,10);
+						}
+					}
+					
+					//engine.mapconDec->setChar(x+1, y, n);
+					//n = rng->getInt(5,8);
+					//engine.mapconDec->setChar(x-1, y, n);
+					//n = rng->getInt(5,8);
+					//engine.mapconDec->setChar(x, y+1, n);
+					//n = rng->getInt(5,8);
+					//engine.mapconDec->setChar(x, y-1, n);
 					//delete a;
 				}
 			}
