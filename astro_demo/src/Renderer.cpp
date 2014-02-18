@@ -86,6 +86,8 @@ void Renderer::render(void *sdlSurface){
 	for (int xM = engine.mapx1; xM < engine.mapx2+16; xM++) {
 		for (int yM = engine.mapy1; yM < engine.mapy2+16; yM++) {
 			//if it needs to be rendered over, render it over
+			
+			//engine.gui->message(TCODColor::red, "noise  %d",n);
 			SDL_Rect dstRect={x*16,y*16,16,16};
 			if(engine.mapcon->getChar(xM,yM) == 64)
 			{
@@ -267,7 +269,33 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.y = 16;
 				}
-				srcRect.x = 32;
+				
+				
+				//int n = xM + yM * 57;
+				//n = (n<<13) ^ n;
+				//float NaN = 7fffffff;
+				//n = 1.0 - ( (n * (n * n * 15731 + 789221) + 1376312589)) / 1073741824.0;   
+				
+				//int n = xM | yM;
+				int n = xM | yM;
+				n = n ^ 1376312589;
+				
+				if(n%4 == 0)
+				{
+					srcRect.x=32+48;
+				} else if (n%3 == 0)
+				{
+					srcRect.x=32+16;
+				}else if (n%17 == 0)
+				{
+					srcRect.x=32+32;
+				}else
+				{
+					srcRect.x=32;
+				}
+				
+				
+				
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 			}
 			//SDL_Delay(100);
@@ -404,4 +432,4 @@ void Renderer::render(void *sdlSurface){
 	
 }
 	
-	
+
