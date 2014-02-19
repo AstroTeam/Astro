@@ -94,7 +94,7 @@ void Renderer::render(void *sdlSurface){
 				TCODConsole::root->clear();
 			}
 			if(engine.mapcon->getChar(xM,yM) == 64 || engine.mapcon->getChar(xM,yM) == 143 ||
-     		   engine.mapcon->getChar(xM,yM) == 159 || engine.mapcon->getChar(xM,yM) == 175)
+     		  engine.mapcon->getChar(xM,yM) == 159 || engine.mapcon->getChar(xM,yM) == 175)
 			{
 				plyx = x;
 				plyy = y;
@@ -426,7 +426,18 @@ void Renderer::render(void *sdlSurface){
 					srcRect.y = 0;
 					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
 				}
-				
+				if (strcmp(a->name,"Marine Fatigue BDU-lower") == 0)
+				{
+					srcRect.x = 0;
+					srcRect.y = 16;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
+				if (strcmp(a->name,"Marine Fatigue BDU-upper") == 0)
+				{
+					srcRect.x = 16;
+					srcRect.y = 16;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
 				if (strcmp(a->name,"Titan-mail") == 0)
 				{
 					srcRect.x = 32;
