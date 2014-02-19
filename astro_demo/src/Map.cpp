@@ -128,6 +128,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 	TCODRandom *rng = TCODRandom::getInstance();
 	for (int tilex = x1; tilex <=x2; tilex++) {
 		for (int tiley = y1; tiley <= y2; tiley++) {
+
 			map->setProperties(tilex,tiley,true,true);
 			Actor* a = NULL;
 			a = engine.getAnyActor(tilex,tiley);
@@ -421,6 +422,11 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 
 	//custom room feature
 	if (room->type == OFFICE) {
+		for (int tilex = x1; tilex <=x2; tilex++) {
+			for (int tiley = y1; tiley <= y2; tiley++) {
+				tiles[tilex+tiley*width].tileType = OFFICE;
+			}
+		}
 		int files = 0;
 		while (files < 10)
 		{
