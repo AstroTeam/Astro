@@ -9,7 +9,7 @@ public:
 	Pickable(bool stacks,int stacksize, PickableType type = NONE);
 	bool pick(Actor *owner, Actor *wearer);
 	virtual bool use(Actor *owner, Actor *wearer);
-	void drop(Actor *owner, Actor *wearer);
+	void drop(Actor *owner, Actor *wearer, bool isNPC = false);
 	static Pickable *create(TCODZip &zip);
 };
 

@@ -157,7 +157,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				if (actor->pickable && actor->x == owner->x && actor->y == owner->y) {
 					if (actor->pickable->pick(actor,owner)) {
 						found = true;
-						engine.gui->message(TCODColor::lightGrey, "You pick up the %s.", actor->name);
+						engine.gui->message(TCODColor::lightGrey, "You pick up %d %s.", actor->pickable->stackSize, actor->name);
 						break;
 					} else if (!found ) {
 						found = true;

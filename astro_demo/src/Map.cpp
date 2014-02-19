@@ -697,65 +697,74 @@ void Map::generateRandom(Actor *owner, int ascii){
 	}else{
 		if(ascii == 169) //infectedMarines have 60% chance of dropping a MLR
 		{
-			for(int i = 0; i < owner->container->size; i++)
-			{
+			//for(int i = 1; i <= owner->container->size; i++)
+			//{
 				Actor *MLR = createMLR(0,0);
 				engine.actors.push(MLR);
 				MLR->pickable->pick(MLR,owner);
-			}
+				//engine.gui->message(TCODColor::white,"MLR added");
+			//}
 				
 		}else if(ascii == 164){
 			for(int i = 0; i < owner->container->size; i++){
-				int rnd = rng->getInt(0,100);
-				if (rnd < 30) {
-					//create a health potion
-					Actor *healthPotion = createHealthPotion(0,0);
-					engine.actors.push(healthPotion);
-					healthPotion->pickable->pick(healthPotion,owner);
-				} else if(rnd < 10+30) {
-					//create a scroll of lightningbolt
-					Actor *scrollOfLightningBolt = createEMP(0,0);
-					engine.actors.push(scrollOfLightningBolt);
-					scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
-				} else if(rnd < 10+30+20) {
-					//create a scroll of fireball
-					Actor *scrollOfFireball = createFireBomb(0,0);
-					engine.actors.push(scrollOfFireball);
-					scrollOfFireball->pickable->pick(scrollOfFireball,owner);
-				} else{
-					//create a scroll of confusion
-					Actor *scrollOfConfusion = createFlashBang(0,0);
-					engine.actors.push(scrollOfConfusion);
-					scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+				int rndA = rng->getInt(0,100);
+				if(rndA > 40){
+					int rnd = rng->getInt(0,100);
+					if (rnd < 30) {
+						//create a health potion
+						Actor *healthPotion = createHealthPotion(0,0);
+						engine.actors.push(healthPotion);
+						healthPotion->pickable->pick(healthPotion,owner);
+					} else if(rnd < 10+30) {
+						//create a scroll of lightningbolt
+						Actor *scrollOfLightningBolt = createEMP(0,0);
+						engine.actors.push(scrollOfLightningBolt);
+						scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
+					} else if(rnd < 10+30+20) {
+						//create a scroll of fireball
+						Actor *scrollOfFireball = createFireBomb(0,0);
+						engine.actors.push(scrollOfFireball);
+						scrollOfFireball->pickable->pick(scrollOfFireball,owner);
+					} else{
+						//create a scroll of confusion
+						Actor *scrollOfConfusion = createFlashBang(0,0);
+						engine.actors.push(scrollOfConfusion);
+						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+					}
 				}
 			}
 		}else if(ascii == 165){
 			for(int i = 0; i < owner->container->size; i++){
-				int rnd2 = rng->getInt(0,100);
-				if (rnd2 < 25) {
-					//create a health potion
-					Actor *healthPotion = createHealthPotion(0,0);
-					engine.actors.push(healthPotion);
-					healthPotion->pickable->pick(healthPotion,owner);
-				} else if(rnd2 < 25+20) {
-					//create a scroll of lightningbolt
-					Actor *scrollOfLightningBolt = createEMP(0,0);
-					engine.actors.push(scrollOfLightningBolt);
-					scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
-				} else if(rnd2 < 25+20+25) {
-					//create a scroll of fireball
-					Actor *scrollOfFireball = createFireBomb(0,0);
-					engine.actors.push(scrollOfFireball);
-					scrollOfFireball->pickable->pick(scrollOfFireball,owner);
-				} else{
-					//create a scroll of confusion
-					Actor *scrollOfConfusion = createFlashBang(0,0);
-					engine.actors.push(scrollOfConfusion);
-					scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+				int rndA2 = rng->getInt(0,100);
+				if(rndA2 > 45){
+					int rnd2 = rng->getInt(0,100);
+					if (rnd2 < 25) {
+						//create a health potion
+						Actor *healthPotion = createHealthPotion(0,0);
+						engine.actors.push(healthPotion);
+						healthPotion->pickable->pick(healthPotion,owner);
+					} else if(rnd2 < 25+20) {
+						//create a scroll of lightningbolt
+						Actor *scrollOfLightningBolt = createEMP(0,0);
+						engine.actors.push(scrollOfLightningBolt);
+						scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
+					} else if(rnd2 < 25+20+25) {
+						//create a scroll of fireball
+						Actor *scrollOfFireball = createFireBomb(0,0);
+						engine.actors.push(scrollOfFireball);
+						scrollOfFireball->pickable->pick(scrollOfFireball,owner);
+					} else{
+						//create a scroll of confusion
+						Actor *scrollOfConfusion = createFlashBang(0,0);
+						engine.actors.push(scrollOfConfusion);
+						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+					}
 				}
-		}
+			}
 		}else if(ascii == 148){
 			for(int i = 0; i < owner->container->size; i++){
+				int rndA2 = rng->getInt(0,100);
+				if(rndA2 > 45){
 					int rnd = rng->getInt(0,120);
 					if (rnd < 30) {
 						//create a health potion
@@ -783,9 +792,13 @@ void Map::generateRandom(Actor *owner, int ascii){
 						engine.actors.push(scrollOfConfusion);
 						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
 					}
+					}
 				}
+			
 		}else if(ascii == 132){
 			for(int i = 0; i < owner->container->size; i++){
+				int rndA2 = rng->getInt(0,100);
+				if(rndA2 > 45){
 					int rnd = rng->getInt(0,100);
 					if (rnd < 30) {
 						//create a health potion
@@ -813,6 +826,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 						engine.actors.push(scrollOfConfusion);
 						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
 					}
+				}
 			}
 		}
 	}
