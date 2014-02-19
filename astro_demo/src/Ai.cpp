@@ -36,6 +36,9 @@ void PlayerAi::save(TCODZip &zip) {
 }
 
 void PlayerAi::update(Actor *owner) {
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
 	int levelUpXp = getNextLevelXp();
 	if (owner->destructible->xp >= levelUpXp) {
 		bool choice_made = false, first = true;
@@ -76,9 +79,6 @@ void PlayerAi::update(Actor *owner) {
 			default: break;
 		}
 		}
-	}
-	if (owner->destructible && owner->destructible->isDead()) {
-		return;
 	}
 	int dx =0, dy =0;
 	switch (engine.lastKey.vk) {
