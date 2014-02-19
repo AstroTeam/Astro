@@ -156,6 +156,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					a->blocks = false;
 					a->ch = 241;
 					a->name = "a destroyed filing cabinet";
+					engine.sendToBack(a);
 					
 					int n = rng->getInt(5,8);
 					int x = a->x;
