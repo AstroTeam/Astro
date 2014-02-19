@@ -10,6 +10,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_Surface *screen=(SDL_Surface *)sdlSurface;
 	//floors
 	SDL_Surface *floorTiles = SDL_LoadBMP("tile_assets/tiles.bmp");
+	SDL_SetColorKey(floorTiles,SDL_SRCCOLORKEY,255);
 	static int alpha = 255*.5;
 	static bool Down = true;
 	if (alpha > 0 && Down)
@@ -109,11 +110,26 @@ void Renderer::render(void *sdlSurface){
 			{ //replace 'down arrow thing' (31 ascii) with basic floor tiles
 				//SDL_UpdateRect(floorMap, x*16, y*16, 16, 16);
 				//SDL_FillRect(floorMap, &dstRect, 258);
-				srcRect.x = 0;
+				//Map::RoomType r = engine.map->tiles[xM*yM].tileType;
+				int r = engine.map->tileType(xM,yM);
+				if (r == 2)
+				{
+					srcRect.x = 48;
+				}
+				else
+				{
+					srcRect.x = 0;
+				}
 				srcRect.y = 0;
 				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
-				//SDL_UpdateRect(floorMap, x*16, y*16, 16, 16);
 				
+				
+				if (engine.map->isInfected(xM,yM))
+				{
+					srcRect.x = 16;
+					srcRect.y = 0;
+					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
+				}
 				//any decor to render just on top of floors
 				if (engine.mapconDec->getChar(xM,yM) == ' ')
 				{
@@ -159,9 +175,25 @@ void Renderer::render(void *sdlSurface){
 			//replace 'up arrow thing' with darker floor tiles
 			else if(engine.mapconCpy->getChar(xM,yM) == 30)
 			{
-				srcRect.x = 0;
+				int r = engine.map->tileType(xM,yM);
+				if (r == 2)
+				{
+					srcRect.x = 48;
+				}
+				else
+				{
+					srcRect.x = 0;
+				}
 				srcRect.y = 16;
 				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
+				
+				//add infection
+				if (engine.map->isInfected(xM,yM))
+				{
+					srcRect.x = 16;
+					srcRect.y = 16;
+					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
+				}
 				
 				//render decor *DARK*
 				if (engine.mapconDec->getChar(xM,yM) == ' ')
@@ -178,7 +210,7 @@ void Renderer::render(void *sdlSurface){
 				}
 			}
 			//replace infected tiles lit
-			else if(engine.mapconCpy->getChar(xM,yM) == 29){
+			/*else if(engine.mapconCpy->getChar(xM,yM) == 29){
 				//SDL_FillRect(floorMap, &dstRect, 258);
 				srcRect.x = 16;
 				srcRect.y = 0;
@@ -204,13 +236,13 @@ void Renderer::render(void *sdlSurface){
 						}
 					}
 				}
-			}
+			}*/
 			//replace unlit infected tiles
-			else if(engine.mapconCpy->getChar(xM,yM) == 28){
-				srcRect.x = 16;
-				srcRect.y = 16;
-				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
-			}
+			//else if(engine.mapconCpy->getChar(xM,yM) == 28){
+			//	srcRect.x = 16;
+			//	srcRect.y = 16;
+			//	SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
+			//}
 			
 			//check for doubles
 			
@@ -426,26 +458,25 @@ void Renderer::render(void *sdlSurface){
 					srcRect.y = 0;
 					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
 				}
-				if (strcmp(a->name,"Marine Fatigue BDU-lower") == 0)
+				else if (strcmp(a->name,"Marine Fatigue BDU-lower") == 0)
 				{
 					srcRect.x = 0;
 					srcRect.y = 16;
 					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
 				}
-				if (strcmp(a->name,"Marine Fatigue BDU-upper") == 0)
+				else if (strcmp(a->name,"Marine Fatigue BDU-upper") == 0)
 				{
 					srcRect.x = 16;
 					srcRect.y = 16;
 					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
 				}
-				if (strcmp(a->name,"Titan-mail") == 0)
+				else if (strcmp(a->name,"Titan-mail") == 0)
 				{
 					srcRect.x = 32;
 					srcRect.y = 0;
 					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
 				}
-				
-				if (strcmp(a->name, "MLR") == 0)
+				else if (strcmp(a->name, "MLR") == 0)
 				{
 					srcRect.x = 16;
 					srcRect.y = 0;

@@ -81,6 +81,15 @@ Map::~Map() {
 	delete map;
 }
 
+int Map::tileType(int x, int y) {
+	int i = x+y*width;
+	if (tiles[i].tileType == Param::OFFICE)
+	{return 2;}
+	else
+	{return 1;}
+	//return tiles[x*y].tileType;
+}
+
 void Map::init(bool withActors, LevelType levelType) {
 	cout << levelType << endl << endl;
 
@@ -641,7 +650,7 @@ void Map::render() const {
 				}
 				else {
 					if (isInfected(x,y)) {
-						engine.mapcon->setChar(x, y, 29);
+						engine.mapcon->setChar(x, y, 31);//29
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
 						//engine.mapconCpy->setChar(x, y, 29);
 						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
@@ -670,7 +679,7 @@ void Map::render() const {
 				}
 				else {
 					if (isInfected(x,y)) {
-						engine.mapcon->setChar(x, y, 28);
+						engine.mapcon->setChar(x, y, 30);//28
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
 						//engine.mapconCpy->setChar(x, y, 28);
 						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
