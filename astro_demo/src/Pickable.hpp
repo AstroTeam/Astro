@@ -1,7 +1,7 @@
 class Pickable : public Persistent {
 public:
 	enum PickableType {
-		NONE,HEALER, LIGHTNING_BOLT, CONFUSER, FIREBALL, EQUIPMENT
+		NONE, HEALER, CHARGER, LIGHTNING_BOLT, CONFUSER, FIREBALL, EQUIPMENT
 	};
 	bool stacks;
 	int stackSize;
@@ -17,6 +17,15 @@ class Healer: public Pickable {
 public: 
 	float amount; //how much it heals
 	Healer(float amount, bool stacks = true, int stackSize = 1, PickableType type = HEALER);
+	bool use(Actor *owner, Actor *wearer);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+};
+
+class Charger: public Pickable {
+public: 
+	float amount; //how much it recharges
+	Charger(float amount, bool stacks = true, int stackSize = 1, PickableType type = CHARGER);
 	bool use(Actor *owner, Actor *wearer);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);

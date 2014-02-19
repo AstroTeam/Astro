@@ -96,7 +96,7 @@ void Engine::init() {
 			break;
 	}
 	player->destructible = new PlayerDestructible(100, 2, "your cadaver");
-	player->attacker = new Attacker(5);
+	player->attacker = new Attacker(5,20);
 	player->ai = new PlayerAi();
 	player->container = new Container(50);
 	actors.push(player);

@@ -304,12 +304,13 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				}
 				//hit the closest monster for <damage> hit points;
 				else{
-					if(false){
-						/////////TO-DO Battery
+					if(owner->attacker && owner->attacker->battery >= 1){
+						owner->attacker->shoot(owner, closestMonster);
+						owner->attacker->usePower(owner, 1);
+						engine.gameStatus = Engine::NEW_TURN;
 					}
 					else{
-						owner->attacker->shoot(owner, closestMonster);
-						engine.gameStatus = Engine::NEW_TURN;
+						engine.gui->message(TCODColor::lightGrey, "Not enough battery to shoot.");
 					}
 				}
 				/*

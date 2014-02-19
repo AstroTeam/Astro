@@ -9,6 +9,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 	Pickable *pickable = NULL;
 	switch(type) {
 		case HEALER: pickable = new Healer(0); break;
+		case CHARGER: pickable = new Charger(0); break;
 		case LIGHTNING_BOLT: pickable = new LightningBolt(0,0); break;
 		case CONFUSER: pickable = new Confuser(0,0); break;
 		case FIREBALL: pickable = new Fireball(0,0,0); break;
@@ -59,6 +60,33 @@ bool Healer::use(Actor *owner, Actor *wearer) {
 	if (wearer->destructible) {
 		float amountHealed = wearer->destructible->heal(amount);
 		if (amountHealed > 0) {
+			return Pickable::use(owner,wearer);
+		}
+	}
+	return false;
+}
+
+Charger::Charger(float amount, bool stacks, int stackSize, PickableType type)
+	: Pickable(stacks,stackSize,type),amount(amount) {
+}
+
+void Charger::load(TCODZip &zip) {
+	amount = zip.getFloat();
+	stacks = zip.getInt();
+	stackSize = zip.getInt();
+}
+
+void Charger::save(TCODZip &zip) {
+	zip.putInt(type);
+	zip.putFloat(amount);
+	zip.putInt(stacks);
+	zip.putInt(stackSize);
+}
+
+bool Charger::use(Actor *owner, Actor *wearer) {
+	if (wearer->attacker) {
+		float amountCharged = wearer->attacker->recharge(amount);
+		if (amountCharged > 0) {
 			return Pickable::use(owner,wearer);
 		}
 	}
@@ -216,6 +244,7 @@ void Pickable::drop(Actor *owner, Actor *wearer) {
 			owner->pickable->stackSize -= numberDropped;
 			switch(type) {
 				case HEALER: droppy->pickable = new Healer(((Healer*)owner->pickable)->amount); droppy->sort = 1; break;
+				case CHARGER: droppy->pickable = new Charger(((Charger*)owner->pickable)->amount); droppy->sort = 1; break;
 				case LIGHTNING_BOLT: droppy->pickable = new LightningBolt(((LightningBolt*)(owner->pickable))->range,((LightningBolt*)(owner->pickable))->damage); droppy->sort = 2; break;
 				case CONFUSER: droppy->pickable = new Confuser(((Confuser*)(owner->pickable))->nbTurns,((Confuser*)(owner->pickable))->range); droppy->sort = 2; break;
 				case FIREBALL: droppy->pickable = new Fireball(((Fireball*)(owner->pickable))->range,((Fireball*)(owner->pickable))->damage,((Fireball*)(owner->pickable))->maxRange); droppy->sort = 2; break;

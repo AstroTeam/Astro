@@ -281,7 +281,7 @@ void Map::addMonster(int x, int y) {
 void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,175);
+	int dice = rng->getInt(0,235);
 	if (dice < 40) {
 		//create a health potion
 		Actor *healthPotion = createHealthPotion(x,y);
@@ -302,16 +302,21 @@ void Map::addItem(int x, int y, RoomType roomType) {
 		Actor *myBoots = createMylarBoots(x,y);
 		engine.actors.push(myBoots);
 		engine.sendToBack(myBoots);
-	} else if(dice < 40+40+40+15+10) {
+	} else if(dice < 40+40+40+15+15) {
 		//create a Modular Laser Rifle (MLR)
 		Actor *MLR = createMLR(x,y);
 		engine.actors.push(MLR);
 		engine.sendToBack(MLR);
-	}else if(dice < 40+40+40+15+10+5){
+	}else if(dice < 40+40+40+15+15+5){
 		//create Titanium Micro Chain-mail
 		Actor *chainMail = createTitanMail(x,y);
 		engine.actors.push(chainMail);
 		engine.sendToBack(chainMail);
+	}else if(dice < 40+40+40+15+15+5+40){
+		//create a battery pack
+		Actor *batteryPack = createBatteryPack(x,y);
+		engine.actors.push(batteryPack);
+		engine.sendToBack(batteryPack);
 	}else {
 		//create a scroll of confusion
 		Actor *scrollOfConfusion = createFlashBang(x,y);
@@ -817,4 +822,11 @@ Actor *Map::createMLR(int x, int y){
 	MLR->pickable = new Equipment(0,Equipment::RANGED,bonus);
 	MLR->sort = 4;
 	return MLR;
+}
+Actor *Map::createBatteryPack(int x,int y){
+	Actor *batteryPack = new Actor(x,y,'+',"Battery Pack", TCODColor::yellow);
+	batteryPack->sort = 1;
+	batteryPack->blocks = false;
+	batteryPack->pickable = new Charger(5);
+	return batteryPack;
 }
