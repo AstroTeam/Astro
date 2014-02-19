@@ -407,7 +407,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		int y = rng->getInt(y1, y2);
 
 		if(canWalk(x,y) && !isWall(x,y)) {
-			Actor * epicenter = new Actor(x, y, 3, "Infection Epicenter", TCODColor::green);
+			Actor * epicenter = new Actor(x, y, 7, "Infection Epicenter", TCODColor::white);
 			epicenter->ai=new EpicenterAi;
 			engine.actors.push(epicenter);
 
