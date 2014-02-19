@@ -93,7 +93,8 @@ void Renderer::render(void *sdlSurface){
 			{
 				TCODConsole::root->clear();
 			}
-			if(engine.mapcon->getChar(xM,yM) == 64)
+			if(engine.mapcon->getChar(xM,yM) == 64 || engine.mapcon->getChar(xM,yM) == 143 ||
+     		   engine.mapcon->getChar(xM,yM) == 159 || engine.mapcon->getChar(xM,yM) == 175)
 			{
 				plyx = x;
 				plyy = y;

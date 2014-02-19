@@ -47,6 +47,7 @@ public:
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
 	Actor *createHealthPotion(int x, int y);
+	Actor *createBatteryPack(int x, int y);
 	Actor *createFlashBang(int x, int y);
 	Actor *createFireBomb(int x, int y);
 	Actor *createEMP(int x,int y);
