@@ -197,7 +197,7 @@ void Map::addMonster(int x, int y) {
 	float infectedMarineAtk = 5;
 	float infectedMarineXp = 10;
 //	float infectedMarineChance = 80;
-	int infectedMarineAscii = 169;
+	int infectedMarineAscii = 149;
 	
 	//Infected NCO Base Stats
 	float infectedNCOMaxHp = 12;
