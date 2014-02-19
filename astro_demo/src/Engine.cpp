@@ -23,6 +23,7 @@ Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	mapcon = new TCODConsole(mapWidth,mapHeight);
 	engine.mapcon->setDefaultBackground(TCODColor::blue);
 	mapconCpy = new TCODConsole(mapWidth, mapHeight);
+	mapconDec = new TCODConsole(mapWidth, mapHeight);
 	gui = new Gui();
 	mapx1 = 0;
 	mapx2 = 0;
@@ -46,15 +47,19 @@ void Engine::term() {
 void Engine::init() {
 	engine.killCount = 0;
 	player = new Actor(40,25,'@', "player","Human","Marine","Infantry",TCODColor::white);
+	int plyrAscii = 64;
 	switch(engine.gui->raceSelection){
 		case 1:
 			player->race="Human";
+			plyrAscii = 143;
 			break;
 		case 2:
 			player->race="Robot";
+			plyrAscii = 159;
 			break;
 		case 3:
 			player->race="Alien";
+			plyrAscii = 175;
 			break;
 	}
 	switch(engine.gui->jobSelection){
@@ -95,6 +100,7 @@ void Engine::init() {
 			player->job="Hacker";
 			break;
 	}
+	player->ch = plyrAscii;
 	player->destructible = new PlayerDestructible(100, 2, "your cadaver");
 	player->attacker = new Attacker(5,20);
 	player->ai = new PlayerAi();
@@ -376,6 +382,7 @@ void Engine::nextLevel() {
 			it = actors.remove(it);
 		}
 	}
+	engine.mapconDec->clear();
 	//create a new map
 	map = new Map(mapWidth,mapHeight);
 	map->init(true, Param::GENERIC);

@@ -93,6 +93,7 @@ void Map::init(bool withActors, LevelType levelType) {
 	listener.bspActors = withActors;
 	listener.roomList = getRoomTypes(levelType);
 	bsp.traverseInvertedLevelOrder(&listener, (void *)withActors);
+	
 }
 
 void Map::save(TCODZip &zip) {
@@ -124,7 +125,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 		y2 = y1;
 		y1 = tmp;
 	}
-
+	TCODRandom *rng = TCODRandom::getInstance();
 	for (int tilex = x1; tilex <=x2; tilex++) {
 		for (int tiley = y1; tiley <= y2; tiley++) {
 			map->setProperties(tilex,tiley,true,true);
@@ -141,10 +142,35 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					//CHANGE THE NAME TO BROKEN CABINET
 					
 					//engine.gui->message(TCODColor::red, "playery  %d",plyy);
-					cout << "breaking cabinet";
+					//cout << "breaking cabinet";
 					a->blocks = false;
 					a->ch = 241;
 					a->name = "a destroyed filing cabinet";
+					
+					int n = rng->getInt(5,8);
+					int x = a->x;
+					int y = a->y;
+					int add = rng->getInt(0,10);
+					for (int xxx = -1; xxx <= 1; xxx++)/////////////////////9x9 for loop to add papers
+					{
+						for (int yyy = -1; yyy <= 1; yyy++)
+						{
+							if (add > 3 )
+							{
+								engine.mapconDec->setChar(x+xxx, y+yyy, n);
+							}
+							n = rng->getInt(5,8);
+							add = rng->getInt(0,10);
+						}
+					}
+					
+					//engine.mapconDec->setChar(x+1, y, n);
+					//n = rng->getInt(5,8);
+					//engine.mapconDec->setChar(x-1, y, n);
+					//n = rng->getInt(5,8);
+					//engine.mapconDec->setChar(x, y+1, n);
+					//n = rng->getInt(5,8);
+					//engine.mapconDec->setChar(x, y-1, n);
 					//delete a;
 				}
 			}
@@ -171,7 +197,7 @@ void Map::addMonster(int x, int y) {
 	float infectedMarineAtk = 5;
 	float infectedMarineXp = 10;
 //	float infectedMarineChance = 80;
-	int infectedMarineAscii = 169;
+	int infectedMarineAscii = 149;
 	
 	//Infected NCO Base Stats
 	float infectedNCOMaxHp = 12;
@@ -218,8 +244,8 @@ void Map::addMonster(int x, int y) {
 	
 	int dice = rng->getInt(0,100);
 	if (dice < infectedCrewMemChance) 
-	{//50% of infectedCrewMembers are infectedMarines
-		if(dice <= infectedCrewMemChance/2)
+	{//10% of infectedCrewMembers are infectedMarines
+		if(dice <= (infectedCrewMemChance*9)/10) 
 		{
 			Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
 			infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
@@ -229,7 +255,7 @@ void Map::addMonster(int x, int y) {
 			generateRandom(infectedCrewMember, infectedCrewMemAscii);
 			engine.actors.push(infectedCrewMember);
 		}
-		else
+		else 
 		{
 			Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
 			infectedMarine->destructible = new MonsterDestructible(infectedMarineMaxHp,infectedMarineDef,"infected corpse",infectedMarineXp);
@@ -386,7 +412,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		int y = rng->getInt(y1, y2);
 
 		if(canWalk(x,y) && !isWall(x,y)) {
-			Actor * epicenter = new Actor(x, y, 3, "Infection Epicenter", TCODColor::green);
+			Actor * epicenter = new Actor(x, y, 7, "Infection Epicenter", TCODColor::white);
 			epicenter->ai=new EpicenterAi;
 			engine.actors.push(epicenter);
 
@@ -489,22 +515,33 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			files++;
 		}
 		//add desks
-		
+		TCODRandom *rng = TCODRandom::getInstance();
+			int place = 0;
 		//random between x1+2 and x2-3(-2 if random 1x1) (so they can fit, leaving a 1 cell lining, if 2x2) 
 		//random between y1+2 and y2-3(-2 if random 1x1) (so they can fit, leaving a 1 cell lining, if 2x2)
 		//these are the two x,y's
-		//
-		//add a 2x2 of desks?  add random desks?
-		// ...D.D...
-		// .........  <- 3x3 of desks with spaces in-between?
-		// ...D.D...
-		//
-		
-		
-		//add papers
-		//replace items with paper description items
-		//or make some random floor tiles into papers, if they only spawn on office rooms/decks then could be unique floor tile
-		
+		for (int xX = x1+2; xX <= x2-2;xX+=2)
+		{
+			for (int yY = y1+2; yY <= y2-2;yY+=2)
+			{
+				//add a 2x2 of desks?  add random desks?
+				// ...D.D...
+				// .........  <- 3x3 of desks with spaces in-between?
+				// ...D.D...
+				//
+				place = rng->getInt(1,10);
+				if (place > 4)
+				{
+					Actor * desk = new Actor(xX,yY,242,"a desk", TCODColor::white);
+					int n = rng->getInt(1,4);
+					engine.mapconDec->setChar(xX, yY, n);
+					engine.actors.push(desk);
+				}
+				//add papers
+				//replace items with paper description items
+				//or make some random floor tiles into papers, if they only spawn on office rooms/decks then could be unique floor tile
+			}
+		}
 		
 	}
 
@@ -652,13 +689,16 @@ void Map::generateRandom(Actor *owner, int ascii){
 	if(dice <= 40){
 			return;
 	}else{
-		if(ascii == 169 && false) //false since this doesn't currently works and I think it causes crashes
+		if(ascii == 169) //infectedMarines have 60% chance of dropping a MLR
 		{
-				Actor *mlr = createMLR(0,0);
-				engine.actors.push(mlr);
-				mlr->pickable->pick(mlr,owner);
-		}
-		else if(ascii == 164){
+			for(int i = 0; i < owner->container->size; i++)
+			{
+				Actor *MLR = createMLR(0,0);
+				engine.actors.push(MLR);
+				MLR->pickable->pick(MLR,owner);
+			}
+				
+		}else if(ascii == 164){
 			for(int i = 0; i < owner->container->size; i++){
 				int rnd = rng->getInt(0,100);
 				if (rnd < 30) {

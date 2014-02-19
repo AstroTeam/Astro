@@ -5,8 +5,6 @@
 #include <string>
 
 
-
-
 void Renderer::render(void *sdlSurface){
 /////////////////////////////////////////////////////////////////////rendering doubled up walkable decor!
 	SDL_Surface *screen=(SDL_Surface *)sdlSurface;
@@ -81,17 +79,26 @@ void Renderer::render(void *sdlSurface){
 	//engine.gui->message(TCODColor::red, "playery  %d",plyy);
 	
 	SDL_Rect srcRect={0,0,16,16};
+	SDL_Rect dstRect1={22*16,0,(engine.mapx2-engine.mapx1)*16+16,(engine.mapy2-engine.mapy1)*16+16};
 	int x = 0, y = 0;
 	int plyx = 0, plyy = 0;
 	for (int xM = engine.mapx1; xM < engine.mapx2+16; xM++) {
 		for (int yM = engine.mapy1; yM < engine.mapy2+16; yM++) {
 			//if it needs to be rendered over, render it over
+			
+			//engine.gui->message(TCODColor::red, "noise  %d",n);
 			SDL_Rect dstRect={x*16,y*16,16,16};
-			if(engine.mapcon->getChar(xM,yM) == 64)
+			if (TCODConsole::root->getCharBackground(22*16+xM,yM) == TCODColor::darkerPink || //refresh if looking
+				TCODConsole::root->getCharBackground(22*16+xM,yM) == TCODColor::pink)
+			{
+				TCODConsole::root->clear();
+			}
+			if(engine.mapcon->getChar(xM,yM) == 64 || engine.mapcon->getChar(xM,yM) == 143 ||
+     		   engine.mapcon->getChar(xM,yM) == 159 || engine.mapcon->getChar(xM,yM) == 175)
 			{
 				plyx = x;
 				plyy = y;
-				if (engine.mapcon->getChar(xM,yM) != 163){//|| engine.gameStatus != engine.MAIN_MENU){
+				if (engine.mapcon->getChar(xM,yM) != 163){//|| engine.gameStatus != engine.MAIN_MENU){ //refresh if player is alive
 					TCODConsole::root->clear();	
 				}
 				
@@ -106,6 +113,25 @@ void Renderer::render(void *sdlSurface){
 				srcRect.y = 0;
 				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				//SDL_UpdateRect(floorMap, x*16, y*16, 16, 16);
+				
+				//any decor to render just on top of floors
+				if (engine.mapconDec->getChar(xM,yM) == ' ')
+				{
+					//do nothing if common case (i.e.) no decor
+				}
+				else if (engine.mapconDec->getChar(xM,yM) == 5 || engine.mapconDec->getChar(xM,yM) == 6 ||  //papers
+						 engine.mapconDec->getChar(xM,yM) == 7 || engine.mapconDec->getChar(xM,yM) == 8)
+				{
+					srcRect.y = 32;
+					srcRect.x = 32+ (engine.mapconDec->getChar(xM,yM) - 5 ) * 16;
+					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+								
+				}
+						
+					
+				
+				
+				
 				
 				//everything bodies to render behind
 				if (engine.mapcon->getChar(xM,yM) == 181 || engine.mapcon->getChar(xM,yM) == 182 || engine.mapcon->getChar(xM,yM) == 183 || 
@@ -136,6 +162,20 @@ void Renderer::render(void *sdlSurface){
 				srcRect.x = 0;
 				srcRect.y = 16;
 				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
+				
+				//render decor *DARK*
+				if (engine.mapconDec->getChar(xM,yM) == ' ')
+				{
+					//do nothing if common case (i.e.) no decor
+				}
+				else if (engine.mapconDec->getChar(xM,yM) == 5 || engine.mapconDec->getChar(xM,yM) == 6 ||  //papers
+						 engine.mapconDec->getChar(xM,yM) == 7 || engine.mapconDec->getChar(xM,yM) == 8)
+				{
+					srcRect.y = 48;
+					srcRect.x = 32+ (engine.mapconDec->getChar(xM,yM) - 5 ) * 16;
+					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+								
+				}
 			}
 			//replace infected tiles lit
 			else if(engine.mapconCpy->getChar(xM,yM) == 29){
@@ -144,6 +184,26 @@ void Renderer::render(void *sdlSurface){
 				srcRect.y = 0;
 				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				//SDL_FillRect(floorMap, &dstRect, 258);
+				if (engine.mapcon->getChar(xM,yM) == 181 || engine.mapcon->getChar(xM,yM) == 182 || engine.mapcon->getChar(xM,yM) == 183 || 
+				engine.mapcon->getChar(xM,yM) == 184 || engine.mapcon->getChar(xM,yM) == 64 || engine.mapcon->getChar(xM,yM) == 164 || 
+				engine.mapcon->getChar(xM,yM) == 165 || engine.mapcon->getChar(xM,yM) == 148 || engine.mapcon->getChar(xM,yM) == 132) 
+				{
+					for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {//is walkable?
+						Actor *actor = *it;
+						if (actor->x == xM && actor->y == yM && actor->destructible && actor->destructible->isDead()) {
+							//doubles += 1;
+							SDL_Rect srcRect2={10*16,3*16,16,16};
+							SDL_Rect dstRect={x*16,y*16,16,16};
+							//10 width 3 height for standard bodies
+							//if they are spore bodies
+							if (actor->ch == 162){
+								srcRect2.y = 2*16;
+							}
+							
+							SDL_BlitSurface(terminal,&srcRect2,floorMap,&dstRect);
+						}
+					}
+				}
 			}
 			//replace unlit infected tiles
 			else if(engine.mapconCpy->getChar(xM,yM) == 28){
@@ -224,7 +284,7 @@ void Renderer::render(void *sdlSurface){
 				}
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 			}
-			else if (engine.mapcon->getChar(xM,yM) == 241)
+			else if (engine.mapcon->getChar(xM,yM) == 241)//smashed filing cabinet
 			{
 				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
 				{
@@ -236,7 +296,48 @@ void Renderer::render(void *sdlSurface){
 				}
 				srcRect.y = 64;
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+				
 			}
+			else if (engine.mapcon->getChar(xM,yM) == 242)//desk
+			{
+				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
+				{
+					srcRect.y = 0;
+				}
+				else
+				{
+					srcRect.y = 16;
+				}
+				
+				
+				//int n = xM + yM * 57;
+				//n = (n<<13) ^ n;
+				//float NaN = 7fffffff;
+				//n = 1.0 - ( (n * (n * n * 15731 + 789221) + 1376312589)) / 1073741824.0;   
+				
+				//int n = xM | yM;
+				//int n = xM | yM;
+				//n = n ^ 1376312589;
+				
+				if(engine.mapconDec->getChar(xM,yM) == 1)
+				{
+					srcRect.x=32+48;
+				} else if (engine.mapconDec->getChar(xM,yM) == 2)
+				{
+					srcRect.x=32+16;
+				}else if (engine.mapconDec->getChar(xM,yM) == 3)
+				{
+					srcRect.x=32+32;
+				}else
+				{
+					srcRect.x=32;
+				}
+				
+				
+				
+				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+			}
+			
 			
 			//SDL_Delay(100);
 			y++;
@@ -305,7 +406,7 @@ void Renderer::render(void *sdlSurface){
 	
 	
 	//SDL_Rect srcRect1={mapx1*16,mapy1*16,(mapx2-mapx1+16)*16,(mapy2-mapy1+16)*16};
-	SDL_Rect dstRect1={22*16,0,(engine.mapx2-engine.mapx1)*16+16,(engine.mapy2-engine.mapy1)*16+16};
+	
 
 	//SDL_BlitSurface(screen,&dstRect1,floorMap,&srcRect1);
 	SDL_BlitSurface(screen,&dstRect1,floorMap,NULL);
@@ -372,4 +473,4 @@ void Renderer::render(void *sdlSurface){
 	
 }
 	
-	
+
