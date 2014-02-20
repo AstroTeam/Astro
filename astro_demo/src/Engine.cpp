@@ -86,7 +86,7 @@ void Engine::init() {
 		case 1:
 			player->role="Marine";
 			player->job="Infantry";
-			
+			player->dex+=4; //job selection bonus
 			
 			
 			pants->pickable->pick(pants,player);

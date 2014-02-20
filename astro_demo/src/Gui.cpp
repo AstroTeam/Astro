@@ -573,7 +573,7 @@ void Gui::classSidebar(){
 			}
 			classBar.print(7,15,"STATS");
 			classBar.print(1,17,"AVAIL. POINTS: %d",statPoints);
-			classBar.print(1,19,"CONSTITUTION: %d",conValue);
+			classBar.print(1,19,"VITALITY: %d",conValue);
 			classBar.print(1,21,"STRENGTH: %d",strValue);
 			classBar.print(1,23,"AGILITY: %d",agValue);
 			
