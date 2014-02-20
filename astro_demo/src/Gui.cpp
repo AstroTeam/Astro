@@ -143,6 +143,7 @@ void Gui::render() {
 	//draw the message
 	if(tileInfoLog != NULL){
 		tileInfoScreen->print(2,3,tileInfoLog->text);
+		
 	}
 	
 	
@@ -207,6 +208,32 @@ void Gui::renderKeyLook() {
 				} else {
 					first = false;
 				}
+					/*
+					//modify this to check the actor name.
+					//if it is longer than tileInfoWidth-4
+					//figure out using regular expressions!
+					//break it up by placing /n
+					//then check how high it is?
+					//to make sure it doesn't run over the bottom...
+					int lastLineBreak = -1;
+					int last
+					int currentSpace = 0;
+					char* checker = actor->name;
+					while(checker != NULL){
+						if(*checker == '\n'){
+					
+					
+						}
+						else if (currentSpace - lastSpace > tileInfoWidth - 4){
+						
+						
+						}
+						else{
+						
+						
+						}
+					}
+					*/
 					strcat(buf,actor->name);
 				if (actor->attacker && !actor->destructible->isDead() && engine.map->isInFov(x,y)) {
 					engine.player->attacker->lastTarget = actor;
