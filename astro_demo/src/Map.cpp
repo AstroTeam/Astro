@@ -156,6 +156,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					a->blocks = false;
 					a->ch = 241;
 					a->name = "a destroyed filing cabinet";
+					engine.sendToBack(a);
 					
 					int n = rng->getInt(5,8);
 					int x = a->x;
@@ -704,16 +705,22 @@ void Map::generateRandom(Actor *owner, int ascii){
 	if(dice <= 40){
 			return;
 	}else{
-		if(ascii == 169) //infectedMarines have 60% chance of dropping a MLR
+		if(ascii == 149) //infectedMarines have 60% chance of dropping an item with 50% chance of it being a MLR, and the other 50% chance being a battery pack
 		{
-			//for(int i = 1; i <= owner->container->size; i++)
-			//{
+			if(dice <= 70)
+			{
 				Actor *MLR = createMLR(0,0);
 				engine.actors.push(MLR);
 				MLR->pickable->pick(MLR,owner);
-				//engine.gui->message(TCODColor::white,"MLR added");
-			//}
-				
+			}
+			else
+			{
+				Actor *batt = createBatteryPack(0,0);
+				engine.actors.push(batt);
+				batt->pickable->pick(batt,owner);
+			}
+			
+			
 		}else if(ascii == 164){
 			for(int i = 0; i < owner->container->size; i++){
 				int rndA = rng->getInt(0,100);

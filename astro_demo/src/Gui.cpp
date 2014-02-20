@@ -129,7 +129,7 @@ void Gui::render() {
 	for (Message **it = log.begin(); it != log.end(); it++) {
 		Message *message = *it;
 		con->setDefaultForeground(message->col * colorCoef);
-		con->print(1,y,message->text);
+		con->print(1,y,message->text,TCOD_BKGND_ALPHA(100));
 		y++;
 		if (colorCoef < 1.0f) {
 			colorCoef +=0.3f;
