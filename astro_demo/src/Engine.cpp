@@ -47,6 +47,12 @@ void Engine::term() {
 void Engine::init() {
 	engine.killCount = 0;
 	player = new Actor(40,25,'@', "player","Human","Marine","Infantry",TCODColor::white);
+	
+	player->destructible = new PlayerDestructible(100, 2, "your cadaver");
+	player->attacker = new Attacker(5,20);
+	player->ai = new PlayerAi();
+	player->container = new Container(50);
+	actors.push(player);
 	int plyrAscii = 64;
 	switch(engine.gui->raceSelection){
 		case 1:
@@ -62,10 +68,35 @@ void Engine::init() {
 			plyrAscii = 175;
 			break;
 	}
+	
+	Actor *pants = new Actor(0,0,'A',"Marine Fatigue BDU-lower",TCODColor::lightPink);
+	ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,0);
+	pants->blocks = false;
+	pants->pickable = new Equipment(0,Equipment::LEGS,bonus);
+	pants->sort = 3;
+	engine.actors.push(pants);
+	Actor *shirt = new Actor(0,0,'B',"Marine Fatigue BDU-upper",TCODColor::lightPink);
+	shirt->blocks = false;
+	shirt->pickable = new Equipment(0,Equipment::CHEST,bonus);
+	shirt->sort = 3;
+	engine.actors.push(shirt);
+	
 	switch(engine.gui->jobSelection){
+		
 		case 1:
 			player->role="Marine";
 			player->job="Infantry";
+			player->dex+=4; //job selection bonus
+			
+			
+			pants->pickable->pick(pants,player);
+			((Equipment*)(pants->pickable))->use(pants,player);
+			shirt->pickable->pick(shirt,player);
+			((Equipment*)(shirt->pickable))->use(shirt,player);
+			//((Equipment*)(owner->pickable))->use(owner,wearer);
+			
+			
+			
 			break;
 		case 2:
 			player->role="Marine";
@@ -101,11 +132,6 @@ void Engine::init() {
 			break;
 	}
 	player->ch = plyrAscii;
-	player->destructible = new PlayerDestructible(100, 2, "your cadaver");
-	player->attacker = new Attacker(5,20);
-	player->ai = new PlayerAi();
-	player->container = new Container(50);
-	actors.push(player);
 	stairs = new Actor(0,0,'>', "stairs", TCODColor::white);
 	stairs->blocks = false;
 	actors.push(stairs);

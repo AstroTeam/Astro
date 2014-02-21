@@ -1,11 +1,3 @@
-struct Tile {
-	bool explored;
-	float infection;
-	Tile() : explored(false),  infection (0) {}
-	const TCODColor * lastColor;//if color changed offscreen
-	char lastChar;//if the char changed
-};
-
 namespace Param {
 	enum LevelType {
 		GENERIC,
@@ -16,6 +8,15 @@ namespace Param {
 		STANDARD,
 		OFFICE,
 	};
+};
+
+struct Tile {
+	bool explored;
+	float infection;
+	Param::RoomType tileType;
+	Tile() : explored(false),  infection (0), tileType(Param::STANDARD) {}
+	const TCODColor * lastColor;//if color changed offscreen
+	char lastChar;//if the char changed
 };
 
 struct Room {
@@ -45,6 +46,10 @@ public:
 	void init(bool withActors, LevelType levelType = GENERIC);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
+	
+	int tileType(int x, int y);
+	//int tileInf(int x, int y);
+	
 	Actor *createHealthPotion(int x, int y);
 	Actor *createBatteryPack(int x, int y);
 	Actor *createFlashBang(int x, int y);

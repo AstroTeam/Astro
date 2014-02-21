@@ -224,17 +224,23 @@ bool Confuser::use(Actor *owner, Actor *wearer) {
 	return Pickable::use(owner,wearer);
 }
 
-void Pickable::drop(Actor *owner, Actor *wearer) {
+void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 	if (wearer->container) {
 		if (owner->pickable->type == EQUIPMENT && ((Equipment*)(owner->pickable))->equipped) {
 			((Equipment*)(owner->pickable))->use(owner,wearer);
 		}
 		int numberDropped = 1;
-		if (numberDropped >= owner->pickable->stackSize) {
+		if(isNPC && wearer->container){
 			wearer->container->remove(owner);
-			engine.actors.push(owner);
 			owner->x = wearer->x;
 			owner->y = wearer->y;
+			engine.actors.push(owner);
+			engine.sendToBack(owner);
+		}else if (numberDropped >= owner->pickable->stackSize && wearer->container) {
+			wearer->container->remove(owner);
+			owner->x = wearer->x;
+			owner->y = wearer->y;
+			engine.actors.push(owner);
 			engine.sendToBack(owner);
 		}
 		else {
@@ -258,7 +264,7 @@ void Pickable::drop(Actor *owner, Actor *wearer) {
 		if (wearer == engine.player){
 			engine.gui->message(TCODColor::lightGrey,"You drop %d %s",numberDropped,owner->name);
 		}else {
-			engine.gui->message(TCODColor::lightGrey,"%s drops %d %s",wearer->name,numberDropped,owner->name);
+			engine.gui->message(TCODColor::lightGrey,"%s drops %d %s",wearer->name,owner->pickable->stackSize,owner->name);
 		}
 	}
 }

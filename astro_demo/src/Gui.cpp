@@ -129,7 +129,7 @@ void Gui::render() {
 	for (Message **it = log.begin(); it != log.end(); it++) {
 		Message *message = *it;
 		con->setDefaultForeground(message->col * colorCoef);
-		con->print(1,y,message->text);
+		con->print(1,y,message->text,TCOD_BKGND_ALPHA(100));
 		y++;
 		if (colorCoef < 1.0f) {
 			colorCoef +=0.3f;
@@ -573,7 +573,7 @@ void Gui::classSidebar(){
 			}
 			classBar.print(7,15,"STATS");
 			classBar.print(1,17,"AVAIL. POINTS: %d",statPoints);
-			classBar.print(1,19,"CONSTITUTION: %d",conValue);
+			classBar.print(1,19,"VITALITY: %d",conValue);
 			classBar.print(1,21,"STRENGTH: %d",strValue);
 			classBar.print(1,23,"AGILITY: %d",agValue);
 			

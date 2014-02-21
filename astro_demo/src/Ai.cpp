@@ -36,6 +36,9 @@ void PlayerAi::save(TCODZip &zip) {
 }
 
 void PlayerAi::update(Actor *owner) {
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
 	int levelUpXp = getNextLevelXp();
 	if (owner->destructible->xp >= levelUpXp) {
 		bool choice_made = false, first = true;
@@ -76,9 +79,6 @@ void PlayerAi::update(Actor *owner) {
 			default: break;
 		}
 		}
-	}
-	if (owner->destructible && owner->destructible->isDead()) {
-		return;
 	}
 	int dx =0, dy =0;
 	switch (engine.lastKey.vk) {
@@ -157,7 +157,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				if (actor->pickable && actor->x == owner->x && actor->y == owner->y) {
 					if (actor->pickable->pick(actor,owner)) {
 						found = true;
-						engine.gui->message(TCODColor::lightGrey, "You pick up the %s.", actor->name);
+						engine.gui->message(TCODColor::lightGrey, "You pick up %d %s.", actor->pickable->stackSize, actor->name);
 						break;
 					} else if (!found ) {
 						found = true;

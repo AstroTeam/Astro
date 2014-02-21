@@ -94,10 +94,19 @@ void MonsterDestructible::die(Actor *owner) {
 	engine.gui->message(TCODColor::lightGrey,"The %s is dead! You feel a rush as it sputters its last breath.", owner->name);
 	engine.player->destructible->xp += xp;
 	if(!owner->container->inventory.isEmpty()){
-		for(Actor **iterator=owner->container->inventory.begin(); iterator != owner->container->inventory.end(); ++iterator){
+		Actor **iterator=owner->container->inventory.begin();
+		for(int i = 0; i < owner->container->size; i++){
+			if(owner->container->inventory.isEmpty()){
+				break;
+			}
 			Actor *actor = *iterator;
 			if(actor){
-				actor->pickable->drop(actor,owner);
+				actor->pickable->drop(actor,owner,true);
+			}
+			
+			if(iterator != owner->container->inventory.end())
+			{
+				++iterator;
 			}
 		}
 	}
