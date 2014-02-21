@@ -313,18 +313,44 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 						engine.gui->message(TCODColor::lightGrey, "Not enough battery to shoot.");
 					}
 				}
-				/*
-				float damageTaken = closestMonster->destructible->takeDamage(closestMonster,damage);
-				if (!closestMonster->destructible->isDead()) {
-				engine.gui->message(TCODColor::lightBlue,
-					"A lightning bolt strikes the %s with a loud crack"
-					"for %g damage.",
-					closestMonster->name,damageTaken);
-				} else {
-					engine.gui->message(TCODColor::orange,"The %s crackles with electricity, twitching slightly.",closestMonster->name);
+				
+			}
+			else{
+				engine.gui->message(TCODColor::lightGrey,"You do not have a ranged weapon equipped");
+			}
+		break;
+		case 'F':
+			//aimed shooty shooty bang bang -Mitchell
+			if(owner->container->ranged){
+				//Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,3);
+				engine.gui->message(TCODColor::cyan, "Choose a target to shoot");
+				int x = engine.player->x;
+				int y = engine.player->y;
+				if (!engine.pickATile(&x, &y, 3)) {
+					engine.gui->message(TCODColor::lightGrey, "You can't shoot that far.");
+					//return false;
 				}
-				return Pickable::use(owner,wearer);
-				*/
+				Actor *actor = engine.getActor(x,y);
+				if (!actor) {
+					engine.gui->message(TCODColor::lightGrey, "No enemy at that location.");
+					//return false;
+				}
+				/*if (!closestMonster) {
+					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
+					//return false;
+				}*/
+				//hit the closest monster for <damage> hit points;
+				else{
+					if(owner->attacker && owner->attacker->battery >= 1){
+						owner->attacker->shoot(owner, actor);
+						owner->attacker->usePower(owner, 1);
+						engine.gameStatus = Engine::NEW_TURN;
+					}
+					else{
+						engine.gui->message(TCODColor::lightGrey, "Not enough battery to shoot.");
+					}
+				}
+				
 			}
 			else{
 				engine.gui->message(TCODColor::lightGrey,"You do not have a ranged weapon equipped");
