@@ -236,6 +236,8 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			Actor *actor;
 			bool choice = true;
 			while(choice){
+			//inventoryScreen->setDefaultBackground(TCODColor::black);
+			//inventoryScreen->clear();
 			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 				switch (menuItem) {
 					case Menu::ITEMS :
@@ -362,14 +364,14 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 Actor *PlayerAi::choseFromInventory(Actor *owner,int type) {
 	static const int INVENTORY_WIDTH = 38;
 	static const int INVENTORY_HEIGHT = 28;
-	static TCODConsole con(INVENTORY_WIDTH, INVENTORY_HEIGHT);
+	inventoryScreen = new TCODConsole(INVENTORY_WIDTH, INVENTORY_HEIGHT);
 	
 	//display the inventory frame
-	con.setDefaultForeground(TCODColor(200,180,50));
-	con.printFrame(0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,true,TCOD_BKGND_DEFAULT);
+	inventoryScreen->setDefaultForeground(TCODColor(200,180,50));
+	inventoryScreen->printFrame(0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,true,TCOD_BKGND_DEFAULT);
 	
 	//display the items with their keyboard shortcut
-	con.setDefaultForeground(TCODColor::white);
+	inventoryScreen->setDefaultForeground(TCODColor::white);
 	int shortcut = 'a';
 	int y = 1;
 	for (Actor **it = owner->container->inventory.begin();
@@ -377,20 +379,20 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type) {
 		Actor *actor = *it;
 		if(actor->sort == type){
 			if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
-				con.print(2,y,"(%c) %s(E)",shortcut,actor->name);
+				inventoryScreen->print(2,y,"(%c) %s(E)",shortcut,actor->name);
 			}else{
-				con.print(2,y,"(%c) %s",shortcut,actor->name);
+				inventoryScreen->print(2,y,"(%c) %s",shortcut,actor->name);
 			}
 			owner->container->select[shortcut] = actor->name;
 			if (actor->pickable->stacks) {
-				con.print(17, y, "(%d)",actor->pickable->stackSize);
+				inventoryScreen->print(17, y, "(%d)",actor->pickable->stackSize);
 			}
 			y++;
 			shortcut++;
 		}
 	}
 	//blit the inventory console on the root console
-	TCODConsole::blit(&con,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
+	TCODConsole::blit(inventoryScreen,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
 		TCODConsole::root, engine.screenWidth/2 - INVENTORY_WIDTH/2,
 		engine.screenHeight/2 - INVENTORY_HEIGHT/2 - 4);
 	TCODConsole::flush();

@@ -11,6 +11,7 @@ protected:
 class PlayerAi : public Ai {
 public:
 	int xpLevel;
+	TCODConsole *inventoryScreen;
 	
 	PlayerAi();
 	int getNextLevelXp();
