@@ -535,6 +535,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_SetColorKey(screen,SDL_SRCCOLORKEY,0);
 	//SDL_Surface *floorMap = SDL_LoadBMP("starmap2.bmp");
 	SDL_Surface *backpack = SDL_LoadBMP("tile_assets/backpack.bmp");
+	SDL_SetColorKey(backpack,SDL_SRCCOLORKEY,255);
 	SDL_Surface *bg = SDL_LoadBMP("tile_assets/invBG.bmp");
 	//SDL_Rect dstRect1={22*16,0,(engine.mapx2-engine.mapx1)*16+16,(engine.mapy2-engine.mapy1)*16+16};
 	SDL_Rect dstBack={(engine.screenWidth*16)/2-375,engine.screenHeight*16-48,750,750};
@@ -571,10 +572,12 @@ void Renderer::render(void *sdlSurface){
 	SDL_SetColorKey(screen,SDL_SRCCOLORKEY,0);
 	//SDL_Surface *floorMap = SDL_LoadBMP("starmap2.bmp");
 	SDL_Surface *tab = SDL_LoadBMP("tile_assets/tablet.bmp");
+	SDL_SetColorKey(tab,SDL_SRCCOLORKEY,255);
 	SDL_Surface *tabBig = SDL_LoadBMP("tile_assets/tablet-big.bmp");
+	SDL_SetColorKey(tabBig,SDL_SRCCOLORKEY,255);
 	SDL_Surface *backpack = SDL_LoadBMP("tile_assets/backpack.bmp");
 	SDL_Surface *bg = SDL_LoadBMP("tile_assets/invBG.bmp");
-	
+	SDL_SetColorKey(backpack,SDL_SRCCOLORKEY,255);
 	//SDL_Rect dstRect1={22*16,0,(engine.mapx2-engine.mapx1)*16+16,(engine.mapy2-engine.mapy1)*16+16};
 	SDL_Rect dstBack={(engine.screenWidth*16)/2-375,engine.screenHeight*16-48,750,750};
 	SDL_Rect dstBack1={0,0,750,750};
@@ -601,13 +604,13 @@ void Renderer::render(void *sdlSurface){
 	}
 	else if (engine.invFrames > 45)
 	{
-		TCODSystem::setFps(30);
+		TCODSystem::setFps(35);
 		SDL_BlitSurface(backpack,&dstBack1,screen,&dstBack);
 		SDL_Rect bigTab    ={0,750-(engine.invFrames-45)*22,708,((engine.invFrames-45)*22)};//(16+((engine.invFrames*16)-45))};
 		
 		//SDL_Rect screenTab ={(engine.screenWidth*16)/2-(708/2),48,708,750};
-		if (((engine.invFrames-45)*22) >= 575)
-			{y += 12;}
+		if (((engine.invFrames-45)*22) >= 650)
+			{y += 28;}
 			
 		SDL_Rect screenTab ={(engine.screenWidth*16)/2-(708/2),y,708,650};
 		
@@ -641,11 +644,13 @@ void Renderer::render(void *sdlSurface){
 		SDL_Rect dstBack1={0,0,750,750};
 		
 		SDL_Surface *tabBig = SDL_LoadBMP("tile_assets/tablet-big.bmp");
+		SDL_SetColorKey(tabBig,SDL_SRCCOLORKEY,255);
 		SDL_Surface *bg = SDL_LoadBMP("tile_assets/invBG.bmp");
 		SDL_SetColorKey(screen,SDL_SRCCOLORKEY,0);
 		SDL_Rect screenTab ={(engine.screenWidth*16)/2-(708/2),48,708,650};
 		
 		SDL_Surface *backpack = SDL_LoadBMP("tile_assets/backpack.bmp");
+		SDL_SetColorKey(backpack,SDL_SRCCOLORKEY,255);
 		SDL_BlitSurface(backpack,&dstBack1,bg,&dstBack);
 		SDL_BlitSurface(tabBig,NULL,bg,&screenTab);
 		
