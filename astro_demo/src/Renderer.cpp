@@ -579,7 +579,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_Rect dstBack={(engine.screenWidth*16)/2-375,engine.screenHeight*16-48,750,750};
 	SDL_Rect dstBack1={0,0,750,750};
 	SDL_Rect dstTab={0,0,250,250};
-	SDL_Rect dstTabS={(engine.screenWidth*16)/2-125,64,100,250};
+	SDL_Rect dstTabS={(engine.screenWidth*16)/2-125,250,250,250};
 	//int second = TCODSystem::getFps();
 	SDL_BlitSurface(bg,NULL,screen,NULL);
 	dstBack.y -= (30*16);
@@ -603,7 +603,7 @@ void Renderer::render(void *sdlSurface){
 	{
 		TCODSystem::setFps(30);
 		SDL_BlitSurface(backpack,&dstBack1,screen,&dstBack);
-		SDL_Rect bigTab    ={0,0,708,((engine.invFrames-45)*22)};//(16+((engine.invFrames*16)-45))};
+		SDL_Rect bigTab    ={0,750-(engine.invFrames-45)*22,708,((engine.invFrames-45)*22)};//(16+((engine.invFrames*16)-45))};
 		
 		//SDL_Rect screenTab ={(engine.screenWidth*16)/2-(708/2),48,708,750};
 		if (((engine.invFrames-45)*22) >= 575)
