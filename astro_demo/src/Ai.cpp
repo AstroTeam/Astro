@@ -187,6 +187,11 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 			Actor *actor;
 			bool choice = true;
+			while (engine.invState != 4){
+				TCODConsole::flush();
+			}
+			
+			
 			while(choice){
 			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 				switch (menuItem) {

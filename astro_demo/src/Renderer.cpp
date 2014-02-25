@@ -13,13 +13,14 @@ void Renderer::render(void *sdlSurface){
 			first=false;
 		// set blue(255) as transparent for the root console
 		// so that we only blit characters
-		SDL_SetColorKey(screen,SDL_SRCCOLORKEY,255);
+	SDL_SetColorKey(screen,SDL_SRCCOLORKEY,255);
 			
 	}
 	if (engine.invState == 0)
 	{
 	TCODSystem::setFps(60);
 	//floors
+	SDL_SetColorKey(screen,SDL_SRCCOLORKEY,255);
 	SDL_Surface *floorTiles = SDL_LoadBMP("tile_assets/tiles.bmp");
 	SDL_SetColorKey(floorTiles,SDL_SRCCOLORKEY,255);
 	static int alpha = 255*.5;
@@ -624,6 +625,19 @@ void Renderer::render(void *sdlSurface){
 		SDL_FreeSurface(tabBig);
 		SDL_FreeSurface(bg);
 	}
+	}
+	else if (engine.invState == 4)
+	{
+		first=true;
+		SDL_Surface *tabBig = SDL_LoadBMP("tile_assets/tablet-big.bmp");
+		SDL_Surface *bg = SDL_LoadBMP("tile_assets/invBG.bmp");
+		SDL_SetColorKey(screen,SDL_SRCCOLORKEY,0);
+		SDL_Rect screenTab ={(engine.screenWidth*16)/2-(708/2),48,708,750};
+		SDL_BlitSurface(tabBig,NULL,bg,&screenTab);
+		SDL_BlitSurface(screen,NULL,bg,NULL);
+		SDL_BlitSurface(bg,NULL,screen,NULL);
+		SDL_FreeSurface(bg);
+		SDL_FreeSurface(tabBig);
 	}
 	
 }
