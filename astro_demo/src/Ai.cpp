@@ -236,6 +236,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		{
 			engine.map->computeFov();
 			engine.gui->menu.clear();
+			engine.invState = 1;
 			engine.gui->menu.addItem(Menu::ITEMS, "Items");
 			engine.gui->menu.addItem(Menu::TECH, "Tech");
 			engine.gui->menu.addItem(Menu::ARMOR, "Armor");
@@ -244,6 +245,9 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 			Actor *actor;
 			bool choice = true;
+			while (engine.invState != 4){
+				TCODConsole::flush();
+			}
 			while(choice){
 			//inventoryScreen->setDefaultBackground(TCODColor::black);
 			//inventoryScreen->clear();
@@ -276,6 +280,8 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					default: break;
 				}
 			}
+			engine.invState = 0;
+			engine.invFrames = 0;
 			if (actor) {
 				actor->pickable->drop(actor,owner);
 				engine.gameStatus = Engine::NEW_TURN;
@@ -403,7 +409,7 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type) {
 	//blit the inventory console on the root console
 	TCODConsole::blit(inventoryScreen,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
 		TCODConsole::root, engine.screenWidth/2 - INVENTORY_WIDTH/2,
-		engine.screenHeight/2 - INVENTORY_HEIGHT/2 - 4);
+		engine.screenHeight/2 - INVENTORY_HEIGHT/2 + 1);
 	TCODConsole::flush();
 	
 	//wait for a key press

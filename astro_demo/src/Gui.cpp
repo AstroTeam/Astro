@@ -323,7 +323,7 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		menux = engine.screenWidth / 2 - INVENTORY_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - INVENTORY_MENU_HEIGHT / 2;
 		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
-		TCODConsole::root->printFrame(menux,menuy - 20,INVENTORY_MENU_WIDTH,
+		TCODConsole::root->printFrame(menux,menuy - 15,INVENTORY_MENU_WIDTH,
 			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"INVENTORY");
 		//clears console 
 		TCODConsole::root->clear();
@@ -365,7 +365,7 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 				} else {
 					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
 				}
-				TCODConsole::root->print(menux+currentItem*8+1,menuy-18,(*it)->label);
+				TCODConsole::root->print(menux+currentItem*8+1,menuy-13,(*it)->label);
 				currentItem++;
 			}
 			TCODConsole::flush();
