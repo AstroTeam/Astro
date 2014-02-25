@@ -8,6 +8,17 @@
 void Renderer::render(void *sdlSurface){
 /////////////////////////////////////////////////////////////////////rendering doubled up walkable decor!
 	SDL_Surface *screen=(SDL_Surface *)sdlSurface;
+	static bool first=true;
+	if ( first ) {
+			first=false;
+		// set blue(255) as transparent for the root console
+		// so that we only blit characters
+		SDL_SetColorKey(screen,SDL_SRCCOLORKEY,255);
+			
+	}
+	if (engine.invState == 0)
+	{
+	TCODSystem::setFps(60);
 	//floors
 	SDL_Surface *floorTiles = SDL_LoadBMP("tile_assets/tiles.bmp");
 	SDL_SetColorKey(floorTiles,SDL_SRCCOLORKEY,255);
@@ -61,14 +72,7 @@ void Renderer::render(void *sdlSurface){
 
 	
 	
-	static bool first=true;
-	if ( first ) {
-			first=false;
-		// set blue(255) as transparent for the root console
-		// so that we only blit characters
-		SDL_SetColorKey(screen,SDL_SRCCOLORKEY,255);
-			
-	}
+	
 	
 	
 	///////////////if there is a tile with multiple items, we need to render them both, ask garret how to detect this
@@ -94,6 +98,7 @@ void Renderer::render(void *sdlSurface){
 			{
 				TCODConsole::root->clear();
 			}
+			
 			if(engine.mapcon->getChar(xM,yM) == 64 || engine.mapcon->getChar(xM,yM) == 143 ||
      		  engine.mapcon->getChar(xM,yM) == 159 || engine.mapcon->getChar(xM,yM) == 175)
 			{
@@ -111,6 +116,8 @@ void Renderer::render(void *sdlSurface){
 				//SDL_UpdateRect(floorMap, x*16, y*16, 16, 16);
 				//SDL_FillRect(floorMap, &dstRect, 258);
 				//Map::RoomType r = engine.map->tiles[xM*yM].tileType;
+				
+				//office floors, can test for any floors
 				int r = engine.map->tileType(xM,yM);
 				if (r == 2)
 				{
@@ -123,7 +130,7 @@ void Renderer::render(void *sdlSurface){
 				srcRect.y = 0;
 				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				
-				
+				//render infection over it
 				if (engine.map->isInfected(xM,yM))
 				{
 					srcRect.x = 16;
@@ -147,7 +154,7 @@ void Renderer::render(void *sdlSurface){
 					
 				
 				
-				
+				//OPTIMIZE ME -->  COMMON CASE IS SLOW
 				
 				//everything bodies to render behind
 				if (engine.mapcon->getChar(xM,yM) == 181 || engine.mapcon->getChar(xM,yM) == 182 || engine.mapcon->getChar(xM,yM) == 183 || 
@@ -175,6 +182,7 @@ void Renderer::render(void *sdlSurface){
 			//replace 'up arrow thing' with darker floor tiles
 			else if(engine.mapconCpy->getChar(xM,yM) == 30)
 			{
+				//render office floors
 				int r = engine.map->tileType(xM,yM);
 				if (r == 2)
 				{
@@ -248,7 +256,7 @@ void Renderer::render(void *sdlSurface){
 			
 			
 			
-			
+			//OPTIMIZE ME -->  COMMON CASE IS SLOW
 			
 			//shadows, always after tiles
 			//flashbang shadow and glow
@@ -444,6 +452,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_BlitSurface(screen,&dstRect1,floorMap,NULL);
 	
 	
+	//COULD OPTIMIZE --> CONTAINER/INVENTORY/PLAYER CONTAINS A LIST OF JUST EQUIPMENT TO RENDER
 	SDL_Rect dstRectEquip={plyx*16,plyy*16,16,16};
 	if (engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN){
 		for (Actor **it = engine.player->container->inventory.begin();it != engine.player->container->inventory.end();it++)
@@ -452,6 +461,7 @@ void Renderer::render(void *sdlSurface){
 			Actor *a = *it;
 			if (a->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(a->pickable))->equipped )//add case to not blit if inventory is open
 			{
+				//equipment
 				if (strcmp(a->name,"Mylar-Lined Boots") == 0)
 				{
 					srcRect.x = 0;
@@ -512,6 +522,109 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(equipment);
 	SDL_FreeSurface(terminal);
 	SDL_FreeSurface(decor);
+	}
+	else if (engine.invState == 1)
+	{
+	TCODSystem::setFps(30);
+	//TCODConsole::root->clear();
+	engine.invFrames++;
+	first=true;
+		// set blue(255) as transparent for the root console
+		// so that we only blit characters
+	SDL_SetColorKey(screen,SDL_SRCCOLORKEY,0);
+	//SDL_Surface *floorMap = SDL_LoadBMP("starmap2.bmp");
+	SDL_Surface *backpack = SDL_LoadBMP("tile_assets/backpack.bmp");
+	SDL_Surface *bg = SDL_LoadBMP("tile_assets/invBG.bmp");
+	SDL_Rect dstRect1={22*16,0,(engine.mapx2-engine.mapx1)*16+16,(engine.mapy2-engine.mapy1)*16+16};
+	SDL_Rect dstBack={(engine.screenWidth*16)/2-250,engine.screenHeight*16-48,500,500};
+	SDL_Rect dstBack1={0,0,500,500};
+	//int second = TCODSystem::getFps();
+	if (engine.invFrames > 30)
+	{
+		//SDL_BlitSurface(screen,NULL,bg,NULL);
+		//TCODConsole::flush();
+		//SDL_BlitSurface(bg,NULL,screen,NULL);
+		engine.invState = 2;
+		SDL_FreeSurface(backpack);
+		SDL_FreeSurface(bg);
+	}
+	else
+	{
+		SDL_BlitSurface(bg,NULL,screen,NULL);
+		//TCODConsole::root->clear();
+		dstBack.y -= (engine.invFrames*16);
+		//dstBack.y = 20;
+		SDL_BlitSurface(backpack,&dstBack1,screen,&dstBack);
+		SDL_FreeSurface(backpack);
+	SDL_FreeSurface(bg);
+	}
+	}
+	else if (engine.invState == 2)
+	{
+	TCODSystem::setFps(30);
+	//TCODConsole::root->clear();
+	engine.invFrames++;
+	first=true;
+		// set blue(255) as transparent for the root console
+		// so that we only blit characters
+	SDL_SetColorKey(screen,SDL_SRCCOLORKEY,0);
+	//SDL_Surface *floorMap = SDL_LoadBMP("starmap2.bmp");
+	SDL_Surface *tab = SDL_LoadBMP("tile_assets/tablet.bmp");
+	SDL_Surface *tabBig = SDL_LoadBMP("tile_assets/tablet-big.bmp");
+	SDL_Surface *backpack = SDL_LoadBMP("tile_assets/backpack.bmp");
+	SDL_Surface *bg = SDL_LoadBMP("tile_assets/invBG.bmp");
+	
+	SDL_Rect dstRect1={22*16,0,(engine.mapx2-engine.mapx1)*16+16,(engine.mapy2-engine.mapy1)*16+16};
+	SDL_Rect dstBack={(engine.screenWidth*16)/2-250,engine.screenHeight*16-48,500,500};
+	SDL_Rect dstBack1={0,0,500,500};
+	SDL_Rect dstTab={0,0,100,250};
+	SDL_Rect dstTabS={(engine.screenWidth*16)/2-50,64,100,250};
+	//int second = TCODSystem::getFps();
+	SDL_BlitSurface(bg,NULL,screen,NULL);
+	dstBack.y -= (30*16);
+	if (engine.invFrames > 60+15)
+	{
+		//SDL_BlitSurface(screen,NULL,bg,NULL);
+		//TCODConsole::flush();
+		//SDL_BlitSurface(bg,NULL,screen,NULL);
+		engine.invState = 4;
+		SDL_Rect screenTab ={(engine.screenWidth*16)/2-(708/2),48,708,750};
+		SDL_BlitSurface(tabBig,NULL,screen,&screenTab);
+		SDL_FreeSurface(backpack);
+		SDL_FreeSurface(tab);
+		SDL_FreeSurface(tabBig);
+		SDL_FreeSurface(bg);
+	}
+	else if (engine.invFrames > 45)
+	{
+		SDL_BlitSurface(backpack,&dstBack1,screen,&dstBack);
+		SDL_Rect bigTab    ={0,0,708,((engine.invFrames-45)*22)};//(16+((engine.invFrames*16)-45))};
+		
+		//SDL_Rect screenTab ={(engine.screenWidth*16)/2-(708/2),48,708,750};
+		SDL_Rect screenTab ={(engine.screenWidth*16)/2-(708/2),0,708,750};
+		
+		SDL_BlitSurface(tabBig,&bigTab,screen,&screenTab);
+		
+		
+		SDL_FreeSurface(backpack);
+		SDL_FreeSurface(tab);
+		SDL_FreeSurface(tabBig);
+		SDL_FreeSurface(bg);
+	}
+	else
+	{
+		//TCODConsole::root->clear();
+		
+		dstTabS.y -= (engine.invFrames-30)*25;
+		//dstBack.y = 20;
+		SDL_BlitSurface(backpack,&dstBack1,screen,&dstBack);
+		SDL_BlitSurface(tab,&dstTab,screen,&dstTabS);
+		SDL_FreeSurface(backpack);
+		SDL_FreeSurface(tab);
+		SDL_FreeSurface(tabBig);
+		SDL_FreeSurface(bg);
+	}
+	}
 	
 }
 	

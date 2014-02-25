@@ -17,6 +17,11 @@ public:
 	Map *map;
 	//Map *mapCpy;
 	//Renderer *rend;
+	
+	int invState;
+	int invFrames;
+	
+	
 	int mapx1;
 	int mapx2;
 	int mapy1;

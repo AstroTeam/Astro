@@ -177,6 +177,8 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		{ 
 			engine.map->computeFov();
 			engine.gui->menu.clear();
+			//TCODConsole::root->clear();
+			engine.invState = 1;
 			engine.gui->menu.addItem(Menu::ITEMS, "Items");
 			engine.gui->menu.addItem(Menu::TECH, "Tech");
 			engine.gui->menu.addItem(Menu::ARMOR, "Armor");
@@ -215,6 +217,8 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					default: break;
 				}
 			}
+			engine.invState = 0;
+			engine.invFrames = 0;
 			if (actor) {
 				bool used;
 				used = actor->pickable->use(actor,owner);

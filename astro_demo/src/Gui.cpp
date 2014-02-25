@@ -319,11 +319,19 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 			menux+=2;
 			menuy+=3;
 	}else if (mode == INVENTORY) {
+		
 		menux = engine.screenWidth / 2 - INVENTORY_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - INVENTORY_MENU_HEIGHT / 2;
 		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
 		TCODConsole::root->printFrame(menux,menuy - 20,INVENTORY_MENU_WIDTH,
 			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"INVENTORY");
+		//clears console 
+		TCODConsole::root->clear();
+		//static bool firstClear = true;
+		//if (firstClear){
+		//	TCODConsole::root->clear();
+		//	firstClear = false;
+		//}
 	} else if(mode == CLASS_MENU){
 		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
@@ -345,8 +353,11 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		
 	}
 	if (mode == INVENTORY){
+		//clears console when inventory is open and when you select a new dingus, mey need to adjust later if we want to move up/down
+		TCODConsole::root->clear();
+		//TCODConsole::flush();
 		while (!TCODConsole::isWindowClosed()) {
-		
+			
 			int currentItem = 0;
 			for (MenuItem **it = items.begin(); it != items.end(); it++) {
 				if (currentItem == selectedItem) {
