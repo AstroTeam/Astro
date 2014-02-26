@@ -26,6 +26,8 @@ Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	mapconDec = new TCODConsole(mapWidth, mapHeight);
 	gui = new Gui();
 	invState = 0;
+	selX = 0;
+	selY = 0;
 	mapx1 = 0;
 	mapx2 = 0;
 	mapy1 = 0;

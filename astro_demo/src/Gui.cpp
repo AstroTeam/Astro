@@ -300,7 +300,7 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 	int selectedItem = 0;
 	int menux = 0, menuy = 0;
 	int menu2x = 0, menu2y = 0;
-	
+	//TCODConsole::root->clear();
 	if (mode == PAUSE) {
 		menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - PAUSE_MENU_HEIGHT / 2;
@@ -322,16 +322,11 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		
 		menux = engine.screenWidth / 2 - INVENTORY_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - INVENTORY_MENU_HEIGHT / 2;
-		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
+		TCODConsole::root->setDefaultForeground(TCODColor(100,180,250));
 		TCODConsole::root->printFrame(menux,menuy - 15,INVENTORY_MENU_WIDTH,
-			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"INVENTORY");
-		//clears console 
-		TCODConsole::root->clear();
-		//static bool firstClear = true;
-		//if (firstClear){
-		//	TCODConsole::root->clear();
-		//	firstClear = false;
-		//}
+			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"INVENTORY MANAGER Pro");
+		//THIS LINE REMOVES THE "INVENTORY" HEADER ->
+		//TCODConsole::root->clear();
 	} else if(mode == CLASS_MENU){
 		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
@@ -354,10 +349,10 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 	}
 	if (mode == INVENTORY){
 		//clears console when inventory is open and when you select a new dingus, mey need to adjust later if we want to move up/down
-		TCODConsole::root->clear();
+		//
 		//TCODConsole::flush();
 		while (!TCODConsole::isWindowClosed()) {
-			
+			//TCODConsole::root->clear();
 			int currentItem = 0;
 			for (MenuItem **it = items.begin(); it != items.end(); it++) {
 				if (currentItem == selectedItem) {
@@ -365,9 +360,13 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 				} else {
 					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
 				}
+				//TCODConsole::flush();
 				TCODConsole::root->print(menux+currentItem*8+1,menuy-13,(*it)->label);
+				engine.selX = menux+selectedItem*8+1;
+				engine.selY = menuy-13;
 				currentItem++;
 			}
+			//TCODConsole::root->clear();
 			TCODConsole::flush();
 			
 			//check key presses
@@ -377,13 +376,19 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 				TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
 				switch(key.vk) {
 					case TCODK_LEFT:
+						//TCODConsole::root->clear();
+						//TCODConsole::flush();
 						selectedItem--;
 						if(selectedItem < 0) {
 							selectedItem = items.size()-1;
 						}
+						//TCODConsole::root->clear();
 					break;
 					case TCODK_RIGHT:
+						//TCODConsole::root->clear();
+						//TCODConsole::flush();
 						selectedItem = (selectedItem +1) % items.size();
+						//TCODConsole::root->clear();
 					break;
 					case TCODK_ENTER: return items.get(selectedItem)->code;
 					case TCODK_ESCAPE: return NO_CHOICE;

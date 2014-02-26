@@ -190,10 +190,12 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			while (engine.invState != 4){
 				TCODConsole::flush();
 			}
-			
+			//TCODConsole::root->clear();
 			
 			while(choice){
+			
 			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
+			//TCODConsole::root->clear();
 				switch (menuItem) {
 					case Menu::ITEMS :
 						actor = choseFromInventory(owner,1);
@@ -222,9 +224,11 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					default: break;
 				}
 			}
+			//TCODConsole::root->clear();
 			engine.invState = 0;
 			engine.invFrames = 0;
 			if (actor) {
+				
 				bool used;
 				used = actor->pickable->use(actor,owner);
 				if (used) {
@@ -382,7 +386,7 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type) {
 	inventoryScreen = new TCODConsole(INVENTORY_WIDTH, INVENTORY_HEIGHT);
 	
 	//display the inventory frame
-	inventoryScreen->setDefaultForeground(TCODColor(200,180,50));
+	inventoryScreen->setDefaultForeground(TCODColor(100,180,250));
 	inventoryScreen->printFrame(0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,true,TCOD_BKGND_DEFAULT);
 	
 	//display the items with their keyboard shortcut

@@ -20,6 +20,8 @@ public:
 	
 	int invState;
 	int invFrames;
+	int selX;
+	int selY;
 	
 	
 	int mapx1;

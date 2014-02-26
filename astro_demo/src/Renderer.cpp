@@ -638,28 +638,48 @@ void Renderer::render(void *sdlSurface){
 	}
 	else if (engine.invState == 4)
 	{
+		TCODConsole::root->clear();
+		
 		first=true;
 		
 		SDL_Rect dstBack={(engine.screenWidth*16)/2-375,(engine.screenHeight*16-48)-(30*16),750,750};
 		SDL_Rect dstBack1={0,0,750,750};
 		
 		SDL_Surface *tabBig = SDL_LoadBMP("tile_assets/tablet-big.bmp");
+		SDL_Surface *pointer = SDL_LoadBMP("tile_assets/finger.bmp");
 		SDL_SetColorKey(tabBig,SDL_SRCCOLORKEY,255);
+		SDL_SetColorKey(pointer,SDL_SRCCOLORKEY,255);
 		SDL_Surface *bg = SDL_LoadBMP("tile_assets/invBG.bmp");
 		SDL_SetColorKey(screen,SDL_SRCCOLORKEY,0);
 		SDL_Rect screenTab ={(engine.screenWidth*16)/2-(708/2),48,708,650};
 		
 		SDL_Surface *backpack = SDL_LoadBMP("tile_assets/backpack.bmp");
 		SDL_SetColorKey(backpack,SDL_SRCCOLORKEY,255);
+		
+		
+		//TCODConsole::root->clear();
+		//SDL_UpdateRect(screen, 0, 0, 85*16,35*16);
+		
+		
+		int x = engine.selX*16;
+		int y = engine.selY*16;
+		
+		//SDL_BlitSurface(bg,NULL,screen,NULL);
+		//TCODConsole::root->clear();
 		SDL_BlitSurface(backpack,&dstBack1,bg,&dstBack);
 		SDL_BlitSurface(tabBig,NULL,bg,&screenTab);
-		
-		
+		//SDL_UpdateRect(screen, 0, 0, 85*16,35*16);
 		SDL_BlitSurface(screen,NULL,bg,NULL);
+		
+		SDL_Rect pointerBox ={x,y,375,800};
+		//SDL_BlitSurface(pointer,NULL,bg,&pointerBox);
+
+		
 		SDL_BlitSurface(bg,NULL,screen,NULL);
 		SDL_FreeSurface(bg);
 		SDL_FreeSurface(tabBig);
 		SDL_FreeSurface(backpack);
+		SDL_FreeSurface(pointer);
 	}
 	
 }
