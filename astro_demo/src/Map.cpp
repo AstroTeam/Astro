@@ -432,7 +432,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//42 is star 
 		int x = (x1+x2)/2;
 		int y = (y1+y2)/2;
-		Actor *light = new Actor(x, y, 42, "A small light", TCODColor::white);
+		Actor *light = new Actor(x, y, 224, "An hastily erected Emergency Light", TCODColor::white);
 		light->ai=new LightAi;
 		engine.actors.push(light);
 	}
