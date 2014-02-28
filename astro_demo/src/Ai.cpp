@@ -526,8 +526,8 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	//Keep info displayed until the play presses 'c' or ESCAPE
 	TCOD_key_t key;
 	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
-	while(key.c != 'c'){
-		if(key.vk == TCODK_ESCAPE)
+	while(key.vk != TCODK_CHAR){
+		if(key.vk == TCODK_ESCAPE || key.c == 'c')
 			break;
 	}
 }
