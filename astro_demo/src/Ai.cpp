@@ -146,6 +146,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 }
 
 void PlayerAi::handleActionKey(Actor *owner, int ascii) {
+	//bool first = true;
 	switch(ascii) {
 		case 'g': //pickup the item
 		{
@@ -377,6 +378,10 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				engine.gui->message(TCODColor::lightGrey,"You do not have a ranged weapon equipped");
 			}
 		break;
+		case 'c':
+			engine.map->computeFov();
+			displayCharacterInfo(owner);
+		break;
 	}
 }
 
@@ -436,7 +441,96 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type) {
 	}
 	return NULL;
 }
-
+void PlayerAi::displayCharacterInfo(Actor *owner){
+//Display screen of Character Information
+	static const int CHARACTER_HEIGHT = 38;
+	static const int CHARACTER_WIDTH = 33;
+	TCODConsole con(CHARACTER_WIDTH,CHARACTER_HEIGHT);
+	
+	con.setDefaultForeground(TCODColor(100,180,250));
+	con.printFrame(0,0,CHARACTER_WIDTH,CHARACTER_HEIGHT,true,TCOD_BKGND_DEFAULT,"CHARACTER");
+	
+	con.setDefaultForeground(TCODColor::white);
+	
+	//Print Currently Equipped armor onto the screen
+	con.print(14,20,"ARMOR");
+	con.print(1,22,"HEAD: ");
+	con.print(1,24,"CHEST: ");
+	con.print(1,26,"LEGS: ");
+	con.print(1,28,"FEET: ");
+	con.print(1,30,"HAND1: ");
+	con.print(1,32,"HAND2: ");
+	con.print(1,34,"RANGED: ");
+	for(Actor **it = owner->container->inventory.begin(); it != owner->container->inventory.end(); ++it){
+		Actor *actor = *it;
+		if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
+			switch(((Equipment*)(actor->pickable))->slot){
+				case Equipment::HEAD:
+					con.print(6,22,"%s",actor->name);
+				break;
+				case Equipment::CHEST:
+					con.print(7,24,"%s",actor->name);
+				break;
+				case Equipment::LEGS:
+					con.print(6,26,"%s",actor->name);
+				break;
+				case Equipment::FEET:
+					con.print(6,28,"%s",actor->name);
+				break;
+				case Equipment::HAND1:
+					con.print(7,30,"%s",actor->name);
+				break;
+				case Equipment::HAND2:
+					con.print(7,32,"%s",actor->name);
+				break;
+				case Equipment::RANGED:
+					con.print(8,34,"%s",actor->name);
+				break;
+				case Equipment::NOSLOT:
+				break;
+				default: break;
+			}
+		}
+	}
+	//Diplay Character Stats
+	con.print(2,4,"STATS");
+	con.print(1,6,"VIT: %g",owner->destructible->maxHp);
+	con.print(1,8,"AG: %g",owner->destructible->totalDefense);
+	con.print(1,10,"STR: %g",owner->attacker->totalPower);
+	con.print(1,12,"INT: N/A");
+	con.print(1,14,"KILLS: %d",engine.killCount);
+	
+	//Display Character Image
+	con.print(20,8,"@");
+	
+	//Display different Image based on race
+	/*switch(owner->ch){
+		case 143:
+			con.print(20,8,"Â");
+		break;
+		case 159:
+			con.print(20,8,"ƒ");
+		break;
+		case 174:
+			con.print(20,8,"»");
+		break;
+		default: break;
+	}*/
+	
+	//blit character info onto the game display
+	TCODConsole::blit(&con,0,0,CHARACTER_WIDTH,CHARACTER_HEIGHT,
+		TCODConsole::root, engine.screenWidth/2 - CHARACTER_WIDTH/2,
+		engine.screenHeight/2 - CHARACTER_HEIGHT/2 - 2);
+	TCODConsole::flush();
+	
+	//Keep info displayed until the play presses 'c' or ESCAPE
+	TCOD_key_t key;
+	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
+	while(key.c != 'c'){
+		if(key.vk == TCODK_ESCAPE)
+			break;
+	}
+}
 
 static const int TRACKING_TURNS = 3;
 
