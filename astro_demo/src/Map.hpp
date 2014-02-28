@@ -13,8 +13,9 @@ namespace Param {
 struct Tile {
 	bool explored;
 	float infection;
+	bool lit;
 	Param::RoomType tileType;
-	Tile() : explored(false),  infection (0), tileType(Param::STANDARD) {}
+	Tile() : explored(false), infection (0), lit(false), tileType(Param::STANDARD) {}
 	const TCODColor * lastColor;//if color changed offscreen
 	char lastChar;//if the char changed
 };
@@ -40,6 +41,7 @@ public:
 	bool isInFov(int x, int y) const;
 	bool isExplored(int x, int y) const;
 	bool isInfected(int x, int y) const;
+	bool isLit(int x, int y) const;
 	void infectFloor(int x, int y);
 	void computeFov();
 	void render() const;

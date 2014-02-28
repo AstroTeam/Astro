@@ -175,14 +175,6 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 						}
 					}
 					
-					//engine.mapconDec->setChar(x+1, y, n);
-					//n = rng->getInt(5,8);
-					//engine.mapconDec->setChar(x-1, y, n);
-					//n = rng->getInt(5,8);
-					//engine.mapconDec->setChar(x, y+1, n);
-					//n = rng->getInt(5,8);
-					//engine.mapconDec->setChar(x, y-1, n);
-					//delete a;
 				}
 			}
 			//delete a;
@@ -435,6 +427,16 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		epicenterAmount--;
 	}
 
+	if (true)//add lights to all rooms, make test later
+	{
+		//42 is star 
+		int x = (x1+x2)/2;
+		int y = (y1+y2)/2;
+		Actor *light = new Actor(x, y, 42, "A small light", TCODColor::white);
+		light->ai=new LightAi;
+		engine.actors.push(light);
+	}
+	
 	//custom room feature
 	if (room->type == OFFICE) {
 		for (int tilex = x1; tilex <=x2; tilex++) {
@@ -613,15 +615,25 @@ bool Map::isInFov(int x, int y) const {
 		return false;
 	}
 	
-	if (map->isInFov(x,y)) {
+	if ((map->isInFov(x,y)) && (engine.distance(engine.player->x,x,engine.player->y,y) <= 2 || isLit(x,y))) {
 		tiles[x+y*width].explored = true;
 		return true;
 	}
 	return false;
 }
 
+bool Map::isLit(int x, int y) const {
+	return tiles[x+y*width].lit;
+}
+
+
 void Map::computeFov() {
-	map->computeFov(engine.player->x,engine.player->y, engine.fovRadius);
+	//compute FOV, then make a light to light up the area?
+	//or just have them be lit/unlit
+	
+	//compute FOV, everything in FOV will be lit 
+	//if your FOV interacts with another thing's FOV, light up both FOV's
+	map->computeFov(engine.player->x,engine.player->y, 10/*engine.fovRadius*/);//@ 6 you cannot run away from mobs
 }
 void Map::render() const {
 
@@ -632,7 +644,7 @@ void Map::render() const {
 
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
-			if (isInFov(x,y)){// || true) {
+			if ((isInFov(x,y) && engine.distance(engine.player->x,x,engine.player->y,y) <= 2) || (isInFov(x,y) && isLit(x,y))){// || true) {
 				//TCODConsole::root->setCharBackground(x,y,isWall(x,y) ? lightWall : lightGround);
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
 
@@ -693,6 +705,23 @@ void Map::render() const {
 					}
 				}
 			}
+			/*if (isInFov(x,y) )//|| isExplored(x,y))
+			{
+				//if it is false set to true
+				tiles[x+y*width].lit = true;
+			}
+			else
+			{
+				tiles[x+y*width].lit = false;
+			}
+			if (isLit(x,y)){
+				engine.mapcon->setCharForeground(x,y,TCODColor::yellow);
+			}
+			else
+			{
+				engine.mapcon->setCharForeground(x,y,TCODColor::white);
+			}*/
+			
 		}
 	}
 

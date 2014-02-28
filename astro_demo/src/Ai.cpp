@@ -617,6 +617,47 @@ void EpicenterAi::save(TCODZip &zip) {
 	zip.putInt(EPICENTER);
 }
 
+
+LightAi::LightAi(){}
+
+void LightAi::load(TCODZip &zip){}
+
+void LightAi::save(TCODZip &zip){}
+
+void LightAi::update(Actor * owner)
+{
+	
+	for (int tilex = owner->x-4; tilex <= owner->x+4; tilex++) {
+		for (int tiley = owner->y-4; tiley <= owner->y+4; tiley++) {
+			if (engine.distance(owner->x,tilex,owner->y,tiley) <= 4)
+			{
+			engine.map->tiles[tilex+tiley*engine.map->width].lit = true;
+			}
+			
+		}
+	}
+		
+	/*for (int i = x1; i <= x2; i++)
+	{
+		for (int j = y1; j <= y2; j++)
+		{
+			if (true)//engine.distance(x,i,y,j) <= 3)
+			{
+				engine.map->tiles[i+j*engine.map->width].infection = true;
+				//engine.mapcon->setChar(i, j, 'L');
+			}
+			else
+			{
+				engine.map->tiles[i+j*engine.map->width].infection = false;
+			}
+		}
+	}
+	*/
+	
+	
+}
+
+
 ConfusedActorAi::ConfusedActorAi(int nbTurns, Ai *oldAi)
 	:nbTurns(nbTurns),oldAi(oldAi) {
 }

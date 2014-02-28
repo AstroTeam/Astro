@@ -547,7 +547,7 @@ void Renderer::render(void *sdlSurface){
 	}
 	else
 	{
-		TCODSystem::setFps(35);
+		TCODSystem::setFps(45);
 		//TCODConsole::root->clear();
 		
 		dstTabS.y -= (engine.invFrames-30)*25;

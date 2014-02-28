@@ -62,6 +62,17 @@ protected:
 	void infectLevel(Actor * owner);
 };
 
+class LightAi : public Ai {
+public:
+	LightAi();
+	void update(Actor * owner);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+protected:
+
+};
+
+
 class ConfusedActorAi : public Ai {
 public:
 	ConfusedActorAi(int nbTurns, Ai *oldAi);
