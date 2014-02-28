@@ -523,13 +523,9 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 		engine.screenHeight/2 - CHARACTER_HEIGHT/2 - 2);
 	TCODConsole::flush();
 	
-	//Keep info displayed until the play presses 'c' or ESCAPE
+	//Keep info displayed until the player presses any character
 	TCOD_key_t key;
 	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
-	while(!key.vk){
-		if(key.vk == TCODK_ESCAPE || key.c == 'c')
-			break;
-	}
 }
 
 static const int TRACKING_TURNS = 3;
