@@ -213,26 +213,113 @@ void Engine::init() {
 		case 4:
 			player->role="Explorer";
 			player->job="Survivalist";
+			
+			chest = new Actor(0,0,185,"T-Shirt (red)",TCODColor::white);
+			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			chest->blocks = false;
+			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC);
+			chest->sort = 3;
+			engine.actors.push(chest);
+			chest->pickable->pick(chest,player);
+			((Equipment*)(chest->pickable))->use(chest,player);
+			
 			break;
 		case 5:
 			player->role="Explorer";
 			player->job="Pirate";
+			
+			chest = new Actor(0,0,185,"Boarding Vest",TCODColor::white);
+			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			chest->blocks = false;
+			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC);
+			chest->sort = 3;
+			engine.actors.push(chest);
+			chest->pickable->pick(chest,player);
+			((Equipment*)(chest->pickable))->use(chest,player);
+			
+			feet = new Actor(0,0,185,"Boarding Boots",TCODColor::white);
+			bonusF = new ItemBonus(ItemBonus::HEALTH,0);
+			feet->blocks = false;
+			feet->pickable = new Equipment(0,Equipment::FEET,bonusF);
+			feet->sort = 3;
+			engine.actors.push(feet);
+			feet->pickable->pick(feet,player);
+			((Equipment*)(feet->pickable))->use(feet,player);
+			
 			break;
 		case 6:
 			player->role="Explorer";
 			player->job="Merchant";
+			//you don't get dick
 			break;
 		case 7:
 			player->role="Mercenary";
 			player->job="Assassin";
+			
+			legs = new Actor(0,0,185,"Skinsuit Leggings",TCODColor::white);
+			bonusHe = new ItemBonus(ItemBonus::HEALTH,0);
+			legs->blocks = false;
+			legs->pickable = new Equipment(0,Equipment::LEGS,bonusHe);
+			legs->sort = 3;
+			engine.actors.push(legs);
+			legs->pickable->pick(legs,player);
+			((Equipment*)(legs->pickable))->use(legs,player);
+			
+			chest = new Actor(0,0,185,"Skinsuit Jacket",TCODColor::white);
+			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			chest->blocks = false;
+			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC);
+			chest->sort = 3;
+			engine.actors.push(chest);
+			chest->pickable->pick(chest,player);
+			((Equipment*)(chest->pickable))->use(chest,player);
+			
+			helmet = new Actor(0,0,185,"Balaclava",TCODColor::white);
+			bonusHe = new ItemBonus(ItemBonus::HEALTH,5);
+			helmet->blocks = false;
+			helmet->pickable = new Equipment(0,Equipment::HEAD,bonusHe);
+			helmet->sort = 3;
+			engine.actors.push(helmet);
+			helmet->pickable->pick(helmet,player);
+			((Equipment*)(helmet->pickable))->use(helmet,player);
+			
 			break;
 		case 8:
 			player->role="Mercenary";
 			player->job="Brute";
+			
+			hands = new Actor(0,0,185,"Bruiser Gloves",TCODColor::white);
+			bonusHa = new ItemBonus(ItemBonus::HEALTH,5);
+			hands->blocks = false;
+			hands->pickable = new Equipment(0,Equipment::HAND1,bonusHa);
+			hands->sort = 3;
+			engine.actors.push(hands);
+			hands->pickable->pick(hands,player);
+			((Equipment*)(hands->pickable))->use(hands,player); 
+			
 			break;
 		case 9:
 			player->role="Mercenary";
 			player->job="Hacker";
+			
+			helmet = new Actor(0,0,185,"Tech Helmet",TCODColor::white);
+			bonusHe = new ItemBonus(ItemBonus::HEALTH,5);
+			helmet->blocks = false;
+			helmet->pickable = new Equipment(0,Equipment::HEAD,bonusHe);
+			helmet->sort = 3;
+			engine.actors.push(helmet);
+			helmet->pickable->pick(helmet,player);
+			((Equipment*)(helmet->pickable))->use(helmet,player);
+			
+			chest = new Actor(0,0,185,"T-Shirt (grey)",TCODColor::white);
+			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			chest->blocks = false;
+			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC);
+			chest->sort = 3;
+			engine.actors.push(chest);
+			chest->pickable->pick(chest,player);
+			((Equipment*)(chest->pickable))->use(chest,player);
+			
 			break;
 	}
 	player->ch = plyrAscii;

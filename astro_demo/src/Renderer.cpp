@@ -387,12 +387,13 @@ void Renderer::render(void *sdlSurface){
 			if (a->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(a->pickable))->equipped )//add case to not blit if inventory is open
 			{
 				//equipment
-				if (strcmp(a->name,"Mylar-Lined Boots") == 0)
+				if (strcmp(a->name,"Mylar-Lined Boots") == 0)//legacy first thing!
 				{
 					srcRect.x = 0;
 					srcRect.y = 0;
 					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
 				}
+				//marine starter stuff
 				else if (strcmp(a->name,"Marine Fatigue Pants") == 0)
 				{
 					srcRect.x = 16;
@@ -429,6 +430,64 @@ void Renderer::render(void *sdlSurface){
 					srcRect.y = 16;
 					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
 				}
+				//explorer starter stuff
+				else if (strcmp(a->name,"T-Shirt (red)") == 0)
+				{
+					srcRect.x = 0;
+					srcRect.y = 32;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
+				else if (strcmp(a->name,"Boarding Vest") == 0)
+				{
+					srcRect.x = 16;
+					srcRect.y = 32;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
+				else if (strcmp(a->name,"Boarding Boots") == 0)
+				{
+					srcRect.x = 32;
+					srcRect.y = 32;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
+				//mercenary starter stuff
+				else if (strcmp(a->name,"Skinsuit Leggings") == 0)
+				{
+					srcRect.x = 80;
+					srcRect.y = 32;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
+				else if (strcmp(a->name,"Skinsuit Jacket") == 0)
+				{
+					srcRect.x = 64;
+					srcRect.y = 32;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
+				else if (strcmp(a->name,"Balaclava") == 0)
+				{
+					srcRect.x = 48;
+					srcRect.y = 32;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
+				else if (strcmp(a->name,"Bruiser Gloves") == 0)
+				{
+					srcRect.x = 96;
+					srcRect.y = 32;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
+				else if (strcmp(a->name,"Tech Helmet") == 0)
+				{
+					srcRect.x = 112;
+					srcRect.y = 32;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
+				else if (strcmp(a->name,"T-Shirt (grey)") == 0)
+				{
+					srcRect.x = 128;
+					srcRect.y = 32;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
+				
+				//rando
 				else if (strcmp(a->name,"Titan-mail") == 0)
 				{
 					srcRect.x = 32;
