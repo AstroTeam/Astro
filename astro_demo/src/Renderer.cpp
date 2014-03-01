@@ -393,15 +393,39 @@ void Renderer::render(void *sdlSurface){
 					srcRect.y = 0;
 					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
 				}
-				else if (strcmp(a->name,"Marine Fatigue BDU-lower") == 0)
+				else if (strcmp(a->name,"Marine Fatigue Pants") == 0)
+				{
+					srcRect.x = 16;
+					srcRect.y = 16;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
+				else if (strcmp(a->name,"Marine Fatigue Jacket") == 0)
+				{
+					srcRect.x = 48;
+					srcRect.y = 16;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
+				else if (strcmp(a->name,"Marine Medical Jacket") == 0)
+				{
+					srcRect.x = 64;
+					srcRect.y = 16;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
+				else if (strcmp(a->name,"Marine Quarter-Master Jacket") == 0)
+				{
+					srcRect.x = 80;
+					srcRect.y = 16;
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
+				else if (strcmp(a->name,"Combat Boots") == 0)
 				{
 					srcRect.x = 0;
 					srcRect.y = 16;
 					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
 				}
-				else if (strcmp(a->name,"Marine Fatigue BDU-upper") == 0)
+				else if (strcmp(a->name,"Marine Ballistic Helmet") == 0)
 				{
-					srcRect.x = 16;
+					srcRect.x = 32;
 					srcRect.y = 16;
 					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
 				}
