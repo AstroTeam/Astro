@@ -557,7 +557,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	
 	//TCODRandom *rnd = TCODRandom::getInstance();
 	//add lights to all rooms, make test later
-	if (rng->getInt(0,10) > 3)
+	if (rng->getInt(0,10) > 4)
 	{
 		//42 is star 
 		int numLights = 0;
@@ -574,7 +574,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			int y = rng->getInt(y1+1,y2-1);
 			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y)) {
 				Actor *light = new Actor(x, y, 224, "An hastily erected Emergency Light", TCODColor::white);
-				light->ai=new LightAi;
+				//4,1 = standard light, radius, flkr
+				light->ai=new LightAi(rng->getInt(3,6),1);
 				engine.actors.push(light);
 				i++;
 			}

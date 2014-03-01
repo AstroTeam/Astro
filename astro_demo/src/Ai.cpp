@@ -614,7 +614,11 @@ void EpicenterAi::save(TCODZip &zip) {
 }
 
 
-LightAi::LightAi(){}
+LightAi::LightAi(int rad, int f)
+{
+	flkr = f;
+	radius = rad;	
+}
 
 void LightAi::load(TCODZip &zip){}
 
@@ -622,10 +626,10 @@ void LightAi::save(TCODZip &zip){}
 
 void LightAi::update(Actor * owner)
 {
-	int maxx = owner->x+4;
-	int minx = owner->x-4;
-	int maxy = owner->y+4;
-	int miny = owner->y-4;
+	int maxx = owner->x+6;
+	int minx = owner->x-6;
+	int maxy = owner->y+6;
+	int miny = owner->y-6;
 	TCODMap lmap(maxx-minx,maxy-miny);
 	for (int x=minx; x <= maxx; x++) {
 		for (int y=miny; y <= maxy; y++) {
@@ -634,10 +638,10 @@ void LightAi::update(Actor * owner)
 		}
 	}
 	//owner->radius
-	lmap.computeFov(owner->x-minx,owner->y-miny,4);
+	lmap.computeFov(owner->x-minx,owner->y-miny,radius);
 	for (int x=minx; x <= maxx; x++) {
 		for (int y=miny; y <= maxy; y++) {
-			if (lmap.isInFov(x-minx,y-miny) && engine.player->x != x && engine.player->y != y) {
+			if (lmap.isInFov(x-minx,y-miny) && (engine.player->x != x && engine.player->y != y)) {
 				engine.map->tiles[x+y*engine.map->width].lit = true;
 			}
 			//else

@@ -64,12 +64,13 @@ protected:
 
 class LightAi : public Ai {
 public:
-	LightAi();
+	LightAi(int rad, int f);
 	void update(Actor * owner);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
 protected:
-
+	int radius;
+	int flkr;
 };
 
 
