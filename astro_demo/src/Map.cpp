@@ -426,16 +426,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		}
 		epicenterAmount--;
 	}
-
-	if (true)//add lights to all rooms, make test later
-	{
-		//42 is star 
-		int x = (x1+x2)/2;
-		int y = (y1+y2)/2;
-		Actor *light = new Actor(x, y, 224, "An hastily erected Emergency Light", TCODColor::white);
-		light->ai=new LightAi;
-		engine.actors.push(light);
-	}
+	
+	
 	
 	//custom room feature
 	if (room->type == OFFICE) {
@@ -562,7 +554,34 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		}
 		
 	}
-
+	
+	//TCODRandom *rnd = TCODRandom::getInstance();
+	//add lights to all rooms, make test later
+	if (rng->getInt(0,10) > 3)
+	{
+		//42 is star 
+		int numLights = 0;
+		int rmSze = (x2 - x1) * (y2 - y1);
+		numLights = rmSze/30;
+		if (numLights <= 0)
+			numLights = 1;
+		for (int i = 0; i < numLights;)
+		{
+			//bool valid = false;
+			//int x = (x1+x2)/2;
+			//int y = (y1+y2)/2;
+			int x = rng->getInt(x1+1,x2-1);
+			int y = rng->getInt(y1+1,y2-1);
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y)) {
+				Actor *light = new Actor(x, y, 224, "An hastily erected Emergency Light", TCODColor::white);
+				light->ai=new LightAi;
+				engine.actors.push(light);
+				i++;
+			}
+		}
+	}
+	
+	
 	//add items
 	int nbItems = rng->getInt(0, MAX_ROOM_ITEMS);
 	while (nbItems > 0) {

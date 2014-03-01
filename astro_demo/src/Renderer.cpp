@@ -210,7 +210,9 @@ void Renderer::render(void *sdlSurface){
 								
 				}
 			}
-
+			
+			
+			
 			
 			//OPTIMIZE ME -->  COMMON CASE IS SLOW
 			
@@ -335,8 +337,8 @@ void Renderer::render(void *sdlSurface){
 		y=0;
 		x++;
 	}
-			
-	//OPTIMIZE ME?  INCLUDE IN PREVIOUS LOOP?
+		
+	//OPTIMIZE ME?  INCLUDE IN PREVIOUS LOOP?, CAN'T, MUST BE AFTER ALL TILES :(
 	int x1 = 0, y1 = 0;
 	for (int xM = engine.mapx1; xM < engine.mapx2+16; xM++) {
 		for (int yM = engine.mapy1; yM < engine.mapy2+16; yM++) {

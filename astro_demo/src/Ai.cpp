@@ -622,17 +622,30 @@ void LightAi::save(TCODZip &zip){}
 
 void LightAi::update(Actor * owner)
 {
-	
-	for (int tilex = owner->x-4; tilex <= owner->x+4; tilex++) {
-		for (int tiley = owner->y-4; tiley <= owner->y+4; tiley++) {
-			if (engine.distance(owner->x,tilex,owner->y,tiley) <= 4)
-			{
-			engine.map->tiles[tilex+tiley*engine.map->width].lit = true;
-			}
-			
+	int maxx = owner->x+4;
+	int minx = owner->x-4;
+	int maxy = owner->y+4;
+	int miny = owner->y-4;
+	TCODMap lmap(maxx-minx,maxy-miny);
+	for (int x=minx; x <= maxx; x++) {
+		for (int y=miny; y <= maxy; y++) {
+			//inheriting properties of real map
+			lmap.setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
 		}
 	}
-		
+	//owner->radius
+	lmap.computeFov(owner->x-minx,owner->y-miny,4);
+	for (int x=minx; x <= maxx; x++) {
+		for (int y=miny; y <= maxy; y++) {
+			if (lmap.isInFov(x-minx,y-miny) && engine.player->x != x && engine.player->y != y) {
+				engine.map->tiles[x+y*engine.map->width].lit = true;
+			}
+			//else
+			//{
+			//	engine.map->tiles[x+y*engine.map->width].lit = false;
+			//}
+		}
+	}
 	/*for (int i = x1; i <= x2; i++)
 	{
 		for (int j = y1; j <= y2; j++)
