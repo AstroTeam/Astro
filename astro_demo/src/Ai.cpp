@@ -11,6 +11,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case CONFUSED_ACTOR: ai = new ConfusedActorAi(0,NULL); break;
 	    case EPICENTER: ai = new EpicenterAi(); break;
 		case RANGED: ai = new RangedAi(); break;
+		case LIGHT: ai = new LightAi(0,0); break;
 	}
 	ai->load(zip);
 	return ai;
@@ -614,15 +615,47 @@ void EpicenterAi::save(TCODZip &zip) {
 }
 
 
-LightAi::LightAi(int rad, int f)
+LightAi::LightAi(int rad, float f)
 {
+	//TCODRandom *myRandom = new TCODRandom();
+	//float rng = myRandom->getFloat(0.0f,1.0f,0.9);
 	flkr = f;
 	radius = rad;	
+	lmap = new TCODMap(13,13);
 }
 
 void LightAi::load(TCODZip &zip){}
 
-void LightAi::save(TCODZip &zip){}
+void LightAi::save(TCODZip &zip){
+	zip.putInt(LIGHT);
+}
+
+void LightAi::flicker(Actor * owner, float chance){
+	int maxx = owner->x+6;
+	int minx = owner->x-6;
+	int maxy = owner->y+6;
+	int miny = owner->y-6;
+	//owner->radius
+	//lmap->computeFov(owner->x-minx,owner->y-miny,radius);
+	for (int x=minx; x <= maxx; x++) {
+		for (int y=miny; y <= maxy; y++) {
+			if (lmap->isInFov(x-minx,y-miny)) {
+				if (flkr < chance)
+				{
+					if (lmap->isInFov(x-minx,y-miny) && (engine.player->x != x && engine.player->y != y)) {
+						engine.map->tiles[x+y*engine.map->width].lit = false;
+					}
+				}
+				else
+				{
+					if (lmap->isInFov(x-minx,y-miny) && (engine.player->x != x && engine.player->y != y)) {
+						engine.map->tiles[x+y*engine.map->width].lit = true;
+					}
+				}
+			}
+		}
+	}
+}
 
 void LightAi::update(Actor * owner)
 {
@@ -630,18 +663,18 @@ void LightAi::update(Actor * owner)
 	int minx = owner->x-6;
 	int maxy = owner->y+6;
 	int miny = owner->y-6;
-	TCODMap lmap(maxx-minx,maxy-miny);
+	//lmap = new TCODMap(maxx-minx,maxy-miny);
 	for (int x=minx; x <= maxx; x++) {
 		for (int y=miny; y <= maxy; y++) {
 			//inheriting properties of real map
-			lmap.setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
+			lmap->setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
 		}
 	}
 	//owner->radius
-	lmap.computeFov(owner->x-minx,owner->y-miny,radius);
+	lmap->computeFov(owner->x-minx,owner->y-miny,radius);
 	for (int x=minx; x <= maxx; x++) {
 		for (int y=miny; y <= maxy; y++) {
-			if (lmap.isInFov(x-minx,y-miny) && (engine.player->x != x && engine.player->y != y)) {
+			if (lmap->isInFov(x-minx,y-miny) && (engine.player->x != x && engine.player->y != y)) {
 				engine.map->tiles[x+y*engine.map->width].lit = true;
 			}
 			//else

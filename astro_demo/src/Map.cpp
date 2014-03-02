@@ -575,7 +575,9 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y)) {
 				Actor *light = new Actor(x, y, 224, "An hastily erected Emergency Light", TCODColor::white);
 				//4,1 = standard light, radius, flkr
-				light->ai=new LightAi(rng->getInt(3,6),1);
+				TCODRandom *myRandom = new TCODRandom();
+				float rng2 = myRandom->getFloat(0.5000f,1.0000f,0.9000f);
+				light->ai = new LightAi(rng->getInt(3,6),rng2);
 				engine.actors.push(light);
 				i++;
 			}

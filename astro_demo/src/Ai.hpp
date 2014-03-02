@@ -4,7 +4,7 @@ public:
 	static Ai *create(TCODZip &zip);
 protected:
 	enum AiType {
-		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED
+		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED, LIGHT
 	};
 };
 
@@ -64,13 +64,15 @@ protected:
 
 class LightAi : public Ai {
 public:
-	LightAi(int rad, int f);
+	LightAi(int rad, float f);
+    float flkr;
+	void flicker(Actor * owner, float f);
 	void update(Actor * owner);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
 protected:
 	int radius;
-	int flkr;
+	TCODMap *lmap;
 };
 
 

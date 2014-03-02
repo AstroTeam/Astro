@@ -370,6 +370,19 @@ void Renderer::render(void *sdlSurface){
 		x1++;
 	}
 	
+	//flicker lights
+	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+		Actor *actor = *it;
+		//if (actor->x ==x && actor->y == y) {
+		//	return actor;
+		//}
+		if (actor->ch == 224 && engine.distance(actor->x,engine.player->x,actor->y,engine.player->y) < 11){
+			LightAi *l = (LightAi*)actor->ai;
+			TCODRandom *myRandom = new TCODRandom();
+			float rng = myRandom->getFloat(0.0000f,1.0000f);
+			l->flicker(actor,rng);
+		}
+	}
 	
 	
 /*
