@@ -925,7 +925,7 @@ Actor *Map::createEMP(int x, int y){
 	return scrollOfLightningBolt;
 }
 Actor *Map::createTitanMail(int x, int y){
-	Actor *chainMail = new Actor(x,y,210,"Titan-mail",TCODColor::lightPink);
+	Actor *chainMail = new Actor(x,y,185,"Titan-mail",TCODColor::white);
 	chainMail->blocks = false;
 	ItemBonus *bonus = new ItemBonus(ItemBonus::DEFENSE,3);
 	chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus);
@@ -933,7 +933,7 @@ Actor *Map::createTitanMail(int x, int y){
 	return chainMail;
 }
 Actor *Map::createMylarBoots(int x, int y){
-	Actor *myBoots = new Actor(x,y,'[',"Mylar-Lined Boots",TCODColor::lightPink);
+	Actor *myBoots = new Actor(x,y,185,"Mylar-Lined Boots",TCODColor::white);
 	myBoots->blocks = false;
 	ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
 	myBoots->pickable = new Equipment(0,Equipment::FEET,bonus);
@@ -949,7 +949,7 @@ Actor *Map::createMLR(int x, int y){
 	return MLR;
 }
 Actor *Map::createBatteryPack(int x,int y){
-	Actor *batteryPack = new Actor(x,y,'+',"Battery Pack", TCODColor::yellow);
+	Actor *batteryPack = new Actor(x,y,186,"Battery Pack", TCODColor::yellow);
 	batteryPack->sort = 1;
 	batteryPack->blocks = false;
 	batteryPack->pickable = new Charger(5);

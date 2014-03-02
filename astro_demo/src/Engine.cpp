@@ -108,9 +108,9 @@ void Engine::init() {
 			player->dex+=4; //job selection bonus
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
-			bonusHe = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
 			legs->blocks = false;
-			legs->pickable = new Equipment(0,Equipment::LEGS,bonusHe);
+			legs->pickable = new Equipment(0,Equipment::LEGS,bonusL);
 			legs->sort = 3;
 			engine.actors.push(legs);
 			legs->pickable->pick(legs,player);
@@ -151,9 +151,9 @@ void Engine::init() {
 			player->job="Medic";
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
-			bonusHe = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
 			legs->blocks = false;
-			legs->pickable = new Equipment(0,Equipment::LEGS,bonusHe);
+			legs->pickable = new Equipment(0,Equipment::LEGS,bonusL);
 			legs->sort = 3;
 			engine.actors.push(legs);
 			legs->pickable->pick(legs,player);
@@ -183,9 +183,9 @@ void Engine::init() {
 			player->job="Quartermaster";
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
-			bonusHe = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
 			legs->blocks = false;
-			legs->pickable = new Equipment(0,Equipment::LEGS,bonusHe);
+			legs->pickable = new Equipment(0,Equipment::LEGS,bonusL);
 			legs->sort = 3;
 			engine.actors.push(legs);
 			legs->pickable->pick(legs,player);
@@ -257,9 +257,9 @@ void Engine::init() {
 			player->job="Assassin";
 			
 			legs = new Actor(0,0,185,"Skinsuit Leggings",TCODColor::white);
-			bonusHe = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
 			legs->blocks = false;
-			legs->pickable = new Equipment(0,Equipment::LEGS,bonusHe);
+			legs->pickable = new Equipment(0,Equipment::LEGS,bonusL);
 			legs->sort = 3;
 			engine.actors.push(legs);
 			legs->pickable->pick(legs,player);

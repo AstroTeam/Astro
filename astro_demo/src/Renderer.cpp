@@ -242,6 +242,13 @@ void Renderer::render(void *sdlSurface){
 				srcRect.y = 0;
 				SDL_BlitSurface(itemsGlow,&srcRect,floorMap,&dstRect);
 			}
+			//Battery Glow
+			else if (engine.mapcon->getChar(xM,yM) == 186)  
+			{
+				srcRect.x = 48;
+				srcRect.y = 0;
+				SDL_BlitSurface(itemsGlow,&srcRect,floorMap,&dstRect);
+			}
 			//Medkit shadow
 			else if (engine.mapcon->getChar(xM,yM) == 184)  
 			{
