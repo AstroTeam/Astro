@@ -380,7 +380,7 @@ void Renderer::render(void *sdlSurface){
 			LightAi *l = (LightAi*)actor->ai;
 			TCODRandom *myRandom = new TCODRandom();
 			float rng = myRandom->getFloat(0.0000f,1.0000f);
-			l->flicker(actor,rng);
+			//l->flicker(actor,rng);
 		}
 	}
 	

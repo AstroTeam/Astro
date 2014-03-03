@@ -577,7 +577,16 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				//4,1 = standard light, radius, flkr
 				TCODRandom *myRandom = new TCODRandom();
 				//0.8 is lower limit, put closer to 1 for less flicker
-				float rng2 = myRandom->getFloat(0.800f,1.0000f,0.9500f);
+				int chance = myRandom->getInt(0,10);
+				float rng2;
+				if (chance > 1)
+				{
+					rng2 = myRandom->getFloat(0.5000f,0.9000f,0.8500f);
+				}
+				else
+				{
+					rng2 = 1;
+				}
 				light->ai = new LightAi(rng->getInt(3,6),rng2);
 				engine.actors.push(light);
 				i++;

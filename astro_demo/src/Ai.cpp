@@ -642,16 +642,19 @@ void LightAi::flicker(Actor * owner, float chance){
 			if (lmap->isInFov(x-minx,y-miny)) {
 				if (flkr < chance)
 				{
-					if (lmap->isInFov(x-minx,y-miny) && (engine.player->x != x && engine.player->y != y)) {
-						engine.map->tiles[x+y*engine.map->width].lit = false;
-					}
+					// && (engine.player->x != x && engine.player->y != y)) {
+					engine.map->tiles[x+y*engine.map->width].lit = false;
 				}
 				else
 				{
-					if (lmap->isInFov(x-minx,y-miny) && (engine.player->x != x && engine.player->y != y)) {
-						engine.map->tiles[x+y*engine.map->width].lit = true;
-					}
+					// && (engine.player->x != x && engine.player->y != y)) {
+					engine.map->tiles[x+y*engine.map->width].lit = true;
 				}
+			}
+			else
+			{
+				//if (engine.map->tiles[x+y*engine.map->width].lit = true)
+				//engine.map->tiles[x+y*engine.map->width].lit = false;
 			}
 		}
 	}
@@ -674,9 +677,13 @@ void LightAi::update(Actor * owner)
 	lmap->computeFov(owner->x-minx,owner->y-miny,radius);
 	for (int x=minx; x <= maxx; x++) {
 		for (int y=miny; y <= maxy; y++) {
-			if (lmap->isInFov(x-minx,y-miny) && (engine.player->x != x && engine.player->y != y)) {
+			if (lmap->isInFov(x-minx,y-miny) && !(engine.player->x == x && engine.player->y == y)) {
 				engine.map->tiles[x+y*engine.map->width].lit = true;
 			}
+			//if ((engine.player->x == x && engine.player->y == y))
+			//{
+			//	engine.map->tiles[x+y*engine.map->width].lit = false;
+			//}
 			//else
 			//{
 			//	engine.map->tiles[x+y*engine.map->width].lit = false;
