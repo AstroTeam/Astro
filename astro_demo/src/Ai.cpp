@@ -12,6 +12,7 @@ Ai *Ai::create(TCODZip &zip) {
 	    case EPICENTER: ai = new EpicenterAi(); break;
 		case RANGED: ai = new RangedAi(); break;
 		case LIGHT: ai = new LightAi(0,0); break;
+		case FLARE: ai = new FlareAi(0,0); break;
 	}
 	ai->load(zip);
 	return ai;
@@ -622,6 +623,8 @@ LightAi::LightAi(int rad, float f)
 	flkr = f;
 	radius = rad;	
 	lmap = new TCODMap(13,13);
+	onOff = true;
+	frst = true;
 }
 
 void LightAi::load(TCODZip &zip){}
@@ -662,34 +665,60 @@ void LightAi::flicker(Actor * owner, float chance){
 
 void LightAi::update(Actor * owner)
 {
-	int maxx = owner->x+6;
-	int minx = owner->x-6;
-	int maxy = owner->y+6;
-	int miny = owner->y-6;
-	//lmap = new TCODMap(maxx-minx,maxy-miny);
-	for (int x=minx; x <= maxx; x++) {
-		for (int y=miny; y <= maxy; y++) {
-			//inheriting properties of real map
-			lmap->setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
-		}
-	}
-	//owner->radius
-	lmap->computeFov(owner->x-minx,owner->y-miny,radius);
-	for (int x=minx; x <= maxx; x++) {
-		for (int y=miny; y <= maxy; y++) {
-			if (lmap->isInFov(x-minx,y-miny) && !(engine.player->x == x && engine.player->y == y)) {
-				engine.map->tiles[x+y*engine.map->width].lit = true;
+	if (onOff)
+	{
+		int maxx = owner->x+6;
+		int minx = owner->x-6;
+		int maxy = owner->y+6;
+		int miny = owner->y-6;
+		//lmap = new TCODMap(maxx-minx,maxy-miny);
+		for (int x=minx; x <= maxx; x++) {
+			for (int y=miny; y <= maxy; y++) {
+				//inheriting properties of real map
+				lmap->setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
 			}
-			//if ((engine.player->x == x && engine.player->y == y))
-			//{
-			//	engine.map->tiles[x+y*engine.map->width].lit = false;
-			//}
-			//else
-			//{
-			//	engine.map->tiles[x+y*engine.map->width].lit = false;
-			//}
 		}
+		//owner->radius
+		lmap->computeFov(owner->x-minx,owner->y-miny,radius);
+		for (int x=minx; x <= maxx; x++) {
+			for (int y=miny; y <= maxy; y++) {
+				if (lmap->isInFov(x-minx,y-miny) && !(engine.player->x == x && engine.player->y == y)) {
+					engine.map->tiles[x+y*engine.map->width].lit = true;
+					if (frst)
+					{
+						engine.map->tiles[x+y*engine.map->width].num++;
+						
+					}
+				}
+				//if ((engine.player->x == x && engine.player->y == y))
+				//{
+				//	engine.map->tiles[x+y*engine.map->width].lit = false;
+				//}
+				//else
+				//{
+				//	engine.map->tiles[x+y*engine.map->width].lit = false;
+				//}
+			}
+		}
+		if (frst)
+			frst = false;//when set to off turn it back to true
 	}
+	else
+	{
+		int maxx = owner->x+6;
+		int minx = owner->x-6;
+		int maxy = owner->y+6;
+		int miny = owner->y-6;
+		for (int x=minx; x <= maxx; x++) {
+			for (int y=miny; y <= maxy; y++) {
+				//if there is only one light source on the tile
+				if (engine.map->tiles[x+y*engine.map->width].num == 1)
+				{
+					engine.map->tiles[x+y*engine.map->width].lit = false;
+					engine.map->tiles[x+y*engine.map->width].num--;
+				}
+			}
+		}
 	/*for (int i = x1; i <= x2; i++)
 	{
 		for (int j = y1; j <= y2; j++)
@@ -706,9 +735,52 @@ void LightAi::update(Actor * owner)
 		}
 	}
 	*/
-	
+	}
 	
 }
+
+FlareAi::FlareAi(int lightRange, int turns) : lightRange(lightRange),turns(turns)
+{
+	//light = new Actor(x, y, ' ', "Flare Light", TCODColor::white);
+	//light->ai = new LightAi(lightRange,1);
+	//engine.actors.push(light);
+	i = 0;
+}
+
+void FlareAi::load(TCODZip &zip){}
+
+void FlareAi::save(TCODZip &zip){
+	zip.putInt(FLARE);
+}
+
+void FlareAi::update(Actor * owner)
+{
+	
+	if (i == 0)
+	{
+		light = new Actor(owner->x,owner->y, ' ', "Flare Light", TCODColor::white);
+		light->ai = new LightAi(lightRange,1);
+		light->blocks = false;
+		engine.actors.push(light);
+		engine.gui->message(TCODColor::orange, "Flare is burning");
+	}
+	if (i <= turns)
+	{
+		i++;
+		engine.gui->message(TCODColor::orange, "Flare is burning");
+	}
+	else
+	{
+		//light->(LightAi)ai->onOff = false;
+		//LightAi l = (LightAi)light->ai;
+		LightAi *l = (LightAi*)light->ai;
+		l->onOff = false;
+		l->update(owner);
+		//engine.actors.remove(light);
+		//light = NULL;
+	}
+}
+
 
 
 ConfusedActorAi::ConfusedActorAi(int nbTurns, Ai *oldAi)

@@ -922,6 +922,13 @@ Actor *Map::createFlashBang(int x, int y){
 	scrollOfConfusion->pickable = new Confuser(10,8);
 	return scrollOfConfusion;
 }
+Actor *Map::createFlare(int x, int y){
+	Actor *scrollOfFlaring = new Actor(x,y,'F',"Flare", TCODColor::white);
+	scrollOfFlaring->sort = 2;
+	scrollOfFlaring->blocks = false;
+	scrollOfFlaring->pickable = new Confuser(10,8);
+	return scrollOfFlaring;
+}
 Actor *Map::createFireBomb(int x, int y){
 	Actor *scrollOfFireball = new Actor(x,y,182,"Firebomb",TCODColor::white);
 	scrollOfFireball->sort = 2;
@@ -953,7 +960,7 @@ Actor *Map::createMylarBoots(int x, int y){
 	return myBoots;
 }
 Actor *Map::createMLR(int x, int y){
-	Actor *MLR = new Actor(x,y,'{',"MLR",TCODColor::darkerOrange);
+	Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	MLR->blocks = false;
 	ItemBonus *bonus = new ItemBonus(ItemBonus::ATTACK,1);
 	MLR->pickable = new Equipment(0,Equipment::RANGED,bonus);
@@ -961,7 +968,7 @@ Actor *Map::createMLR(int x, int y){
 	return MLR;
 }
 Actor *Map::createBatteryPack(int x,int y){
-	Actor *batteryPack = new Actor(x,y,186,"Battery Pack", TCODColor::yellow);
+	Actor *batteryPack = new Actor(x,y,186,"Battery Pack", TCODColor::white);
 	batteryPack->sort = 1;
 	batteryPack->blocks = false;
 	batteryPack->pickable = new Charger(5);

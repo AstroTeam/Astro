@@ -269,19 +269,19 @@ void Renderer::render(void *sdlSurface){
 					//dark
 					srcRect.x = 16;
 				}
-				if(engine.mapconCpy->getChar(xM,yM-1) == '^')//if wall above it is wall
+				if(engine.mapcon->getChar(xM,yM-1) == '^')//if wall above it is wall
 				{
 					srcRect.y = 0;
 				}
-				else if (engine.mapconCpy->getChar(xM-1,yM) == '^')//if there is a wall to the left
+				else if (engine.mapcon->getChar(xM-1,yM) == '^')//if there is a wall to the left
 				{
 					srcRect.y = 16;
 				}
-				else if (engine.mapconCpy->getChar(xM+1,yM) == '^')//if there si a wall to the right
+				else if (engine.mapcon->getChar(xM+1,yM) == '^')//if there si a wall to the right
 				{
 					srcRect.y = 32;
 				}
-				else if (engine.mapconCpy->getChar(xM,yM+1) == '^')//if wall below use the backwards filing cabinet
+				else if (engine.mapcon->getChar(xM,yM+1) == '^')//if wall below use the backwards filing cabinet
 				{
 					srcRect.y = 48;
 				}
@@ -377,9 +377,9 @@ void Renderer::render(void *sdlSurface){
 		//	return actor;
 		//}
 		if (actor->ch == 224 && engine.distance(actor->x,engine.player->x,actor->y,engine.player->y) < 11){
-			LightAi *l = (LightAi*)actor->ai;
-			TCODRandom *myRandom = new TCODRandom();
-			float rng = myRandom->getFloat(0.0000f,1.0000f);
+			//LightAi *l = (LightAi*)actor->ai;
+			//TCODRandom *myRandom = new TCODRandom();
+			//float rng = myRandom->getFloat(0.0000f,1.0000f);
 			//l->flicker(actor,rng);
 		}
 	}

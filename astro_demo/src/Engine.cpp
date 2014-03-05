@@ -95,9 +95,9 @@ void Engine::init() {
 	ItemBonus *bonusF;
 	Actor *hands = NULL;
 	ItemBonus *bonusHa;
-	Actor *ranged = NULL;
-	ItemBonus *bonusR;
-	
+	//Actor *ranged = NULL;
+	//ItemBonus *bonusR;
+	Actor *equip1 = NULL;
 	
 	
 	switch(engine.gui->jobSelection){
@@ -222,6 +222,15 @@ void Engine::init() {
 			engine.actors.push(chest);
 			chest->pickable->pick(chest,player);
 			((Equipment*)(chest->pickable))->use(chest,player);
+			
+			//add flare, for now is generic flare
+			equip1 = new Actor(0,0,'F',"Flare", TCODColor::white);
+			equip1->sort = 2;
+			equip1->blocks = false;
+			equip1->pickable = new Flare(5,8,5);
+			engine.actors.push(equip1);
+			equip1->pickable->pick(equip1,player);
+			//((Equipment*)(equip1->pickable))->use(equip1,player);
 			
 			break;
 		case 5:

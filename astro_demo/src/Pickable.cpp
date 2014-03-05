@@ -14,6 +14,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 		case CONFUSER: pickable = new Confuser(0,0); break;
 		case FIREBALL: pickable = new Fireball(0,0,0); break;
 		case EQUIPMENT: pickable = new Equipment(0); break;
+		case FLARE: break;
 		case NONE: break;
 	}
 	pickable->load(zip);
@@ -224,6 +225,49 @@ bool Confuser::use(Actor *owner, Actor *wearer) {
 	return Pickable::use(owner,wearer);
 }
 
+Flare::Flare(int nbTurns, float range, int lightRange, bool stacks, int stackSize, PickableType type) 
+	: Pickable(stacks, stackSize, type),nbTurns(nbTurns), range(range), lightRange(lightRange) {
+}
+
+void Flare::load(TCODZip &zip) {
+	nbTurns = zip.getInt();
+	range = zip.getFloat();
+	lightRange = zip.getInt();
+	stacks = zip.getInt();
+	stackSize = zip.getInt();
+}
+
+void Flare::save(TCODZip &zip) {
+	zip.putInt(FLARE);
+	zip.putInt(nbTurns);
+	zip.putFloat(range);
+	zip.putInt(lightRange);
+	zip.putInt(stacks);
+	zip.putInt(stackSize);
+}
+
+bool Flare::use(Actor *owner, Actor *wearer) {
+	engine.gui->message(TCODColor::orange, "Choose an area to illuminate");
+	int x = engine.player->x;
+	int y = engine.player->y;
+	if (!engine.pickATile(&x, &y, range)) {
+		return false;
+	}
+	//make new actor as a flare item
+	Actor *scrollOfFlaring = new Actor(x,y,'f',"Flare", TCODColor::white);
+	scrollOfFlaring->ai = new FlareAi(3,5);
+	//scrollOfFlaring->sort = 2;
+	scrollOfFlaring->blocks = false;
+	engine.actors.push(scrollOfFlaring);
+	//scrollOfFlaring->pickable = new Confuser(10,8);
+	//return scrollOfFlaring;
+	
+	
+	engine.gui->message(TCODColor::lightOrange, "You fire off the Flare and see the area around it illuminated.");
+	return Pickable::use(owner,wearer);
+}
+
+
 void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 	if (wearer->container) {
 		if (owner->pickable->type == EQUIPMENT && ((Equipment*)(owner->pickable))->equipped) {
@@ -254,6 +298,7 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 				case LIGHTNING_BOLT: droppy->pickable = new LightningBolt(((LightningBolt*)(owner->pickable))->range,((LightningBolt*)(owner->pickable))->damage); droppy->sort = 2; break;
 				case CONFUSER: droppy->pickable = new Confuser(((Confuser*)(owner->pickable))->nbTurns,((Confuser*)(owner->pickable))->range); droppy->sort = 2; break;
 				case FIREBALL: droppy->pickable = new Fireball(((Fireball*)(owner->pickable))->range,((Fireball*)(owner->pickable))->damage,((Fireball*)(owner->pickable))->maxRange); droppy->sort = 2; break;
+				case FLARE: break;
 				case EQUIPMENT: break;
 				case NONE: break;
 			}
