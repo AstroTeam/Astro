@@ -47,7 +47,6 @@ public:
 			int index = map.rng->getInt(0, 10);
 			if (index < roomList->size()) {
 				room->type = roomList->get(index);
-				cout << "OFFICE MADE" << endl;
 				roomList->remove(room->type);
 			}
 			else {
@@ -144,7 +143,6 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 			
 			if (a != NULL)
 			{
-				cout << a->name << endl;
 				if (strcmp(a->name,"a filing cabinet") == 0)
 				{
 					//engine.actors.remove(a);
@@ -358,10 +356,21 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 	TCODList<RoomType> * roomList = new TCODList<RoomType>();
 		switch (levelType) {
 			case GENERIC:
+				//hopefully one generator room is guarenteed
+				roomList->push(GENERATOR);
 				//small amount of office rooms
 				for (int i = 0; i <= rng->getInt(1,5); i++) {
 					roomList->push(OFFICE);
 				}	
+				//small amount of barracks
+				for (int i = 0; i <= rng->getInt(1,3); i++) {
+					roomList->push(BARRACKS);
+				}	
+				//need to see if end list items are less common
+				//roomList->push(SERVER);
+				//roomList->push(ARMORY);
+				//roomList->push(MESSHALL);
+				//roomList->push(OBSERVATORY);
 				break;
 			case OFFICE_FLOOR:
 				for (int i = 0; i <= rng->getInt(3,9); i++) {
@@ -428,14 +437,16 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	}
 	
 	
+	//record the room type to the tile of the room
+	for (int tilex = x1; tilex <=x2; tilex++) {
+		for (int tiley = y1; tiley <= y2; tiley++) {
+			tiles[tilex+tiley*width].tileType = room->type;
+		}
+	}
 	
 	//custom room feature
+	//OFFICE ROOMS
 	if (room->type == OFFICE) {
-		for (int tilex = x1; tilex <=x2; tilex++) {
-			for (int tiley = y1; tiley <= y2; tiley++) {
-				tiles[tilex+tiley*width].tileType = OFFICE;
-			}
-		}
 		int files = 0;
 		while (files < 10)
 		{
@@ -553,7 +564,23 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			}
 		}
 		
+	}		
+	if (room->type == BARRACKS) {
+		cout << "Barrack Made" << endl;
+		Actor * bed = new Actor(x1,y1,230,"a bed", TCODColor::white);
+		engine.actors.push(bed);
 	}
+	if (room->type == GENERATOR) {
+		cout << "Gen room Made" << endl;
+		Actor * generator = new Actor(x1,y1,231,"a generator", TCODColor::white);
+		engine.actors.push(generator);
+	}
+
+	/*
+	 *
+	 * SETTINGS FOR OTHER ROOMS CAN BE PLACED HERE
+	 *
+	 */
 	
 	//TCODRandom *rnd = TCODRandom::getInstance();
 	//add lights to all rooms, make test later

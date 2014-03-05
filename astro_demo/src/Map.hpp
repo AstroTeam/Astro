@@ -7,6 +7,13 @@ namespace Param {
 	enum RoomType {
 		STANDARD,
 		OFFICE,
+		BARRACKS,
+		GENERATOR,
+		SERVER,
+		KITCHEN,
+		MESSHALL,
+		ARMORY,
+		OBSERVATORY
 	};
 };
 
