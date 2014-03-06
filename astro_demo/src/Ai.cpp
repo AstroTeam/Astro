@@ -125,6 +125,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 		if (actor->blocks && actor->x == targetx &&actor->y == targety) {
 			if (actor->destructible && !actor->destructible->isDead()) {
 				owner->attacker->attack(owner, actor);
+				engine.damageDone += owner->attacker->totalPower;
 			}
 			return false;
 		}
@@ -501,6 +502,8 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	con.print(1,10,"STR: %g",owner->attacker->totalPower);
 	con.print(1,12,"INT: N/A");
 	con.print(1,14,"KILLS: %d",engine.killCount);
+	con.print(1,16,"DMG DONE: %g",engine.damageDone);
+	con.print(1,18,"DMG TAKEN: %g",engine.damageReceived);
 	
 	//Display Character Image
 	con.print(20,8,"@");
@@ -584,6 +587,7 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 		}
 	} else if (owner->attacker) {
 		owner->attacker->attack(owner,engine.player);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
 	}
 	
 }
@@ -889,9 +893,11 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		}
 	} else if (distance !=1 && owner->attacker) {
 		owner->attacker->shoot(owner,engine.player);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
 	}
 	else if (owner->attacker) {
 		owner->attacker->attack(owner,engine.player);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
 	}
 	
 }

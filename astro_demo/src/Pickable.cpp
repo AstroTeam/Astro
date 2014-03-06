@@ -121,6 +121,7 @@ bool LightningBolt::use(Actor *owner, Actor *wearer) {
 	}
 	//hit the closest monster for <damage> hit points;
 	float damageTaken = closestMonster->destructible->takeDamage(closestMonster,damage);
+	engine.damageDone += damage;
 	if (!closestMonster->destructible->isDead()) {
 	engine.gui->message(TCODColor::lightBlue,
 		"A lightning bolt strikes the %s with a loud crack"
@@ -168,6 +169,7 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 		if (actor->destructible && !actor->destructible->isDead()
 			&&actor->getDistance(x,y) <= range) {
 			float damageTaken = actor->destructible->takeDamage(actor,damage);
+			engine.damageDone += damage;
 			if (!actor->destructible->isDead()) {
 				engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damageTaken);
 			} else {
