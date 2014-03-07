@@ -113,6 +113,10 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 48;
 				}
+				else if (r == 3)//3 is barracks
+				{
+					srcRect.x = 16;
+				}
 				else //else is regular floors
 				{
 					srcRect.x = 0;
@@ -123,7 +127,7 @@ void Renderer::render(void *sdlSurface){
 				//render infection over it
 				if (engine.map->isInfected(xM,yM))
 				{
-					srcRect.x = 16;
+					srcRect.x = 128;
 					srcRect.y = 0;
 					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				}
@@ -180,6 +184,10 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 48;
 				}
+				else if (r == 3)//3 is barracks
+				{
+					srcRect.x = 16;
+				}
 				else
 				{
 					srcRect.x = 0;
@@ -190,7 +198,7 @@ void Renderer::render(void *sdlSurface){
 				//add infection, same a lit, except y
 				if (engine.map->isInfected(xM,yM))
 				{
-					srcRect.x = 16;
+					srcRect.x = 128;
 					srcRect.y = 16;
 					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				}
@@ -337,6 +345,11 @@ void Renderer::render(void *sdlSurface){
 				}
 				
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+			}
+			//barracks decor
+			else if (engine.mapcon->getChar(xM,yM) == 243)
+			{
+				
 			}
 			
 			y++;
