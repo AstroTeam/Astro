@@ -567,8 +567,24 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	}		
 	if (room->type == BARRACKS) {
 		cout << "Barrack Made" << endl;
-		Actor * bed = new Actor(x1,y1,230,"a bed", TCODColor::white);
-		engine.actors.push(bed);
+		//add a row on the left, then on the right
+		
+		for (int i = y1+1; i < y2-1;)
+		{
+			Actor * bed = new Actor(x1+1,i,'B',"Bed Headboard", TCODColor::white);
+			engine.actors.push(bed);
+			Actor * bedf = new Actor(x1+2,i,'b',"Bed foot", TCODColor::white);
+			engine.actors.push(bedf);
+			Actor *endtable = new Actor(x1+1,i+1,'e',"A bare-bones endtable", TCODColor::white);
+			engine.actors.push(endtable);
+			Actor * bed2 = new Actor(x2-1,i,'B',"Bed Headboard", TCODColor::white);
+			engine.actors.push(bed2);
+			Actor * bedf2 = new Actor(x2-2,i,'b',"Bed foot", TCODColor::white);
+			engine.actors.push(bedf2);
+			Actor *endtable2 = new Actor(x2-1,i+1,'e',"A bare-bones endtable", TCODColor::white);
+			engine.actors.push(endtable2);
+			i += 2;
+		}
 	}
 	if (room->type == GENERATOR) {
 		cout << "Gen room Made" << endl;
