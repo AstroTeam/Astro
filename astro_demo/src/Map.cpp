@@ -580,11 +580,11 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			mod2 = true;
 		for (int i = y1+1; i < y2-1;)
 		{
-			Actor * bed = new Actor(x1+1,i,'B',"Bed Headboard", TCODColor::white);
+			Actor * bed = new Actor(x1+1,i,243,"Bed Headboard", TCODColor::white);
 			engine.mapconDec->setChar(x1+1,i, 9);//Bed Headboard (9,10,11, add random)
 			engine.actors.push(bed);
-			Actor * bedf = new Actor(x1+2,i,'b',"Bed foot", TCODColor::white);
-			engine.mapconDec->setChar(x1+2,i, 12);//Bed foot (12,13,14, add random)
+			Actor * bedf = new Actor(x1+2,i,243,"Bed foot", TCODColor::white);
+			engine.mapconDec->setChar(x1+2,i, 15);//Bed foot (12,13,14, add random)
 			engine.actors.push(bedf);
 			//send to back
 			Actor *endtable = new Actor(x1+1,i+1,'e',"A bare-bones endtable", TCODColor::white);
@@ -593,11 +593,11 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			endtable->blocks = false;
 			engine.sendToBack(endtable);
 			//need to check if there is enough space
-			Actor * bed2 = new Actor(x2-1,i,'B',"Bed Headboard", TCODColor::white);
-			engine.mapconDec->setChar(x2-1,i, 9);//Bed Headboard (9,10,11, add random)
+			Actor * bed2 = new Actor(x2-1,i,243,"Bed Headboard", TCODColor::white);
+			engine.mapconDec->setChar(x2-1,i, 12);//Bed Headboard (9,10,11, add random)
 			engine.actors.push(bed2);
-			Actor * bedf2 = new Actor(x2-2,i,'b',"Bed foot", TCODColor::white);
-			engine.mapconDec->setChar(x2-2,i, 12);//Bed Headboard (12,13,14, add random)
+			Actor * bedf2 = new Actor(x2-2,i,243,"Bed foot", TCODColor::white);
+			engine.mapconDec->setChar(x2-2,i, 18);//Bed Headboard (12,13,14, add random)
 			engine.actors.push(bedf2);
 			Actor *endtable2 = new Actor(x2-1,i+1,'e',"A bare-bones endtable", TCODColor::white);
 			engine.mapconDec->setChar(x2-1,i+1, 15);//endtable
@@ -610,17 +610,17 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				//another mapcondec number to look opened/looted
 				if (!mod2)
 				{
-					Actor *locker = new Actor((x1+x2)/2,i,'L',"A Government Issue Locker", TCODColor::white);
-					engine.mapconDec->setChar((x1+x2)/2,i, 16);//Locker
+					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
+					engine.mapconDec->setChar((x1+x2)/2,i, 22);//Locker
 					engine.actors.push(locker);
-					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,'L',"A Government Issue Locker", TCODColor::white);
-					engine.mapconDec->setChar(((x1+x2)/2)+1,i, 16);//Locker
+					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,243,"A Government Issue Locker", TCODColor::white);
+					engine.mapconDec->setChar(((x1+x2)/2)+1,i, 22);//Locker
 					engine.actors.push(locker2);
 				}
 				else
 				{
-					Actor *locker = new Actor((x1+x2)/2,i,'L',"A Government Issue Locker", TCODColor::white);
-					engine.mapconDec->setChar((x1+x2)/2,i, 16);//Locker
+					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
+					engine.mapconDec->setChar((x1+x2)/2,i, 22);//Locker
 					engine.actors.push(locker);
 				}
 			}

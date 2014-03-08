@@ -349,7 +349,37 @@ void Renderer::render(void *sdlSurface){
 			//barracks decor
 			else if (engine.mapcon->getChar(xM,yM) == 243)
 			{
+				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
+				{
+					//light
+					srcRect.y = 0;
+				}
+				else
+				{
+					//dark
+					srcRect.y = 16;
+				}
+				if(engine.mapconDec->getChar(xM,yM) == 9)//headboard of bed
+				{
+					srcRect.x=96;
+				}else if(engine.mapconDec->getChar(xM,yM) == 15)//foot of bed
+				{
+					srcRect.x=144;
+				}else if(engine.mapconDec->getChar(xM,yM) == 12)//backward headboard
+				{
+					srcRect.x=96;
+					srcRect.y += 32;
+				}else if(engine.mapconDec->getChar(xM,yM) == 18)//backward foot
+				{
+					srcRect.x=144;
+					srcRect.y += 32;
+				}else if(engine.mapconDec->getChar(xM,yM) == 22)//locker
+				{
+					srcRect.x=192;
+					//srcRect.y += 32;
+				}
 				
+				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 			}
 			
 			y++;
