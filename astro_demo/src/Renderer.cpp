@@ -277,19 +277,27 @@ void Renderer::render(void *sdlSurface){
 					//dark
 					srcRect.x = 16;
 				}
-				if(engine.mapcon->getChar(xM,yM-1) == '^')//if wall above it is wall
+				if(engine.mapcon->getChar(xM,yM-1) == '^')// ||
+				   //engine.mapcon->getChar(xM+1,yM-1) == '^' ||
+				   //engine.mapcon->getChar(xM-1,yM-1) == '^')//if wall above it is wall
 				{
 					srcRect.y = 0;
 				}
-				else if (engine.mapcon->getChar(xM-1,yM) == '^')//if there is a wall to the left
+				else if (engine.mapcon->getChar(xM-1,yM) == '^')// || 
+						 //engine.mapcon->getChar(xM-1,yM-1) == '^' || 
+						 //engine.mapcon->getChar(xM-1,yM+1) == '^')//if there is a wall to the left
 				{
 					srcRect.y = 16;
 				}
-				else if (engine.mapcon->getChar(xM+1,yM) == '^')//if there si a wall to the right
+				else if (engine.mapcon->getChar(xM+1,yM) == '^')// ||
+						 //engine.mapcon->getChar(xM+1,yM-1) == '^' ||
+						 //engine.mapcon->getChar(xM+1,yM+1) == '^')//if there si a wall to the right
 				{
 					srcRect.y = 32;
 				}
-				else if (engine.mapcon->getChar(xM,yM+1) == '^')//if wall below use the backwards filing cabinet
+				else if (engine.mapcon->getChar(xM,yM+1) == '^')// ||
+						 //engine.mapcon->getChar(xM+1,yM+1) == '^' ||
+						 //engine.mapcon->getChar(xM-1,yM+1) == '^' )//if wall below use the backwards filing cabinet
 				{
 					srcRect.y = 48;
 				}
@@ -359,24 +367,60 @@ void Renderer::render(void *sdlSurface){
 					//dark
 					srcRect.y = 16;
 				}
-				if(engine.mapconDec->getChar(xM,yM) == 9)//headboard of bed
+				if(engine.mapconDec->getChar(xM,yM) == 9)//headboard of bed 1
 				{
 					srcRect.x=96;
-				}else if(engine.mapconDec->getChar(xM,yM) == 15)//foot of bed
+				}else if(engine.mapconDec->getChar(xM,yM) == 10)//headboard of bed 2
+				{
+					srcRect.x=112;
+				}else if(engine.mapconDec->getChar(xM,yM) == 11)//headboardof bed 3
+				{
+					srcRect.x=128;
+				}else if(engine.mapconDec->getChar(xM,yM) == 15)//foot of bed 1
 				{
 					srcRect.x=144;
-				}else if(engine.mapconDec->getChar(xM,yM) == 12)//backward headboard
+				}else if(engine.mapconDec->getChar(xM,yM) == 16)//foot of bed 2
+				{
+					srcRect.x=160;
+				}else if(engine.mapconDec->getChar(xM,yM) == 17)//foot of bed 3
+				{
+					srcRect.x=176;
+				}else if(engine.mapconDec->getChar(xM,yM) == 12)//backward headboard 1
 				{
 					srcRect.x=96;
 					srcRect.y += 32;
-				}else if(engine.mapconDec->getChar(xM,yM) == 18)//backward foot
+				}else if(engine.mapconDec->getChar(xM,yM) == 13)//backward headboard 2
+				{
+					srcRect.x=112;
+					srcRect.y += 32;
+				}else if(engine.mapconDec->getChar(xM,yM) == 14)//backward headboard 3
+				{
+					srcRect.x=128;
+					srcRect.y += 32;
+				}else if(engine.mapconDec->getChar(xM,yM) == 18)//backward foot 1
 				{
 					srcRect.x=144;
 					srcRect.y += 32;
-				}else if(engine.mapconDec->getChar(xM,yM) == 22)//locker
+				}else if(engine.mapconDec->getChar(xM,yM) == 19)//backward foot 2
+				{
+					srcRect.x=160;
+					srcRect.y += 32;
+				}else if(engine.mapconDec->getChar(xM,yM) == 20)//backward foot 3
+				{
+					srcRect.x=176;
+					srcRect.y += 32;
+				}else if(engine.mapconDec->getChar(xM,yM) == 23)//locker
 				{
 					srcRect.x=192;
 					//srcRect.y += 32;
+				}else if(engine.mapconDec->getChar(xM,yM) == 21)//endtable
+				{
+					srcRect.x=192;
+					srcRect.y += 32;
+				}else if(engine.mapconDec->getChar(xM,yM) == 22)//endtable backwards
+				{
+					srcRect.x=208;
+					srcRect.y += 32;
 				}
 				
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);

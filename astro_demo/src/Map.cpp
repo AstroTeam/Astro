@@ -569,6 +569,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	}		
 	if (room->type == BARRACKS) {
 		cout << "Barrack Made" << endl;
+		//TCODRandom *rng = TCODRandom::getInstance();
 		//add a row on the left, then on the right
 		//boolean to see the distance between the beds, if it is enough, add some lockers
 		int delta = (x2-2)-(x1+2);  // must be equal to 4 or greater
@@ -581,26 +582,26 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		for (int i = y1+1; i < y2-1;)
 		{
 			Actor * bed = new Actor(x1+1,i,243,"Bed Headboard", TCODColor::white);
-			engine.mapconDec->setChar(x1+1,i, 9);//Bed Headboard (9,10,11, add random)
+			engine.mapconDec->setChar(x1+1,i, rng->getInt(9,11));//Bed Headboard (9,10,11, add random)
 			engine.actors.push(bed);
 			Actor * bedf = new Actor(x1+2,i,243,"Bed foot", TCODColor::white);
-			engine.mapconDec->setChar(x1+2,i, 15);//Bed foot (12,13,14, add random)
+			engine.mapconDec->setChar(x1+2,i, rng->getInt(15,17));//Bed foot (12,13,14, add random)
 			engine.actors.push(bedf);
 			//send to back
-			Actor *endtable = new Actor(x1+1,i+1,'e',"A bare-bones endtable", TCODColor::white);
-			engine.mapconDec->setChar(x1+1,i+1, 15);//endtable
+			Actor *endtable = new Actor(x1+1,i+1,243,"A bare-bones endtable", TCODColor::white);
+			engine.mapconDec->setChar(x1+1,i+1, 21);//endtable
 			engine.actors.push(endtable);
 			endtable->blocks = false;
 			engine.sendToBack(endtable);
 			//need to check if there is enough space
 			Actor * bed2 = new Actor(x2-1,i,243,"Bed Headboard", TCODColor::white);
-			engine.mapconDec->setChar(x2-1,i, 12);//Bed Headboard (9,10,11, add random)
+			engine.mapconDec->setChar(x2-1,i, rng->getInt(12,14));//Bed Headboard (9,10,11, add random)
 			engine.actors.push(bed2);
 			Actor * bedf2 = new Actor(x2-2,i,243,"Bed foot", TCODColor::white);
-			engine.mapconDec->setChar(x2-2,i, 18);//Bed Headboard (12,13,14, add random)
+			engine.mapconDec->setChar(x2-2,i, rng->getInt(18,20));//Bed Headboard (12,13,14, add random)
 			engine.actors.push(bedf2);
-			Actor *endtable2 = new Actor(x2-1,i+1,'e',"A bare-bones endtable", TCODColor::white);
-			engine.mapconDec->setChar(x2-1,i+1, 15);//endtable
+			Actor *endtable2 = new Actor(x2-1,i+1,243,"A bare-bones endtable", TCODColor::white);
+			engine.mapconDec->setChar(x2-1,i+1, 22);//endtable
 			engine.actors.push(endtable2);
 			endtable2->blocks = false;
 			engine.sendToBack(endtable2);
@@ -611,16 +612,16 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				if (!mod2)
 				{
 					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
-					engine.mapconDec->setChar((x1+x2)/2,i, 22);//Locker
+					engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
 					engine.actors.push(locker);
 					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,243,"A Government Issue Locker", TCODColor::white);
-					engine.mapconDec->setChar(((x1+x2)/2)+1,i, 22);//Locker
+					engine.mapconDec->setChar(((x1+x2)/2)+1,i, 23);//Locker
 					engine.actors.push(locker2);
 				}
 				else
 				{
 					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
-					engine.mapconDec->setChar((x1+x2)/2,i, 22);//Locker
+					engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
 					engine.actors.push(locker);
 				}
 			}
