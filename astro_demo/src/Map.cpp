@@ -47,7 +47,6 @@ public:
 			int index = map.rng->getInt(0, 10);
 			if (index < roomList->size()) {
 				room->type = roomList->get(index);
-				cout << "OFFICE MADE" << endl;
 				roomList->remove(room->type);
 			}
 			else {
@@ -85,6 +84,8 @@ int Map::tileType(int x, int y) {
 	int i = x+y*width;
 	if (tiles[i].tileType == Param::OFFICE)
 	{return 2;}
+	else if (tiles[i].tileType == Param::BARRACKS)
+	{return 3;}
 	else
 	{return 1;}
 	//return tiles[x*y].tileType;
@@ -144,7 +145,6 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 			
 			if (a != NULL)
 			{
-				cout << a->name << endl;
 				if (strcmp(a->name,"a filing cabinet") == 0)
 				{
 					//engine.actors.remove(a);
@@ -162,7 +162,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					int x = a->x;
 					int y = a->y;
 					int add = rng->getInt(0,10);
-					for (int xxx = -1; xxx <= 1; xxx++)/////////////////////9x9 for loop to add papers
+					for (int xxx = -1; xxx <= 1; xxx++)/////////////////////9x9 for loop to add papers, lol xxx,yyy
 					{
 						for (int yyy = -1; yyy <= 1; yyy++)
 						{
@@ -175,14 +175,6 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 						}
 					}
 					
-					//engine.mapconDec->setChar(x+1, y, n);
-					//n = rng->getInt(5,8);
-					//engine.mapconDec->setChar(x-1, y, n);
-					//n = rng->getInt(5,8);
-					//engine.mapconDec->setChar(x, y+1, n);
-					//n = rng->getInt(5,8);
-					//engine.mapconDec->setChar(x, y-1, n);
-					//delete a;
 				}
 			}
 			//delete a;
@@ -366,10 +358,21 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 	TCODList<RoomType> * roomList = new TCODList<RoomType>();
 		switch (levelType) {
 			case GENERIC:
+				//hopefully one generator room is guarenteed
+				roomList->push(GENERATOR);
 				//small amount of office rooms
 				for (int i = 0; i <= rng->getInt(1,5); i++) {
 					roomList->push(OFFICE);
 				}	
+				//small amount of barracks
+				for (int i = 0; i <= rng->getInt(1,3); i++) {
+					roomList->push(BARRACKS);
+				}	
+				//need to see if end list items are less common
+				//roomList->push(SERVER);
+				//roomList->push(ARMORY);
+				//roomList->push(MESSHALL);
+				//roomList->push(OBSERVATORY);
 				break;
 			case OFFICE_FLOOR:
 				for (int i = 0; i <= rng->getInt(3,9); i++) {
@@ -434,14 +437,18 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		}
 		epicenterAmount--;
 	}
-
-	//custom room feature
-	if (room->type == OFFICE) {
-		for (int tilex = x1; tilex <=x2; tilex++) {
-			for (int tiley = y1; tiley <= y2; tiley++) {
-				tiles[tilex+tiley*width].tileType = OFFICE;
-			}
+	
+	
+	//record the room type to the tile of the room
+	for (int tilex = x1; tilex <=x2; tilex++) {
+		for (int tiley = y1; tiley <= y2; tiley++) {
+			tiles[tilex+tiley*width].tileType = room->type;
 		}
+	}
+	
+	//custom room feature
+	//OFFICE ROOMS
+	if (room->type == OFFICE) {
 		int files = 0;
 		while (files < 10)
 		{
@@ -559,8 +566,120 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			}
 		}
 		
+	}		
+	if (room->type == BARRACKS) {
+		cout << "Barrack Made" << endl;
+		//add a row on the left, then on the right
+		//boolean to see the distance between the beds, if it is enough, add some lockers
+		int delta = (x2-2)-(x1+2);  // must be equal to 4 or greater
+		//check if there is an even number if rows between the beds or not
+		//if mod2 is even (equal zero) there are an odd number of spaces between, so it is just one locker
+		//if mod2 is odd (not zero) there are an even number between, so add two to center them out
+		bool mod2 = false;
+		if (delta%2 == 0)
+			mod2 = true;
+		for (int i = y1+1; i < y2-1;)
+		{
+			Actor * bed = new Actor(x1+1,i,243,"Bed Headboard", TCODColor::white);
+			engine.mapconDec->setChar(x1+1,i, 9);//Bed Headboard (9,10,11, add random)
+			engine.actors.push(bed);
+			Actor * bedf = new Actor(x1+2,i,243,"Bed foot", TCODColor::white);
+			engine.mapconDec->setChar(x1+2,i, 15);//Bed foot (12,13,14, add random)
+			engine.actors.push(bedf);
+			//send to back
+			Actor *endtable = new Actor(x1+1,i+1,'e',"A bare-bones endtable", TCODColor::white);
+			engine.mapconDec->setChar(x1+1,i+1, 15);//endtable
+			engine.actors.push(endtable);
+			endtable->blocks = false;
+			engine.sendToBack(endtable);
+			//need to check if there is enough space
+			Actor * bed2 = new Actor(x2-1,i,243,"Bed Headboard", TCODColor::white);
+			engine.mapconDec->setChar(x2-1,i, 12);//Bed Headboard (9,10,11, add random)
+			engine.actors.push(bed2);
+			Actor * bedf2 = new Actor(x2-2,i,243,"Bed foot", TCODColor::white);
+			engine.mapconDec->setChar(x2-2,i, 18);//Bed Headboard (12,13,14, add random)
+			engine.actors.push(bedf2);
+			Actor *endtable2 = new Actor(x2-1,i+1,'e',"A bare-bones endtable", TCODColor::white);
+			engine.mapconDec->setChar(x2-1,i+1, 15);//endtable
+			engine.actors.push(endtable2);
+			endtable2->blocks = false;
+			engine.sendToBack(endtable2);
+			if (delta >= 4)
+			{
+				//have locker, be attackable, drops loot, have one blank ascii & mapcondec number, when you attack it it switches to 
+				//another mapcondec number to look opened/looted
+				if (!mod2)
+				{
+					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
+					engine.mapconDec->setChar((x1+x2)/2,i, 22);//Locker
+					engine.actors.push(locker);
+					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,243,"A Government Issue Locker", TCODColor::white);
+					engine.mapconDec->setChar(((x1+x2)/2)+1,i, 22);//Locker
+					engine.actors.push(locker2);
+				}
+				else
+				{
+					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
+					engine.mapconDec->setChar((x1+x2)/2,i, 22);//Locker
+					engine.actors.push(locker);
+				}
+			}
+			i += 2;
+			
+		}
+	}
+	if (room->type == GENERATOR) {
+		cout << "Gen room Made" << endl;
+		Actor * generator = new Actor(x1+1,y1+1,231,"a generator", TCODColor::white);
+		engine.actors.push(generator);
 	}
 
+	/*
+	 *
+	 * SETTINGS FOR OTHER ROOMS CAN BE PLACED HERE
+	 *
+	 */
+	
+	//TCODRandom *rnd = TCODRandom::getInstance();
+	//add lights to all rooms, make test later
+	if (rng->getInt(0,10) > 4)
+	{
+		//42 is star 
+		int numLights = 0;
+		int rmSze = (x2 - x1) * (y2 - y1);
+		numLights = rmSze/30;
+		if (numLights <= 0)
+			numLights = 1;
+		for (int i = 0; i < numLights;)
+		{
+			//bool valid = false;
+			//int x = (x1+x2)/2;
+			//int y = (y1+y2)/2;
+			int x = rng->getInt(x1+1,x2-1);
+			int y = rng->getInt(y1+1,y2-1);
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y)) {
+				Actor *light = new Actor(x, y, 224, "An hastily erected Emergency Light", TCODColor::white);
+				//4,1 = standard light, radius, flkr
+				TCODRandom *myRandom = new TCODRandom();
+				//0.8 is lower limit, put closer to 1 for less flicker
+				int chance = myRandom->getInt(0,10);
+				float rng2;
+				if (chance > 1)
+				{
+					rng2 = myRandom->getFloat(0.5000f,0.9000f,0.8500f);
+				}
+				else
+				{
+					rng2 = 1;
+				}
+				light->ai = new LightAi(rng->getInt(3,6),rng2);
+				engine.actors.push(light);
+				i++;
+			}
+		}
+	}
+	
+	
 	//add items
 	int nbItems = rng->getInt(0, MAX_ROOM_ITEMS);
 	while (nbItems > 0) {
@@ -613,15 +732,25 @@ bool Map::isInFov(int x, int y) const {
 		return false;
 	}
 	
-	if (map->isInFov(x,y)) {
+	if ((map->isInFov(x,y)) && (engine.distance(engine.player->x,x,engine.player->y,y) <= 2 || isLit(x,y))) {
 		tiles[x+y*width].explored = true;
 		return true;
 	}
 	return false;
 }
 
+bool Map::isLit(int x, int y) const {
+	return tiles[x+y*width].lit;
+}
+
+
 void Map::computeFov() {
-	map->computeFov(engine.player->x,engine.player->y, engine.fovRadius);
+	//compute FOV, then make a light to light up the area?
+	//or just have them be lit/unlit
+	
+	//compute FOV, everything in FOV will be lit 
+	//if your FOV interacts with another thing's FOV, light up both FOV's
+	map->computeFov(engine.player->x,engine.player->y, 10/*engine.fovRadius*/);//@ 6 you cannot run away from mobs
 }
 void Map::render() const {
 
@@ -632,7 +761,7 @@ void Map::render() const {
 
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
-			if (isInFov(x,y)){// || true) {
+			if ((isInFov(x,y) && engine.distance(engine.player->x,x,engine.player->y,y) <= 2) || (isInFov(x,y) && isLit(x,y))){// || true) {
 				//TCODConsole::root->setCharBackground(x,y,isWall(x,y) ? lightWall : lightGround);
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
 
@@ -693,6 +822,23 @@ void Map::render() const {
 					}
 				}
 			}
+			/*if (isInFov(x,y) )//|| isExplored(x,y))
+			{
+				//if it is false set to true
+				tiles[x+y*width].lit = true;
+			}
+			else
+			{
+				tiles[x+y*width].lit = false;
+			}
+			if (isLit(x,y)){
+				engine.mapcon->setCharForeground(x,y,TCODColor::yellow);
+			}
+			else
+			{
+				engine.mapcon->setCharForeground(x,y,TCODColor::white);
+			}*/
+			
 		}
 	}
 
@@ -861,6 +1007,13 @@ Actor *Map::createFlashBang(int x, int y){
 	scrollOfConfusion->pickable = new Confuser(10,8);
 	return scrollOfConfusion;
 }
+Actor *Map::createFlare(int x, int y){
+	Actor *scrollOfFlaring = new Actor(x,y,'F',"Flare", TCODColor::white);
+	scrollOfFlaring->sort = 2;
+	scrollOfFlaring->blocks = false;
+	scrollOfFlaring->pickable = new Confuser(10,8);
+	return scrollOfFlaring;
+}
 Actor *Map::createFireBomb(int x, int y){
 	Actor *scrollOfFireball = new Actor(x,y,182,"Firebomb",TCODColor::white);
 	scrollOfFireball->sort = 2;
@@ -876,7 +1029,7 @@ Actor *Map::createEMP(int x, int y){
 	return scrollOfLightningBolt;
 }
 Actor *Map::createTitanMail(int x, int y){
-	Actor *chainMail = new Actor(x,y,210,"Titan-mail",TCODColor::lightPink);
+	Actor *chainMail = new Actor(x,y,185,"Titan-mail",TCODColor::white);
 	chainMail->blocks = false;
 	ItemBonus *bonus = new ItemBonus(ItemBonus::DEFENSE,3);
 	chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus);
@@ -884,7 +1037,7 @@ Actor *Map::createTitanMail(int x, int y){
 	return chainMail;
 }
 Actor *Map::createMylarBoots(int x, int y){
-	Actor *myBoots = new Actor(x,y,'[',"Mylar-Lined Boots",TCODColor::lightPink);
+	Actor *myBoots = new Actor(x,y,185,"Mylar-Lined Boots",TCODColor::white);
 	myBoots->blocks = false;
 	ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
 	myBoots->pickable = new Equipment(0,Equipment::FEET,bonus);
@@ -892,7 +1045,7 @@ Actor *Map::createMylarBoots(int x, int y){
 	return myBoots;
 }
 Actor *Map::createMLR(int x, int y){
-	Actor *MLR = new Actor(x,y,'{',"MLR",TCODColor::darkerOrange);
+	Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	MLR->blocks = false;
 	ItemBonus *bonus = new ItemBonus(ItemBonus::ATTACK,1);
 	MLR->pickable = new Equipment(0,Equipment::RANGED,bonus);
@@ -900,7 +1053,7 @@ Actor *Map::createMLR(int x, int y){
 	return MLR;
 }
 Actor *Map::createBatteryPack(int x,int y){
-	Actor *batteryPack = new Actor(x,y,'+',"Battery Pack", TCODColor::yellow);
+	Actor *batteryPack = new Actor(x,y,186,"Battery Pack", TCODColor::white);
 	batteryPack->sort = 1;
 	batteryPack->blocks = false;
 	batteryPack->pickable = new Charger(5);

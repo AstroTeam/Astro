@@ -91,17 +91,17 @@ void Gui::render() {
 	//sidebar->setDefaultForeground(TCODColor::white);
 	sidebar->print(3,7,"Dungeon level %d", engine.level);
 	sidebar->print(3,13,"Turn count: %d",engine.turnCount);
-	sidebar->print(3,15,"Kill Count: %d",engine.killCount);
+	//sidebar->print(3,15,"Kill Count: %d",engine.killCount);
 	
 	//display the armor slots
-	sidebar->print(9,17,"Armor");
-	if (engine.player->container->head)sidebar->print(2,19,"He",engine.player->container->head);
-	if (engine.player->container->chest)sidebar->print(5,19,"C",engine.player->container->chest);
-	if (engine.player->container->legs)sidebar->print(7,19,"L",engine.player->container->legs);
-	if (engine.player->container->feet)sidebar->print(9,19,"F",engine.player->container->feet);
-	if (engine.player->container->hand1)sidebar->print(12,19,"H1",engine.player->container->hand1);
-	if (engine.player->container->hand2)sidebar->print(16,19,"H2",engine.player->container->hand2);
-	if (engine.player->container->ranged)sidebar->print(19,19,"R",engine.player->container->ranged);
+	sidebar->print(9,15,"Armor");
+	if (engine.player->container->head)sidebar->print(2,17,"He",engine.player->container->head);
+	if (engine.player->container->chest)sidebar->print(5,17,"C",engine.player->container->chest);
+	if (engine.player->container->legs)sidebar->print(7,17,"L",engine.player->container->legs);
+	if (engine.player->container->feet)sidebar->print(9,17,"F",engine.player->container->feet);
+	if (engine.player->container->hand1)sidebar->print(12,17,"H1",engine.player->container->hand1);
+	if (engine.player->container->hand2)sidebar->print(16,17,"H2",engine.player->container->hand2);
+	if (engine.player->container->ranged)sidebar->print(19,17,"R",engine.player->container->ranged);
 	
 	//display player xp bar
 	PlayerAi *ai = (PlayerAi *)engine.player->ai;
@@ -112,12 +112,12 @@ void Gui::render() {
 		
 		
 	//display an ability cooldown bar
-	sidebar->print(1,21,"Ability Cooldown: ");
-	renderBar(1,23, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
+	sidebar->print(1,19,"Ability Cooldown: ");
+	renderBar(1,21, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
 
 	
 	//display FPS
-	sidebar->print(3,25,"FPS : %d",TCODSystem::getFps());
+	sidebar->print(3,23,"FPS : %d",TCODSystem::getFps());
 
 
 	//mouse look
@@ -327,7 +327,7 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 	int selectedItem = 0;
 	int menux = 0, menuy = 0;
 	int menu2x = 0, menu2y = 0;
-	
+	//TCODConsole::root->clear();
 	if (mode == PAUSE) {
 		menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - PAUSE_MENU_HEIGHT / 2;
@@ -346,11 +346,14 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 			menux+=2;
 			menuy+=3;
 	}else if (mode == INVENTORY) {
+		
 		menux = engine.screenWidth / 2 - INVENTORY_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - INVENTORY_MENU_HEIGHT / 2;
-		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
-		TCODConsole::root->printFrame(menux,menuy - 20,INVENTORY_MENU_WIDTH,
-			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"INVENTORY");
+		TCODConsole::root->setDefaultForeground(TCODColor(100,180,250));
+		TCODConsole::root->printFrame(menux,menuy - 15,INVENTORY_MENU_WIDTH,
+			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"INVENTORY MANAGER Pro");
+		//THIS LINE REMOVES THE "INVENTORY" HEADER ->
+		//TCODConsole::root->clear();
 	} else if(mode == CLASS_MENU){
 		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
@@ -372,8 +375,11 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		
 	}
 	if (mode == INVENTORY){
+		//clears console when inventory is open and when you select a new dingus, mey need to adjust later if we want to move up/down
+		//
+		//TCODConsole::flush();
 		while (!TCODConsole::isWindowClosed()) {
-		
+			//TCODConsole::root->clear();
 			int currentItem = 0;
 			for (MenuItem **it = items.begin(); it != items.end(); it++) {
 				if (currentItem == selectedItem) {
@@ -381,9 +387,13 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 				} else {
 					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
 				}
-				TCODConsole::root->print(menux+currentItem*8+1,menuy-18,(*it)->label);
+				//TCODConsole::flush();
+				TCODConsole::root->print(menux+currentItem*8+1,menuy-13,(*it)->label);
+				engine.selX = menux+selectedItem*8+1;
+				engine.selY = menuy-13;
 				currentItem++;
 			}
+			//TCODConsole::root->clear();
 			TCODConsole::flush();
 			
 			//check key presses
@@ -393,13 +403,19 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 				TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
 				switch(key.vk) {
 					case TCODK_LEFT:
+						//TCODConsole::root->clear();
+						//TCODConsole::flush();
 						selectedItem--;
 						if(selectedItem < 0) {
 							selectedItem = items.size()-1;
 						}
+						//TCODConsole::root->clear();
 					break;
 					case TCODK_RIGHT:
+						//TCODConsole::root->clear();
+						//TCODConsole::flush();
 						selectedItem = (selectedItem +1) % items.size();
+						//TCODConsole::root->clear();
 					break;
 					case TCODK_ENTER: return items.get(selectedItem)->code;
 					case TCODK_ESCAPE: return NO_CHOICE;
@@ -600,7 +616,7 @@ void Gui::classSidebar(){
 			}
 			classBar.print(7,15,"STATS");
 			classBar.print(1,17,"AVAIL. POINTS: %d",statPoints);
-			classBar.print(1,19,"CONSTITUTION: %d",conValue);
+			classBar.print(1,19,"VITALITY: %d",conValue);
 			classBar.print(1,21,"STRENGTH: %d",strValue);
 			classBar.print(1,23,"AGILITY: %d",agValue);
 			

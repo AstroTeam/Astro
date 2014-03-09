@@ -4,13 +4,14 @@ public:
 	static Ai *create(TCODZip &zip);
 protected:
 	enum AiType {
-		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED
+		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED, LIGHT, FLARE
 	};
 };
 
 class PlayerAi : public Ai {
 public:
 	int xpLevel;
+	TCODConsole *inventoryScreen;
 	
 	PlayerAi();
 	int getNextLevelXp();
@@ -21,6 +22,7 @@ protected:
 	bool moveOrAttack(Actor *owner, int targetx, int targety);
 	void handleActionKey(Actor *owner, int ascii);
 	Actor *choseFromInventory(Actor *owner, int type);
+	void displayCharacterInfo(Actor *owner);
 };
 
 class MonsterAi : public Ai {
@@ -59,6 +61,35 @@ protected:
 	//int turnCount;
 	void infectLevel(Actor * owner);
 };
+
+class LightAi : public Ai {
+public:
+	LightAi(int rad, float f);
+    float flkr;
+	bool onOff;
+	bool frst;
+	void flicker(Actor * owner, float f);
+	void update(Actor * owner);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+protected:
+	int radius;
+	TCODMap *lmap;
+};
+
+class FlareAi : public Ai {
+public:
+	FlareAi(int lightRange, int turns);
+	int lightRange;
+	void update(Actor * owner);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+protected:
+	int turns;
+	Actor *light;
+	int i;
+};
+
 
 class ConfusedActorAi : public Ai {
 public:

@@ -7,14 +7,23 @@ namespace Param {
 	enum RoomType {
 		STANDARD,
 		OFFICE,
+		BARRACKS,
+		GENERATOR,
+		SERVER,
+		KITCHEN,
+		MESSHALL,
+		ARMORY,
+		OBSERVATORY
 	};
 };
 
 struct Tile {
 	bool explored;
 	float infection;
+	bool lit;
+	int num;
 	Param::RoomType tileType;
-	Tile() : explored(false),  infection (0), tileType(Param::STANDARD) {}
+	Tile() : explored(false), infection (0), lit(false),num (0), tileType(Param::STANDARD) {}
 	const TCODColor * lastColor;//if color changed offscreen
 	char lastChar;//if the char changed
 };
@@ -40,6 +49,7 @@ public:
 	bool isInFov(int x, int y) const;
 	bool isExplored(int x, int y) const;
 	bool isInfected(int x, int y) const;
+	bool isLit(int x, int y) const;
 	void infectFloor(int x, int y);
 	void computeFov();
 	void render() const;
@@ -53,6 +63,7 @@ public:
 	Actor *createHealthPotion(int x, int y);
 	Actor *createBatteryPack(int x, int y);
 	Actor *createFlashBang(int x, int y);
+	Actor *createFlare(int x, int y);
 	Actor *createFireBomb(int x, int y);
 	Actor *createEMP(int x,int y);
 	Actor *createTitanMail(int x, int y);

@@ -25,6 +25,9 @@ Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	mapconCpy = new TCODConsole(mapWidth, mapHeight);
 	mapconDec = new TCODConsole(mapWidth, mapHeight);
 	gui = new Gui();
+	invState = 0;
+	selX = 0;
+	selY = 0;
 	mapx1 = 0;
 	mapx2 = 0;
 	mapy1 = 0;
@@ -69,31 +72,76 @@ void Engine::init() {
 			break;
 	}
 	
-	Actor *pants = new Actor(0,0,'A',"Marine Fatigue BDU-lower",TCODColor::lightPink);
+	/*Actor *pants = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
 	ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,0);
 	pants->blocks = false;
 	pants->pickable = new Equipment(0,Equipment::LEGS,bonus);
 	pants->sort = 3;
 	engine.actors.push(pants);
-	Actor *shirt = new Actor(0,0,'B',"Marine Fatigue BDU-upper",TCODColor::lightPink);
+
+	Actor *shirt = new Actor(0,0,185,"Marine Fatigue Jacket",TCODColor::white);
 	shirt->blocks = false;
 	shirt->pickable = new Equipment(0,Equipment::CHEST,bonus);
 	shirt->sort = 3;
-	engine.actors.push(shirt);
+	engine.actors.push(shirt);*/
+	
+	Actor *helmet = NULL;
+	ItemBonus *bonusHe;
+	Actor *chest = NULL;
+	ItemBonus *bonusC;
+	Actor *legs = NULL;
+	ItemBonus *bonusL;
+	Actor *feet = NULL;
+	ItemBonus *bonusF;
+	Actor *hands = NULL;
+	ItemBonus *bonusHa;
+	//Actor *ranged = NULL;
+	//ItemBonus *bonusR;
+	Actor *equip1 = NULL;
+	
 	
 	switch(engine.gui->jobSelection){
 		
 		case 1:
 			player->role="Marine";
 			player->job="Infantry";
+			player->dex+=4; //job selection bonus
 			
+			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
+			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
+			legs->blocks = false;
+			legs->pickable = new Equipment(0,Equipment::LEGS,bonusL);
+			legs->sort = 3;
+			engine.actors.push(legs);
+			legs->pickable->pick(legs,player);
+			((Equipment*)(legs->pickable))->use(legs,player);
 			
+			feet = new Actor(0,0,185,"Combat Boots",TCODColor::white);
+			bonusF = new ItemBonus(ItemBonus::HEALTH,0);
+			feet->blocks = false;
+			feet->pickable = new Equipment(0,Equipment::FEET,bonusF);
+			feet->sort = 3;
+			engine.actors.push(feet);
+			feet->pickable->pick(feet,player);
+			((Equipment*)(feet->pickable))->use(feet,player);
 			
-			pants->pickable->pick(pants,player);
-			((Equipment*)(pants->pickable))->use(pants,player);
-			shirt->pickable->pick(shirt,player);
-			((Equipment*)(shirt->pickable))->use(shirt,player);
-			//((Equipment*)(owner->pickable))->use(owner,wearer);
+			chest = new Actor(0,0,185,"Marine Fatigue Jacket",TCODColor::white);
+			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			chest->blocks = false;
+			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC);
+			chest->sort = 3;
+			engine.actors.push(chest);
+			chest->pickable->pick(chest,player);
+			((Equipment*)(chest->pickable))->use(chest,player);
+			
+			helmet = new Actor(0,0,185,"Marine Ballistic Helmet",TCODColor::white);
+			bonusHe = new ItemBonus(ItemBonus::HEALTH,5);
+			helmet->blocks = false;
+			helmet->pickable = new Equipment(0,Equipment::HEAD,bonusHe);
+			helmet->sort = 3;
+			engine.actors.push(helmet);
+			helmet->pickable->pick(helmet,player);
+			((Equipment*)(helmet->pickable))->use(helmet,player);
 			
 			
 			
@@ -101,34 +149,186 @@ void Engine::init() {
 		case 2:
 			player->role="Marine";
 			player->job="Medic";
+			
+			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
+			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
+			legs->blocks = false;
+			legs->pickable = new Equipment(0,Equipment::LEGS,bonusL);
+			legs->sort = 3;
+			engine.actors.push(legs);
+			legs->pickable->pick(legs,player);
+			((Equipment*)(legs->pickable))->use(legs,player);
+			
+			feet = new Actor(0,0,185,"Combat Boots",TCODColor::white);
+			bonusF = new ItemBonus(ItemBonus::HEALTH,0);
+			feet->blocks = false;
+			feet->pickable = new Equipment(0,Equipment::FEET,bonusF);
+			feet->sort = 3;
+			engine.actors.push(feet);
+			feet->pickable->pick(feet,player);
+			((Equipment*)(feet->pickable))->use(feet,player);
+			
+			chest = new Actor(0,0,185,"Marine Medical Jacket",TCODColor::white);
+			bonusC = new ItemBonus(ItemBonus::HEALTH,0);//makes health kits more useful?  or just a class powerup?
+			chest->blocks = false;
+			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC);
+			chest->sort = 3;
+			engine.actors.push(chest);
+			chest->pickable->pick(chest,player);
+			((Equipment*)(chest->pickable))->use(chest,player);
+			
 			break;
 		case 3:
 			player->role="Marine";
 			player->job="Quartermaster";
+			
+			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
+			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
+			legs->blocks = false;
+			legs->pickable = new Equipment(0,Equipment::LEGS,bonusL);
+			legs->sort = 3;
+			engine.actors.push(legs);
+			legs->pickable->pick(legs,player);
+			((Equipment*)(legs->pickable))->use(legs,player);
+			
+			feet = new Actor(0,0,185,"Combat Boots",TCODColor::white);
+			bonusF = new ItemBonus(ItemBonus::HEALTH,0);
+			feet->blocks = false;
+			feet->pickable = new Equipment(0,Equipment::FEET,bonusF);
+			feet->sort = 3;
+			engine.actors.push(feet);
+			feet->pickable->pick(feet,player);
+			((Equipment*)(feet->pickable))->use(feet,player);
+			
+			chest = new Actor(0,0,185,"Marine Quarter-Master Jacket",TCODColor::white);
+			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			chest->blocks = false;
+			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC);
+			chest->sort = 3;
+			engine.actors.push(chest);
+			chest->pickable->pick(chest,player);
+			((Equipment*)(chest->pickable))->use(chest,player);
+			
 			break;
 		case 4:
 			player->role="Explorer";
 			player->job="Survivalist";
+			
+			chest = new Actor(0,0,185,"T-Shirt (red)",TCODColor::white);
+			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			chest->blocks = false;
+			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC);
+			chest->sort = 3;
+			engine.actors.push(chest);
+			chest->pickable->pick(chest,player);
+			((Equipment*)(chest->pickable))->use(chest,player);
+			
+			//add flare, for now is generic flare
+			equip1 = new Actor(0,0,'F',"Flare", TCODColor::white);
+			equip1->sort = 2;
+			equip1->blocks = false;
+			equip1->pickable = new Flare(5,8,5);
+			engine.actors.push(equip1);
+			equip1->pickable->pick(equip1,player);
+			//((Equipment*)(equip1->pickable))->use(equip1,player);
+			
 			break;
 		case 5:
 			player->role="Explorer";
 			player->job="Pirate";
+			
+			chest = new Actor(0,0,185,"Boarding Vest",TCODColor::white);
+			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			chest->blocks = false;
+			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC);
+			chest->sort = 3;
+			engine.actors.push(chest);
+			chest->pickable->pick(chest,player);
+			((Equipment*)(chest->pickable))->use(chest,player);
+			
+			feet = new Actor(0,0,185,"Boarding Boots",TCODColor::white);
+			bonusF = new ItemBonus(ItemBonus::HEALTH,0);
+			feet->blocks = false;
+			feet->pickable = new Equipment(0,Equipment::FEET,bonusF);
+			feet->sort = 3;
+			engine.actors.push(feet);
+			feet->pickable->pick(feet,player);
+			((Equipment*)(feet->pickable))->use(feet,player);
+			
 			break;
 		case 6:
 			player->role="Explorer";
 			player->job="Merchant";
+			//you don't get dick
 			break;
 		case 7:
 			player->role="Mercenary";
 			player->job="Assassin";
+			
+			legs = new Actor(0,0,185,"Skinsuit Leggings",TCODColor::white);
+			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
+			legs->blocks = false;
+			legs->pickable = new Equipment(0,Equipment::LEGS,bonusL);
+			legs->sort = 3;
+			engine.actors.push(legs);
+			legs->pickable->pick(legs,player);
+			((Equipment*)(legs->pickable))->use(legs,player);
+			
+			chest = new Actor(0,0,185,"Skinsuit Jacket",TCODColor::white);
+			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			chest->blocks = false;
+			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC);
+			chest->sort = 3;
+			engine.actors.push(chest);
+			chest->pickable->pick(chest,player);
+			((Equipment*)(chest->pickable))->use(chest,player);
+			
+			helmet = new Actor(0,0,185,"Balaclava",TCODColor::white);
+			bonusHe = new ItemBonus(ItemBonus::HEALTH,5);
+			helmet->blocks = false;
+			helmet->pickable = new Equipment(0,Equipment::HEAD,bonusHe);
+			helmet->sort = 3;
+			engine.actors.push(helmet);
+			helmet->pickable->pick(helmet,player);
+			((Equipment*)(helmet->pickable))->use(helmet,player);
+			
 			break;
 		case 8:
 			player->role="Mercenary";
 			player->job="Brute";
+			
+			hands = new Actor(0,0,185,"Bruiser Gloves",TCODColor::white);
+			bonusHa = new ItemBonus(ItemBonus::HEALTH,5);
+			hands->blocks = false;
+			hands->pickable = new Equipment(0,Equipment::HAND1,bonusHa);
+			hands->sort = 3;
+			engine.actors.push(hands);
+			hands->pickable->pick(hands,player);
+			((Equipment*)(hands->pickable))->use(hands,player); 
+			
 			break;
 		case 9:
 			player->role="Mercenary";
 			player->job="Hacker";
+			
+			helmet = new Actor(0,0,185,"Tech Helmet",TCODColor::white);
+			bonusHe = new ItemBonus(ItemBonus::HEALTH,5);
+			helmet->blocks = false;
+			helmet->pickable = new Equipment(0,Equipment::HEAD,bonusHe);
+			helmet->sort = 3;
+			engine.actors.push(helmet);
+			helmet->pickable->pick(helmet,player);
+			((Equipment*)(helmet->pickable))->use(helmet,player);
+			
+			chest = new Actor(0,0,185,"T-Shirt (grey)",TCODColor::white);
+			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			chest->blocks = false;
+			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC);
+			chest->sort = 3;
+			engine.actors.push(chest);
+			chest->pickable->pick(chest,player);
+			((Equipment*)(chest->pickable))->use(chest,player);
+			
 			break;
 	}
 	player->ch = plyrAscii;

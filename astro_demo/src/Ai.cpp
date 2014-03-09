@@ -11,6 +11,8 @@ Ai *Ai::create(TCODZip &zip) {
 		case CONFUSED_ACTOR: ai = new ConfusedActorAi(0,NULL); break;
 	    case EPICENTER: ai = new EpicenterAi(); break;
 		case RANGED: ai = new RangedAi(); break;
+		case LIGHT: ai = new LightAi(0,0); break;
+		case FLARE: ai = new FlareAi(0,0); break;
 	}
 	ai->load(zip);
 	return ai;
@@ -123,6 +125,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 		if (actor->blocks && actor->x == targetx &&actor->y == targety) {
 			if (actor->destructible && !actor->destructible->isDead()) {
 				owner->attacker->attack(owner, actor);
+				engine.damageDone += owner->attacker->totalPower;
 			}
 			return false;
 		}
@@ -146,6 +149,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 }
 
 void PlayerAi::handleActionKey(Actor *owner, int ascii) {
+	//bool first = true;
 	switch(ascii) {
 		case 'g': //pickup the item
 		{
@@ -177,6 +181,8 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		{ 
 			engine.map->computeFov();
 			engine.gui->menu.clear();
+			//TCODConsole::root->clear();
+			engine.invState = 1;
 			engine.gui->menu.addItem(Menu::ITEMS, "Items");
 			engine.gui->menu.addItem(Menu::TECH, "Tech");
 			engine.gui->menu.addItem(Menu::ARMOR, "Armor");
@@ -185,8 +191,15 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 			Actor *actor;
 			bool choice = true;
+			while (engine.invState != 4){
+				TCODConsole::flush();
+			}
+			//TCODConsole::root->clear();
+			
 			while(choice){
+			
 			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
+			//TCODConsole::root->clear();
 				switch (menuItem) {
 					case Menu::ITEMS :
 						actor = choseFromInventory(owner,1);
@@ -215,7 +228,11 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					default: break;
 				}
 			}
+			//TCODConsole::root->clear();
+			engine.invState = 0;
+			engine.invFrames = 0;
 			if (actor) {
+				
 				bool used;
 				used = actor->pickable->use(actor,owner);
 				if (used) {
@@ -227,6 +244,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		{
 			engine.map->computeFov();
 			engine.gui->menu.clear();
+			engine.invState = 1;
 			engine.gui->menu.addItem(Menu::ITEMS, "Items");
 			engine.gui->menu.addItem(Menu::TECH, "Tech");
 			engine.gui->menu.addItem(Menu::ARMOR, "Armor");
@@ -235,7 +253,12 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 			Actor *actor;
 			bool choice = true;
+			while (engine.invState != 4){
+				TCODConsole::flush();
+			}
 			while(choice){
+			//inventoryScreen->setDefaultBackground(TCODColor::black);
+			//inventoryScreen->clear();
 			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 				switch (menuItem) {
 					case Menu::ITEMS :
@@ -265,6 +288,8 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					default: break;
 				}
 			}
+			engine.invState = 0;
+			engine.invFrames = 0;
 			if (actor) {
 				actor->pickable->drop(actor,owner);
 				engine.gameStatus = Engine::NEW_TURN;
@@ -313,22 +338,52 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 						engine.gui->message(TCODColor::lightGrey, "Not enough battery to shoot.");
 					}
 				}
-				/*
-				float damageTaken = closestMonster->destructible->takeDamage(closestMonster,damage);
-				if (!closestMonster->destructible->isDead()) {
-				engine.gui->message(TCODColor::lightBlue,
-					"A lightning bolt strikes the %s with a loud crack"
-					"for %g damage.",
-					closestMonster->name,damageTaken);
-				} else {
-					engine.gui->message(TCODColor::orange,"The %s crackles with electricity, twitching slightly.",closestMonster->name);
-				}
-				return Pickable::use(owner,wearer);
-				*/
+				
 			}
 			else{
 				engine.gui->message(TCODColor::lightGrey,"You do not have a ranged weapon equipped");
 			}
+		break;
+		case 'F':
+			//aimed shooty shooty bang bang -Mitchell
+			if(owner->container->ranged){
+				//Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,3);
+				engine.gui->message(TCODColor::cyan, "Choose a target to shoot");
+				int x = engine.player->x;
+				int y = engine.player->y;
+				if (!engine.pickATile(&x, &y, 3)) {
+					engine.gui->message(TCODColor::lightGrey, "You can't shoot that far.");
+					//return false;
+				}
+				Actor *actor = engine.getActor(x,y);
+				if (!actor) {
+					engine.gui->message(TCODColor::lightGrey, "No enemy at that location.");
+					//return false;
+				}
+				/*if (!closestMonster) {
+					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
+					//return false;
+				}*/
+				//hit the closest monster for <damage> hit points;
+				else{
+					if(owner->attacker && owner->attacker->battery >= 1){
+						owner->attacker->shoot(owner, actor);
+						owner->attacker->usePower(owner, 1);
+						engine.gameStatus = Engine::NEW_TURN;
+					}
+					else{
+						engine.gui->message(TCODColor::lightGrey, "Not enough battery to shoot.");
+					}
+				}
+				
+			}
+			else{
+				engine.gui->message(TCODColor::lightGrey,"You do not have a ranged weapon equipped");
+			}
+		break;
+		case 'c':
+			engine.map->computeFov();
+			displayCharacterInfo(owner);
 		break;
 	}
 }
@@ -336,14 +391,14 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 Actor *PlayerAi::choseFromInventory(Actor *owner,int type) {
 	static const int INVENTORY_WIDTH = 38;
 	static const int INVENTORY_HEIGHT = 28;
-	static TCODConsole con(INVENTORY_WIDTH, INVENTORY_HEIGHT);
+	inventoryScreen = new TCODConsole(INVENTORY_WIDTH, INVENTORY_HEIGHT);
 	
 	//display the inventory frame
-	con.setDefaultForeground(TCODColor(200,180,50));
-	con.printFrame(0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,true,TCOD_BKGND_DEFAULT);
+	inventoryScreen->setDefaultForeground(TCODColor(100,180,250));
+	inventoryScreen->printFrame(0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,true,TCOD_BKGND_DEFAULT);
 	
 	//display the items with their keyboard shortcut
-	con.setDefaultForeground(TCODColor::white);
+	inventoryScreen->setDefaultForeground(TCODColor::white);
 	int shortcut = 'a';
 	int y = 1;
 	for (Actor **it = owner->container->inventory.begin();
@@ -351,22 +406,22 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type) {
 		Actor *actor = *it;
 		if(actor->sort == type){
 			if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
-				con.print(2,y,"(%c) %s(E)",shortcut,actor->name);
+				inventoryScreen->print(2,y,"(%c) %s(E)",shortcut,actor->name);
 			}else{
-				con.print(2,y,"(%c) %s",shortcut,actor->name);
+				inventoryScreen->print(2,y,"(%c) %s",shortcut,actor->name);
 			}
 			owner->container->select[shortcut] = actor->name;
 			if (actor->pickable->stacks) {
-				con.print(17, y, "(%d)",actor->pickable->stackSize);
+				inventoryScreen->print(17, y, "(%d)",actor->pickable->stackSize);
 			}
 			y++;
 			shortcut++;
 		}
 	}
 	//blit the inventory console on the root console
-	TCODConsole::blit(&con,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
+	TCODConsole::blit(inventoryScreen,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
 		TCODConsole::root, engine.screenWidth/2 - INVENTORY_WIDTH/2,
-		engine.screenHeight/2 - INVENTORY_HEIGHT/2 - 4);
+		engine.screenHeight/2 - INVENTORY_HEIGHT/2 + 1);
 	TCODConsole::flush();
 	
 	//wait for a key press
@@ -389,7 +444,94 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type) {
 	}
 	return NULL;
 }
-
+void PlayerAi::displayCharacterInfo(Actor *owner){
+//Display screen of Character Information
+	static const int CHARACTER_HEIGHT = 38;
+	static const int CHARACTER_WIDTH = 33;
+	TCODConsole con(CHARACTER_WIDTH,CHARACTER_HEIGHT);
+	
+	con.setDefaultForeground(TCODColor(100,180,250));
+	con.printFrame(0,0,CHARACTER_WIDTH,CHARACTER_HEIGHT,true,TCOD_BKGND_DEFAULT,"CHARACTER");
+	
+	con.setDefaultForeground(TCODColor::white);
+	
+	//Print Currently Equipped armor onto the screen
+	con.print(14,20,"ARMOR");
+	con.print(1,22,"HEAD: ");
+	con.print(1,24,"CHEST: ");
+	con.print(1,26,"LEGS: ");
+	con.print(1,28,"FEET: ");
+	con.print(1,30,"HAND1: ");
+	con.print(1,32,"HAND2: ");
+	con.print(1,34,"RANGED: ");
+	for(Actor **it = owner->container->inventory.begin(); it != owner->container->inventory.end(); ++it){
+		Actor *actor = *it;
+		if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
+			switch(((Equipment*)(actor->pickable))->slot){
+				case Equipment::HEAD:
+					con.print(6,22,"%s",actor->name);
+				break;
+				case Equipment::CHEST:
+					con.print(7,24,"%s",actor->name);
+				break;
+				case Equipment::LEGS:
+					con.print(6,26,"%s",actor->name);
+				break;
+				case Equipment::FEET:
+					con.print(6,28,"%s",actor->name);
+				break;
+				case Equipment::HAND1:
+					con.print(7,30,"%s",actor->name);
+				break;
+				case Equipment::HAND2:
+					con.print(7,32,"%s",actor->name);
+				break;
+				case Equipment::RANGED:
+					con.print(8,34,"%s",actor->name);
+				break;
+				case Equipment::NOSLOT:
+				break;
+				default: break;
+			}
+		}
+	}
+	//Diplay Character Stats
+	con.print(2,4,"STATS");
+	con.print(1,6,"VIT: %g",owner->destructible->maxHp);
+	con.print(1,8,"AG: %g",owner->destructible->totalDefense);
+	con.print(1,10,"STR: %g",owner->attacker->totalPower);
+	con.print(1,12,"INT: N/A");
+	con.print(1,14,"KILLS: %d",engine.killCount);
+	con.print(1,16,"DMG DONE: %g",engine.damageDone);
+	con.print(1,18,"DMG TAKEN: %g",engine.damageReceived);
+	
+	//Display Character Image
+	con.print(20,8,"@");
+	
+	//Display different Image based on race
+	/*switch(owner->ch){
+		case 143:
+			con.print(20,8,"Â");
+		break;
+		case 159:
+			con.print(20,8,"ƒ");
+		break;
+		case 174:
+			con.print(20,8,"»");
+		break;
+		default: break;
+	}*/
+	
+	//blit character info onto the game display
+	TCODConsole::blit(&con,0,0,CHARACTER_WIDTH,CHARACTER_HEIGHT,
+		TCODConsole::root, engine.screenWidth/2 - CHARACTER_WIDTH/2,
+		engine.screenHeight/2 - CHARACTER_HEIGHT/2 - 2);
+	TCODConsole::flush();
+	
+	//Keep info displayed until the player presses any character
+	TCOD_key_t key;
+	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
+}
 
 static const int TRACKING_TURNS = 3;
 
@@ -445,6 +587,7 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 		}
 	} else if (owner->attacker) {
 		owner->attacker->attack(owner,engine.player);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
 	}
 	
 }
@@ -475,6 +618,174 @@ void EpicenterAi::infectLevel(Actor *owner) {
 void EpicenterAi::save(TCODZip &zip) {
 	zip.putInt(EPICENTER);
 }
+
+
+LightAi::LightAi(int rad, float f)
+{
+	//TCODRandom *myRandom = new TCODRandom();
+	//float rng = myRandom->getFloat(0.0f,1.0f,0.9);
+	flkr = f;
+	radius = rad;	
+	lmap = new TCODMap(13,13);
+	onOff = true;
+	frst = true;
+}
+
+void LightAi::load(TCODZip &zip){}
+
+void LightAi::save(TCODZip &zip){
+	zip.putInt(LIGHT);
+}
+
+void LightAi::flicker(Actor * owner, float chance){
+	int maxx = owner->x+6;
+	int minx = owner->x-6;
+	int maxy = owner->y+6;
+	int miny = owner->y-6;
+	//owner->radius
+	//lmap->computeFov(owner->x-minx,owner->y-miny,radius);
+	for (int x=minx; x <= maxx; x++) {
+		for (int y=miny; y <= maxy; y++) {
+			if (lmap->isInFov(x-minx,y-miny)) {
+				if (flkr < chance)
+				{
+					// && (engine.player->x != x && engine.player->y != y)) {
+					engine.map->tiles[x+y*engine.map->width].lit = false;
+				}
+				else
+				{
+					// && (engine.player->x != x && engine.player->y != y)) {
+					engine.map->tiles[x+y*engine.map->width].lit = true;
+				}
+			}
+			else
+			{
+				//if (engine.map->tiles[x+y*engine.map->width].lit = true)
+				//engine.map->tiles[x+y*engine.map->width].lit = false;
+			}
+		}
+	}
+}
+
+void LightAi::update(Actor * owner)
+{
+	if (onOff)
+	{
+		int maxx = owner->x+6;
+		int minx = owner->x-6;
+		int maxy = owner->y+6;
+		int miny = owner->y-6;
+		//lmap = new TCODMap(maxx-minx,maxy-miny);
+		for (int x=minx; x <= maxx; x++) {
+			for (int y=miny; y <= maxy; y++) {
+				//inheriting properties of real map
+				lmap->setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
+			}
+		}
+		//owner->radius
+		lmap->computeFov(owner->x-minx,owner->y-miny,radius);
+		for (int x=minx; x <= maxx; x++) {
+			for (int y=miny; y <= maxy; y++) {
+				if (lmap->isInFov(x-minx,y-miny) && !(engine.player->x == x && engine.player->y == y)) {
+					engine.map->tiles[x+y*engine.map->width].lit = true;
+					if (frst)
+					{
+						engine.map->tiles[x+y*engine.map->width].num++;
+						
+					}
+				}
+				//if ((engine.player->x == x && engine.player->y == y))
+				//{
+				//	engine.map->tiles[x+y*engine.map->width].lit = false;
+				//}
+				//else
+				//{
+				//	engine.map->tiles[x+y*engine.map->width].lit = false;
+				//}
+			}
+		}
+		if (frst)
+			frst = false;//when set to off turn it back to true
+	}
+	else
+	{
+		int maxx = owner->x+6;
+		int minx = owner->x-6;
+		int maxy = owner->y+6;
+		int miny = owner->y-6;
+		for (int x=minx; x <= maxx; x++) {
+			for (int y=miny; y <= maxy; y++) {
+				//if there is only one light source on the tile
+				if (engine.map->tiles[x+y*engine.map->width].num == 1)
+				{
+					engine.map->tiles[x+y*engine.map->width].lit = false;
+					engine.map->tiles[x+y*engine.map->width].num--;
+				}
+			}
+		}
+	/*for (int i = x1; i <= x2; i++)
+	{
+		for (int j = y1; j <= y2; j++)
+		{
+			if (true)//engine.distance(x,i,y,j) <= 3)
+			{
+				engine.map->tiles[i+j*engine.map->width].infection = true;
+				//engine.mapcon->setChar(i, j, 'L');
+			}
+			else
+			{
+				engine.map->tiles[i+j*engine.map->width].infection = false;
+			}
+		}
+	}
+	*/
+	}
+	
+}
+
+FlareAi::FlareAi(int lightRange, int turns) : lightRange(lightRange),turns(turns)
+{
+	//light = new Actor(x, y, ' ', "Flare Light", TCODColor::white);
+	//light->ai = new LightAi(lightRange,1);
+	//engine.actors.push(light);
+	i = 0;
+}
+
+void FlareAi::load(TCODZip &zip){}
+
+void FlareAi::save(TCODZip &zip){
+	zip.putInt(FLARE);
+}
+
+void FlareAi::update(Actor * owner)
+{
+	
+	if (i == 0)
+	{
+		light = new Actor(owner->x,owner->y, ' ', "Flare Light", TCODColor::white);
+		light->ai = new LightAi(lightRange,1);
+		light->blocks = false;
+		engine.actors.push(light);
+		engine.gui->message(TCODColor::orange, "Flare is burning");
+	}
+	if (i <= turns)
+	{
+		i++;
+		engine.gui->message(TCODColor::orange, "Flare is burning");
+	}
+	else
+	{
+		//light->(LightAi)ai->onOff = false;
+		//LightAi l = (LightAi)light->ai;
+		LightAi *l = (LightAi*)light->ai;
+		l->onOff = false;
+		l->update(owner);
+		//engine.actors.remove(light);
+		//light = NULL;
+	}
+}
+
+
 
 ConfusedActorAi::ConfusedActorAi(int nbTurns, Ai *oldAi)
 	:nbTurns(nbTurns),oldAi(oldAi) {
@@ -582,9 +893,11 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		}
 	} else if (distance !=1 && owner->attacker) {
 		owner->attacker->shoot(owner,engine.player);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
 	}
 	else if (owner->attacker) {
 		owner->attacker->attack(owner,engine.player);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
 	}
 	
 }

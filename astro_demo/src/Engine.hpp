@@ -17,6 +17,13 @@ public:
 	Map *map;
 	//Map *mapCpy;
 	//Renderer *rend;
+	
+	int invState;
+	int invFrames;
+	int selX;
+	int selY;
+	
+	
 	int mapx1;
 	int mapx2;
 	int mapy1;
@@ -29,6 +36,8 @@ public:
 	int level;
 	int turnCount;
 	int killCount;
+	float damageDone;
+	float damageReceived;
 	Gui *gui;
 	TCOD_key_t lastKey;
 	//TCOD_mouse_t mouse; comment this out to remove mouse look
