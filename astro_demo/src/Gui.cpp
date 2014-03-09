@@ -28,7 +28,7 @@ Gui::Gui() {
 	con = new TCODConsole(CON_WIDTH, PANEL_HEIGHT);
 	sidebar = new TCODConsole(MSG_X, engine.screenHeight);
 	tileInfoScreen = new TCODConsole(TILE_INFO_WIDTH, PANEL_HEIGHT);
-	
+
 }
 
 Gui::~Gui() {
@@ -152,7 +152,7 @@ void Gui::render() {
 	TCODConsole::blit(tileInfoScreen, 0, 0, TILE_INFO_WIDTH, PANEL_HEIGHT, TCODConsole::root, engine.screenWidth - TILE_INFO_WIDTH, engine.screenHeight - PANEL_HEIGHT);	
 	TCODConsole::blit(sidebar, 0, 0, MSG_X, engine.screenHeight-PANEL_HEIGHT, TCODConsole::root, 0, 0);	
 		
-		
+	
 		
 }
 
@@ -186,13 +186,6 @@ Gui::Message::~Message() {
 	free(text);
 }
 
-const char* Gui::modifyMessageToPrint(const char* m) {
-	
-
-
-
-}
-
 
 
 //keyboard-based look
@@ -217,31 +210,6 @@ void Gui::renderKeyLook() {
 				} else {
 					first = false;
 				}
-					
-					//modify this to check the actor name.
-					//if it is longer than tileInfoWidth-4
-					//figure out using regular expressions!
-					//break it up by placing /n
-					//then check how high it is?
-					//to make sure it doesn't run over the bottom...
-					int lastLineBreak = -1;
-					int lineNum = 3;
-					int currentSpace = 0;
-					char* checker = actor->name;
-					while(checker != NULL || checker != '\0' ){
-						if (currentSpace - lastLineSpace >= tileInfoWidth - 4){
-							lastLineBreak = currentSpace;
-							
-							
-						}
-						else{
-						
-						
-						}
-						currentSpace++;
-						checker++;
-					}
-					
 					strcat(buf,actor->name);
 				if (actor->attacker && !actor->destructible->isDead() && engine.map->isInFov(x,y)) {
 					engine.player->attacker->lastTarget = actor;
@@ -252,7 +220,7 @@ void Gui::renderKeyLook() {
 		Actor *actor = engine.getAnyActor(x, y);
 		if (!actor || !engine.map->isExplored(x,y)) {
 			memset(&buf[0], 0, sizeof(buf));
-			strcat(buf,"There is nothing\ninteresting here.");
+			strcat(buf,"There is nothing interesting here.");
 		} 
 		tileInfoLog = new Message(buf, TCODColor::lightGrey);
 	}
@@ -294,6 +262,10 @@ void Gui::message(const TCODColor &col, const char *text, ...) {
 	char *lineBegin = buf;
 	char *lineEnd;
 	
+	/*//uncomment the lines below if you want a space between each message
+	Message *space = new Message("\n",col);
+	log.push(space);
+	*/
 	do {
 		//make room for the new message
 		if (log.size() == MSG_HEIGHT) {
@@ -301,12 +273,39 @@ void Gui::message(const TCODColor &col, const char *text, ...) {
 			log.remove(toRemove);
 			delete toRemove;
 		}
+		
 		//detect the EOL
 		lineEnd = strchr(lineBegin,'\n');
+		
 		if (lineEnd) {
+			if(lineEnd - lineBegin > CON_WIDTH - 2){
+				char temp = *(lineBegin + CON_WIDTH - 2);
+				if(temp != ' ') {
+					*(lineBegin + CON_WIDTH - 2) = '\0';
+					lineEnd = strrchr(lineBegin, ' ');
+					*(lineBegin + CON_WIDTH - 2) = temp;
+				}
+				else{
+					lineEnd = lineBegin + CON_WIDTH - 2;
+				}
+			}
 			*lineEnd = '\0';
 		}
-		
+		else{
+			if(strlen(lineBegin) > CON_WIDTH - 2){
+				char temp = *(lineBegin + CON_WIDTH - 2);
+				if(temp != ' ') {
+					*(lineBegin + CON_WIDTH - 2) = '\0';
+					lineEnd = strrchr(lineBegin, ' ');
+					*(lineBegin + CON_WIDTH - 2) = temp;
+				}
+				else{
+					lineEnd = lineBegin + CON_WIDTH - 2;
+				}
+				*lineEnd = '\0';
+			}
+		}
+
 		//add a new message to the log
 		Message *msg = new Message(lineBegin,col);
 		log.push(msg);
