@@ -46,7 +46,7 @@ void PlayerAi::update(Actor *owner) {
 		bool choice_made = false, first = true;
 		while (!choice_made) {
 		if (first) {
-			engine.gui->message(TCODColor::yellow,"As the monster falls to the floor, you feel yourself filled with some\n unknown strength!");
+			engine.gui->message(TCODColor::yellow,"As the monster falls to the floor, you feel yourself filled with some unknown strength!");
 			TCODConsole::flush();
 			xpLevel++;
 			owner->destructible->xp -= levelUpXp;
