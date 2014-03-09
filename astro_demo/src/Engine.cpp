@@ -337,12 +337,8 @@ void Engine::init() {
 	actors.push(stairs);
 	map = new Map(mapWidth, mapHeight);
 	map->init(true, Param::GENERIC);
-	gui->message(TCODColor::red, 
-
-    	"Welcome to Astroverius Station! Warning unknown alien life form detected!");
-	gui->message(TCODColor::blue, player->race);
-	gui->message(TCODColor::blue, player->role);
-	gui->message(TCODColor::blue, player->job);
+	gui->message(TCODColor::red, "Welcome to Astroverius Station! Warning unknown alien life form detected!");
+	gui->message(TCODColor::blue,"You appear to be a %s %s %s. Your experience will be needed to complete this journey.", player->race, player->role, player->job);
 	gameStatus = STARTUP;
 }
 
