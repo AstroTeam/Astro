@@ -6,10 +6,16 @@ mapcondec:
 
 9,10,11 are bed headboards
 
-12,13,14 are bed feet
+12,13,14 are bed headboards backwards
 
-15 is an endtable
+15,16,17 are bed feet
 
-16 is a locker
+18,19,20 are bed feet backwards
 
-17 is a looted locker
+21 is an endtable
+
+22 is an endtable backwards
+
+23 is a locker
+
+24 is a looted locker
