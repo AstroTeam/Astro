@@ -186,6 +186,15 @@ Gui::Message::~Message() {
 	free(text);
 }
 
+const char* Gui::modifyMessageToPrint(const char* m) {
+	
+
+
+
+}
+
+
+
 //keyboard-based look
 void Gui::renderKeyLook() {
 	
@@ -208,7 +217,7 @@ void Gui::renderKeyLook() {
 				} else {
 					first = false;
 				}
-					/*
+					
 					//modify this to check the actor name.
 					//if it is longer than tileInfoWidth-4
 					//figure out using regular expressions!
@@ -216,24 +225,23 @@ void Gui::renderKeyLook() {
 					//then check how high it is?
 					//to make sure it doesn't run over the bottom...
 					int lastLineBreak = -1;
-					int last
+					int lineNum = 3;
 					int currentSpace = 0;
 					char* checker = actor->name;
-					while(checker != NULL){
-						if(*checker == '\n'){
-					
-					
-						}
-						else if (currentSpace - lastSpace > tileInfoWidth - 4){
-						
-						
+					while(checker != NULL || checker != '\0' ){
+						if (currentSpace - lastLineSpace >= tileInfoWidth - 4){
+							lastLineBreak = currentSpace;
+							
+							
 						}
 						else{
 						
 						
 						}
+						currentSpace++;
+						checker++;
 					}
-					*/
+					
 					strcat(buf,actor->name);
 				if (actor->attacker && !actor->destructible->isDead() && engine.map->isInFov(x,y)) {
 					engine.player->attacker->lastTarget = actor;
