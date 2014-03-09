@@ -141,8 +141,14 @@ void Gui::render() {
 	tileInfoScreen->printFrame(0, 0, TILE_INFO_WIDTH, 
 		PANEL_HEIGHT, true,TCOD_BKGND_ALPHA(50),"TILE INFO");
 	//draw the message
-	if(tileInfoLog != NULL){
-		tileInfoScreen->print(2,3,tileInfoLog->text);
+	y = 2;
+	if(tileInfoLog.size() > 0){
+		for (Message **it = tileInfoLog.begin(); it != tileInfoLog.end(); it++) {
+			Message *message = *it;
+			tileInfoScreen->setDefaultForeground(message->col);
+			tileInfoScreen->print(2,y,message->text,TCOD_BKGND_ALPHA(100));
+			y++;
+		}
 		
 	}
 	
@@ -222,7 +228,56 @@ void Gui::renderKeyLook() {
 			memset(&buf[0], 0, sizeof(buf));
 			strcat(buf,"There is nothing interesting here.");
 		} 
-		tileInfoLog = new Message(buf, TCODColor::lightGrey);
+		char *lineBegin = buf;
+		char *lineEnd;
+	
+		//remove all the past messages
+			while(tileInfoLog.size() > 0) {
+				Message *toRemove = tileInfoLog.get(0);
+				tileInfoLog.remove(toRemove);
+				delete toRemove;
+			}
+			
+		do {
+			
+			//detect the EOL
+			lineEnd = strchr(lineBegin,'\n');
+			
+			if (lineEnd) {
+				if(lineEnd - lineBegin > TILE_INFO_WIDTH - 2){
+					char temp = *(lineBegin + TILE_INFO_WIDTH - 2);
+					if(temp != ' ') {
+						*(lineBegin + TILE_INFO_WIDTH - 2) = '\0';
+						lineEnd = strrchr(lineBegin, ' ');
+						*(lineBegin + TILE_INFO_WIDTH - 2) = temp;
+					}
+					else{
+						lineEnd = lineBegin + TILE_INFO_WIDTH - 2;
+					}
+				}
+				*lineEnd = '\0';
+			}
+			else{
+				if(strlen(lineBegin) > TILE_INFO_WIDTH - 2){
+					char temp = *(lineBegin + TILE_INFO_WIDTH - 2);
+					if(temp != ' ') {
+						*(lineBegin + TILE_INFO_WIDTH - 2) = '\0';
+						lineEnd = strrchr(lineBegin, ' ');
+						*(lineBegin + TILE_INFO_WIDTH - 2) = temp;
+					}
+					else{
+						lineEnd = lineBegin + TILE_INFO_WIDTH - 2;
+					}
+					*lineEnd = '\0';
+				}
+			}
+
+			Message *msg = new Message(lineBegin,TCODColor::lightGrey);
+			tileInfoLog.push(msg);
+			
+			//go to the next line
+			lineBegin = lineEnd + 1;
+		} while (lineEnd);
 	}
 }
 
