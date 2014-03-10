@@ -649,7 +649,7 @@ void Gui::classSidebar(){
 				break;
 				default: break;
 			}
-			classBar.print(6,9,"SUBCLASS: ");
+			classBar.print(6,9,"SUBCLASS");
 			switch(jobSelection){
 				case 1:
 					classBar.print(6,11,"INFANTRY");
@@ -687,4 +687,15 @@ void Gui::classSidebar(){
 			classBar.print(1,23,"AGILITY: %d",agValue);
 			
 			TCODConsole::blit(&classBar, 0, 0, 20, engine.screenHeight, TCODConsole::root, 0, 0);
+}
+void Gui::vendingSidebar(){
+	//create vending machine sidebar
+	TCODConsole vendBar(20,engine.screenHeight);
+	vendBar.setDefaultBackground(TCODColor::black);
+	vendBar.clear();
+	vendBar.setDefaultForeground(TCODColor(200,180,50));
+	vendBar.printFrame(0,0,20,engine.screenHeight,true,TCOD_BKGND_ALPHA(50),"PURCHASE INFO");
+	
+	vendBar.print(1,5,"Pbc: ");
+	TCODConsole::blit(&vendBar, 0, 0, 20, engine.screenHeight, TCODConsole::root, 0, 0);
 }
