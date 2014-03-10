@@ -719,10 +719,17 @@ void LightAi::update(Actor * owner)
 				if (engine.map->tiles[x+y*engine.map->width].num == 1)
 				{
 					engine.map->tiles[x+y*engine.map->width].lit = false;
-					engine.map->tiles[x+y*engine.map->width].num--;
+					if (!frst)
+					{
+						engine.map->tiles[x+y*engine.map->width].num--;
+						
+					}
+					//engine.map->tiles[x+y*engine.map->width].num--;
 				}
 			}
 		}
+	if (!frst)
+			frst = true;//when set to off turn it back to true
 	/*for (int i = x1; i <= x2; i++)
 	{
 		for (int j = y1; j <= y2; j++)

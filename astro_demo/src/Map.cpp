@@ -86,6 +86,8 @@ int Map::tileType(int x, int y) {
 	{return 2;}
 	else if (tiles[i].tileType == Param::BARRACKS)
 	{return 3;}
+	else if (tiles[i].tileType == Param::GENERATOR)
+	{return 1;}
 	else
 	{return 1;}
 	//return tiles[x*y].tileType;
@@ -557,6 +559,22 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				{
 					Actor * desk = new Actor(xX,yY,242,"a desk", TCODColor::white);
 					int n = rng->getInt(1,4);
+					if (n == 1)
+					{
+						desk->name = "A desk with a ruined computer";
+					}
+					else if (n == 2)
+					{
+						desk->name = "A desk with strew papers about";
+					}
+					else if (n == 3)
+					{
+						desk->name = "A desk with an angled computer";
+					}
+					else
+					{
+						desk->name = "A desk with a nice computer";
+					}					
 					engine.mapconDec->setChar(xX, yY, n);
 					engine.actors.push(desk);
 				}
@@ -613,15 +631,18 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				{
 					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
+					locker->destructible = new Destructible(1,0,"Opened Locker",0);
 					engine.actors.push(locker);
 					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,243,"A Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar(((x1+x2)/2)+1,i, 23);//Locker
+					locker->destructible = new Destructible(1,0,"Opened Locker",0);
 					engine.actors.push(locker2);
 				}
 				else
 				{
 					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
+					locker->destructible = new Destructible(1,0,"Opened Locker",0);
 					engine.actors.push(locker);
 				}
 			}

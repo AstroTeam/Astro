@@ -413,6 +413,10 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x=192;
 					//srcRect.y += 32;
+				}else if(engine.mapconDec->getChar(xM,yM) == 24)//locker looted
+				{
+					srcRect.x=208;
+					//srcRect.y += 32;
 				}else if(engine.mapconDec->getChar(xM,yM) == 21)//endtable
 				{
 					srcRect.x=192;

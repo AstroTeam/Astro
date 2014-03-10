@@ -66,15 +66,21 @@ void Destructible::die(Actor *owner) {
 	//if spore creature they get spore body
 	if (owner->ch == 165){
 		owner->ch = 162;
+		owner->blocks = false;
+	}
+	else if(owner->ch == 243){
+		engine.mapconDec->setChar(owner->x,owner->y, 24);//Locker
+		owner->ch = 243;
 	}
 	//else generic blood whale
 	else
 	{
 		owner->ch = 163;
+		owner->blocks = false;
 	}
 	owner->col = TCODColor::white;
 	owner->name = corpseName;
-	owner->blocks = false;
+	//owner->blocks = false;
 	//make sure corpses are drawn before other important things
 	engine.sendToBack(owner);
 }

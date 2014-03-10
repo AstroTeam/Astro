@@ -224,7 +224,7 @@ void Engine::init() {
 			((Equipment*)(chest->pickable))->use(chest,player);
 			
 			//add flare, for now is generic flare
-			equip1 = new Actor(0,0,'F',"Flare", TCODColor::white);
+			equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
 			equip1->sort = 2;
 			equip1->blocks = false;
 			equip1->pickable = new Flare(5,8,5);
