@@ -129,12 +129,18 @@ void Renderer::render(void *sdlSurface){
 				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				
 				//render infection over it
-				if (engine.map->isInfected(xM,yM))
+				if (engine.map->infectionState(xM,yM) > 0)
 				{
-					srcRect.x = 128;
+					if (engine.map->infectionState(xM,yM) <= 6) {
+						srcRect.x = 64 + 16 * engine.map->infectionState(xM, yM);
+					}
+					else {
+						srcRect.x = 64 + 16 * 6;
+					}
 					srcRect.y = 0;
 					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				}
+
 				//any decor to render just on top of floors
 				if (engine.mapconDec->getChar(xM,yM) == ' ')
 				{
@@ -203,10 +209,14 @@ void Renderer::render(void *sdlSurface){
 				srcRect.y = 16;
 				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				
-				//add infection, same a lit, except y
-				if (engine.map->isInfected(xM,yM))
+				if (engine.map->infectionState(xM,yM) > 0)
 				{
-					srcRect.x = 128;
+					if (engine.map->infectionState(xM,yM) <= 6) {
+						srcRect.x = 64 + 16 * engine.map->infectionState(xM, yM);
+					}
+					else {
+						srcRect.x = 64 + 16 * 6;
+					}
 					srcRect.y = 16;
 					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				}
