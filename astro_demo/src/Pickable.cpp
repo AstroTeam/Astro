@@ -120,15 +120,15 @@ bool LightningBolt::use(Actor *owner, Actor *wearer) {
 		return false;
 	}
 	//hit the closest monster for <damage> hit points;
-	float damageTaken = closestMonster->destructible->takeDamage(closestMonster,damage);
-	engine.damageDone += damage;
+	float damageTaken = closestMonster->destructible->takeDamage(closestMonster, -3 + 3 * wearer->totalIntel);
+	engine.damageDone += 3 * wearer->totalIntel - 3;
 	if (!closestMonster->destructible->isDead()) {
 	engine.gui->message(TCODColor::lightBlue,
 		"A lightning bolt strikes the %s with a loud crack"
 		"for %g damage.",
 		closestMonster->name,damageTaken);
 	} else {
-		engine.gui->message(TCODColor::orange,"The %s crackles with electricity, twitching slightly.",closestMonster->name);
+		engine.gui->message(TCODColor::orange,"Taking %g damage, the %s crackles with electricity, twitching slightly.",damageTaken,closestMonster->name);
 	}
 	return Pickable::use(owner,wearer);
 }
@@ -168,8 +168,8 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 		Actor *actor = *it;
 		if (actor->destructible && !actor->destructible->isDead()
 			&&actor->getDistance(x,y) <= range) {
-			float damageTaken = actor->destructible->takeDamage(actor,damage);
-			engine.damageDone += damage;
+			float damageTaken = actor->destructible->takeDamage(actor,damage + 2 * owner->totalIntel);
+			engine.damageDone += damage + 2 * owner->totalIntel;
 			if (!actor->destructible->isDead()) {
 				engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damageTaken);
 			} else {
