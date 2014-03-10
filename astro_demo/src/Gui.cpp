@@ -203,9 +203,10 @@ void Gui::renderKeyLook() {
 		char buf[128] = ""; 
 		if (engine.map->isInFov(x,y)){
 			//char c = (char)engine.map->tiles[x+y*engine.map->width].num;
-			int i = engine.map->tiles[x+y*engine.map->width].num;
+			float i = engine.map->tiles[x+y*engine.map->width].infection;
 			//strcat(buf,(char*)i);
-			engine.gui->message(TCODColor::red, "number of lights is %d",i);
+			engine.gui->message(TCODColor::green, "the infection level is %g",i);
+			
 			strcat(buf,"You see:\n");
 		}else {
 			strcat(buf,"You remember seeing:\n");
