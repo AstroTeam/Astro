@@ -123,10 +123,7 @@ bool LightningBolt::use(Actor *owner, Actor *wearer) {
 	float damageTaken = closestMonster->destructible->takeDamage(closestMonster, -3 + 3 * wearer->totalIntel);
 	engine.damageDone += 3 * wearer->totalIntel - 3;
 	if (!closestMonster->destructible->isDead()) {
-	engine.gui->message(TCODColor::lightBlue,
-		"A lightning bolt strikes the %s with a loud crack"
-		"for %g damage.",
-		closestMonster->name,damageTaken);
+		engine.gui->message(TCODColor::orange,"Taking %g damage, the %s crackles with electricity, crying out in rage.",damageTaken,closestMonster->name);
 	} else {
 		engine.gui->message(TCODColor::orange,"Taking %g damage, the %s crackles with electricity, twitching slightly.",damageTaken,closestMonster->name);
 	}
@@ -159,21 +156,21 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 		"or hit escape to cancel.");
 	int x = engine.player->x;
 	int y = engine.player->y;
-	if (!engine.pickATile(&x,&y,maxRange,range)) {
+	if (!engine.pickATile(&x,&y,maxRange,range -2 + wearer->totalIntel /4)) {
 		return false;
 	}
 	//burn everything in range, including the player
-	engine.gui->message(TCODColor::orange, "The fireball explodes, burning everything within %g tiles!",range);
+	engine.gui->message(TCODColor::orange, "The fireball explodes, burning everything within %g tiles!",range + wearer->totalIntel /4);
 	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
 		Actor *actor = *it;
 		if (actor->destructible && !actor->destructible->isDead()
-			&&actor->getDistance(x,y) <= range) {
-			float damageTaken = actor->destructible->takeDamage(actor,damage + 2 * owner->totalIntel);
-			engine.damageDone += damage + 2 * owner->totalIntel;
+			&&actor->getDistance(x,y) <= range + wearer->totalIntel /4) {
+			float damageTaken = actor->destructible->takeDamage(actor, 2 * wearer->totalIntel);
+			engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
 				engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damageTaken);
 			} else {
-			engine.gui->message(TCODColor::orange,"The %s is an ashen mound, crumbling under its own weight.",actor->name);
+				engine.gui->message(TCODColor::orange,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",actor->name, damageTaken);
 			}
 		}
 	}
