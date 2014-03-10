@@ -87,7 +87,7 @@ int Map::tileType(int x, int y) {
 	else if (tiles[i].tileType == Param::BARRACKS)
 	{return 3;}
 	else if (tiles[i].tileType == Param::GENERATOR)
-	{return 1;}
+	{return 4;}
 	else
 	{return 1;}
 	//return tiles[x*y].tileType;
@@ -635,7 +635,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					engine.actors.push(locker);
 					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,243,"A Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar(((x1+x2)/2)+1,i, 23);//Locker
-					locker->destructible = new Destructible(1,0,"Opened Locker",0);
+					locker2->destructible = new Destructible(1,0,"Opened Locker",0);
 					engine.actors.push(locker2);
 				}
 				else
