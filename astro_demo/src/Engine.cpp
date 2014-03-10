@@ -259,7 +259,7 @@ void Engine::init() {
 		case 6:
 			player->role="Explorer";
 			player->job="Merchant";
-			//you don't get chicks
+			//you don't get dick
 			break;
 		case 7:
 			player->role="Mercenary";
