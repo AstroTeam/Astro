@@ -132,10 +132,10 @@ void Renderer::render(void *sdlSurface){
 				if (engine.map->infectionState(xM,yM) > 0)
 				{
 					if (engine.map->infectionState(xM,yM) <= 6) {
-						srcRect.x = 64 + 16 * engine.map->infectionState(xM, yM);
+						srcRect.x = 64 + 16 * (engine.map->infectionState(xM, yM) - 1);
 					}
 					else {
-						srcRect.x = 64 + 16 * 6;
+						srcRect.x = 64 + 16 * 5;
 					}
 					srcRect.y = 0;
 					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
