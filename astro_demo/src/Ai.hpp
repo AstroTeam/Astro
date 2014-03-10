@@ -1,7 +1,10 @@
 class Ai : public Persistent {
 public:
+	TCODConsole *inventoryScreen;
+	
 	virtual void update(Actor *owner) = 0;
 	static Ai *create(TCODZip &zip);
+	Actor *choseFromInventory(Actor *owner, int type);
 protected:
 	enum AiType {
 		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED, LIGHT, FLARE
@@ -27,10 +30,13 @@ protected:
 
 class MonsterAi : public Ai {
 public:
+	TCODConsole *inventoryScreen;
+	
 	MonsterAi();
 	void update(Actor *owner);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
+	Actor *choseFromInventory(Actor *owner, int type);
 protected:
 	int moveCount;
 	

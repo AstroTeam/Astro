@@ -31,6 +31,11 @@ void Attacker::attack(Actor *owner, Actor *target) {
 				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name,damageTaken + 1);
 				target->destructible->takeDamage(target,damageTaken+1);
 			}
+			else if(strcmp(target->name,"A Government Issue Locker") == 0)
+			{
+				engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
+				target->destructible->takeDamage(target,damageTaken);
+			}
 			else {
 				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name,damageTaken);
 				target->destructible->takeDamage(target,damageTaken);
