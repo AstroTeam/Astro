@@ -49,6 +49,7 @@ public:
 	bool isInFov(int x, int y) const;
 	bool isExplored(int x, int y) const;
 	bool isInfected(int x, int y) const;
+	bool infectionState(int x, int y) const;
 	bool isLit(int x, int y) const;
 	void infectFloor(int x, int y);
 	void computeFov();

@@ -745,6 +745,9 @@ bool Map::isInfected(int x, int y) const {
 	return (bool)((int)tiles[x+y*width].infection);
 }
 
+int Map::infectionState(int x, int y) const {
+	return (int)tiles[x+y*width].infection;
+}
 void Map::infectFloor(int x, int y) {
 	tiles[x+y*width].infection += rng->getFloat(.1, 2);
 }
