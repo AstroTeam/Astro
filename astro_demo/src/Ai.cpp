@@ -725,9 +725,10 @@ void EpicenterAi::load(TCODZip &zip) {
 }
 
 void EpicenterAi::update(Actor *owner) {
-	if (engine.turnCount % 500 == 0) {
+	if (engine.turnCount % 250 == 0) {
 		infectLevel(owner);
 	}
+	//set growing flowers boolean to true to have the infected tiles grow some flowers upon infection spread
 }
 
 void EpicenterAi::infectLevel(Actor *owner) {

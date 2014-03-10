@@ -5,15 +5,15 @@ namespace Param {
 	};
 
 	enum RoomType {
-		STANDARD,
-		OFFICE,
-		BARRACKS,
-		GENERATOR,
-		SERVER,
-		KITCHEN,
-		MESSHALL,
-		ARMORY,
-		OBSERVATORY
+		STANDARD,  //done lol
+		OFFICE,    //done
+		BARRACKS,  //done* -> must add dropping items from lockers
+		GENERATOR, //must populate with decor
+		SERVER,    //to-do
+		KITCHEN,   //to-do
+		MESSHALL,  //to-do
+		ARMORY,    //to-do
+		OBSERVATORY//to-do
 	};
 };
 
@@ -22,6 +22,8 @@ struct Tile {
 	float infection;
 	bool lit;
 	int num;
+	//add number of flowers and a boolean to grow them when epicenter updates
+	//could have flower levels?  easier to make flower tiles to overlay than keep track of x,y's for every flower on a tile
 	Param::RoomType tileType;
 	Tile() : explored(false), infection (0), lit(false),num (0), tileType(Param::STANDARD) {}
 	const TCODColor * lastColor;//if color changed offscreen

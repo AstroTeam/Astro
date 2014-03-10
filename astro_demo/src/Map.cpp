@@ -652,8 +652,25 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	}
 	if (room->type == GENERATOR) {
 		cout << "Gen room Made" << endl;
-		Actor * generator = new Actor(x1+1,y1+1,231,"a generator", TCODColor::white);
+		Actor * generator = new Actor(x1+1,y1+1,'G',"a generator", TCODColor::white);
 		engine.actors.push(generator);
+		Actor * generator1 = new Actor(x1+2,y1+1,'G',"a generator", TCODColor::white);
+		engine.actors.push(generator1);
+		Actor * generator2 = new Actor(x1+1,y1+2,'G',"a generator", TCODColor::white);
+		engine.actors.push(generator2);
+		Actor * generator3 = new Actor(x1+2,y1+2,'G',"a generator", TCODColor::white);
+		engine.actors.push(generator3);
+		Actor * generator4 = new Actor(x1+1,y1+3,'G',"a generator", TCODColor::white);
+		engine.actors.push(generator4);
+		Actor * generator5 = new Actor(x1+2,y1+3,'G',"a generator", TCODColor::white);
+		engine.actors.push(generator5);
+		//add large generators, animated
+		//add workbench
+		//add wrenchs
+		//add oil cans
+		//add danger sign?
+		//electric infected crewmember
+		
 	}
 
 	/*
