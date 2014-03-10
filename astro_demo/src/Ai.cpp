@@ -108,8 +108,10 @@ void PlayerAi::update(Actor *owner) {
 			owner->destructible->xp -= levelUpXp;
 		}
 		engine.gui->menu.clear();
-		engine.gui->menu.addItem(Menu::CONSTITUTION, "Constitution (+20hp)");
-		engine.gui->menu.addItem(Menu::STRENGTH, "Strength (+1 attack)");
+		engine.gui->menu.addItem(Menu::CONSTITUTION, "Vitality (bonus health)");
+		engine.gui->menu.addItem(Menu::STRENGTH, "Strength (melee damage)");
+		engine.gui->menu.addItem(Menu::DEXTERITY, "Dexterity (ranged damage)");
+		engine.gui->menu.addItem(Menu::INTELLIGENCE, "Intelligence (tech damage)");
 		//engine.gui->menu.addItem(Menu::AGILITY, "Agility (+1 defence)");
 		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::PAUSE);
 	
@@ -117,11 +119,23 @@ void PlayerAi::update(Actor *owner) {
 			case Menu::CONSTITUTION	:
 				owner->destructible->maxHp += 20;
 				owner->destructible->hp += 20;
+				owner->vit++;
 				choice_made = true;
 				break;
 			case Menu::STRENGTH :
 				owner->attacker->basePower += 1;
 				owner->attacker->totalPower += 1;
+				owner->str++;
+				choice_made = true;
+				break;
+			case Menu::DEXTERITY :
+				owner->dex++;
+				owner->totalDex++;
+				choice_made = true;
+				break;
+			case Menu::INTELLIGENCE :
+				owner->intel++;
+				owner->totalIntel++;
 				choice_made = true;
 				break;
 			case Menu::AGILITY:

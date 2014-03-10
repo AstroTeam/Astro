@@ -51,7 +51,7 @@ void Attacker::attack(Actor *owner, Actor *target) {
 
 void Attacker::shoot(Actor *owner, Actor *target) {
 	if (target->destructible && !target->destructible->isDead() ) {
-		float damageTaken = totalPower - target->destructible->totalDefense;
+		float damageTaken = (int)owner->totalDex - target->destructible->totalDefense;
 		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
 			if (owner->oozing && target->susceptible) {
 				engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hit points!",owner->name, target->name,damageTaken + 1);

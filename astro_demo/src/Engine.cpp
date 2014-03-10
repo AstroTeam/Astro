@@ -106,6 +106,7 @@ void Engine::init() {
 			player->role="Marine";
 			player->job="Infantry";
 			player->dex+=4; //job selection bonus
+			player->totalDex+=4; //job selection bonus
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
 			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
