@@ -117,6 +117,10 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 16;
 				}
+				else if (r == 4)//4 is generator
+				{
+					srcRect.x = 32;
+				}
 				else //else is regular floors
 				{
 					srcRect.x = 0;
@@ -187,6 +191,10 @@ void Renderer::render(void *sdlSurface){
 				else if (r == 3)//3 is barracks
 				{
 					srcRect.x = 16;
+				}
+				else if (r == 4)//4 is generator
+				{
+					srcRect.x = 32;
 				}
 				else
 				{
