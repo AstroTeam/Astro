@@ -140,6 +140,12 @@ void Renderer::render(void *sdlSurface){
 					srcRect.y = 0;
 					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				}
+				else if (engine.mapcon->getChar(xM,yM) == 7)
+				{
+					srcRect.x = 64 + 16 * 5;
+					srcRect.y = 0;
+					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
+				}
 
 				//any decor to render just on top of floors
 				if (engine.mapconDec->getChar(xM,yM) == ' ')
@@ -217,6 +223,12 @@ void Renderer::render(void *sdlSurface){
 					else {
 						srcRect.x = 64 + 16 * 5;
 					}
+					srcRect.y = 16;
+					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
+				}
+				else if (engine.mapcon->getChar(xM,yM) == 7)
+				{
+					srcRect.x = 64 + 16 * 5;
 					srcRect.y = 16;
 					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				}
