@@ -960,7 +960,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 	if(dice <= 40){
 			return;
 	}else{
-		if(ascii == 243){
+		if(ascii == 243){//locker, this might be a problem if we want multiple decors to drop different things
 			int random = rng->getInt(0,100);
 			if(random < 30){
 				Actor *flare = createFlare(0,0);
@@ -1147,7 +1147,7 @@ Actor *Map::createFlare(int x, int y){
 	Actor *scrollOfFlaring = new Actor(x,y,187,"Flare", TCODColor::white);
 	scrollOfFlaring->sort = 2;
 	scrollOfFlaring->blocks = false;
-	scrollOfFlaring->pickable = new Flare(5,8,5);
+	scrollOfFlaring->pickable = new Flare(10,5,5);//10 is turns, can be random, 5 is range of throwability (constant), 5 is range of flare
 	return scrollOfFlaring;
 }
 Actor *Map::createFireBomb(int x, int y){

@@ -902,14 +902,16 @@ void FlareAi::update(Actor * owner)
 		light->ai = new LightAi(lightRange,1);
 		light->blocks = false;
 		engine.actors.push(light);
-		engine.gui->message(TCODColor::orange, "Flare is burning");
+		i++;
+		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of it's phosphorus remains.",turns-i,turns);
+		
 	}
-	if (i <= turns)
+	if (i < turns)
 	{
 		i++;
-		engine.gui->message(TCODColor::orange, "Flare is burning");
+		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of it's phosphorus remains.",turns-i,turns);
 	}
-	else//DELETE ME
+	else
 	{
 		//engine.gui->message(TCODColor::orange, "Flare has burnt out");
 		//light->(LightAi)ai->onOff = false;
@@ -920,6 +922,7 @@ void FlareAi::update(Actor * owner)
 		l->update(owner);
 		//engine.actors.remove(light);
 		//light = NULL;
+		//SHOULD DELETE THE LIGHT PERMANENTLY 
 	}
 }
 

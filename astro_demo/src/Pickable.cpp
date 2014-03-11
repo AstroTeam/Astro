@@ -270,7 +270,7 @@ bool Flare::use(Actor *owner, Actor *wearer) {
 	}
 	//make new actor as a flare item
 	Actor *scrollOfFlaring = new Actor(x,y,' ',"Flare", TCODColor::white);
-	scrollOfFlaring->ai = new FlareAi(3,5);
+	scrollOfFlaring->ai = new FlareAi(lightRange,nbTurns);
 	//scrollOfFlaring->sort = 2;
 	scrollOfFlaring->blocks = false;
 	engine.actors.push(scrollOfFlaring);
