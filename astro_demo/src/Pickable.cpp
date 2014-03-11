@@ -276,7 +276,11 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 		if(isNPC && wearer->container){
 			wearer->container->remove(owner);
 			owner->x = wearer->x;
-			owner->y = wearer->y;
+			if(wearer->ch == 243){
+				owner->y = wearer->y + 1;
+			}else{
+				owner->y = wearer->y;
+			}
 			engine.actors.push(owner);
 			engine.sendToBack(owner);
 		}else if (numberDropped >= owner->pickable->stackSize && wearer->container) {

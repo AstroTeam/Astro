@@ -72,7 +72,6 @@ public:
 	Actor *createTitanMail(int x, int y);
 	Actor *createMylarBoots(int x, int y);
 	Actor *createMLR(int x, int y);
-	
 	Tile *tiles;
 
 	

@@ -631,18 +631,24 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				{
 					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
-					locker->destructible = new Destructible(1,0,"Opened Locker",0);
+					locker->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
+					locker->container = new Container(3);
+					generateRandom(locker,243);
 					engine.actors.push(locker);
 					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,243,"A Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar(((x1+x2)/2)+1,i, 23);//Locker
-					locker2->destructible = new Destructible(1,0,"Opened Locker",0);
+					locker2->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
+					locker2->container = new Container(3);
+					generateRandom(locker2,243);
 					engine.actors.push(locker2);
 				}
 				else
 				{
 					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
-					locker->destructible = new Destructible(1,0,"Opened Locker",0);
+					locker->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
+					locker->container = new Container(3);
+					generateRandom(locker,243);
 					engine.actors.push(locker);
 				}
 			}
@@ -919,7 +925,26 @@ void Map::generateRandom(Actor *owner, int ascii){
 	if(dice <= 40){
 			return;
 	}else{
-		if(ascii == 149) //infectedMarines have 60% chance of dropping an item with 50% chance of it being a MLR, and the other 50% chance being a battery pack
+		if(ascii == 243){
+			int random = rng->getInt(0,100);
+			if(random < 30){
+				Actor *flare = createFlare(0,0);
+				engine.actors.push(flare);
+				flare->pickable->pick(flare,owner);
+			}else if(random < 30+10){
+				Actor *chainMail = createTitanMail(0,0);
+				engine.actors.push(chainMail);
+				chainMail->pickable->pick(chainMail,owner);
+			}else if(random < 30+10+20){
+				Actor *myBoots = createMylarBoots(0,0);
+				engine.actors.push(myBoots);
+				myBoots->pickable->pick(myBoots,owner);
+			}else{
+				Actor *batt = createBatteryPack(0,0);
+				engine.actors.push(batt);
+				batt->pickable->pick(batt,owner);
+			}
+		}else if(ascii == 149) //infectedMarines have 60% chance of dropping an item with 50% chance of it being a MLR, and the other 50% chance being a battery pack
 		{
 			if(dice <= 70)
 			{
@@ -1076,10 +1101,10 @@ Actor *Map::createFlashBang(int x, int y){
 	return scrollOfConfusion;
 }
 Actor *Map::createFlare(int x, int y){
-	Actor *scrollOfFlaring = new Actor(x,y,'F',"Flare", TCODColor::white);
+	Actor *scrollOfFlaring = new Actor(x,y,187,"Flare", TCODColor::white);
 	scrollOfFlaring->sort = 2;
 	scrollOfFlaring->blocks = false;
-	scrollOfFlaring->pickable = new Confuser(10,8);
+	scrollOfFlaring->pickable = new Flare(5,8,5);
 	return scrollOfFlaring;
 }
 Actor *Map::createFireBomb(int x, int y){
@@ -1127,3 +1152,4 @@ Actor *Map::createBatteryPack(int x,int y){
 	batteryPack->pickable = new Charger(5);
 	return batteryPack;
 }
+

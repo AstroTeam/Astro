@@ -96,8 +96,10 @@ PlayerDestructible::PlayerDestructible(float maxHp, float defense, const char *c
 void MonsterDestructible::die(Actor *owner) {
 	//transform it into a corpse
 	//doesnt block, cant be attacked, doesnt move
-	engine.killCount++;
-	engine.gui->message(TCODColor::lightGrey,"The %s is dead! You feel a rush as it sputters its last breath.", owner->name);
+	if(owner->ch != 243){
+		engine.killCount++;
+		engine.gui->message(TCODColor::lightGrey,"The %s is dead! You feel a rush as it sputters its last breath.", owner->name);
+	}
 	engine.player->destructible->xp += xp;
 	//vendingMenu(owner);
 	if(!owner->container->inventory.isEmpty()){
