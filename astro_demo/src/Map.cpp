@@ -1125,7 +1125,7 @@ Actor *Map::createCurrencyStack(int x, int y){
 	Actor *currencyStack = new Actor(x,y,'B',"PetaBitcoins",TCODColor::yellow);
 	currencyStack->sort = 0;
 	currencyStack->blocks = false;
-	currencyStack->pickable = new Coinage(1,100);
+	currencyStack->pickable = new Coinage(1,100+75*(engine.level-1));
 	return currencyStack;
 }
 
