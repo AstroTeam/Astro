@@ -487,6 +487,11 @@ void Renderer::render(void *sdlSurface){
 					srcRect.x +=224;
 					srcRect.y = 48;
 				}
+				else if(engine.mapconDec->getChar(xM,yM) == 32)//pallet
+				{
+					srcRect.x +=240;
+					srcRect.y = 48;
+				}
 				
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 			}

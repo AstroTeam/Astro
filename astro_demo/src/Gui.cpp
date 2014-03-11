@@ -207,7 +207,21 @@ void Gui::renderKeyLook() {
 			//char c = (char)engine.map->tiles[x+y*engine.map->width].num;
 			float i = engine.map->tiles[x+y*engine.map->width].infection;
 			//strcat(buf,(char*)i);
-			engine.gui->message(TCODColor::green, "the infection level is %g",i);
+			if (i < 1)
+				engine.gui->message(TCODColor::green, "The ground you look at is free of any apparent ailment.");
+			else if (i < 2)
+				engine.gui->message(TCODColor::green, "The ground you look at has some green moss on it.");
+			else if (i < 3)
+				engine.gui->message(TCODColor::green, "The ground you look at has some odd green moss on it's surface.");
+			else if (i < 4)
+				engine.gui->message(TCODColor::green, "The ground you look at has weird moss covering it.");
+			else if (i < 5)
+				engine.gui->message(TCODColor::green, "The ground you look at has a lot of moss on it.");
+			else if (i < 6)
+				engine.gui->message(TCODColor::green, "The ground you look at is almost covered in odd green moss.");
+			else
+				engine.gui->message(TCODColor::green, "The ground you look at is completely covered in weird moss.");
+			//engine.gui->message(TCODColor::green, "the infection level is %g",i);
 			
 			strcat(buf,"You see:\n");
 		}else {

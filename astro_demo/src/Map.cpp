@@ -709,7 +709,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			
 		}
 		
-		int torch = rng->getInt(1,3);
+		int torch = rng->getInt(1,3,3);
 		for (int i = 0; i < torch;)
 		{	
 			int x = rng->getInt(x1+1,x2-1);
@@ -718,6 +718,22 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				Actor *torch = new Actor(x, y, 243, "A blowtorch.", TCODColor::white);
 				engine.mapconDec->setChar(x,y, 31);//
 				engine.actors.push(torch);
+				i++;
+			}
+			
+		}
+		
+		int pall = rng->getInt(1,4,2);
+		for (int i = 0; i < pall;)
+		{	
+			int x = rng->getInt(x1+1,x2-1);
+			int y = rng->getInt(y1+1,y2-1);
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
+				Actor *pallet = new Actor(x, y, 243, "An empty pallet.", TCODColor::white);
+				engine.mapconDec->setChar(x,y, 32);//
+				engine.actors.push(pallet);
+				pallet->blocks = false;
+				engine.sendToBack(pallet);
 				i++;
 			}
 			
