@@ -898,7 +898,7 @@ void FlareAi::update(Actor * owner)
 	
 	if (i == 0)
 	{
-		light = new Actor(owner->x,owner->y, ' ', "Flare Light", TCODColor::white);
+		light = new Actor(owner->x,owner->y, 171, "Flare Light", TCODColor::white);
 		light->ai = new LightAi(lightRange,1);
 		light->blocks = false;
 		engine.actors.push(light);
@@ -909,10 +909,12 @@ void FlareAi::update(Actor * owner)
 		i++;
 		engine.gui->message(TCODColor::orange, "Flare is burning");
 	}
-	else
+	else//DELETE ME
 	{
+		//engine.gui->message(TCODColor::orange, "Flare has burnt out");
 		//light->(LightAi)ai->onOff = false;
 		//LightAi l = (LightAi)light->ai;
+		light->ch = ' ';
 		LightAi *l = (LightAi*)light->ai;
 		l->onOff = false;
 		l->update(owner);

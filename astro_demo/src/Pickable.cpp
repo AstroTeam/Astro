@@ -269,7 +269,7 @@ bool Flare::use(Actor *owner, Actor *wearer) {
 		return false;
 	}
 	//make new actor as a flare item
-	Actor *scrollOfFlaring = new Actor(x,y,'f',"Flare", TCODColor::white);
+	Actor *scrollOfFlaring = new Actor(x,y,' ',"Flare", TCODColor::white);
 	scrollOfFlaring->ai = new FlareAi(3,5);
 	//scrollOfFlaring->sort = 2;
 	scrollOfFlaring->blocks = false;

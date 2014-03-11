@@ -49,6 +49,9 @@ void Renderer::render(void *sdlSurface){
 	SDL_Surface *itemsGlow = SDL_LoadBMP("tile_assets/alphaGlow.bmp");
 	SDL_SetAlpha( itemsGlow, SDL_SRCALPHA, alpha);
 	SDL_SetColorKey(itemsGlow,SDL_SRCCOLORKEY,255);
+	SDL_Surface *flareGlow= SDL_LoadBMP("tile_assets/alphaGlow_flare.bmp");
+	SDL_SetAlpha(flareGlow, SDL_SRCALPHA, alpha*1.25);
+	SDL_SetColorKey(flareGlow,SDL_SRCCOLORKEY,255);
 	//shadows
 	SDL_Surface *shadows = SDL_LoadBMP("tile_assets/itemShadows.bmp");
 	SDL_SetAlpha(shadows, SDL_SRCALPHA, 255*.25);
@@ -531,6 +534,48 @@ void Renderer::render(void *sdlSurface){
 				SDL_BlitSurface(shadows,&srcRect,floorMap,&dstRectOffset);
 				
 			}
+			//flare glow
+			else if (engine.mapcon->getChar(xM,yM) == 171)//this is the light itself
+			{
+				//FlareAi *l = (FlareAi*)engine.getAnyActor(xM,yM);
+				//LightAi *light = (LightAi*)l->light->ai;
+				//LightAi *l = (LightAi*)engine.getAnyActor(xM,yM)->ai;
+				//l->onOff = false;
+				//if (l->onOff)
+				//{
+				SDL_Rect srcRectTemp={0,0,48,48};
+				SDL_Rect dstRectTemp={x1*16-16,y1*16-16,48,48};
+				SDL_BlitSurface(flareGlow,&srcRectTemp,floorMap,&dstRectTemp);
+				static int wobble = 0;
+				SDL_Rect srcRectTemp2={160,160+16,16,16};
+				SDL_Rect dstRectTemp2={x1*16+wobble,y1*16,16,16};
+				SDL_BlitSurface(terminal,&srcRectTemp2,floorMap,&dstRectTemp2);
+				static bool DownW = true;
+				static int slow = 0;
+				if (slow%6 == 0)
+				{
+					if (wobble > -4 && DownW)
+					{
+						wobble--;
+						if (wobble < -4)
+							wobble = -4;
+					}
+					else if (wobble == -4 && DownW)
+					{
+						DownW = false;
+					}
+					else if (wobble < 4)
+					{
+						wobble++;;
+					}
+					else if (wobble >= 4)
+					{
+						DownW = true;
+					}
+				}	
+				slow++;
+				//}
+			}
 			
 			
 			y1++;
@@ -551,6 +596,7 @@ void Renderer::render(void *sdlSurface){
 			//float rng = myRandom->getFloat(0.0000f,1.0000f);
 			//l->flicker(actor,rng);
 		}
+		
 	}
 	
 	
@@ -709,6 +755,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(screen);
 	SDL_FreeSurface(floorTiles);
 	SDL_FreeSurface(itemsGlow);
+	SDL_FreeSurface(flareGlow);
 	SDL_FreeSurface(shadows);
 	SDL_FreeSurface(equipment);
 	SDL_FreeSurface(terminal);
