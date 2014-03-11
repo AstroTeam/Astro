@@ -156,15 +156,15 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 		"or hit escape to cancel.");
 	int x = engine.player->x;
 	int y = engine.player->y;
-	if (!engine.pickATile(&x,&y,maxRange,range -2 + wearer->totalIntel /4)) {
+	if (!engine.pickATile(&x,&y,maxRange, (wearer->totalIntel - 1) /3 +1)) {
 		return false;
 	}
 	//burn everything in range, including the player
-	engine.gui->message(TCODColor::orange, "The fireball explodes, burning everything within %g tiles!",range + wearer->totalIntel /4);
+	engine.gui->message(TCODColor::orange, "The fireball explodes, burning everything within %g tiles!",1 + (wearer->totalIntel - 1) /3);
 	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
 		Actor *actor = *it;
 		if (actor->destructible && !actor->destructible->isDead()
-			&&actor->getDistance(x,y) <= range + wearer->totalIntel /4) {
+			&&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) {
 			float damageTaken = actor->destructible->takeDamage(actor, 2 * wearer->totalIntel);
 			engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
