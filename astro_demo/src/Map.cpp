@@ -570,7 +570,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					}
 					else if (n == 2)
 					{
-						desk->name = "A desk with strew papers about";
+						desk->name = "A desk with strewn papers about";
 					}
 					else if (n == 3)
 					{
@@ -707,7 +707,21 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				i++;
 			}
 			
-		}	
+		}
+		
+		int torch = rng->getInt(1,3);
+		for (int i = 0; i < torch;)
+		{	
+			int x = rng->getInt(x1+1,x2-1);
+			int y = rng->getInt(y1+1,y2-1);
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
+				Actor *torch = new Actor(x, y, 243, "A blowtorch.", TCODColor::white);
+				engine.mapconDec->setChar(x,y, 31);//
+				engine.actors.push(torch);
+				i++;
+			}
+			
+		}
 	}
 
 	/*

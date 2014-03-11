@@ -445,77 +445,47 @@ void Renderer::render(void *sdlSurface){
 					srcRect.y += 32;
 				}
 				////////////////////////////////////////////////////////////////////////GENERATORS
-				else if(engine.mapconDec->getChar(xM,yM) == 25)//jerry rigged tile
-				{
-					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white && engine.map->tileType(xM,yM) == 4){
 						//light
-						srcRect.x=224;
-						srcRect.y = 0;
-					}else{
+						srcRect.x=0;
+				}else if (engine.map->tileType(xM,yM) == 4){
 						//dark
-						srcRect.x=224+32;
-						srcRect.y = 0;
-					}
+						srcRect.x=32;
+				}
+				if(engine.mapconDec->getChar(xM,yM) == 25)//jerry rigged tile
+				{
+					srcRect.x +=224;
+					srcRect.y = 0;
 				}
 				else if(engine.mapconDec->getChar(xM,yM) == 26)//danger sign
 				{
-					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
-						//light
-						srcRect.x=224+16;
-						srcRect.y = 0;
-					}else{
-						//dark
-						srcRect.x=224+16+32;
-						srcRect.y = 0;
-					}
+					srcRect.x +=240;
+					srcRect.y = 0;
 				}
 				else if(engine.mapconDec->getChar(xM,yM) == 27)//cables
 				{
-					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
-						//light
-						srcRect.x=224;
-						srcRect.y = 16;
-					}else{
-						//dark
-						srcRect.x=224+32;
-						srcRect.y = 16;
-					}
+					srcRect.x +=224;
+					srcRect.y = 16;
 				}
 				else if(engine.mapconDec->getChar(xM,yM) == 28)//oil drum
 				{
-					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
-						//light
-						srcRect.x=224+16;
-						srcRect.y = 16;
-					}else{
-						//dark
-						srcRect.x=224+32+16;
-						srcRect.y = 16;
-					}
+					srcRect.x +=240;
+					srcRect.y = 16;
 				}
 				else if(engine.mapconDec->getChar(xM,yM) == 29)//generator
 				{
-					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
-						//light
-						srcRect.x=224;
-						srcRect.y = 32;
-					}else{
-						//dark
-						srcRect.x=224+32;
-						srcRect.y = 32;
-					}
+					srcRect.x +=224;
+					srcRect.y = 32;
 				}
 				else if(engine.mapconDec->getChar(xM,yM) == 30)//console
 				{
-					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
-						//light
-						srcRect.x=224+16;
-						srcRect.y = 32;
-					}else{
-						//dark
-						srcRect.x=224+32+16;
-						srcRect.y = 32;
-					}
+					srcRect.x +=240;
+					srcRect.y = 32;
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 31)//blowtorch
+				{
+					srcRect.x +=224;
+					srcRect.y = 48;
 				}
 				
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
