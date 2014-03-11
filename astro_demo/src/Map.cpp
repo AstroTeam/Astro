@@ -652,25 +652,51 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	}
 	if (room->type == GENERATOR) {
 		cout << "Gen room Made" << endl;
-		Actor * generator = new Actor(x1+1,y1+1,'G',"a generator", TCODColor::white);
+		Actor * generator = new Actor(x1+1,y1+1,243,"A floor tile that has been jerry rigged to accept a generator.", TCODColor::white);
+		engine.mapconDec->setChar(x1+1,y1+1, 25);//
 		engine.actors.push(generator);
-		Actor * generator1 = new Actor(x1+2,y1+1,'G',"a generator", TCODColor::white);
+		generator->blocks = false;
+		engine.sendToBack(generator);
+		Actor * generator1 = new Actor(x1+2,y1+1,243,"A danger sign and a small toolbox.", TCODColor::white);
+		engine.mapconDec->setChar(x1+2,y1+1, 26);//
 		engine.actors.push(generator1);
-		Actor * generator2 = new Actor(x1+1,y1+2,'G',"a generator", TCODColor::white);
+		generator1->blocks = false;
+		engine.sendToBack(generator1);
+		Actor * generator2 = new Actor(x1+1,y1+2,243,"A bundle of cables.", TCODColor::white);
+		engine.mapconDec->setChar(x1+1,y1+2, 27);//
 		engine.actors.push(generator2);
-		Actor * generator3 = new Actor(x1+2,y1+2,'G',"a generator", TCODColor::white);
-		engine.actors.push(generator3);
-		Actor * generator4 = new Actor(x1+1,y1+3,'G',"a generator", TCODColor::white);
+		generator2->blocks = false;
+		engine.sendToBack(generator2);
+		//Actor * generator3 = new Actor(x1+2,y1+2,'G',"a generator", TCODColor::white);
+		//engine.actors.push(generator3);
+		Actor * generator4 = new Actor(x1+1,y1+3,243,"A portable generator.", TCODColor::white);
+		engine.mapconDec->setChar(x1+1,y1+3, 29);//
 		engine.actors.push(generator4);
-		Actor * generator5 = new Actor(x1+2,y1+3,'G',"a generator", TCODColor::white);
+		Actor * generator5 = new Actor(x1+2,y1+3,243,"A generator control console.", TCODColor::white);
+		engine.mapconDec->setChar(x1+2,y1+3, 30);//
 		engine.actors.push(generator5);
-		//add large generators, animated
-		//add workbench
-		//add wrenchs
-		//add oil cans
+		//add large generators, animated - done
+		//add workbench                  - done
+		//add wrenchs             
+		//add oil cans                   - done
 		//add danger sign?
 		//electric infected crewmember
-		
+		int rmSze = (x2 - x1) * (y2 - y1);
+		int numDrums = rmSze/20;
+		if (numDrums <= 0)
+			numDrums = 1;
+		for (int i = 0; i < numDrums;)
+		{	
+			int x = rng->getInt(x1+1,x2-1);
+			int y = rng->getInt(y1+1,y2-1);
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
+				Actor *Drum = new Actor(x, y, 243, "A gasoline drum.", TCODColor::white);
+				engine.mapconDec->setChar(x,y, 28);//
+				engine.actors.push(Drum);
+				i++;
+			}
+			
+		}	
 	}
 
 	/*
@@ -696,7 +722,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			//int y = (y1+y2)/2;
 			int x = rng->getInt(x1+1,x2-1);
 			int y = rng->getInt(y1+1,y2-1);
-			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y)) {
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
 				Actor *light = new Actor(x, y, 224, "An hastily erected Emergency Light", TCODColor::white);
 				//4,1 = standard light, radius, flkr
 				TCODRandom *myRandom = new TCODRandom();

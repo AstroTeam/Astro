@@ -444,6 +444,79 @@ void Renderer::render(void *sdlSurface){
 					srcRect.x=208;
 					srcRect.y += 32;
 				}
+				////////////////////////////////////////////////////////////////////////GENERATORS
+				else if(engine.mapconDec->getChar(xM,yM) == 25)//jerry rigged tile
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.x=224;
+						srcRect.y = 0;
+					}else{
+						//dark
+						srcRect.x=224+32;
+						srcRect.y = 0;
+					}
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 26)//danger sign
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.x=224+16;
+						srcRect.y = 0;
+					}else{
+						//dark
+						srcRect.x=224+16+32;
+						srcRect.y = 0;
+					}
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 27)//cables
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.x=224;
+						srcRect.y = 16;
+					}else{
+						//dark
+						srcRect.x=224+32;
+						srcRect.y = 16;
+					}
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 28)//oil drum
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.x=224+16;
+						srcRect.y = 16;
+					}else{
+						//dark
+						srcRect.x=224+32+16;
+						srcRect.y = 16;
+					}
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 29)//generator
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.x=224;
+						srcRect.y = 32;
+					}else{
+						//dark
+						srcRect.x=224+32;
+						srcRect.y = 32;
+					}
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 30)//console
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.x=224+16;
+						srcRect.y = 32;
+					}else{
+						//dark
+						srcRect.x=224+32+16;
+						srcRect.y = 32;
+					}
+				}
 				
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 			}
