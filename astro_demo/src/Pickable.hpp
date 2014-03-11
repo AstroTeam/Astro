@@ -1,7 +1,7 @@
 class Pickable : public Persistent {
 public:
 	enum PickableType {
-		NONE, HEALER, CHARGER, LIGHTNING_BOLT, CONFUSER, FIREBALL, EQUIPMENT, FLARE
+		NONE, HEALER, CHARGER, LIGHTNING_BOLT, CONFUSER, FIREBALL, EQUIPMENT, FLARE, CURRENCY
 	};
 	bool stacks;
 	int stackSize;
@@ -11,6 +11,13 @@ public:
 	virtual bool use(Actor *owner, Actor *wearer);
 	void drop(Actor *owner, Actor *wearer, bool isNPC = false);
 	static Pickable *create(TCODZip &zip);
+};
+
+class Coinage: public Pickable {
+public: 
+	Coinage(bool stacks = true, int stackSize = 100, PickableType type = CURRENCY);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
 };
 
 class Healer: public Pickable {

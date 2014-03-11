@@ -118,7 +118,9 @@ void Gui::render() {
 	
 	//display FPS
 	sidebar->print(3,23,"FPS : %d",TCODSystem::getFps());
-
+	
+	//display wallet amount
+	sidebar->print(3,25,"Wallet : %d",engine.player->container->wallet);
 
 	//mouse look
 	//renderMouseLook();

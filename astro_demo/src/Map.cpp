@@ -312,7 +312,7 @@ void Map::addMonster(int x, int y) {
 void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,235);
+	int dice = rng->getInt(0,335);
 	if (dice < 40) {
 		//create a health potion
 		Actor *healthPotion = createHealthPotion(x,y);
@@ -348,11 +348,16 @@ void Map::addItem(int x, int y, RoomType roomType) {
 		Actor *batteryPack = createBatteryPack(x,y);
 		engine.actors.push(batteryPack);
 		engine.sendToBack(batteryPack);
-	}else {
+	}else if(dice< 40+40+40+15+15+5+40+40){
 		//create a scroll of confusion
 		Actor *scrollOfConfusion = createFlashBang(x,y);
 		engine.actors.push(scrollOfConfusion);
 		engine.sendToBack(scrollOfConfusion);
+	}
+	else {
+		Actor *stackOfMoney = createCurrencyStack(x,y);
+		engine.actors.push(stackOfMoney);
+		engine.sendToBack(stackOfMoney);
 	}
 }
 
@@ -1086,6 +1091,14 @@ void Map::generateRandom(Actor *owner, int ascii){
 		}
 	}
 }
+Actor *Map::createCurrencyStack(int x, int y){
+	Actor *currencyStack = new Actor(x,y,'B',"PetaBitcoins",TCODColor::yellow);
+	currencyStack->sort = 0;
+	currencyStack->blocks = false;
+	currencyStack->pickable = new Coinage(1,100);
+	return currencyStack;
+}
+
 Actor *Map::createHealthPotion(int x,int y){
 	Actor *healthPotion = new Actor(x,y,184,"Medkit", TCODColor::white);
 	healthPotion->sort = 1;

@@ -8,6 +8,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 	PickableType type = (PickableType)zip.getInt();
 	Pickable *pickable = NULL;
 	switch(type) {
+		case CURRENCY: pickable = new Coinage(0); break;
 		case HEALER: pickable = new Healer(0); break;
 		case CHARGER: pickable = new Charger(0); break;
 		case LIGHTNING_BOLT: pickable = new LightningBolt(0,0); break;
@@ -38,6 +39,21 @@ bool Pickable::use(Actor *owner, Actor *wearer) {
 		owner->pickable->stackSize -= 1;
 	}
 	return false;
+}
+
+Coinage::Coinage(bool stacks, int stackSize, PickableType type)
+	: Pickable(stacks, stackSize, type) {
+}
+
+void Coinage::load(TCODZip &zip) {
+	stacks = zip.getInt();
+	stackSize = zip.getInt();
+}
+
+void Coinage::save(TCODZip &zip) {
+	zip.putInt(type);
+	zip.putInt(stacks);
+	zip.putInt(stackSize);
 }
 
 Healer::Healer(float amount, bool stacks, int stackSize, PickableType type)
@@ -296,6 +312,7 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 			PickableType type = owner->pickable->type;
 			owner->pickable->stackSize -= numberDropped;
 			switch(type) {
+				case CURRENCY: break;
 				case HEALER: droppy->pickable = new Healer(((Healer*)owner->pickable)->amount); droppy->sort = 1; break;
 				case CHARGER: droppy->pickable = new Charger(((Charger*)owner->pickable)->amount); droppy->sort = 1; break;
 				case LIGHTNING_BOLT: droppy->pickable = new LightningBolt(((LightningBolt*)(owner->pickable))->range,((LightningBolt*)(owner->pickable))->damage); droppy->sort = 2; break;

@@ -63,6 +63,7 @@ public:
 	int tileType(int x, int y);
 	//int tileInf(int x, int y);
 	
+	Actor *createCurrencyStack(int x, int y);
 	Actor *createHealthPotion(int x, int y);
 	Actor *createBatteryPack(int x, int y);
 	Actor *createFlashBang(int x, int y);
