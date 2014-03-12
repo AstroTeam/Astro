@@ -64,6 +64,7 @@ void Destructible::die(Actor *owner) {
 	//transform the actor into a corpse
 	//check who owner was to decide what corpse they get
 	//if spore creature they get spore body
+	
 	if (owner->ch == 165){
 		owner->ch = 162;
 		owner->blocks = false;
@@ -102,6 +103,30 @@ void MonsterDestructible::die(Actor *owner) {
 	}
 	engine.player->destructible->xp += xp;
 	//vendingMenu(owner);
+	if(!owner->container->inventory.isEmpty()){
+		Actor **iterator=owner->container->inventory.begin();
+		for(int i = 0; i < owner->container->size; i++){
+			if(owner->container->inventory.isEmpty()){
+				break;
+			}
+			Actor *actor = *iterator;
+			if(actor){
+				actor->pickable->drop(actor,owner,true);
+			}
+			
+			if(iterator != owner->container->inventory.end())
+			{
+				++iterator;
+			}
+		}
+	}
+	Destructible::die(owner);
+}
+
+void MonsterDestructible::suicide(Actor *owner) {
+	//transform it into a corpse
+	//doesnt block, cant be attacked, doesnt move
+	hp = 0;
 	if(!owner->container->inventory.isEmpty()){
 		Actor **iterator=owner->container->inventory.begin();
 		for(int i = 0; i < owner->container->size; i++){

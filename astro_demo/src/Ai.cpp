@@ -1075,13 +1075,34 @@ void TechAi::update(Actor *owner) {
 		moveCount--;
 	}
 	if (moveCount > 0) 
-	{
-		moveOrAttack(owner, engine.player->x, engine.player->y);
-			
-	} else 
-	{
-		moveCount = 0;
-	}
+	{	
+			if(!berserk)
+				moveOrAttack(owner, engine.player->x, engine.player->y);
+			else //berserk case, so you need to get the closest monster/player
+			{
+				Actor *closest = NULL;
+				float bestDistance = 1E6f;
+				for (Actor **iterator = engine.actors.begin(); iterator != engine.actors.end(); iterator++) 
+				{
+					Actor *actor = *iterator;
+					if (actor->destructible && !actor->destructible->isDead() && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24) //243 = locker
+					{
+						float distance = actor->getDistance(owner->x,owner->y);
+						if (distance < bestDistance && (distance <= range || range ==0.0f)) 
+						{
+							bestDistance = distance;
+							closest = actor;
+						}
+					}
+				}
+				
+				if(closest)
+					moveOrAttack(owner, closest->x, closest->y);
+			}
+				
+		} 
+		else 
+			moveCount = 0;
 }
 void TechAi::moveOrAttack(Actor *owner, int targetx, int targety)
 {
@@ -1106,20 +1127,43 @@ void TechAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		if (owner->oozing) {
 			engine.map->infectFloor(owner->x, owner->y);
 		}
-	//distance <= 1 or (distance <= range && numEmpGrenades > 0)
-	//distance <= range && (distance <= 1 or numEmpGrenades > 0)
-	} else if (distance > 1 && distance <= range && owner->attacker && numEmpGrenades > 0) 
+	} else if (distance > 1 && distance <= range && owner->attacker && numEmpGrenades > 0 && !berserk) 
 	{
-	
+		TCODRandom *rng = TCODRandom::getInstance();
+		//Grenadiers will go berserk and attack the nearest monster or the player 15% of the time or whenever they have one grenade left
+		//The damage done is proportion to the number of grenades left
+		if(rng->getInt(0,100) < 15 || numEmpGrenades == 1)
+		{
+			berserk = true;
+			numEmpGrenades = -1*numEmpGrenades;
+			engine.gui->message(TCODColor::red,"The %s is going berserk!",owner->name);
+		}
+		else
+		{
 			float damageTaken = engine.player->destructible->takeDamage(engine.player, -3 + 3 * owner->totalIntel);
 			numEmpGrenades--;
 			engine.gui->message(TCODColor::red,"The %s uses an EMP Grenade on the player for %g hit points!",owner->name, damageTaken);
 			engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDefense);
+		}
+
 		
-	}else if (owner->attacker) {
+	}else if (owner->attacker && !berserk) { //grenadier will melee attack if up close
 		owner->attacker->attack(owner,engine.player);
 		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
-	}
+	}else if(owner->attacker && berserk)
+	{
+		Actor *actor = engine.getActor(targetx,targety);
+		if(owner->destructible->isDead() || actor->destructible->isDead())
+			return;
+		float damageTaken = actor->destructible->takeDamage(actor, -1*numEmpGrenades*(-3 + 3 * owner->totalIntel));
+		engine.gui->message(TCODColor::red, "The %s kamakazes on the %s for %g hit points!",owner->name,actor->name, damageTaken);
+		if(actor == engine.player)
+			engine.damageReceived += -1*numEmpGrenades*(3 * owner->totalIntel - 3 - engine.player->destructible->totalDefense);
+			
+		MonsterDestructible* md = (MonsterDestructible*) owner->destructible;
+		md->suicide(owner);
+		
+	}	
 	
 }
 
