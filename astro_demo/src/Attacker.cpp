@@ -25,7 +25,21 @@ void Attacker::save(TCODZip &zip) {
 
 void Attacker::attack(Actor *owner, Actor *target) {
 	if (target->destructible && !target->destructible->isDead() ) {
-		float damageTaken = totalPower - target->destructible->totalDefense;
+		//hit chance calculator
+		int roll = TCODRandom::getInstance()->getInt(1,20);
+		int attackRoll = roll + owner->totalStr;
+		float damageTaken;
+		if(roll >= 20){
+			engine.gui->message(TCODColor::red,"CRITICAL HIT!");
+			damageTaken = (2 * totalPower) - target->destructible->totalDefense;
+		}
+		else if(roll <= 1){
+			engine.gui->message(TCODColor::lightGrey,"critical miss...");
+			damageTaken = 0;
+		}
+		else{
+			damageTaken = totalPower - target->destructible->totalDefense;
+		}
 		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
 			if (owner->oozing && target->susceptible) {
 				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name,damageTaken + 1);
