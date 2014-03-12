@@ -1,10 +1,11 @@
+<<<<<<< HEAD
 class Ai : public Persistent {
 public:
 	TCODConsole *inventoryScreen;
 	
 	virtual void update(Actor *owner) = 0;
 	static Ai *create(TCODZip &zip);
-	Actor *choseFromInventory(Actor *owner, int type);
+	Actor *choseFromInventory(Actor *owner, int type, bool isVend);
 protected:
 	enum AiType {
 		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED, LIGHT, FLARE
@@ -24,7 +25,7 @@ public:
 protected:
 	bool moveOrAttack(Actor *owner, int targetx, int targety);
 	void handleActionKey(Actor *owner, int ascii);
-	Actor *choseFromInventory(Actor *owner, int type);
+	Actor *choseFromInventory(Actor *owner, int type, bool isVend);
 	void displayCharacterInfo(Actor *owner);
 };
 
@@ -36,7 +37,6 @@ public:
 	void update(Actor *owner);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
-	Actor *choseFromInventory(Actor *owner, int type);
 protected:
 	int moveCount;
 	

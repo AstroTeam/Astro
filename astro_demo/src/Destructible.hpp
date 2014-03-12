@@ -28,7 +28,6 @@ public:
 	MonsterDestructible(float maxHp, float defense, const char *corpseName, int xp);
 	void die (Actor *owner);
 	void save(TCODZip &zip);
-	void vendingMenu(Actor *owner);
 };
 
 class PlayerDestructible : public Destructible {

@@ -37,6 +37,7 @@ bool Pickable::use(Actor *owner, Actor *wearer) {
 		return true;
 	} else {
 		owner->pickable->stackSize -= 1;
+		return true;
 	}
 	return false;
 }
