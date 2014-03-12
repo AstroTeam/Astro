@@ -17,7 +17,7 @@ Ai *Ai::create(TCODZip &zip) {
 	ai->load(zip);
 	return ai;
 }
-Actor *Ai::choseFromInventory(Actor *owner,int type) {
+Actor *Ai::choseFromInventory(Actor *owner,int type, bool isVend) {
 	static const int INVENTORY_WIDTH = 38;
 	static const int INVENTORY_HEIGHT = 28;
 	inventoryScreen = new TCODConsole(INVENTORY_WIDTH, INVENTORY_HEIGHT);
@@ -48,9 +48,15 @@ Actor *Ai::choseFromInventory(Actor *owner,int type) {
 		}
 	}
 	//blit the inventory console on the root console
-	TCODConsole::blit(inventoryScreen,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
-		TCODConsole::root, engine.screenWidth/2 - INVENTORY_WIDTH/2,
-		engine.screenHeight/2 - INVENTORY_HEIGHT/2 + 1);
+	if(isVend){
+		TCODConsole::blit(inventoryScreen,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
+			TCODConsole::root, engine.screenWidth/2 - INVENTORY_WIDTH/2 + 20,
+			engine.screenHeight/2 - INVENTORY_HEIGHT/2 - 3);
+	}else{
+		TCODConsole::blit(inventoryScreen,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
+			TCODConsole::root, engine.screenWidth/2 - INVENTORY_WIDTH/2,
+			engine.screenHeight/2 - INVENTORY_HEIGHT/2 + 1);
+	}
 	TCODConsole::flush();
 	
 	//wait for a key press
@@ -261,33 +267,39 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 			Actor *actor;
 			bool choice = true;
+			bool itemUsed = true;
 			while (engine.invState != 4){
 				TCODConsole::flush();
 			}
 			//TCODConsole::root->clear();
 			
 			while(choice){
-			
 			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 			//TCODConsole::root->clear();
 				switch (menuItem) {
 					case Menu::ITEMS :
-						actor = choseFromInventory(owner,1);
-						if(actor)
-							choice = false;
-						break;
+						itemUsed = true;
+						while(itemUsed){
+							actor = choseFromInventory(owner,1,false);
+							if(actor){
+								itemUsed = actor->pickable->use(actor,owner);
+							}else{
+								itemUsed = false;
+							}
+						}
+					break;
 					case Menu::TECH :
-						actor = choseFromInventory(owner,2);
+						actor = choseFromInventory(owner,2,false);
 						if(actor)
 							choice = false;
 						break;
 					case Menu::ARMOR:
-						actor = choseFromInventory(owner,3);
+						actor = choseFromInventory(owner,3,false);
 						if(actor)
 							choice = false;
 						break;
 					case Menu::WEAPONS:
-						actor = choseFromInventory(owner,4);
+						actor = choseFromInventory(owner,4,false);
 						if(actor)
 							choice = false;
 						break;
@@ -302,7 +314,6 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			engine.invState = 0;
 			engine.invFrames = 0;
 			if (actor) {
-				
 				bool used;
 				used = actor->pickable->use(actor,owner);
 				if (used) {
@@ -332,22 +343,22 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 				switch (menuItem) {
 					case Menu::ITEMS :
-						actor = choseFromInventory(owner,1);
+						actor = choseFromInventory(owner,1,false);
 						if(actor)
 							choice = false;
 						break;
 					case Menu::TECH :
-						actor = choseFromInventory(owner,2);
+						actor = choseFromInventory(owner,2,false);
 						if(actor)
 							choice = false;
 						break;
 					case Menu::ARMOR:
-						actor = choseFromInventory(owner,3);
+						actor = choseFromInventory(owner,3,false);
 						if(actor)
 							choice = false;
 						break;
 					case Menu::WEAPONS:
-						actor = choseFromInventory(owner,4);
+						actor = choseFromInventory(owner,4,false);
 						if(actor)
 							choice = false;
 						break;
@@ -460,7 +471,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 	}
 }
 
-Actor *PlayerAi::choseFromInventory(Actor *owner,int type) {
+Actor *PlayerAi::choseFromInventory(Actor *owner,int type, bool isVend) {
 	static const int INVENTORY_WIDTH = 38;
 	static const int INVENTORY_HEIGHT = 28;
 	inventoryScreen = new TCODConsole(INVENTORY_WIDTH, INVENTORY_HEIGHT);
@@ -663,62 +674,7 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	}
 	
 }
-Actor *MonsterAi::choseFromInventory(Actor *owner,int type) {
-	static const int INVENTORY_WIDTH = 38;
-	static const int INVENTORY_HEIGHT = 28;
-	inventoryScreen = new TCODConsole(INVENTORY_WIDTH, INVENTORY_HEIGHT);
-	
-	//display the inventory frame
-	inventoryScreen->setDefaultForeground(TCODColor(100,180,250));
-	inventoryScreen->printFrame(0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,true,TCOD_BKGND_DEFAULT);
-	
-	//display the items with their keyboard shortcut
-	inventoryScreen->setDefaultForeground(TCODColor::white);
-	int shortcut = 'a';
-	int y = 1;
-	for (Actor **it = owner->container->inventory.begin();
-		it != owner->container->inventory.end(); it++) {
-		Actor *actor = *it;
-		if(actor->sort == type){
-			if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
-				inventoryScreen->print(2,y,"(%c) %s(E)",shortcut,actor->name);
-			}else{
-				inventoryScreen->print(2,y,"(%c) %s",shortcut,actor->name);
-			}
-			owner->container->select[shortcut] = actor->name;
-			if (actor->pickable->stacks) {
-				inventoryScreen->print(17, y, "(%d)",actor->pickable->stackSize);
-			}
-			y++;
-			shortcut++;
-		}
-	}
-	//blit the inventory console on the root console
-	TCODConsole::blit(inventoryScreen,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
-		TCODConsole::root, engine.screenWidth/2 - INVENTORY_WIDTH/2,
-		engine.screenHeight/2 - INVENTORY_HEIGHT/2 + 1);
-	TCODConsole::flush();
-	
-	//wait for a key press
-	TCOD_key_t key;
-	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
-	
-	if (key.vk == TCODK_CHAR) {
-		if(owner->container->select[key.c]){
-			int index = 0;
-			for(Actor **it = owner->container->inventory.begin(); it != owner->container->inventory.end(); ++it){
-				Actor *actor = *it;
-				if((index >= key.c - 'a') && strcmp(actor->name,owner->container->select[key.c]) == 0){
-					engine.gui->message(TCODColor::grey, "You picked the %s",actor->name);
-					owner->container->select.clear();
-					return actor;
-				}
-				index++;
-			}
-		}
-	}
-	return NULL;
-}
+
 
 EpicenterAi::EpicenterAi() {
 }

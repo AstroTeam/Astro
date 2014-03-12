@@ -42,6 +42,7 @@ public:
 		MAIN,
 		PAUSE,
 		INVENTORY,
+		VENDING,
 		CLASS_MENU,
 		CLASS_SELECT
 	};
@@ -109,7 +110,7 @@ public:
 	void clear();
 	void classSidebar();
 	void vendingSidebar();
-	
+	Actor *vendingMenu(Actor *owner);
 protected:
 	TCODConsole *con;
 	TCODConsole *sidebar;
