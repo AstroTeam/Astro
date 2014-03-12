@@ -650,6 +650,7 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {   //need to 
 		{
 			if ((player->getDistance(*x,*y) > maxRange && maxRange != 0)) {
 				gui->message(TCODColor::pink,"this tile is out of range!");
+				return false;
 			} else {
 				return true;
 			}

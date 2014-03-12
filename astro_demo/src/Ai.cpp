@@ -395,7 +395,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,3);
 				if (!closestMonster) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
-					//return false;
+					return;
 				}
 				//hit the closest monster for <damage> hit points;
 				else{
@@ -423,13 +423,13 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				int x = engine.player->x;
 				int y = engine.player->y;
 				if (!engine.pickATile(&x, &y, 3)) {
-					engine.gui->message(TCODColor::lightGrey, "You can't shoot that far.");
-					//return false;
+					//engine.gui->message(TCODColor::lightGrey, "You can't shoot that far.");
+					return;
 				}
 				Actor *actor = engine.getActor(x,y);
 				if (!actor) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy at that location.");
-					//return false;
+					return;
 				}
 				/*if (!closestMonster) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
