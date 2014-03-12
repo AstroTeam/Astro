@@ -101,7 +101,10 @@ void MonsterDestructible::die(Actor *owner) {
 		engine.gui->message(TCODColor::lightGrey,"The %s is dead! You feel a rush as it sputters its last breath.", owner->name);
 	}
 	engine.player->destructible->xp += xp;
+	
+	//Makes Vending UI appear upon monster death (For Testing Purposes Only)
 	//engine.gui->vendingMenu(owner);
+	
 	if(!owner->container->inventory.isEmpty()){
 		Actor **iterator=owner->container->inventory.begin();
 		for(int i = 0; i < owner->container->size; i++){
