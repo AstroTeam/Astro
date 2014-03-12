@@ -338,34 +338,7 @@ void Gui::tileInfoMessage(const TCODColor &col, const char *text, ...) {
 			//detect the EOL
 			lineEnd = strchr(lineBegin,'\n');
 			
-			if (lineEnd) {
-				if(lineEnd - lineBegin > TILE_INFO_WIDTH - 2){
-					char temp = *(lineBegin + TILE_INFO_WIDTH - 2);
-					if(temp != ' ') {
-						*(lineBegin + TILE_INFO_WIDTH - 2) = '\0';
-						lineEnd = strrchr(lineBegin, ' ');
-						*(lineBegin + TILE_INFO_WIDTH - 2) = temp;
-					}
-					else{
-						lineEnd = lineBegin + TILE_INFO_WIDTH - 2;
-					}
-				}
-				*lineEnd = '\0';
-			}
-			else{
-				if(strlen(lineBegin) > TILE_INFO_WIDTH - 2){
-					char temp = *(lineBegin + TILE_INFO_WIDTH - 2);
-					if(temp != ' ') {
-						*(lineBegin + TILE_INFO_WIDTH - 2) = '\0';
-						lineEnd = strrchr(lineBegin, ' ');
-						*(lineBegin + TILE_INFO_WIDTH - 2) = temp;
-					}
-					else{
-						lineEnd = lineBegin + TILE_INFO_WIDTH - 2;
-					}
-					*lineEnd = '\0';
-				}
-			}
+			lineEnd = wrapText(lineBegin, lineEnd, TILE_INFO_WIDTH - 2);
 
 			Message *msg = new Message(lineBegin, col);
 			tileInfoLog.push(msg);
@@ -373,6 +346,40 @@ void Gui::tileInfoMessage(const TCODColor &col, const char *text, ...) {
 			//go to the next line
 			lineBegin = lineEnd + 1;
 		} while (lineEnd);
+
+}
+
+char* Gui::wrapText(char* lineBegin, char* lineEnd, int maxLength) {
+	
+	if(lineEnd){
+		if(lineEnd - lineBegin > maxLength){
+			char temp = *(lineBegin + maxLength);
+			if(temp != ' ') {
+				*(lineBegin + maxLength) = '\0';
+				lineEnd = strrchr(lineBegin, ' ');
+				*(lineBegin + maxLength) = temp;
+			}
+			else{
+				lineEnd = lineBegin + maxLength;
+			}
+		}
+		*lineEnd = '\0';
+	}
+	else{
+		if(strlen(lineBegin) > (unsigned)maxLength){
+			char temp = *(lineBegin + maxLength);
+			if(temp != ' ') {
+				*(lineBegin + maxLength) = '\0';
+				lineEnd = strrchr(lineBegin, ' ');
+				*(lineBegin + maxLength) = temp;
+			}
+			else{
+				lineEnd = lineBegin + maxLength;
+			}
+			*lineEnd = '\0';
+		}
+	}
+	return lineEnd;
 
 }
 
@@ -387,6 +394,7 @@ void Gui::message(const TCODColor &col, const char *text, ...) {
 	char *lineBegin = buf;
 	char *lineEnd;
 	
+	
 	/*//uncomment the lines below if you want a space between each message
 	Message *space = new Message("\n",col);
 	log.push(space);
@@ -399,38 +407,12 @@ void Gui::message(const TCODColor &col, const char *text, ...) {
 			delete toRemove;
 		}
 		
-		//detect the EOL
+		//detect the EOL	
 		lineEnd = strchr(lineBegin,'\n');
 		
-		if (lineEnd) {
-			if(lineEnd - lineBegin > CON_WIDTH - 2){
-				char temp = *(lineBegin + CON_WIDTH - 2);
-				if(temp != ' ') {
-					*(lineBegin + CON_WIDTH - 2) = '\0';
-					lineEnd = strrchr(lineBegin, ' ');
-					*(lineBegin + CON_WIDTH - 2) = temp;
-				}
-				else{
-					lineEnd = lineBegin + CON_WIDTH - 2;
-				}
-			}
-			*lineEnd = '\0';
-		}
-		else{
-			if(strlen(lineBegin) > CON_WIDTH - 2){
-				char temp = *(lineBegin + CON_WIDTH - 2);
-				if(temp != ' ') {
-					*(lineBegin + CON_WIDTH - 2) = '\0';
-					lineEnd = strrchr(lineBegin, ' ');
-					*(lineBegin + CON_WIDTH - 2) = temp;
-				}
-				else{
-					lineEnd = lineBegin + CON_WIDTH - 2;
-				}
-				*lineEnd = '\0';
-			}
-		}
-
+		//send in lineBegin, return lineEnd. magic will happen
+		lineEnd = wrapText(lineBegin, lineEnd, CON_WIDTH - 2);
+		
 		//add a new message to the log
 		Message *msg = new Message(lineBegin,col);
 		log.push(msg);
