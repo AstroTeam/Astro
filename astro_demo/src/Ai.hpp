@@ -56,6 +56,22 @@ class RangedAi : public Ai
 		void moveOrAttack(Actor *owner, int targetx, int targety);
 };
 
+
+class TechAi : public Ai
+{
+	public:
+		TechAi();
+		void update(Actor *owner);
+		void load(TCODZip &zip);
+		void save(TCODZip &zip);
+		bool berserk; //need to save this
+	protected:
+		int moveCount;
+		int range; //range
+		int numEmpGrenades;
+		void moveOrAttack(Actor *owner, int targetx, int targety);
+};
+
 class EpicenterAi : public Ai {
 public:
 	EpicenterAi();
