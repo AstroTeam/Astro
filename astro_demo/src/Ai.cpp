@@ -1193,8 +1193,10 @@ void TechAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		Actor *actor = engine.getActor(targetx,targety);
 		if(owner->destructible->isDead() || actor->destructible->isDead())
 			return;
+			
+		const char* name = actor->name;
 		float damageTaken = actor->destructible->takeDamage(actor, -1*numEmpGrenades*(-3 + 3 * owner->totalIntel));
-		engine.gui->message(TCODColor::red, "The %s kamakazes on the %s for %g hit points!",owner->name,actor->name, damageTaken);
+		engine.gui->message(TCODColor::red, "The %s kamakazes on the %s for %g hit points!",owner->name,name, damageTaken);
 		if(actor == engine.player)
 			engine.damageReceived += -1*numEmpGrenades*(3 * owner->totalIntel - 3 - engine.player->destructible->totalDefense);
 			
