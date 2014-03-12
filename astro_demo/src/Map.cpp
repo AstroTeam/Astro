@@ -803,19 +803,19 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				{
 					rng2 = myRandom->getFloat(0.9000f,0.9900f,0.9500f);
 					light->name = "An flickering hastily erected Emergency Light";
-					engine.gui->message(TCODColor::red, "flickering %d",chance);
+					//engine.gui->message(TCODColor::red, "flickering %d",chance);
 				}
 				else if (chance >= 10)
 				{
 					rng2 = myRandom->getFloat(0.9000f,0.9900f,0.9500f);
 					light->name = "A broken Emergency Light";
 					broke = true;
-					engine.gui->message(TCODColor::red, "broken %d",chance);
+					//engine.gui->message(TCODColor::red, "broken %d",chance);
 				}
 				else
 				{
 					rng2 = 1;
-					engine.gui->message(TCODColor::red, "fine %d",chance);
+					//engine.gui->message(TCODColor::red, "fine %d",chance);
 				}
 				light->ai = new LightAi(rng->getInt(3,6),rng2);
 				if (broke)
