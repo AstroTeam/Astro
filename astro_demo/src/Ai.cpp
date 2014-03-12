@@ -921,18 +921,31 @@ void LightAi::update(Actor * owner)
 		for (int x=minx; x <= maxx; x++) {
 			for (int y=miny; y <= maxy; y++) {
 				//if there is only one light source on the tile
-				if (engine.map->tiles[x+y*engine.map->width].num == 1)
+				if (engine.distance(owner->x,x,owner->y,y) <= radius)
 				{
-					engine.map->tiles[x+y*engine.map->width].lit = false;
-					if (!frst)
+					if (engine.map->tiles[x+y*engine.map->width].num == 1)
 					{
-						engine.map->tiles[x+y*engine.map->width].num--;
 						
+						if (!frst)
+						{
+							engine.map->tiles[x+y*engine.map->width].lit = false;
+							engine.map->tiles[x+y*engine.map->width].num--;
+							
+						}
+						//engine.map->tiles[x+y*engine.map->width].num--;
 					}
-					//engine.map->tiles[x+y*engine.map->width].num--;
+					else if (engine.map->tiles[x+y*engine.map->width].num > 1)
+					{
+						if (!frst)
+						{
+							engine.map->tiles[x+y*engine.map->width].num--;
+							
+						}
+					}
 				}
 			}
 		}
+		
 	if (!frst)
 			frst = true;//when set to off turn it back to true
 	/*for (int i = x1; i <= x2; i++)
