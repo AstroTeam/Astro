@@ -407,6 +407,12 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//put the player in the first room
 		engine.player->x = (x1+x2)/2;
 		engine.player->y = (y1+y2)/2;
+		engine.playerLight = new Actor(engine.player->x, engine.player->y, 'l', "Your Flashlight", TCODColor::white);
+		engine.playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
+		engine.actors.push(engine.playerLight);
+		engine.playerLight->blocks = false;
+		//playerLight->ai->moving = true;
+		engine.sendToBack(engine.playerLight);
 	}
 	TCODRandom *rng = TCODRandom::getInstance();
 	//add monsters
@@ -841,7 +847,7 @@ bool Map::isInFov(int x, int y) const {
 		return false;
 	}
 	
-	if ((map->isInFov(x,y)) && (engine.distance(engine.player->x,x,engine.player->y,y) <= 2 || isLit(x,y))) {
+	if ((map->isInFov(x,y)) && (engine.distance(engine.player->x,x,engine.player->y,y) <= 1 || isLit(x,y))) {
 		tiles[x+y*width].explored = true;
 		return true;
 	}
@@ -870,7 +876,7 @@ void Map::render() const {
 
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
-			if ((isInFov(x,y) && engine.distance(engine.player->x,x,engine.player->y,y) <= 2) || (isInFov(x,y) && isLit(x,y))){// || true) {
+			if ((isInFov(x,y) && engine.distance(engine.player->x,x,engine.player->y,y) < 1) || (isInFov(x,y) && isLit(x,y))){// || true) {
 				//TCODConsole::root->setCharBackground(x,y,isWall(x,y) ? lightWall : lightGround);
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
 
@@ -891,12 +897,14 @@ void Map::render() const {
 					if (isInfected(x,y)) {
 						engine.mapcon->setChar(x, y, 31);//29
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.map->tiles[x+y*engine.map->width].num++;
 						//engine.mapconCpy->setChar(x, y, 29);
 						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}
 					else {
 						engine.mapcon->setChar(x, y, 31);
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.map->tiles[x+y*engine.map->width].num++;
 						//engine.mapconCpy->setChar(x, y, 31);
 						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}
@@ -920,12 +928,14 @@ void Map::render() const {
 					if (isInfected(x,y)) {
 						engine.mapcon->setChar(x, y, 30);//28
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.map->tiles[x+y*engine.map->width].num = 0;
 						//engine.mapconCpy->setChar(x, y, 28);
 						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}
 					else {
 						engine.mapcon->setChar(x, y, 30);
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.map->tiles[x+y*engine.map->width].num = 0;
 						//engine.mapconCpy->setChar(x, y, 30);
 						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}

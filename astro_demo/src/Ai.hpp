@@ -71,9 +71,11 @@ protected:
 class LightAi : public Ai {
 public:
 	LightAi(int rad, float f);
+	LightAi(int rad, float f,bool move);
     float flkr;
 	bool onOff;
-	bool frst;
+	bool frst;//to reset num
+	bool moving;//are you static or moving
 	void flicker(Actor * owner, float f);
 	void update(Actor * owner);
 	void load(TCODZip &zip);
@@ -81,6 +83,8 @@ public:
 protected:
 	int radius;
 	TCODMap *lmap;
+	int lstX;
+	int lstY;
 };
 
 class FlareAi : public Ai {
