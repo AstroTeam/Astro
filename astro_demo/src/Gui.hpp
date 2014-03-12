@@ -103,6 +103,7 @@ public:
 	~Gui();
 	void render();
 	void message(const TCODColor &col, const char *text, ...);
+	void tileInfoMessage(const TCODColor &col, const char *text, ...);
 	void renderKeyLook();
 	void load(TCODZip &zip);
 	void save (TCODZip &zip);

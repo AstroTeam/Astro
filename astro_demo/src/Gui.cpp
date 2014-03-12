@@ -197,19 +197,28 @@ Gui::Message::~Message() {
 //keyboard-based look
 void Gui::renderKeyLook() {
 	
+	//gets rid of everything previously printed to the tileInfoScreen by emptying the tileInfoLog
+	while(tileInfoLog.size() > 0) {
+		Message *toRemove = tileInfoLog.get(0);
+		tileInfoLog.remove(toRemove);
+		delete toRemove;
+	}
+	
+	
+	//gets the info to send to the tileInfoLog
 	int x = engine.player->x;
 	int y = engine.player->y;
 	if (engine.pickATile(&x,&y)){
 		char buf[128] = ""; 
 		if (engine.map->isInFov(x,y)){
-			//char c = (char)engine.map->tiles[x+y*engine.map->width].num;
-			float i = engine.map->tiles[x+y*engine.map->width].infection;
-			//strcat(buf,(char*)i);
-			engine.gui->message(TCODColor::green, "the infection level is %g",i);
 			
-			strcat(buf,"You see:\n");
+			tileInfoMessage(TCODColor::lightGrey, "You see:");
+			
+			float i = engine.map->tiles[x+y*engine.map->width].infection;
+			tileInfoMessage(TCODColor::green, "an infection level of %g",i);
+			
 		}else {
-			strcat(buf,"You remember seeing:\n");
+			tileInfoMessage(TCODColor::lightGrey, "You remember seeing:");
 		}
 		bool first = true;
 		for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
@@ -217,11 +226,11 @@ void Gui::renderKeyLook() {
 			//find actors under the mouse cursor
 			if (actor->x == x && actor->y == y) {
 				if (!first) {
-					strcat(buf, "\n");
+					tileInfoMessage(TCODColor::lightGrey, "You remember seeing:");
 				} else {
 					first = false;
 				}
-					strcat(buf,actor->name);
+					tileInfoMessage(actor->col, actor->name);
 				if (actor->attacker && !actor->destructible->isDead() && engine.map->isInFov(x,y)) {
 					engine.player->attacker->lastTarget = actor;
 				}
@@ -230,20 +239,57 @@ void Gui::renderKeyLook() {
 		//display the list of actors under the mouse cursor
 		Actor *actor = engine.getAnyActor(x, y);
 		if (!actor || !engine.map->isExplored(x,y)) {
-			memset(&buf[0], 0, sizeof(buf));
-			strcat(buf,"There is nothing interesting here.");
-		} 
-		char *lineBegin = buf;
-		char *lineEnd;
-	
-		//remove all the past messages
-			while(tileInfoLog.size() > 0) {
-				Message *toRemove = tileInfoLog.get(0);
-				tileInfoLog.remove(toRemove);
-				delete toRemove;
-			}
 			
-		do {
+			memset(&buf[0], 0, sizeof(buf));
+			
+			//clear the last message, just in case we added a "you remember seeing"
+			Message *toRemove = tileInfoLog.get(0);
+			tileInfoLog.remove(toRemove);
+			delete toRemove;
+			
+			tileInfoMessage(TCODColor::lightGrey, "There is nothing interesting here.");
+		} 
+	}
+}
+
+/* remove the below function to remove mouse look
+void Gui::renderMouseLook() {
+	if (!engine.map->isInFov(engine.mouse.cx, engine.mouse.cy)) {
+		return; //mouse is out of fov, nothing to return
+	}
+	char buf[128] = "";
+	
+	bool first = true;
+	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+		Actor *actor = *it;
+		//find actors under the mouse cursor
+		if (actor->x == engine.mouse.cx && actor->y == engine.mouse.cy) {
+			if (!first) {
+				strcat(buf, ", ");
+			} else {
+				first = false;
+			}
+			strcat(buf,actor->name);
+		}
+	}
+	//display the list of actors under the mouse cursor
+	con->setDefaultForeground(TCODColor::lightGrey);
+	con->print(1,0,buf);
+} */
+
+void Gui::tileInfoMessage(const TCODColor &col, const char *text, ...) {
+	//build the text
+
+	va_list ap;
+	char buf[128];
+	va_start(ap,text);
+	vsprintf(buf, text, ap);
+	va_end(ap);
+	
+	char *lineBegin = buf;
+	char *lineEnd;
+
+	do {
 			
 			//detect the EOL
 			lineEnd = strchr(lineBegin,'\n');
@@ -277,40 +323,15 @@ void Gui::renderKeyLook() {
 				}
 			}
 
-			Message *msg = new Message(lineBegin,TCODColor::lightGrey);
+			Message *msg = new Message(lineBegin, col);
 			tileInfoLog.push(msg);
 			
 			//go to the next line
 			lineBegin = lineEnd + 1;
 		} while (lineEnd);
-	}
+
 }
 
-/* remove the below function to remove mouse look
-void Gui::renderMouseLook() {
-	if (!engine.map->isInFov(engine.mouse.cx, engine.mouse.cy)) {
-		return; //mouse is out of fov, nothing to return
-	}
-	char buf[128] = "";
-	
-	bool first = true;
-	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
-		Actor *actor = *it;
-		//find actors under the mouse cursor
-		if (actor->x == engine.mouse.cx && actor->y == engine.mouse.cy) {
-			if (!first) {
-				strcat(buf, ", ");
-			} else {
-				first = false;
-			}
-			strcat(buf,actor->name);
-		}
-	}
-	//display the list of actors under the mouse cursor
-	con->setDefaultForeground(TCODColor::lightGrey);
-	con->print(1,0,buf);
-} */
-	
 void Gui::message(const TCODColor &col, const char *text, ...) {
 	//build the text
 	va_list ap;
