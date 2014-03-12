@@ -835,7 +835,7 @@ void LightAi::update(Actor * owner)
 		
 		if (moving)
 		{
-			engine.gui->message(TCODColor::yellow, "changed light!");
+			//engine.gui->message(TCODColor::yellow, "changed light!");
 			for (int x=lstX-6; x <= lstX+6; x++) {
 				for (int y=lstY-6; y <= lstY+6; y++) {
 					
