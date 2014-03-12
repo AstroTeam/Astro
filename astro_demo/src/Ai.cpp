@@ -1014,13 +1014,13 @@ void FlareAi::update(Actor * owner)
 		light->blocks = false;
 		engine.actors.push(light);
 		i++;
-		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of it's phosphorus remains.",turns-i,turns);
+		//engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of it's phosphorus remains.",turns-i,turns);
 		
 	}
 	if (i < turns)
 	{
 		i++;
-		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of it's phosphorus remains.",turns-i,turns);
+		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of it's phosphorus remains.",turns-i+1,turns);
 	}
 	else
 	{
