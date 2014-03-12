@@ -204,11 +204,12 @@ void Gui::renderKeyLook() {
 	if (engine.pickATile(&x,&y)){
 		char buf[128] = ""; 
 		if (engine.map->isInFov(x,y)){
-			//char c = (char)engine.map->tiles[x+y*engine.map->width].num;
+			int c = engine.map->tiles[x+y*engine.map->width].num;
 			float i = engine.map->tiles[x+y*engine.map->width].infection;
 			//strcat(buf,(char*)i);
 			if (i < 1)
-				engine.gui->message(TCODColor::green, "The ground you look at is free of any apparent ailment.");
+				//engine.gui->message(TCODColor::green, "The ground you look at is free of any apparent ailment.");
+				{}
 			else if (i < 2)
 				engine.gui->message(TCODColor::green, "The ground you look at has some green moss on it.");
 			else if (i < 3)
@@ -221,7 +222,7 @@ void Gui::renderKeyLook() {
 				engine.gui->message(TCODColor::green, "The ground you look at is almost covered in odd green moss.");
 			else
 				engine.gui->message(TCODColor::green, "The ground you look at is completely covered in weird moss.");
-			//engine.gui->message(TCODColor::green, "the infection level is %g",i);
+			engine.gui->message(TCODColor::green, "the light level is %d",c);
 			
 			strcat(buf,"You see:\n");
 		}else {

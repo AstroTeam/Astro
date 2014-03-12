@@ -12,7 +12,7 @@
 } */
 
 Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
-	player(NULL),map(NULL), fovRadius(3),
+	player(NULL),playerLight(NULL),map(NULL), fovRadius(3),
 	screenWidth(screenWidth),screenHeight(screenHeight),level(1),turnCount(0) {
 	mapWidth = 100;
 	mapHeight = 100;
@@ -50,7 +50,12 @@ void Engine::term() {
 void Engine::init() {
 	engine.killCount = 0;
 	player = new Actor(40,25,'@', "player","Human","Marine","Infantry",TCODColor::white);
-	
+	playerLight = new Actor(40, 25, 'l', "Your Flashlight", TCODColor::white);
+	playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
+	engine.actors.push(playerLight);
+	playerLight->blocks = false;
+	//playerLight->ai->moving = true;
+	engine.sendToBack(playerLight);
 	player->destructible = new PlayerDestructible(100, 2, "your cadaver");
 	player->attacker = new Attacker(5,20);
 	player->ai = new PlayerAi();
