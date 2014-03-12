@@ -815,7 +815,7 @@ void LightAi::update(Actor * owner)
 				}
 			}
 		}
-		
+		//only do this once for flares!
 		for (int x=minx; x <= maxx; x++) {
 			for (int y=miny; y <= maxy; y++) {
 				//inheriting properties of real map
@@ -878,6 +878,8 @@ void LightAi::update(Actor * owner)
 			for (int y=miny; y <= maxy; y++) {
 				//if there is only one light source on the tile
 				if (lmap->isInFov(x-minx,y-miny)){ //&& !(engine.player->x == x && engine.player->y == y)) {
+				//ERROR WHEN SOMETHING BLOCKS THE NEW FOV AND NOT THE OLD ONE IT DOESNT UPDATE
+				//RECORD OLD FOV, NOT NEW ONE!
 					if (engine.map->tiles[x+y*engine.map->width].num == 1)
 					{
 						
@@ -966,7 +968,7 @@ void FlareAi::update(Actor * owner)
 	if (i == 0)
 	{
 		light = new Actor(owner->x,owner->y, 171, "Flare Light", TCODColor::white);
-		light->ai = new LightAi(lightRange,1);
+		light->ai = new LightAi(lightRange,1);//,true);
 		light->blocks = false;
 		engine.actors.push(light);
 		i++;
@@ -980,13 +982,22 @@ void FlareAi::update(Actor * owner)
 	}
 	else
 	{
-		//engine.gui->message(TCODColor::orange, "Flare has burnt out");
+		static bool burnOut = true;
+		if (burnOut)
+		{
+			engine.gui->message(TCODColor::orange, "Flare has burnt out, leaving a pile of ash.");
+			burnOut = false;
+		}
 		//light->(LightAi)ai->onOff = false;
 		//LightAi l = (LightAi)light->ai;
 		light->ch = ' ';
+		owner->name = "a pile of ash";
+		owner->ch = 'a';
 		LightAi *l = (LightAi*)light->ai;
 		l->onOff = false;
+		
 		l->update(owner);
+		//l->update(owner);
 		//engine.actors.remove(light);
 		//light = NULL;
 		//SHOULD DELETE THE LIGHT PERMANENTLY 
