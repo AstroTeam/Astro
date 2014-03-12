@@ -197,12 +197,21 @@ void Map::addMonster(int x, int y) {
 	float infectedCrewMemChance = 80;
 	int infectedCrewMemAscii = 164;
 	
+	//Infected Marine Base Stats
 	float infectedMarineMaxHp = 10;
 	float infectedMarineDef = 0;
 	float infectedMarineAtk = 5;
 	float infectedMarineXp = 10;
 //	float infectedMarineChance = 80;
 	int infectedMarineAscii = 149;
+	
+	//Infected Grenadier Base Stats
+	float infectedGrenadierMaxHp = 15;
+	float infectedGrenadierDef = 0;
+	float infectedGrenadierAtk = 2;
+	float infectedGrenadierXp = 20;
+//	float infectedGrenadierChance = 80;
+	int infectedGrenadierAscii = 155; //Change this to the desired ascii
 	
 	//Infected NCO Base Stats
 	float infectedNCOMaxHp = 12;
@@ -249,8 +258,8 @@ void Map::addMonster(int x, int y) {
 	
 	int dice = rng->getInt(0,100);
 	if (dice < infectedCrewMemChance) 
-	{//10% of infectedCrewMembers are infectedMarines
-		if(dice <= (infectedCrewMemChance*9)/10) 
+	{//10% of infectedCrewMembers are infectedMarines, and 5% are infectedGrenadiers 
+		if(dice <= (infectedCrewMemChance*75)/100)
 		{
 			Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
 			infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
@@ -260,7 +269,7 @@ void Map::addMonster(int x, int y) {
 			generateRandom(infectedCrewMember, infectedCrewMemAscii);
 			engine.actors.push(infectedCrewMember);
 		}
-		else 
+		else if(dice <= (infectedCrewMemChance*85)/100) 
 		{
 			Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
 			infectedMarine->destructible = new MonsterDestructible(infectedMarineMaxHp,infectedMarineDef,"infected corpse",infectedMarineXp);
@@ -269,6 +278,17 @@ void Map::addMonster(int x, int y) {
 			infectedMarine->ai = new RangedAi();
 			generateRandom(infectedMarine, infectedMarineAscii);
 			engine.actors.push(infectedMarine);
+		}
+		else 
+		{
+			Actor *infectedGrenadier = new Actor(x,y,infectedGrenadierAscii,"Infected Grenadier",TCODColor::white);
+			infectedGrenadier->destructible = new MonsterDestructible(infectedGrenadierMaxHp,infectedGrenadierDef,"infected corpse",infectedGrenadierXp);
+			infectedGrenadier->attacker = new Attacker(infectedGrenadierAtk);
+			infectedGrenadier->container = new Container(2);
+			infectedGrenadier->ai = new TechAi();
+			generateRandom(infectedGrenadier , infectedGrenadierAscii);
+			engine.actors.push(infectedGrenadier);
+
 		}
 		
 	}
@@ -989,6 +1009,14 @@ void Map::generateRandom(Actor *owner, int ascii){
 				Actor *batt = createBatteryPack(0,0);
 				engine.actors.push(batt);
 				batt->pickable->pick(batt,owner);
+			}
+		}else if(ascii == 155) //infected grenadier
+		{
+			for(int i = 0; i < owner->container->size; i++)
+			{
+				Actor *emp = createEMP(0,0);
+				engine.actors.push(emp);
+				emp->pickable->pick(emp,owner);
 			}
 		}else if(ascii == 149) //infectedMarines have 60% chance of dropping an item with 50% chance of it being a MLR, and the other 50% chance being a battery pack
 		{

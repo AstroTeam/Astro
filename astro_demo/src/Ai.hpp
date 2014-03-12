@@ -1,3 +1,4 @@
+
 class Ai : public Persistent {
 public:
 	TCODConsole *inventoryScreen;
@@ -113,3 +114,21 @@ protected:
 	int nbTurns;
 	Ai *oldAi;
 };
+
+class TechAi : public Ai
+{
+	public:
+		TechAi();
+		void update(Actor *owner);
+		void load(TCODZip &zip);
+		void save(TCODZip &zip);
+		bool berserk;
+	protected:
+		int moveCount;
+		int range; //range
+		int numEmpGrenades;
+		void moveOrAttack(Actor *owner, int targetx, int targety);
+};
+
+
+
