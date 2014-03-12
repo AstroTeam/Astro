@@ -72,6 +72,7 @@ public:
 	LightAi(int rad, float f);
 	LightAi(int rad, float f,bool move);
     float flkr;
+	bool onAgn;
 	bool onOff;
 	bool frst;//to reset num
 	bool moving;//are you static or moving

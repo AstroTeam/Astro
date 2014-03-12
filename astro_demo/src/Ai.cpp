@@ -721,6 +721,7 @@ LightAi::LightAi(int rad, float f)
 	lmap = new TCODMap(13,13);
 	frstMap = new TCODMap(13,13);
 	frstBool = true;
+	onAgn = false;
 	//oldMap = new TCODMap(13,13);
 	onOff = true;
 	frst = true;
@@ -739,6 +740,7 @@ LightAi::LightAi(int rad, float f, bool movibility)
 	lmap = new TCODMap(13,13);
 	frstMap = new TCODMap(13,13);
 	frstBool = true;
+	onAgn = false;
 	//oldMap = new TCODMap(13,13);
 	onOff = true;
 	frst = true;
@@ -753,34 +755,16 @@ void LightAi::save(TCODZip &zip){
 }
 
 void LightAi::flicker(Actor * owner, float chance){
-	int maxx = owner->x+6;
-	int minx = owner->x-6;
-	int maxy = owner->y+6;
-	int miny = owner->y-6;
-	//owner->radius
-	//lmap->computeFov(owner->x-minx,owner->y-miny,radius);
-	
-	for (int x=minx; x <= maxx; x++) {
-		for (int y=miny; y <= maxy; y++) {
-			if (lmap->isInFov(x-minx,y-miny)) {
-				if (flkr < chance)
-				{
-					// && (engine.player->x != x && engine.player->y != y)) {
-					engine.map->tiles[x+y*engine.map->width].lit = false;
-				}
-				else
-				{
-					// && (engine.player->x != x && engine.player->y != y)) {
-					engine.map->tiles[x+y*engine.map->width].lit = true;
-				}
-			}
-			else
-			{
-				//if (engine.map->tiles[x+y*engine.map->width].lit = true)
-				//engine.map->tiles[x+y*engine.map->width].lit = false;
-			}
-		}
+	if (flkr < chance)
+	{
+		//LightAi *l = (LightAi*)owner->ai;
+		onOff = false;
+		update(owner);
+		//onOff = !onOff;
+		//update(owner);
 	}
+	//onOff = true;
+	//update(owner);
 }
 
 void LightAi::update(Actor * owner)
@@ -914,49 +898,12 @@ void LightAi::update(Actor * owner)
 					}
 						
 				}
-				/*if (engine.distance(owner->x,x,owner->y,y) <= radius)
-				{
-					if (engine.map->tiles[x+y*engine.map->width].num == 1)
-					{
-						
-						if (!frst)
-						{
-							engine.map->tiles[x+y*engine.map->width].lit = false;
-							engine.map->tiles[x+y*engine.map->width].num--;
-							
-						}
-						//engine.map->tiles[x+y*engine.map->width].num--;
-					}
-					else if (engine.map->tiles[x+y*engine.map->width].num > 1)
-					{
-						if (!frst)
-						{
-							engine.map->tiles[x+y*engine.map->width].num--;
-							
-						}
-					}
-				}*/
 			}
 		}
 		
 	if (!frst)
 			frst = true;//when set to off turn it back to true
-	/*for (int i = x1; i <= x2; i++)
-	{
-		for (int j = y1; j <= y2; j++)
-		{
-			if (true)//engine.distance(x,i,y,j) <= 3)
-			{
-				engine.map->tiles[i+j*engine.map->width].infection = true;
-				//engine.mapcon->setChar(i, j, 'L');
-			}
-			else
-			{
-				engine.map->tiles[i+j*engine.map->width].infection = false;
-			}
-		}
-	}
-	*/
+
 	}
 	
 }

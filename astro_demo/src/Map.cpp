@@ -770,15 +770,16 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			int x = rng->getInt(x1+1,x2-1);
 			int y = rng->getInt(y1+1,y2-1);
 			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
-				Actor *light = new Actor(x, y, 224, "An hastily erected Emergency Light", TCODColor::white);
+				Actor *light = new Actor(x, y, 224, "A hastily erected Emergency Light", TCODColor::white);
 				//4,1 = standard light, radius, flkr
 				TCODRandom *myRandom = new TCODRandom();
 				//0.8 is lower limit, put closer to 1 for less flicker
 				int chance = myRandom->getInt(0,10);
 				float rng2;
-				if (chance > 1)
+				if (chance > 5)
 				{
-					rng2 = myRandom->getFloat(0.5000f,0.9000f,0.8500f);
+					rng2 = myRandom->getFloat(0.9000f,0.9900f,0.9500f);
+					light->name = "An flickering hastily erected Emergency Light";
 				}
 				else
 				{
