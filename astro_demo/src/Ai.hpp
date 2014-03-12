@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 class Ai : public Persistent {
 public:
 	TCODConsole *inventoryScreen;
