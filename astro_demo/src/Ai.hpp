@@ -82,6 +82,8 @@ public:
 protected:
 	int radius;
 	TCODMap *lmap;
+	TCODMap *frstMap;
+	bool frstBool;
 	int lstX;
 	int lstY;
 };

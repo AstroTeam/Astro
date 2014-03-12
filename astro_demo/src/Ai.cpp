@@ -719,6 +719,8 @@ LightAi::LightAi(int rad, float f)
 	lstX = 0;
 	lstY = 0;
 	lmap = new TCODMap(13,13);
+	frstMap = new TCODMap(13,13);
+	frstBool = true;
 	//oldMap = new TCODMap(13,13);
 	onOff = true;
 	frst = true;
@@ -735,6 +737,8 @@ LightAi::LightAi(int rad, float f, bool movibility)
 	lstX = 0;
 	lstY = 0;
 	lmap = new TCODMap(13,13);
+	frstMap = new TCODMap(13,13);
+	frstBool = true;
 	//oldMap = new TCODMap(13,13);
 	onOff = true;
 	frst = true;
@@ -821,7 +825,13 @@ void LightAi::update(Actor * owner)
 				//inheriting properties of real map
 				
 				lmap->setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
+				if (frstBool){
+					frstMap->setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
+				}
 			}
+		}
+		if (frstBool){
+			frstBool = false;
 		}
 		//owner->radius
 		lmap->computeFov(owner->x-minx,owner->y-miny,radius);
@@ -877,16 +887,19 @@ void LightAi::update(Actor * owner)
 		for (int x=minx; x <= maxx; x++) {
 			for (int y=miny; y <= maxy; y++) {
 				//if there is only one light source on the tile
-				if (lmap->isInFov(x-minx,y-miny)){ //&& !(engine.player->x == x && engine.player->y == y)) {
+				frstMap->computeFov(owner->x-minx,owner->y-miny,radius);
+				lmap->computeFov(owner->x-minx,owner->y-miny,radius);
+				if (frstMap->isInFov(x-minx,y-miny) || lmap->isInFov(x-minx,y-miny)){ //&& !(engine.player->x == x && engine.player->y == y)) {
 				//ERROR WHEN SOMETHING BLOCKS THE NEW FOV AND NOT THE OLD ONE IT DOESNT UPDATE
 				//RECORD OLD FOV, NOT NEW ONE!
-					if (engine.map->tiles[x+y*engine.map->width].num == 1)
-					{
-						
+					if (engine.map->tiles[x+y*engine.map->width].num <= 1)//adding lights that have variable FOV because of movement, like flares
+					{//may have "0's" in their FOV that are lit, because we only increase num once ever, so if there are 0's, make sure they are not lit
+					 //but also make sure they are not decrementing it past 0 -> line 902!	
 						if (!frst)
 						{
 							engine.map->tiles[x+y*engine.map->width].lit = false;
-							engine.map->tiles[x+y*engine.map->width].num--;
+							if (engine.map->tiles[x+y*engine.map->width].num == 1)
+								{engine.map->tiles[x+y*engine.map->width].num--;}
 							
 						}
 						//engine.map->tiles[x+y*engine.map->width].num--;
@@ -995,8 +1008,7 @@ void FlareAi::update(Actor * owner)
 		owner->ch = 'a';
 		LightAi *l = (LightAi*)light->ai;
 		l->onOff = false;
-		
-		l->update(owner);
+		l->update(light);
 		//l->update(owner);
 		//engine.actors.remove(light);
 		//light = NULL;
