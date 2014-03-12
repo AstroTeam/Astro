@@ -63,6 +63,7 @@ public:
 	int tileType(int x, int y);
 	//int tileInf(int x, int y);
 	
+	Actor *createCurrencyStack(int x, int y);
 	Actor *createHealthPotion(int x, int y);
 	Actor *createBatteryPack(int x, int y);
 	Actor *createFlashBang(int x, int y);
@@ -72,7 +73,6 @@ public:
 	Actor *createTitanMail(int x, int y);
 	Actor *createMylarBoots(int x, int y);
 	Actor *createMLR(int x, int y);
-	
 	Tile *tiles;
 
 	

@@ -92,8 +92,8 @@ public:
 	void save(TCODZip &zip);
 protected:
 	int turns;
-	Actor *light;
 	int i;
+	Actor *light;
 };
 
 

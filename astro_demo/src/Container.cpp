@@ -1,7 +1,7 @@
 #include "main.hpp"
 #include <string>
 
-Container::Container(int size) : size(size),head(false),chest(false),
+Container::Container(int size) : size(size),wallet(0),head(false),chest(false),
 	legs(false),feet(false),hand1(false),hand2(false),ranged(false){
 }
 
@@ -11,6 +11,7 @@ Container::~Container() {
 
 void Container::load(TCODZip &zip) {
 	size = zip.getInt();
+	wallet = zip.getInt();
 	int nbActors = zip.getInt();
 	while (nbActors > 0) {
 		Actor *actor = new Actor(0,0,0,NULL,TCODColor::white);
@@ -30,6 +31,7 @@ void Container::load(TCODZip &zip) {
 
 void Container::save(TCODZip &zip) {
 	zip.putInt(size);
+	zip.putInt(wallet);
 	zip.putInt(inventory.size());
 	for (Actor **it = inventory.begin(); it != inventory.end(); it++) {
 		(*it)->save(zip);
@@ -44,6 +46,11 @@ void Container::save(TCODZip &zip) {
 }
 
 bool Container::add(Actor *actor) {
+	if(actor->pickable->type == Pickable::CURRENCY) {
+		wallet += actor->pickable->stackSize;
+		return true;
+	}
+	
 	int amount = 0;
 	for(Actor **it = inventory.begin(); it != inventory.end(); it++){
 		Actor *actor = *it;

@@ -228,7 +228,7 @@ void Engine::init() {
 			equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
 			equip1->sort = 2;
 			equip1->blocks = false;
-			equip1->pickable = new Flare(5,8,5);
+			equip1->pickable = new Flare(10,5,5);
 			engine.actors.push(equip1);
 			equip1->pickable->pick(equip1,player);
 			//((Equipment*)(equip1->pickable))->use(equip1,player);

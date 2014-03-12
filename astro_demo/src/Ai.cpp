@@ -119,23 +119,23 @@ void PlayerAi::update(Actor *owner) {
 			case Menu::CONSTITUTION	:
 				owner->destructible->maxHp += 20;
 				owner->destructible->hp += 20;
-				owner->vit++;
+				owner->vit += 1;
 				choice_made = true;
 				break;
 			case Menu::STRENGTH :
 				owner->attacker->basePower += 1;
 				owner->attacker->totalPower += 1;
-				owner->str++;
+				owner->str += 1;
 				choice_made = true;
 				break;
 			case Menu::DEXTERITY :
-				owner->dex++;
-				owner->totalDex++;
+				owner->dex += 1;
+				owner->totalDex += 1;
 				choice_made = true;
 				break;
 			case Menu::INTELLIGENCE :
-				owner->intel++;
-				owner->totalIntel++;
+				owner->intel += 1;
+				owner->totalIntel += 1;
 				choice_made = true;
 				break;
 			case Menu::AGILITY:
@@ -402,6 +402,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					if(owner->attacker && owner->attacker->battery >= 1){
 						owner->attacker->shoot(owner, closestMonster);
 						owner->attacker->usePower(owner, 1);
+						engine.damageDone += (int)owner->totalDex - closestMonster->destructible->totalDefense;
 						engine.gameStatus = Engine::NEW_TURN;
 					}
 					else{
@@ -439,6 +440,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					if(owner->attacker && owner->attacker->battery >= 1){
 						owner->attacker->shoot(owner, actor);
 						owner->attacker->usePower(owner, 1);
+						engine.damageDone += (int)owner->totalDex - actor->destructible->totalDefense;
 						engine.gameStatus = Engine::NEW_TURN;
 					}
 					else{
@@ -567,10 +569,10 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	}
 	//Diplay Character Stats
 	con.print(2,4,"STATS");
-	con.print(1,6,"VIT: %g",owner->destructible->maxHp);
-	con.print(1,8,"AG: %g",owner->destructible->totalDefense);
-	con.print(1,10,"STR: %g",owner->attacker->totalPower);
-	con.print(1,12,"INT: N/A");
+	con.print(1,6,"VIT: %d",owner->vit);
+	con.print(1,8,"DEX: %d",owner->dex);
+	con.print(1,10,"STR: %d",owner->str);
+	con.print(1,12,"INT: %d",owner->intel);
 	con.print(1,14,"KILLS: %d",engine.killCount);
 	con.print(1,16,"DMG DONE: %g",engine.damageDone);
 	con.print(1,18,"DMG TAKEN: %g",engine.damageReceived);
@@ -896,26 +898,31 @@ void FlareAi::update(Actor * owner)
 	
 	if (i == 0)
 	{
-		light = new Actor(owner->x,owner->y, ' ', "Flare Light", TCODColor::white);
+		light = new Actor(owner->x,owner->y, 171, "Flare Light", TCODColor::white);
 		light->ai = new LightAi(lightRange,1);
 		light->blocks = false;
 		engine.actors.push(light);
-		engine.gui->message(TCODColor::orange, "Flare is burning");
+		i++;
+		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of it's phosphorus remains.",turns-i,turns);
+		
 	}
-	if (i <= turns)
+	if (i < turns)
 	{
 		i++;
-		engine.gui->message(TCODColor::orange, "Flare is burning");
+		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of it's phosphorus remains.",turns-i,turns);
 	}
 	else
 	{
+		//engine.gui->message(TCODColor::orange, "Flare has burnt out");
 		//light->(LightAi)ai->onOff = false;
 		//LightAi l = (LightAi)light->ai;
+		light->ch = ' ';
 		LightAi *l = (LightAi*)light->ai;
 		l->onOff = false;
 		l->update(owner);
 		//engine.actors.remove(light);
 		//light = NULL;
+		//SHOULD DELETE THE LIGHT PERMANENTLY 
 	}
 }
 

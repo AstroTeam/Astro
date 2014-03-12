@@ -49,6 +49,9 @@ void Renderer::render(void *sdlSurface){
 	SDL_Surface *itemsGlow = SDL_LoadBMP("tile_assets/alphaGlow.bmp");
 	SDL_SetAlpha( itemsGlow, SDL_SRCALPHA, alpha);
 	SDL_SetColorKey(itemsGlow,SDL_SRCCOLORKEY,255);
+	SDL_Surface *flareGlow= SDL_LoadBMP("tile_assets/alphaGlow_flare.bmp");
+	SDL_SetAlpha(flareGlow, SDL_SRCALPHA, alpha*1.25);
+	SDL_SetColorKey(flareGlow,SDL_SRCCOLORKEY,255);
 	//shadows
 	SDL_Surface *shadows = SDL_LoadBMP("tile_assets/itemShadows.bmp");
 	SDL_SetAlpha(shadows, SDL_SRCALPHA, 255*.25);
@@ -140,6 +143,12 @@ void Renderer::render(void *sdlSurface){
 					srcRect.y = 0;
 					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				}
+				else if (engine.mapcon->getChar(xM,yM) == 7)
+				{
+					srcRect.x = 64 + 16 * 5;
+					srcRect.y = 0;
+					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
+				}
 
 				//any decor to render just on top of floors
 				if (engine.mapconDec->getChar(xM,yM) == ' ')
@@ -217,6 +226,12 @@ void Renderer::render(void *sdlSurface){
 					else {
 						srcRect.x = 64 + 16 * 5;
 					}
+					srcRect.y = 16;
+					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
+				}
+				else if (engine.mapcon->getChar(xM,yM) == 7)
+				{
+					srcRect.x = 64 + 16 * 5;
 					srcRect.y = 16;
 					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				}
@@ -444,6 +459,54 @@ void Renderer::render(void *sdlSurface){
 					srcRect.x=208;
 					srcRect.y += 32;
 				}
+				////////////////////////////////////////////////////////////////////////GENERATORS
+				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white && engine.map->tileType(xM,yM) == 4){
+						//light
+						srcRect.x=0;
+				}else if (engine.map->tileType(xM,yM) == 4){
+						//dark
+						srcRect.x=32;
+				}
+				if(engine.mapconDec->getChar(xM,yM) == 25)//jerry rigged tile
+				{
+					srcRect.x +=224;
+					srcRect.y = 0;
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 26)//danger sign
+				{
+					srcRect.x +=240;
+					srcRect.y = 0;
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 27)//cables
+				{
+					srcRect.x +=224;
+					srcRect.y = 16;
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 28)//oil drum
+				{
+					srcRect.x +=240;
+					srcRect.y = 16;
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 29)//generator
+				{
+					srcRect.x +=224;
+					srcRect.y = 32;
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 30)//console
+				{
+					srcRect.x +=240;
+					srcRect.y = 32;
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 31)//blowtorch
+				{
+					srcRect.x +=224;
+					srcRect.y = 48;
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 32)//pallet
+				{
+					srcRect.x +=240;
+					srcRect.y = 48;
+				}
 				
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 			}
@@ -471,6 +534,48 @@ void Renderer::render(void *sdlSurface){
 				SDL_BlitSurface(shadows,&srcRect,floorMap,&dstRectOffset);
 				
 			}
+			//flare glow
+			else if (engine.mapcon->getChar(xM,yM) == 171)//this is the light itself
+			{
+				//FlareAi *l = (FlareAi*)engine.getAnyActor(xM,yM);
+				//LightAi *light = (LightAi*)l->light->ai;
+				//LightAi *l = (LightAi*)engine.getAnyActor(xM,yM)->ai;
+				//l->onOff = false;
+				//if (l->onOff)
+				//{
+				SDL_Rect srcRectTemp={0,0,48,48};
+				SDL_Rect dstRectTemp={x1*16-16,y1*16-16,48,48};
+				SDL_BlitSurface(flareGlow,&srcRectTemp,floorMap,&dstRectTemp);
+				static int wobble = 0;
+				SDL_Rect srcRectTemp2={160,160+16,16,16};
+				SDL_Rect dstRectTemp2={x1*16+wobble,y1*16,16,16};
+				SDL_BlitSurface(terminal,&srcRectTemp2,floorMap,&dstRectTemp2);
+				static bool DownW = true;
+				static int slow = 0;
+				if (slow%6 == 0)
+				{
+					if (wobble > -4 && DownW)
+					{
+						wobble--;
+						if (wobble < -4)
+							wobble = -4;
+					}
+					else if (wobble == -4 && DownW)
+					{
+						DownW = false;
+					}
+					else if (wobble < 4)
+					{
+						wobble++;;
+					}
+					else if (wobble >= 4)
+					{
+						DownW = true;
+					}
+				}	
+				slow++;
+				//}
+			}
 			
 			
 			y1++;
@@ -491,6 +596,7 @@ void Renderer::render(void *sdlSurface){
 			//float rng = myRandom->getFloat(0.0000f,1.0000f);
 			//l->flicker(actor,rng);
 		}
+		
 	}
 	
 	
@@ -649,6 +755,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(screen);
 	SDL_FreeSurface(floorTiles);
 	SDL_FreeSurface(itemsGlow);
+	SDL_FreeSurface(flareGlow);
 	SDL_FreeSurface(shadows);
 	SDL_FreeSurface(equipment);
 	SDL_FreeSurface(terminal);

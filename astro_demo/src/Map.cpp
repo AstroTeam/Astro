@@ -312,7 +312,7 @@ void Map::addMonster(int x, int y) {
 void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,235);
+	int dice = rng->getInt(0,335);
 	if (dice < 40) {
 		//create a health potion
 		Actor *healthPotion = createHealthPotion(x,y);
@@ -348,11 +348,16 @@ void Map::addItem(int x, int y, RoomType roomType) {
 		Actor *batteryPack = createBatteryPack(x,y);
 		engine.actors.push(batteryPack);
 		engine.sendToBack(batteryPack);
-	}else {
+	}else if(dice< 40+40+40+15+15+5+40+40){
 		//create a scroll of confusion
 		Actor *scrollOfConfusion = createFlashBang(x,y);
 		engine.actors.push(scrollOfConfusion);
 		engine.sendToBack(scrollOfConfusion);
+	}
+	else {
+		Actor *stackOfMoney = createCurrencyStack(x,y);
+		engine.actors.push(stackOfMoney);
+		engine.sendToBack(stackOfMoney);
 	}
 }
 
@@ -565,7 +570,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					}
 					else if (n == 2)
 					{
-						desk->name = "A desk with strew papers about";
+						desk->name = "A desk with strewn papers about";
 					}
 					else if (n == 3)
 					{
@@ -631,18 +636,24 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				{
 					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
-					locker->destructible = new Destructible(1,0,"Opened Locker",0);
+					locker->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
+					locker->container = new Container(3);
+					generateRandom(locker,243);
 					engine.actors.push(locker);
 					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,243,"A Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar(((x1+x2)/2)+1,i, 23);//Locker
-					locker2->destructible = new Destructible(1,0,"Opened Locker",0);
+					locker2->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
+					locker2->container = new Container(3);
+					generateRandom(locker2,243);
 					engine.actors.push(locker2);
 				}
 				else
 				{
 					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
-					locker->destructible = new Destructible(1,0,"Opened Locker",0);
+					locker->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
+					locker->container = new Container(3);
+					generateRandom(locker,243);
 					engine.actors.push(locker);
 				}
 			}
@@ -652,25 +663,81 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	}
 	if (room->type == GENERATOR) {
 		cout << "Gen room Made" << endl;
-		Actor * generator = new Actor(x1+1,y1+1,'G',"a generator", TCODColor::white);
+		Actor * generator = new Actor(x1+1,y1+1,243,"A floor tile that has been jerry rigged to accept a generator.", TCODColor::white);
+		engine.mapconDec->setChar(x1+1,y1+1, 25);//
 		engine.actors.push(generator);
-		Actor * generator1 = new Actor(x1+2,y1+1,'G',"a generator", TCODColor::white);
+		generator->blocks = false;
+		engine.sendToBack(generator);
+		Actor * generator1 = new Actor(x1+2,y1+1,243,"A danger sign and a small toolbox.", TCODColor::white);
+		engine.mapconDec->setChar(x1+2,y1+1, 26);//
 		engine.actors.push(generator1);
-		Actor * generator2 = new Actor(x1+1,y1+2,'G',"a generator", TCODColor::white);
+		generator1->blocks = false;
+		engine.sendToBack(generator1);
+		Actor * generator2 = new Actor(x1+1,y1+2,243,"A bundle of cables.", TCODColor::white);
+		engine.mapconDec->setChar(x1+1,y1+2, 27);//
 		engine.actors.push(generator2);
-		Actor * generator3 = new Actor(x1+2,y1+2,'G',"a generator", TCODColor::white);
-		engine.actors.push(generator3);
-		Actor * generator4 = new Actor(x1+1,y1+3,'G',"a generator", TCODColor::white);
+		generator2->blocks = false;
+		engine.sendToBack(generator2);
+		//Actor * generator3 = new Actor(x1+2,y1+2,'G',"a generator", TCODColor::white);
+		//engine.actors.push(generator3);
+		Actor * generator4 = new Actor(x1+1,y1+3,243,"A portable generator.", TCODColor::white);
+		engine.mapconDec->setChar(x1+1,y1+3, 29);//
 		engine.actors.push(generator4);
-		Actor * generator5 = new Actor(x1+2,y1+3,'G',"a generator", TCODColor::white);
+		Actor * generator5 = new Actor(x1+2,y1+3,243,"A generator control console.", TCODColor::white);
+		engine.mapconDec->setChar(x1+2,y1+3, 30);//
 		engine.actors.push(generator5);
-		//add large generators, animated
-		//add workbench
-		//add wrenchs
-		//add oil cans
+		//add large generators, animated - done
+		//add workbench                  - done
+		//add wrenchs             
+		//add oil cans                   - done
 		//add danger sign?
 		//electric infected crewmember
+		int rmSze = (x2 - x1) * (y2 - y1);
+		int numDrums = rmSze/20;
+		if (numDrums <= 0)
+			numDrums = 1;
+		for (int i = 0; i < numDrums;)
+		{	
+			int x = rng->getInt(x1+1,x2-1);
+			int y = rng->getInt(y1+1,y2-1);
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
+				Actor *Drum = new Actor(x, y, 243, "A gasoline drum.", TCODColor::white);
+				engine.mapconDec->setChar(x,y, 28);//
+				engine.actors.push(Drum);
+				i++;
+			}
+			
+		}
 		
+		int torch = rng->getInt(1,3,3);
+		for (int i = 0; i < torch;)
+		{	
+			int x = rng->getInt(x1+1,x2-1);
+			int y = rng->getInt(y1+1,y2-1);
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
+				Actor *torch = new Actor(x, y, 243, "A blowtorch.", TCODColor::white);
+				engine.mapconDec->setChar(x,y, 31);//
+				engine.actors.push(torch);
+				i++;
+			}
+			
+		}
+		
+		int pall = rng->getInt(1,4,2);
+		for (int i = 0; i < pall;)
+		{	
+			int x = rng->getInt(x1+1,x2-1);
+			int y = rng->getInt(y1+1,y2-1);
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
+				Actor *pallet = new Actor(x, y, 243, "An empty pallet.", TCODColor::white);
+				engine.mapconDec->setChar(x,y, 32);//
+				engine.actors.push(pallet);
+				pallet->blocks = false;
+				engine.sendToBack(pallet);
+				i++;
+			}
+			
+		}
 	}
 
 	/*
@@ -696,7 +763,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			//int y = (y1+y2)/2;
 			int x = rng->getInt(x1+1,x2-1);
 			int y = rng->getInt(y1+1,y2-1);
-			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y)) {
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
 				Actor *light = new Actor(x, y, 224, "An hastily erected Emergency Light", TCODColor::white);
 				//4,1 = standard light, radius, flkr
 				TCODRandom *myRandom = new TCODRandom();
@@ -893,7 +960,26 @@ void Map::generateRandom(Actor *owner, int ascii){
 	if(dice <= 40){
 			return;
 	}else{
-		if(ascii == 149) //infectedMarines have 60% chance of dropping an item with 50% chance of it being a MLR, and the other 50% chance being a battery pack
+		if(ascii == 243){//locker, this might be a problem if we want multiple decors to drop different things
+			int random = rng->getInt(0,100);
+			if(random < 30){
+				Actor *flare = createFlare(0,0);
+				engine.actors.push(flare);
+				flare->pickable->pick(flare,owner);
+			}else if(random < 30+10){
+				Actor *chainMail = createTitanMail(0,0);
+				engine.actors.push(chainMail);
+				chainMail->pickable->pick(chainMail,owner);
+			}else if(random < 30+10+20){
+				Actor *myBoots = createMylarBoots(0,0);
+				engine.actors.push(myBoots);
+				myBoots->pickable->pick(myBoots,owner);
+			}else{
+				Actor *batt = createBatteryPack(0,0);
+				engine.actors.push(batt);
+				batt->pickable->pick(batt,owner);
+			}
+		}else if(ascii == 149) //infectedMarines have 60% chance of dropping an item with 50% chance of it being a MLR, and the other 50% chance being a battery pack
 		{
 			if(dice <= 70)
 			{
@@ -1035,6 +1121,14 @@ void Map::generateRandom(Actor *owner, int ascii){
 		}
 	}
 }
+Actor *Map::createCurrencyStack(int x, int y){
+	Actor *currencyStack = new Actor(x,y,'B',"PetaBitcoins",TCODColor::yellow);
+	currencyStack->sort = 0;
+	currencyStack->blocks = false;
+	currencyStack->pickable = new Coinage(1,100+75*(engine.level-1));
+	return currencyStack;
+}
+
 Actor *Map::createHealthPotion(int x,int y){
 	Actor *healthPotion = new Actor(x,y,184,"Medkit", TCODColor::white);
 	healthPotion->sort = 1;
@@ -1050,10 +1144,10 @@ Actor *Map::createFlashBang(int x, int y){
 	return scrollOfConfusion;
 }
 Actor *Map::createFlare(int x, int y){
-	Actor *scrollOfFlaring = new Actor(x,y,'F',"Flare", TCODColor::white);
+	Actor *scrollOfFlaring = new Actor(x,y,187,"Flare", TCODColor::white);
 	scrollOfFlaring->sort = 2;
 	scrollOfFlaring->blocks = false;
-	scrollOfFlaring->pickable = new Confuser(10,8);
+	scrollOfFlaring->pickable = new Flare(10,5,5);//10 is turns, can be random, 5 is range of throwability (constant), 5 is range of flare
 	return scrollOfFlaring;
 }
 Actor *Map::createFireBomb(int x, int y){
@@ -1101,3 +1195,4 @@ Actor *Map::createBatteryPack(int x,int y){
 	batteryPack->pickable = new Charger(5);
 	return batteryPack;
 }
+

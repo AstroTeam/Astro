@@ -19,3 +19,23 @@ mapcondec:
 23 is a locker
 
 24 is a looted locker
+
+25 is a jerry rigged tile
+
+26 is a danger sign
+
+27 is a cable bundle
+
+28 is an oil barrel
+
+29 is a generator
+
+30 is a generator console
+
+31 is a blowtorch
+
+32 is a pallet
+
+33 is a workbench (left)
+
+34 is a workbench (right)

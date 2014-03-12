@@ -118,7 +118,9 @@ void Gui::render() {
 	
 	//display FPS
 	sidebar->print(3,23,"FPS : %d",TCODSystem::getFps());
-
+	
+	//display wallet amount
+	sidebar->print(3,25,"Wallet : %d",engine.player->container->wallet);
 
 	//mouse look
 	//renderMouseLook();
@@ -141,12 +143,12 @@ void Gui::render() {
 	tileInfoScreen->printFrame(0, 0, TILE_INFO_WIDTH, 
 		PANEL_HEIGHT, true,TCOD_BKGND_ALPHA(50),"TILE INFO");
 	//draw the message
-	y = 2;
+	y = 1;
 	if(tileInfoLog.size() > 0){
 		for (Message **it = tileInfoLog.begin(); it != tileInfoLog.end(); it++) {
 			Message *message = *it;
 			tileInfoScreen->setDefaultForeground(message->col);
-			tileInfoScreen->print(2,y,message->text,TCOD_BKGND_ALPHA(100));
+			tileInfoScreen->print(1,y,message->text,TCOD_BKGND_ALPHA(100));
 			y++;
 		}
 		
@@ -198,56 +200,98 @@ Gui::Message::~Message() {
 void Gui::renderKeyLook() {
 	
 	//gets rid of everything previously printed to the tileInfoScreen by emptying the tileInfoLog
-	while(tileInfoLog.size() > 0) {
+	/*while(tileInfoLog.size() > 0) {
 		Message *toRemove = tileInfoLog.get(0);
 		tileInfoLog.remove(toRemove);
 		delete toRemove;
-	}
+	}*/
 	
 	
 	//gets the info to send to the tileInfoLog
 	int x = engine.player->x;
 	int y = engine.player->y;
 	if (engine.pickATile(&x,&y)){
-		char buf[128] = ""; 
+	
+		while(tileInfoLog.size() > 0) {
+			Message *toRemove = tileInfoLog.get(0);
+			tileInfoLog.remove(toRemove);
+			delete toRemove;
+		}
+		
+		
+		//char buf[128] = ""; 
 		if (engine.map->isInFov(x,y)){
 			
 			tileInfoMessage(TCODColor::lightGrey, "You see:");
 			
 			float i = engine.map->tiles[x+y*engine.map->width].infection;
-			tileInfoMessage(TCODColor::green, "an infection level of %g",i);
+
+			//tileInfoMessage(TCODColor::green, "an infection level of %g",i);
+
+			//Uncomment this if you want it to go into the tileInfoScreen
+			if (i < 1)
+				tileInfoMessage(TCODColor::green, "an area free of any ailment");
+				//could have this be nothing
+			else if (i < 2)
+				tileInfoMessage(TCODColor::green, "an area with some green moss on it");
+			else if (i < 3)
+				tileInfoMessage(TCODColor::green, "an area with some odd green moss on it's surface");
+			else if (i < 4)
+				tileInfoMessage(TCODColor::green, "an area with has weird moss covering it");
+			else if (i < 5)
+				tileInfoMessage(TCODColor::green, "an area that has a lot of moss on it");
+			else if (i < 6)
+				tileInfoMessage(TCODColor::green, "an area almost covered in odd green moss");
+			else
+				tileInfoMessage(TCODColor::green, "an area completely covered in weird moss");
+			
+			/*
+			if (i < 1)
+				engine.gui->message(TCODColor::green, "The ground you look at is free of any apparent ailment.");
+			else if (i < 2)
+				engine.gui->message(TCODColor::green, "The ground you look at has some green moss on it.");
+			else if (i < 3)
+				engine.gui->message(TCODColor::green, "The ground you look at has some odd green moss on it's surface.");
+			else if (i < 4)
+				engine.gui->message(TCODColor::green, "The ground you look at has weird moss covering it.");
+			else if (i < 5)
+				engine.gui->message(TCODColor::green, "The ground you look at has a lot of moss on it.");
+			else if (i < 6)
+				engine.gui->message(TCODColor::green, "The ground you look at is almost covered in odd green moss.");
+			else
+				engine.gui->message(TCODColor::green, "The ground you look at is completely covered in weird moss.");
+				
+			//engine.gui->message(TCODColor::green, "the infection level is %g",i);
+			*/
 			
 		}else {
 			tileInfoMessage(TCODColor::lightGrey, "You remember seeing:");
 		}
-		bool first = true;
 		for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
 			Actor *actor = *it;
 			//find actors under the mouse cursor
 			if (actor->x == x && actor->y == y) {
-				if (!first) {
-					tileInfoMessage(TCODColor::lightGrey, "You remember seeing:");
-				} else {
-					first = false;
-				}
 					tileInfoMessage(actor->col, actor->name);
 				if (actor->attacker && !actor->destructible->isDead() && engine.map->isInFov(x,y)) {
 					engine.player->attacker->lastTarget = actor;
 				}
 			}
 		}
-		//display the list of actors under the mouse cursor
-		Actor *actor = engine.getAnyActor(x, y);
+		
+		//uncomment below(s) and replace below-below if you only want the tileInfoLog to show if there is an actor on it. Changes this since we now print out the infection level
+		/*Actor *actor = engine.getAnyActor(x, y);
 		if (!actor || !engine.map->isExplored(x,y)) {
+		*/
+		
+		if (!engine.map->isExplored(x,y)) {
+			//clear all the messages before this
+			while(tileInfoLog.size() > 0){
+				Message *toRemove = tileInfoLog.get(0);
+				tileInfoLog.remove(toRemove);
+				delete toRemove;
+			}
 			
-			memset(&buf[0], 0, sizeof(buf));
-			
-			//clear the last message, just in case we added a "you remember seeing"
-			Message *toRemove = tileInfoLog.get(0);
-			tileInfoLog.remove(toRemove);
-			delete toRemove;
-			
-			tileInfoMessage(TCODColor::lightGrey, "There is nothing interesting here.");
+			tileInfoMessage(TCODColor::lightGrey, "\nThere is nothing interesting here.");
 		} 
 	}
 }

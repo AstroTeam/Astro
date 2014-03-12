@@ -8,6 +8,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 	PickableType type = (PickableType)zip.getInt();
 	Pickable *pickable = NULL;
 	switch(type) {
+		case CURRENCY: pickable = new Coinage(0); break;
 		case HEALER: pickable = new Healer(0); break;
 		case CHARGER: pickable = new Charger(0); break;
 		case LIGHTNING_BOLT: pickable = new LightningBolt(0,0); break;
@@ -38,6 +39,21 @@ bool Pickable::use(Actor *owner, Actor *wearer) {
 		owner->pickable->stackSize -= 1;
 	}
 	return false;
+}
+
+Coinage::Coinage(bool stacks, int stackSize, PickableType type)
+	: Pickable(stacks, stackSize, type) {
+}
+
+void Coinage::load(TCODZip &zip) {
+	stacks = zip.getInt();
+	stackSize = zip.getInt();
+}
+
+void Coinage::save(TCODZip &zip) {
+	zip.putInt(type);
+	zip.putInt(stacks);
+	zip.putInt(stackSize);
 }
 
 Healer::Healer(float amount, bool stacks, int stackSize, PickableType type)
@@ -120,15 +136,12 @@ bool LightningBolt::use(Actor *owner, Actor *wearer) {
 		return false;
 	}
 	//hit the closest monster for <damage> hit points;
-	float damageTaken = closestMonster->destructible->takeDamage(closestMonster,damage);
-	engine.damageDone += damage;
+	float damageTaken = closestMonster->destructible->takeDamage(closestMonster, -3 + 3 * wearer->totalIntel);
+	engine.damageDone += 3 * wearer->totalIntel - 3;
 	if (!closestMonster->destructible->isDead()) {
-	engine.gui->message(TCODColor::lightBlue,
-		"A lightning bolt strikes the %s with a loud crack"
-		"for %g damage.",
-		closestMonster->name,damageTaken);
+		engine.gui->message(TCODColor::orange,"Taking %g damage, the %s crackles with electricity, crying out in rage.",damageTaken,closestMonster->name);
 	} else {
-		engine.gui->message(TCODColor::orange,"The %s crackles with electricity, twitching slightly.",closestMonster->name);
+		engine.gui->message(TCODColor::orange,"Taking %g damage, the %s crackles with electricity, twitching slightly.",damageTaken,closestMonster->name);
 	}
 	return Pickable::use(owner,wearer);
 }
@@ -159,21 +172,21 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 		"or hit escape to cancel.");
 	int x = engine.player->x;
 	int y = engine.player->y;
-	if (!engine.pickATile(&x,&y,maxRange,range)) {
+	if (!engine.pickATile(&x,&y,maxRange, (wearer->totalIntel - 1) /3 +1)) {
 		return false;
 	}
 	//burn everything in range, including the player
-	engine.gui->message(TCODColor::orange, "The fireball explodes, burning everything within %g tiles!",range);
+	engine.gui->message(TCODColor::orange, "The fireball explodes, burning everything within %g tiles!",1 + (wearer->totalIntel - 1) /3);
 	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
 		Actor *actor = *it;
 		if (actor->destructible && !actor->destructible->isDead()
-			&&actor->getDistance(x,y) <= range) {
-			float damageTaken = actor->destructible->takeDamage(actor,damage);
-			engine.damageDone += damage;
+			&&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) {
+			float damageTaken = actor->destructible->takeDamage(actor, 2 * wearer->totalIntel);
+			engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
 				engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damageTaken);
 			} else {
-			engine.gui->message(TCODColor::orange,"The %s is an ashen mound, crumbling under its own weight.",actor->name);
+				engine.gui->message(TCODColor::orange,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",actor->name, damageTaken);
 			}
 		}
 	}
@@ -256,8 +269,8 @@ bool Flare::use(Actor *owner, Actor *wearer) {
 		return false;
 	}
 	//make new actor as a flare item
-	Actor *scrollOfFlaring = new Actor(x,y,'f',"Flare", TCODColor::white);
-	scrollOfFlaring->ai = new FlareAi(3,5);
+	Actor *scrollOfFlaring = new Actor(x,y,' ',"Flare", TCODColor::white);
+	scrollOfFlaring->ai = new FlareAi(lightRange,nbTurns);
 	//scrollOfFlaring->sort = 2;
 	scrollOfFlaring->blocks = false;
 	engine.actors.push(scrollOfFlaring);
@@ -279,7 +292,11 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 		if(isNPC && wearer->container){
 			wearer->container->remove(owner);
 			owner->x = wearer->x;
-			owner->y = wearer->y;
+			if(wearer->ch == 243){
+				owner->y = wearer->y + 1;
+			}else{
+				owner->y = wearer->y;
+			}
 			engine.actors.push(owner);
 			engine.sendToBack(owner);
 		}else if (numberDropped >= owner->pickable->stackSize && wearer->container) {
@@ -295,6 +312,7 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 			PickableType type = owner->pickable->type;
 			owner->pickable->stackSize -= numberDropped;
 			switch(type) {
+				case CURRENCY: break;
 				case HEALER: droppy->pickable = new Healer(((Healer*)owner->pickable)->amount); droppy->sort = 1; break;
 				case CHARGER: droppy->pickable = new Charger(((Charger*)owner->pickable)->amount); droppy->sort = 1; break;
 				case LIGHTNING_BOLT: droppy->pickable = new LightningBolt(((LightningBolt*)(owner->pickable))->range,((LightningBolt*)(owner->pickable))->damage); droppy->sort = 2; break;
