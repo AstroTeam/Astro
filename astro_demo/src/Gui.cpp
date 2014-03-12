@@ -209,7 +209,7 @@ void Gui::renderKeyLook() {
 	//gets the info to send to the tileInfoLog
 	int x = engine.player->x;
 	int y = engine.player->y;
-	if (engine.pickATile(&x,&y)){
+	while(!engine.pickATileForInfoScreen(&x,&y)){
 	
 		while(tileInfoLog.size() > 0) {
 			Message *toRemove = tileInfoLog.get(0);
