@@ -768,6 +768,115 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {   //need to 
 	return false;
 }
 
+bool Engine::pickATileForInfoScreen(int *x, int *y, float maxRange, float AOE) {   //need to make middle tile unique 
+		int dx = 0, dy = 0;
+		render();
+		TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&lastKey,NULL);
+		switch (lastKey.vk) {
+		case TCODK_UP: dy = -1; break;
+		case TCODK_DOWN: dy = 1; break;
+		case TCODK_LEFT: dx =-1; break;
+		case TCODK_RIGHT: dx = 1; break;
+		case TCODK_ENTER: 
+		{
+			if ((player->getDistance(*x,*y) > maxRange && maxRange != 0)) {
+				gui->message(TCODColor::pink,"this tile is out of range!");
+				return false;
+			} else {
+				return true;
+			}
+		}
+		case TCODK_ESCAPE: return false;
+		default: break;
+		}
+		*x += dx;
+		*y += dy;
+		
+		if (*x > 99) *x = 99;
+		if (*x < 0) *x = 0;
+		if (*y > 99) *y = 99;
+		if (*y < 0) *y = 0;
+		
+		//things with AOE > 1 need to have a more unique middle color so i can render them
+		if (AOE > 1.0 )
+		{
+			//make center unique
+			for (int i = 0; i < map->height; i++) {
+				for (int j = 0; j < map->width; j++) {
+					if ( distance(*x,j,*y,i) <= AOE ) {
+						if (distance(*x,j,*y,i) < 1.0) {//middle
+							mapcon->setCharBackground(j,i,TCODColor::darkerPink);
+							
+						}
+						else if ( distance(*x,player->x,*y,player->y) >= maxRange && maxRange != 0) {
+							mapcon->setCharBackground(j,i,TCODColor::desaturatedPink);
+						
+						} else {
+							mapcon->setCharBackground(j,i,TCODColor::pink);
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0; i < map->height; i++) {
+				for (int j = 0; j < map->width; j++) {
+					if ( distance(*x,j,*y,i) <= AOE ) {
+						if ( distance(*x,player->x,*y,player->y) >= maxRange && maxRange != 0) {
+							mapcon->setCharBackground(j,i,TCODColor::desaturatedPink);
+						} else {
+							mapcon->setCharBackground(j,i,TCODColor::pink);
+						}
+					}
+				}
+			}
+		}
+	//int mapx1 = 0, mapy1 = 0, mapy2 = 0, mapx2 = 0;
+	mapx1 = *x - ((screenWidth -22)/2);
+	mapy1 = *y - ((screenHeight -12)/2);
+	mapx2 = *x + ((screenWidth -22)/2);
+	mapy2 = *y + ((screenHeight -12)/2);
+	
+	
+	if (mapx1 <= 0) {// <= lets it catch the time when it needs to stop scrolling
+		mapx2 += (0-mapx1);
+		mapx1 = 0;
+		mapx2 += 1; //allows it to render the whole screen
+	}	
+	if (mapy1 <= 0) { 
+		mapy2 += (0-mapy1);
+		mapy1 = 0;
+		mapy2 += 1;
+	}
+	if (mapx2 >= 100) {
+		mapx1 += (100-mapx2);
+		//gui->message(TCODColor::green, "******************************************");
+		mapx2 = 100;
+		mapx1 -= 1;
+	}
+	if (mapy2 >= 101) {
+		mapy1 += (101-mapy2);
+		mapy2 = 101;
+		mapy1 -= 1;
+	}
+	//stops the map from spilling into the console
+	int mapy2a = mapy2;
+	if (mapy2a > TCODConsole::root->getHeight() - 12) mapy2a = TCODConsole::root->getHeight() - 12;
+	//gui->message(TCODColor::red, "y2a is %d",mapy2a);
+	//need to make a list of '.' under other chars, that there would be a difference between mapcon and mapconCpy
+	//then need to make some sort of flag
+	
+	
+	//blitting of the map onto the screen...maybe blit onto temp root copy, then render and blit back
+	TCODConsole::blit(mapcon, mapx1, mapy1, mapx2, mapy2a, 
+		TCODConsole::root, 22, 0);
+		
+	TCODConsole::flush();
+		
+	return false;
+}
+
 Actor *Engine::getActor(int x, int y) const {
 	for (Actor **it = actors.begin(); it != actors.end(); it++) {
 		Actor *actor = *it;

@@ -782,6 +782,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		numLights = rmSze/30;
 		if (numLights <= 0)
 			numLights = 1;
+		TCODRandom *myRandom = new TCODRandom();
+		int chance = 0;
 		for (int i = 0; i < numLights;)
 		{
 			//bool valid = false;
@@ -792,20 +794,35 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
 				Actor *light = new Actor(x, y, 224, "A hastily erected Emergency Light", TCODColor::white);
 				//4,1 = standard light, radius, flkr
-				TCODRandom *myRandom = new TCODRandom();
+				
 				//0.8 is lower limit, put closer to 1 for less flicker
-				int chance = myRandom->getInt(0,10);
+				chance = myRandom->getInt(0,10,5);
+				bool broke = false;
 				float rng2;
-				if (chance > 5)
+				if (chance >= 5 && chance < 10)//could make this number and all flickering number change based on level
 				{
 					rng2 = myRandom->getFloat(0.9000f,0.9900f,0.9500f);
 					light->name = "An flickering hastily erected Emergency Light";
+					//engine.gui->message(TCODColor::red, "flickering %d",chance);
+				}
+				else if (chance >= 10)
+				{
+					rng2 = myRandom->getFloat(0.9000f,0.9900f,0.9500f);
+					light->name = "A broken Emergency Light";
+					broke = true;
+					//engine.gui->message(TCODColor::red, "broken %d",chance);
 				}
 				else
 				{
 					rng2 = 1;
+					//engine.gui->message(TCODColor::red, "fine %d",chance);
 				}
 				light->ai = new LightAi(rng->getInt(3,6),rng2);
+				if (broke)
+				{
+					LightAi *l = (LightAi*)light->ai;
+					l->onOff = false;
+				}
 				engine.actors.push(light);
 				i++;
 			}
