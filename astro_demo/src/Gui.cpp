@@ -230,8 +230,8 @@ void Gui::renderKeyLook() {
 			//tileInfoMessage(TCODColor::green, "an infection level of %g",i);
 
 			//Uncomment this if you want it to go into the tileInfoScreen
-			if (i < 1)
-				tileInfoMessage(TCODColor::green, "an area free of any ailment");
+			if (i < 1){}
+				//tileInfoMessage(TCODColor::green, "an area free of any ailment");
 				//could have this be nothing
 			else if (i < 2)
 				tileInfoMessage(TCODColor::green, "an area with some green moss on it");
