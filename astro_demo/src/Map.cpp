@@ -407,6 +407,12 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//put the player in the first room
 		engine.player->x = (x1+x2)/2;
 		engine.player->y = (y1+y2)/2;
+		engine.playerLight = new Actor(engine.player->x, engine.player->y, 'l', "Your Flashlight", TCODColor::white);
+		engine.playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
+		engine.actors.push(engine.playerLight);
+		engine.playerLight->blocks = false;
+		//playerLight->ai->moving = true;
+		engine.sendToBack(engine.playerLight);
 	}
 	TCODRandom *rng = TCODRandom::getInstance();
 	//add monsters

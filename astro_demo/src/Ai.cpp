@@ -167,7 +167,10 @@ void PlayerAi::update(Actor *owner) {
 		engine.gui->message(TCODColor::pink, "saved"); break;
 	case TCODK_CONTROL: 
 		engine.player->x = engine.stairs->x;
+		engine.playerLight->x = engine.stairs->x;
 		engine.player->y = engine.stairs->y;
+		engine.playerLight->y = engine.stairs->y;
+		
 		engine.map->computeFov(); break;
 		
 	case TCODK_PRINTSCREEN:

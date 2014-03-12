@@ -50,12 +50,12 @@ void Engine::term() {
 void Engine::init() {
 	engine.killCount = 0;
 	player = new Actor(40,25,'@', "player","Human","Marine","Infantry",TCODColor::white);
-	playerLight = new Actor(40, 25, 'l', "Your Flashlight", TCODColor::white);
-	playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
-	engine.actors.push(playerLight);
-	playerLight->blocks = false;
+	//playerLight = new Actor(40, 25, 'l', "Your Flashlight", TCODColor::white);
+	//playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
+	//engine.actors.push(playerLight);
+	//playerLight->blocks = false;
 	//playerLight->ai->moving = true;
-	engine.sendToBack(playerLight);
+	//engine.sendToBack(playerLight);
 	player->destructible = new PlayerDestructible(100, 2, "your cadaver");
 	player->attacker = new Attacker(5,20);
 	player->ai = new PlayerAi();
@@ -375,10 +375,11 @@ void Engine::save() {
 		player->save(zip);
 		//then the stairs
 		stairs->save(zip);
+		playerLight->save(zip);
 		//then all the other actors
-		zip.putInt(actors.size() - 2);
+		zip.putInt(actors.size() - 3);
 		for (Actor **it = actors.begin(); it!=actors.end(); it++) {
-			if (*it != player && *it != stairs) {
+			if (*it != player && *it != stairs && *it != playerLight) {
 				(*it)->save(zip);
 			}
 		}
@@ -450,8 +451,12 @@ void Engine::load(bool pause) {
 		//the stairs
 		stairs = new Actor(0,0,0,NULL,TCODColor::white);
 		stairs->load(zip);
+		//then the player's light
+		playerLight = new Actor(0,0,0, NULL, TCODColor::white);
+		playerLight->load(zip);
 		actors.push(player);
 		actors.push(stairs);
+		actors.push(playerLight);
 		//then all other actors
 		int nbActors = zip.getInt();
 		while (nbActors > 0) {
