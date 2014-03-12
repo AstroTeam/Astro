@@ -1122,7 +1122,8 @@ void TechAi::update(Actor *owner) {
 				for (Actor **iterator = engine.actors.begin(); iterator != engine.actors.end(); iterator++) 
 				{
 					Actor *actor = *iterator;
-					if (actor->destructible && !actor->destructible->isDead() && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24) //243 = locker
+					const char* name = actor->name;
+					if (actor->destructible && !actor->destructible->isDead() && strcmp(name, "infected corpse") != 0 && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24) //243 = locker
 					{
 						float distance = actor->getDistance(owner->x,owner->y);
 						if (distance < bestDistance && (distance <= range || range ==0.0f)) 
