@@ -206,7 +206,6 @@ void Gui::renderKeyLook() {
 		delete toRemove;
 	}*/
 	
-	
 	//gets the info to send to the tileInfoLog
 	int x = engine.player->x;
 	int y = engine.player->y;
@@ -224,6 +223,8 @@ void Gui::renderKeyLook() {
 			
 			tileInfoMessage(TCODColor::lightGrey, "You see:");
 			
+			int c = engine.map->tiles[x+y*engine.map->width].num;
+
 			float i = engine.map->tiles[x+y*engine.map->width].infection;
 
 			//tileInfoMessage(TCODColor::green, "an infection level of %g",i);
@@ -247,7 +248,8 @@ void Gui::renderKeyLook() {
 			
 			/*
 			if (i < 1)
-				engine.gui->message(TCODColor::green, "The ground you look at is free of any apparent ailment.");
+				//engine.gui->message(TCODColor::green, "The ground you look at is free of any apparent ailment.");
+				{}
 			else if (i < 2)
 				engine.gui->message(TCODColor::green, "The ground you look at has some green moss on it.");
 			else if (i < 3)
@@ -263,6 +265,9 @@ void Gui::renderKeyLook() {
 				
 			//engine.gui->message(TCODColor::green, "the infection level is %g",i);
 			*/
+
+			tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
+
 			
 		}else {
 			tileInfoMessage(TCODColor::lightGrey, "You remember seeing:");

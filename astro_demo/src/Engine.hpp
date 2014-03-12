@@ -13,6 +13,7 @@ public:
 	TCODConsole *mapconDec;
 	TCODList<Actor *> actors;
 	Actor *player;
+	Actor *playerLight;
 	Actor *stairs;
 	Map *map;
 	//Map *mapCpy;

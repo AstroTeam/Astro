@@ -214,7 +214,9 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 		
 	} */
 	owner->x = targetx;
+	engine.playerLight->x = targetx;
 	owner->y = targety;
+	engine.playerLight->y = targety;
 	return true;
 }
 
@@ -395,7 +397,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,3);
 				if (!closestMonster) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
-					//return false;
+					return;
 				}
 				//hit the closest monster for <damage> hit points;
 				else{
@@ -423,13 +425,13 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				int x = engine.player->x;
 				int y = engine.player->y;
 				if (!engine.pickATile(&x, &y, 3)) {
-					engine.gui->message(TCODColor::lightGrey, "You can't shoot that far.");
-					//return false;
+					//engine.gui->message(TCODColor::lightGrey, "You can't shoot that far.");
+					return;
 				}
 				Actor *actor = engine.getActor(x,y);
 				if (!actor) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy at that location.");
-					//return false;
+					return;
 				}
 				/*if (!closestMonster) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
@@ -755,9 +757,30 @@ LightAi::LightAi(int rad, float f)
 	//float rng = myRandom->getFloat(0.0f,1.0f,0.9);
 	flkr = f;
 	radius = rad;	
+	lstX = 0;
+	lstY = 0;
 	lmap = new TCODMap(13,13);
+	//oldMap = new TCODMap(13,13);
 	onOff = true;
 	frst = true;
+	//frstTurn = true;
+	moving = false;
+}
+
+LightAi::LightAi(int rad, float f, bool movibility)
+{
+	//TCODRandom *myRandom = new TCODRandom();
+	//float rng = myRandom->getFloat(0.0f,1.0f,0.9);
+	flkr = f;
+	radius = rad;	
+	lstX = 0;
+	lstY = 0;
+	lmap = new TCODMap(13,13);
+	//oldMap = new TCODMap(13,13);
+	onOff = true;
+	frst = true;
+	//frstTurn = true;
+	moving = movibility;
 }
 
 void LightAi::load(TCODZip &zip){}
@@ -773,6 +796,7 @@ void LightAi::flicker(Actor * owner, float chance){
 	int miny = owner->y-6;
 	//owner->radius
 	//lmap->computeFov(owner->x-minx,owner->y-miny,radius);
+	
 	for (int x=minx; x <= maxx; x++) {
 		for (int y=miny; y <= maxy; y++) {
 			if (lmap->isInFov(x-minx,y-miny)) {
@@ -805,9 +829,38 @@ void LightAi::update(Actor * owner)
 		int maxy = owner->y+6;
 		int miny = owner->y-6;
 		//lmap = new TCODMap(maxx-minx,maxy-miny);
+		
+		if (moving)
+		{
+			engine.gui->message(TCODColor::yellow, "changed light!");
+			for (int x=lstX-6; x <= lstX+6; x++) {
+				for (int y=lstY-6; y <= lstY+6; y++) {
+					
+					if (engine.map->tiles[x+y*engine.map->width].drty)
+					{
+						if (engine.map->tiles[x+y*engine.map->width].num == 1)//player's FOV
+						{
+							engine.map->tiles[x+y*engine.map->width].lit = false;//problem-> the player's flashlight is the only one that needs to move
+							engine.map->tiles[x+y*engine.map->width].num--;      //all else never comes here, just add one and be done
+							frst = true;				                         //everytime you move, decrement by 1, then add the new shit back
+							engine.map->tiles[x+y*engine.map->width].drty = false;
+						}
+						else if (engine.map->tiles[x+y*engine.map->width].num > 1)
+						{
+							engine.map->tiles[x+y*engine.map->width].num--;
+							frst = true;
+							engine.map->tiles[x+y*engine.map->width].drty = false;
+						}
+						//lmap->setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
+					}
+				}
+			}
+		}
+		
 		for (int x=minx; x <= maxx; x++) {
 			for (int y=miny; y <= maxy; y++) {
 				//inheriting properties of real map
+				
 				lmap->setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
 			}
 		}
@@ -815,26 +868,46 @@ void LightAi::update(Actor * owner)
 		lmap->computeFov(owner->x-minx,owner->y-miny,radius);
 		for (int x=minx; x <= maxx; x++) {
 			for (int y=miny; y <= maxy; y++) {
-				if (lmap->isInFov(x-minx,y-miny) && !(engine.player->x == x && engine.player->y == y)) {
-					engine.map->tiles[x+y*engine.map->width].lit = true;
-					if (frst)
-					{
-						engine.map->tiles[x+y*engine.map->width].num++;
-						
+				//if (engine.distance(owner->x,x,owner->y,y) <= radius)
+				//{
+					if (lmap->isInFov(x-minx,y-miny)){ //&& !(engine.player->x == x && engine.player->y == y)) {
+					
+						engine.map->tiles[x+y*engine.map->width].lit = true;
+						if (moving)
+								engine.map->tiles[x+y*engine.map->width].drty = true;
+						if (frst)
+						{
+							
+							engine.map->tiles[x+y*engine.map->width].num++;
+							
+							//engine.gui->message(TCODColor::green, "calculating lights.");
+							//frst = false;//when set to off turn it back to true
+						}
 					}
-				}
-				//if ((engine.player->x == x && engine.player->y == y))
-				//{
-				//	engine.map->tiles[x+y*engine.map->width].lit = false;
-				//}
-				//else
-				//{
-				//	engine.map->tiles[x+y*engine.map->width].lit = false;
+					//if ((engine.player->x == x && engine.player->y == y))
+					//{
+					//	engine.map->tiles[x+y*engine.map->width].lit = false;
+					//}
+					//else
+					//{
+					//	engine.map->tiles[x+y*engine.map->width].lit = false;
+					//	if (frst)
+					//	{
+					//		engine.map->tiles[x+y*engine.map->width].num--;
+							
+					//	}
+					//}
 				//}
 			}
 		}
+		if (moving){
+		lstX = owner->x;
+		lstY = owner->y;}
+		
 		if (frst)
-			frst = false;//when set to off turn it back to true
+			frst = false;
+		
+		
 	}
 	else
 	{
