@@ -591,10 +591,23 @@ void Renderer::render(void *sdlSurface){
 		//	return actor;
 		//}
 		if (actor->ch == 224 && engine.distance(actor->x,engine.player->x,actor->y,engine.player->y) < 11){
-			//LightAi *l = (LightAi*)actor->ai;
-			//TCODRandom *myRandom = new TCODRandom();
-			//float rng = myRandom->getFloat(0.0000f,1.0000f);
-			//l->flicker(actor,rng);
+			LightAi *l = (LightAi*)actor->ai;
+			/*if (!l->onOff)
+			{
+				l->onOff = true;
+				l->update(actor);
+			}
+			TCODRandom *myRandom = new TCODRandom();
+			float rng = myRandom->getFloat(0.0000f,1.0000f);
+			l->flicker(actor,rng);*/
+			TCODRandom *myRandom = new TCODRandom();
+			float rng = myRandom->getFloat(0.0000f,1.0000f,0.65000f);
+			if(l->flkr < rng || l->onAgn)
+			{
+				l->onOff = !l->onOff;
+				l->update(actor);
+				l->onAgn = !l->onAgn;
+			}
 		}
 		
 	}
