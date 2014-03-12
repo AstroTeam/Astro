@@ -56,6 +56,17 @@ void Engine::init() {
 	player->ai = new PlayerAi();
 	player->container = new Container(50);
 	actors.push(player);
+	player->str=engine.gui->strValue;
+	//player->totalStr=engine.gui->strValue;
+	player->attacker->basePower=engine.gui->strValue;
+	player->attacker->totalPower=engine.gui->strValue;
+	player->dex=engine.gui->agValue;
+	player->totalDex=engine.gui->agValue;
+	player->intel=engine.gui->intelValue;
+	player->totalIntel=engine.gui->intelValue;
+	player->vit=engine.gui->conValue;
+	player->destructible->hp=engine.gui->conValue;
+	player->destructible->maxHp=engine.gui->conValue;
 	int plyrAscii = 64;
 	switch(engine.gui->raceSelection){
 		case 1:
@@ -772,10 +783,11 @@ void Engine::win() {
 	gameStatus=Engine::VICTORY;
 }
 void Engine::classMenu(){
-	engine.gui->statPoints = 5;
+	engine.gui->statPoints = 2;
 	engine.gui->conValue = 100;
 	engine.gui->strValue = 5;
-	engine.gui->agValue = 2;
+	engine.gui->agValue = 3;
+	engine.gui->intelValue = 3;
 	engine.gui->menu.clear();
 	engine.gui->menu.addItem(Menu::RACE, "RACE");
 	engine.gui->menu.addItem(Menu::CLASS, "CLASS");
@@ -941,9 +953,10 @@ if(cat == 1){
 	}
 }else{
 	engine.gui->classMenu.clear();
-	engine.gui->classMenu.addItem(Menu::CONSTITUTION, "CONSTITUTION");
+	engine.gui->classMenu.addItem(Menu::VITALITY, "VITALITY");
 	engine.gui->classMenu.addItem(Menu::STRENGTH, "STRENGTH");
-	engine.gui->classMenu.addItem(Menu::AGILITY, "AGILITY");
+	engine.gui->classMenu.addItem(Menu::DEXTERITY, "DEXTERITY");
+	engine.gui->classMenu.addItem(Menu::INTELLIGENCE, "INTELLIGENCE");
 	engine.gui->classMenu.addItem(Menu::RESET,"RESET SELECTIONS");
 	engine.gui->classMenu.addItem(Menu::EXIT, "DONE");
 	bool choice = true;
@@ -951,7 +964,7 @@ if(cat == 1){
 				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
 				
 					switch (menuItem) {
-						case Menu::CONSTITUTION :
+						case Menu::VITALITY :
 							if(engine.gui->statPoints == 0)
 								choice = false;
 							else{
@@ -969,7 +982,7 @@ if(cat == 1){
 								engine.gui->classSidebar();
 							}
 							break;
-						case Menu::AGILITY :
+						case Menu::DEXTERITY :
 							if(engine.gui->statPoints == 0)
 								choice = false;
 							else{
@@ -978,14 +991,24 @@ if(cat == 1){
 								engine.gui->classSidebar();
 							}
 							break;
+						case Menu::INTELLIGENCE :
+							if(engine.gui->statPoints == 0)
+								choice = false;
+							else{
+								engine.gui->statPoints = engine.gui->statPoints - 1;
+								engine.gui->intelValue += 1;
+								engine.gui->classSidebar();
+							}
+							break;
 						case Menu::EXIT :
 							choice = false;
 							break;
 						case Menu::RESET:
-							engine.gui->statPoints = 5;
+							engine.gui->statPoints = 2;
 							engine.gui->conValue = 100;
 							engine.gui->strValue = 5;
-							engine.gui->agValue = 2;
+							engine.gui->agValue = 3;
+							engine.gui->intelValue = 3;
 							engine.gui->classSidebar();
 							break;
 						case Menu::NO_CHOICE:

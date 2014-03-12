@@ -9,6 +9,7 @@ public:
 	EXIT,
 	MAIN_MENU,
 	CONSTITUTION,
+	VITALITY,
 	STRENGTH,
 	AGILITY,
 	DEXTERITY,
@@ -93,6 +94,7 @@ public:
 	int conValue;
 	int strValue;
 	int agValue;
+	int intelValue;
 	//Values that save the last selection made in Race/Class Menus
 	/*int raceChosen;
 	int classChosen;

@@ -702,6 +702,7 @@ void Gui::classSidebar(){
 			classBar.print(1,19,"VITALITY: %d",conValue);
 			classBar.print(1,21,"STRENGTH: %d",strValue);
 			classBar.print(1,23,"DEXTERITY: %d",agValue);
+			classBar.print(1,25,"INTELLIGENCE: %d",intelValue);
 			
 			TCODConsole::blit(&classBar, 0, 0, 20, engine.screenHeight, TCODConsole::root, 0, 0);
 }
