@@ -921,7 +921,29 @@ void LightAi::update(Actor * owner)
 		for (int x=minx; x <= maxx; x++) {
 			for (int y=miny; y <= maxy; y++) {
 				//if there is only one light source on the tile
-				if (engine.distance(owner->x,x,owner->y,y) <= radius)
+				if (lmap->isInFov(x-minx,y-miny)){ //&& !(engine.player->x == x && engine.player->y == y)) {
+					if (engine.map->tiles[x+y*engine.map->width].num == 1)
+					{
+						
+						if (!frst)
+						{
+							engine.map->tiles[x+y*engine.map->width].lit = false;
+							engine.map->tiles[x+y*engine.map->width].num--;
+							
+						}
+						//engine.map->tiles[x+y*engine.map->width].num--;
+					}
+					else if (engine.map->tiles[x+y*engine.map->width].num > 1)
+					{
+						if (!frst)
+						{
+							engine.map->tiles[x+y*engine.map->width].num--;
+							
+						}
+					}
+						
+				}
+				/*if (engine.distance(owner->x,x,owner->y,y) <= radius)
 				{
 					if (engine.map->tiles[x+y*engine.map->width].num == 1)
 					{
@@ -942,7 +964,7 @@ void LightAi::update(Actor * owner)
 							
 						}
 					}
-				}
+				}*/
 			}
 		}
 		
