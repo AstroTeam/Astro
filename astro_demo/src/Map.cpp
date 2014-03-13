@@ -147,7 +147,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 			
 			if (a != NULL)
 			{
-				if (strcmp(a->name,"a filing cabinet") == 0)
+				if (a->smashable)
 				{
 					//engine.actors.remove(a);
 					//CHANGE THE SPRITE TO BROKEN CABINET
@@ -157,7 +157,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					//cout << "breaking cabinet";
 					a->blocks = false;
 					a->ch = 241;
-					a->name = "a destroyed filing cabinet";
+					a->name = "Debris";
 					engine.sendToBack(a);
 					
 					int n = rng->getInt(5,8);
@@ -375,6 +375,8 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 				for (int i = 0; i <= rng->getInt(1,3); i++) {
 					roomList->push(BARRACKS);
 				}	
+				roomList->push(KITCHEN);
+				roomList->push(KITCHEN);
 				//need to see if end list items are less common
 				//roomList->push(SERVER);
 				//roomList->push(ARMORY);
@@ -740,6 +742,45 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		}
 	}
 
+	if (room->type == KITCHEN) {
+		cout << "KITCHEN Made" << endl;
+		TCODRandom *rng = TCODRandom::getInstance();
+		int midX = (x1+x2)/2;
+		for (int i = x1; i < x2+1; i++)
+		{
+			if (i == x2) {
+				Actor * refrigerator = new Actor(i, y1,'r',"refrigerator", TCODColor::white);
+				refrigerator->smashable = true;
+				engine.actors.push(refrigerator);
+			}
+			else if (0 == rng->getInt(0,5)) {
+				Actor * oven = new Actor(i, y1,'o',"oven", TCODColor::white);
+				oven->smashable = true;
+				engine.actors.push(oven);
+			}
+			else {
+				Actor * counter = new Actor(i, y1,'c',"Kitchen Counter", TCODColor::white);
+				counter->smashable = true;
+				engine.actors.push(counter);
+			}
+			if (i > x1+1 && i < x2-1) {
+				if (i > midX-2 && i < midX+2) {
+					Actor *sink = new Actor(i, y1+3,'s',"Industrial Sink", TCODColor::white);
+					engine.actors.push(sink);
+					Actor *sink2 = new Actor(i, y1+4,'s',"Industrial Sink", TCODColor::white);
+					engine.actors.push(sink2);
+				}
+				else { 
+
+					Actor * midCounter = new Actor(i, y1+3,'c',"Kitchen Counter", TCODColor::white);
+					engine.actors.push(midCounter);
+					Actor * midCounter2 = new Actor(i, y1+4,'c',"Kitchen Counter", TCODColor::white);
+					engine.actors.push(midCounter2);
+
+				}
+			}
+		}
+	}
 	/*
 	 *
 	 * SETTINGS FOR OTHER ROOMS CAN BE PLACED HERE

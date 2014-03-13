@@ -9,6 +9,7 @@ public:
 	const char *role;  //the actor's role (default Marine)
 	const char *job;   //the actor's job (default Infantry)
 	bool blocks; //can you walk over this guy?
+	bool smashable; //can this be smashed?
 	bool oozing; //is this guy infected?
 	bool susceptible; //is this guy susceptible to the infection?
 	int sort; //Actor type (1 = Item, 2 = Tech, 3 = Armor, 4 = Weapon)

@@ -10,7 +10,7 @@ namespace Param {
 		BARRACKS,  //done* -> must add dropping items from lockers
 		GENERATOR, //must populate with decor
 		SERVER,    //to-do
-		KITCHEN,   //to-do
+		KITCHEN,   //doing
 		MESSHALL,  //to-do
 		ARMORY,    //to-do
 		OBSERVATORY//to-do
