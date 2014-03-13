@@ -211,7 +211,7 @@ void Map::addMonster(int x, int y) {
 	float infectedGrenadierAtk = 2;
 	float infectedGrenadierXp = 20;
 //	float infectedGrenadierChance = 80;
-	int infectedGrenadierAscii = 155; //Change this to the desired ascii
+	int infectedGrenadierAscii = 133; //Change this to the desired ascii
 	
 	//Infected NCO Base Stats
 	float infectedNCOMaxHp = 12;
@@ -1223,7 +1223,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 	}
 }
 Actor *Map::createCurrencyStack(int x, int y){
-	Actor *currencyStack = new Actor(x,y,'B',"PetaBitcoins",TCODColor::yellow);
+	Actor *currencyStack = new Actor(x,y,188,"PetaBitcoins",TCODColor::yellow);
 	currencyStack->sort = 0;
 	currencyStack->blocks = false;
 	currencyStack->pickable = new Coinage(1,100+75*(engine.level-1));
