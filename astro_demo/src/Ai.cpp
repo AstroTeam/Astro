@@ -544,14 +544,14 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	con.setDefaultForeground(TCODColor::white);
 	
 	//Print Currently Equipped armor onto the screen
-	con.print(14,20,"ARMOR");
-	con.print(1,22,"HEAD: ");
-	con.print(1,24,"CHEST: ");
-	con.print(1,26,"LEGS: ");
-	con.print(1,28,"FEET: ");
-	con.print(1,30,"HAND1: ");
-	con.print(1,32,"HAND2: ");
-	con.print(1,34,"RANGED: ");
+	con.print(14,22,"ARMOR");
+	con.print(1,24,"HEAD: ");
+	con.print(1,26,"CHEST: ");
+	con.print(1,28,"LEGS: ");
+	con.print(1,30,"FEET: ");
+	con.print(1,32,"HAND1: ");
+	con.print(1,34,"HAND2: ");
+	con.print(1,36,"RANGED: ");
 	for(Actor **it = owner->container->inventory.begin(); it != owner->container->inventory.end(); ++it){
 		Actor *actor = *it;
 		if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
@@ -585,13 +585,13 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	}
 	//Diplay Character Stats
 	con.print(2,4,"STATS");
-	con.print(1,6,"VIT: %d",owner->vit);
-	con.print(1,8,"DEX: %d",owner->dex);
-	con.print(1,10,"STR: %d",owner->str);
-	con.print(1,12,"INT: %d",owner->intel);
-	con.print(1,14,"KILLS: %d",engine.killCount);
-	con.print(1,16,"DMG DONE: %g",engine.damageDone);
-	con.print(1,18,"DMG TAKEN: %g",engine.damageReceived);
+	con.print(1,8,"VIT: %d",owner->vit);
+	con.print(1,10,"DEX: %d",owner->dex);
+	con.print(1,12,"STR: %d",owner->str);
+	con.print(1,14,"INT: %d",owner->intel);
+	con.print(1,16,"KILLS: %d",engine.killCount);
+	con.print(1,18,"DMG DONE: %g",engine.damageDone);
+	con.print(1,20,"DMG TAKEN: %g",engine.damageReceived);
 	
 	//Display Character Image
 	con.print(20,8,"@");
