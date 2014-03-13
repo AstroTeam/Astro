@@ -17,7 +17,7 @@ Ai *Ai::create(TCODZip &zip) {
 	ai->load(zip);
 	return ai;
 }
-Actor *Ai::choseFromInventory(Actor *owner,int type) {
+Actor *Ai::choseFromInventory(Actor *owner,int type, bool isVend) {
 	static const int INVENTORY_WIDTH = 38;
 	static const int INVENTORY_HEIGHT = 28;
 	inventoryScreen = new TCODConsole(INVENTORY_WIDTH, INVENTORY_HEIGHT);
@@ -48,9 +48,15 @@ Actor *Ai::choseFromInventory(Actor *owner,int type) {
 		}
 	}
 	//blit the inventory console on the root console
-	TCODConsole::blit(inventoryScreen,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
-		TCODConsole::root, engine.screenWidth/2 - INVENTORY_WIDTH/2,
-		engine.screenHeight/2 - INVENTORY_HEIGHT/2 + 1);
+	if(isVend){
+		TCODConsole::blit(inventoryScreen,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
+			TCODConsole::root, engine.screenWidth/2 - INVENTORY_WIDTH/2 + 20,
+			engine.screenHeight/2 - INVENTORY_HEIGHT/2 - 3);
+	}else{
+		TCODConsole::blit(inventoryScreen,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
+			TCODConsole::root, engine.screenWidth/2 - INVENTORY_WIDTH/2,
+			engine.screenHeight/2 - INVENTORY_HEIGHT/2 + 1);
+	}
 	TCODConsole::flush();
 	
 	//wait for a key press
@@ -167,7 +173,10 @@ void PlayerAi::update(Actor *owner) {
 		engine.gui->message(TCODColor::pink, "saved"); break;
 	case TCODK_CONTROL: 
 		engine.player->x = engine.stairs->x;
+		engine.playerLight->x = engine.stairs->x;
 		engine.player->y = engine.stairs->y;
+		engine.playerLight->y = engine.stairs->y;
+		
 		engine.map->computeFov(); break;
 		
 	case TCODK_PRINTSCREEN:
@@ -214,7 +223,9 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 		
 	} */
 	owner->x = targetx;
+	engine.playerLight->x = targetx;
 	owner->y = targety;
+	engine.playerLight->y = targety;
 	return true;
 }
 
@@ -261,33 +272,39 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 			Actor *actor;
 			bool choice = true;
+			bool itemUsed = true;
 			while (engine.invState != 4){
 				TCODConsole::flush();
 			}
 			//TCODConsole::root->clear();
 			
 			while(choice){
-			
 			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 			//TCODConsole::root->clear();
 				switch (menuItem) {
 					case Menu::ITEMS :
-						actor = choseFromInventory(owner,1);
-						if(actor)
-							choice = false;
-						break;
+						itemUsed = true;
+						while(itemUsed){
+							actor = choseFromInventory(owner,1,false);
+							if(actor){
+								itemUsed = actor->pickable->use(actor,owner);
+							}else{
+								itemUsed = false;
+							}
+						}
+					break;
 					case Menu::TECH :
-						actor = choseFromInventory(owner,2);
+						actor = choseFromInventory(owner,2,false);
 						if(actor)
 							choice = false;
 						break;
 					case Menu::ARMOR:
-						actor = choseFromInventory(owner,3);
+						actor = choseFromInventory(owner,3,false);
 						if(actor)
 							choice = false;
 						break;
 					case Menu::WEAPONS:
-						actor = choseFromInventory(owner,4);
+						actor = choseFromInventory(owner,4,false);
 						if(actor)
 							choice = false;
 						break;
@@ -302,7 +319,6 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			engine.invState = 0;
 			engine.invFrames = 0;
 			if (actor) {
-				
 				bool used;
 				used = actor->pickable->use(actor,owner);
 				if (used) {
@@ -332,22 +348,22 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 				switch (menuItem) {
 					case Menu::ITEMS :
-						actor = choseFromInventory(owner,1);
+						actor = choseFromInventory(owner,1,false);
 						if(actor)
 							choice = false;
 						break;
 					case Menu::TECH :
-						actor = choseFromInventory(owner,2);
+						actor = choseFromInventory(owner,2,false);
 						if(actor)
 							choice = false;
 						break;
 					case Menu::ARMOR:
-						actor = choseFromInventory(owner,3);
+						actor = choseFromInventory(owner,3,false);
 						if(actor)
 							choice = false;
 						break;
 					case Menu::WEAPONS:
-						actor = choseFromInventory(owner,4);
+						actor = choseFromInventory(owner,4,false);
 						if(actor)
 							choice = false;
 						break;
@@ -395,7 +411,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,3);
 				if (!closestMonster) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
-					//return false;
+					return;
 				}
 				//hit the closest monster for <damage> hit points;
 				else{
@@ -423,13 +439,13 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				int x = engine.player->x;
 				int y = engine.player->y;
 				if (!engine.pickATile(&x, &y, 3)) {
-					engine.gui->message(TCODColor::lightGrey, "You can't shoot that far.");
-					//return false;
+					//engine.gui->message(TCODColor::lightGrey, "You can't shoot that far.");
+					return;
 				}
 				Actor *actor = engine.getActor(x,y);
 				if (!actor) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy at that location.");
-					//return false;
+					return;
 				}
 				/*if (!closestMonster) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
@@ -460,7 +476,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 	}
 }
 
-Actor *PlayerAi::choseFromInventory(Actor *owner,int type) {
+Actor *PlayerAi::choseFromInventory(Actor *owner,int type, bool isVend) {
 	static const int INVENTORY_WIDTH = 38;
 	static const int INVENTORY_HEIGHT = 28;
 	inventoryScreen = new TCODConsole(INVENTORY_WIDTH, INVENTORY_HEIGHT);
@@ -663,62 +679,7 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	}
 	
 }
-Actor *MonsterAi::choseFromInventory(Actor *owner,int type) {
-	static const int INVENTORY_WIDTH = 38;
-	static const int INVENTORY_HEIGHT = 28;
-	inventoryScreen = new TCODConsole(INVENTORY_WIDTH, INVENTORY_HEIGHT);
-	
-	//display the inventory frame
-	inventoryScreen->setDefaultForeground(TCODColor(100,180,250));
-	inventoryScreen->printFrame(0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,true,TCOD_BKGND_DEFAULT);
-	
-	//display the items with their keyboard shortcut
-	inventoryScreen->setDefaultForeground(TCODColor::white);
-	int shortcut = 'a';
-	int y = 1;
-	for (Actor **it = owner->container->inventory.begin();
-		it != owner->container->inventory.end(); it++) {
-		Actor *actor = *it;
-		if(actor->sort == type){
-			if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
-				inventoryScreen->print(2,y,"(%c) %s(E)",shortcut,actor->name);
-			}else{
-				inventoryScreen->print(2,y,"(%c) %s",shortcut,actor->name);
-			}
-			owner->container->select[shortcut] = actor->name;
-			if (actor->pickable->stacks) {
-				inventoryScreen->print(17, y, "(%d)",actor->pickable->stackSize);
-			}
-			y++;
-			shortcut++;
-		}
-	}
-	//blit the inventory console on the root console
-	TCODConsole::blit(inventoryScreen,0,0,INVENTORY_WIDTH,INVENTORY_HEIGHT,
-		TCODConsole::root, engine.screenWidth/2 - INVENTORY_WIDTH/2,
-		engine.screenHeight/2 - INVENTORY_HEIGHT/2 + 1);
-	TCODConsole::flush();
-	
-	//wait for a key press
-	TCOD_key_t key;
-	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
-	
-	if (key.vk == TCODK_CHAR) {
-		if(owner->container->select[key.c]){
-			int index = 0;
-			for(Actor **it = owner->container->inventory.begin(); it != owner->container->inventory.end(); ++it){
-				Actor *actor = *it;
-				if((index >= key.c - 'a') && strcmp(actor->name,owner->container->select[key.c]) == 0){
-					engine.gui->message(TCODColor::grey, "You picked the %s",actor->name);
-					owner->container->select.clear();
-					return actor;
-				}
-				index++;
-			}
-		}
-	}
-	return NULL;
-}
+
 
 EpicenterAi::EpicenterAi() {
 }
@@ -755,9 +716,36 @@ LightAi::LightAi(int rad, float f)
 	//float rng = myRandom->getFloat(0.0f,1.0f,0.9);
 	flkr = f;
 	radius = rad;	
+	lstX = 0;
+	lstY = 0;
 	lmap = new TCODMap(13,13);
+	frstMap = new TCODMap(13,13);
+	frstBool = true;
+	onAgn = false;
+	//oldMap = new TCODMap(13,13);
 	onOff = true;
 	frst = true;
+	//frstTurn = true;
+	moving = false;
+}
+
+LightAi::LightAi(int rad, float f, bool movibility)
+{
+	//TCODRandom *myRandom = new TCODRandom();
+	//float rng = myRandom->getFloat(0.0f,1.0f,0.9);
+	flkr = f;
+	radius = rad;	
+	lstX = 0;
+	lstY = 0;
+	lmap = new TCODMap(13,13);
+	frstMap = new TCODMap(13,13);
+	frstBool = true;
+	onAgn = false;
+	//oldMap = new TCODMap(13,13);
+	onOff = true;
+	frst = true;
+	//frstTurn = true;
+	moving = movibility;
 }
 
 void LightAi::load(TCODZip &zip){}
@@ -767,33 +755,16 @@ void LightAi::save(TCODZip &zip){
 }
 
 void LightAi::flicker(Actor * owner, float chance){
-	int maxx = owner->x+6;
-	int minx = owner->x-6;
-	int maxy = owner->y+6;
-	int miny = owner->y-6;
-	//owner->radius
-	//lmap->computeFov(owner->x-minx,owner->y-miny,radius);
-	for (int x=minx; x <= maxx; x++) {
-		for (int y=miny; y <= maxy; y++) {
-			if (lmap->isInFov(x-minx,y-miny)) {
-				if (flkr < chance)
-				{
-					// && (engine.player->x != x && engine.player->y != y)) {
-					engine.map->tiles[x+y*engine.map->width].lit = false;
-				}
-				else
-				{
-					// && (engine.player->x != x && engine.player->y != y)) {
-					engine.map->tiles[x+y*engine.map->width].lit = true;
-				}
-			}
-			else
-			{
-				//if (engine.map->tiles[x+y*engine.map->width].lit = true)
-				//engine.map->tiles[x+y*engine.map->width].lit = false;
-			}
-		}
+	if (flkr < chance)
+	{
+		//LightAi *l = (LightAi*)owner->ai;
+		onOff = false;
+		update(owner);
+		//onOff = !onOff;
+		//update(owner);
 	}
+	//onOff = true;
+	//update(owner);
 }
 
 void LightAi::update(Actor * owner)
@@ -805,36 +776,91 @@ void LightAi::update(Actor * owner)
 		int maxy = owner->y+6;
 		int miny = owner->y-6;
 		//lmap = new TCODMap(maxx-minx,maxy-miny);
+		
+		if (moving)
+		{
+			//engine.gui->message(TCODColor::yellow, "changed light!");
+			for (int x=lstX-6; x <= lstX+6; x++) {
+				for (int y=lstY-6; y <= lstY+6; y++) {
+					
+					if (engine.map->tiles[x+y*engine.map->width].drty)
+					{
+						if (engine.map->tiles[x+y*engine.map->width].num == 1)//player's FOV
+						{
+							engine.map->tiles[x+y*engine.map->width].lit = false;//problem-> the player's flashlight is the only one that needs to move
+							engine.map->tiles[x+y*engine.map->width].num--;      //all else never comes here, just add one and be done
+							frst = true;				                         //everytime you move, decrement by 1, then add the new shit back
+							engine.map->tiles[x+y*engine.map->width].drty = false;
+						}
+						else if (engine.map->tiles[x+y*engine.map->width].num > 1)
+						{
+							engine.map->tiles[x+y*engine.map->width].num--;
+							frst = true;
+							engine.map->tiles[x+y*engine.map->width].drty = false;
+						}
+						//lmap->setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
+					}
+				}
+			}
+		}
+		//only do this once for flares!
 		for (int x=minx; x <= maxx; x++) {
 			for (int y=miny; y <= maxy; y++) {
 				//inheriting properties of real map
+				
 				lmap->setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
+				if (frstBool){
+					frstMap->setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
+				}
 			}
+		}
+		if (frstBool){
+			frstBool = false;
 		}
 		//owner->radius
 		lmap->computeFov(owner->x-minx,owner->y-miny,radius);
 		for (int x=minx; x <= maxx; x++) {
 			for (int y=miny; y <= maxy; y++) {
-				if (lmap->isInFov(x-minx,y-miny) && !(engine.player->x == x && engine.player->y == y)) {
-					engine.map->tiles[x+y*engine.map->width].lit = true;
-					if (frst)
-					{
-						engine.map->tiles[x+y*engine.map->width].num++;
-						
+				//if (engine.distance(owner->x,x,owner->y,y) <= radius)
+				//{
+					if (lmap->isInFov(x-minx,y-miny)){ //&& !(engine.player->x == x && engine.player->y == y)) {
+					
+						engine.map->tiles[x+y*engine.map->width].lit = true;
+						if (moving)
+								engine.map->tiles[x+y*engine.map->width].drty = true;
+						if (frst)
+						{
+							
+							engine.map->tiles[x+y*engine.map->width].num++;
+							
+							//engine.gui->message(TCODColor::green, "calculating lights.");
+							//frst = false;//when set to off turn it back to true
+						}
 					}
-				}
-				//if ((engine.player->x == x && engine.player->y == y))
-				//{
-				//	engine.map->tiles[x+y*engine.map->width].lit = false;
-				//}
-				//else
-				//{
-				//	engine.map->tiles[x+y*engine.map->width].lit = false;
+					//if ((engine.player->x == x && engine.player->y == y))
+					//{
+					//	engine.map->tiles[x+y*engine.map->width].lit = false;
+					//}
+					//else
+					//{
+					//	engine.map->tiles[x+y*engine.map->width].lit = false;
+					//	if (frst)
+					//	{
+					//		engine.map->tiles[x+y*engine.map->width].num--;
+							
+					//	}
+					//}
 				//}
 			}
 		}
+		if (moving){
+		lstX = owner->x;
+		lstY = owner->y;}
+		
 		if (frst)
-			frst = false;//when set to off turn it back to true
+			frst = false;
+		
+		
 	}
 	else
 	{
@@ -845,36 +871,39 @@ void LightAi::update(Actor * owner)
 		for (int x=minx; x <= maxx; x++) {
 			for (int y=miny; y <= maxy; y++) {
 				//if there is only one light source on the tile
-				if (engine.map->tiles[x+y*engine.map->width].num == 1)
-				{
-					engine.map->tiles[x+y*engine.map->width].lit = false;
-					if (!frst)
-					{
-						engine.map->tiles[x+y*engine.map->width].num--;
-						
+				frstMap->computeFov(owner->x-minx,owner->y-miny,radius);
+				lmap->computeFov(owner->x-minx,owner->y-miny,radius);
+				if (frstMap->isInFov(x-minx,y-miny) || lmap->isInFov(x-minx,y-miny)){ //&& !(engine.player->x == x && engine.player->y == y)) {
+				//ERROR WHEN SOMETHING BLOCKS THE NEW FOV AND NOT THE OLD ONE IT DOESNT UPDATE
+				//RECORD OLD FOV, NOT NEW ONE!
+					if (engine.map->tiles[x+y*engine.map->width].num <= 1)//adding lights that have variable FOV because of movement, like flares
+					{//may have "0's" in their FOV that are lit, because we only increase num once ever, so if there are 0's, make sure they are not lit
+					 //but also make sure they are not decrementing it past 0 -> line 902!	
+						if (!frst)
+						{
+							engine.map->tiles[x+y*engine.map->width].lit = false;
+							if (engine.map->tiles[x+y*engine.map->width].num == 1)
+								{engine.map->tiles[x+y*engine.map->width].num--;}
+							
+						}
+						//engine.map->tiles[x+y*engine.map->width].num--;
 					}
-					//engine.map->tiles[x+y*engine.map->width].num--;
+					else if (engine.map->tiles[x+y*engine.map->width].num > 1)
+					{
+						if (!frst)
+						{
+							engine.map->tiles[x+y*engine.map->width].num--;
+							
+						}
+					}
+						
 				}
 			}
 		}
+		
 	if (!frst)
 			frst = true;//when set to off turn it back to true
-	/*for (int i = x1; i <= x2; i++)
-	{
-		for (int j = y1; j <= y2; j++)
-		{
-			if (true)//engine.distance(x,i,y,j) <= 3)
-			{
-				engine.map->tiles[i+j*engine.map->width].infection = true;
-				//engine.mapcon->setChar(i, j, 'L');
-			}
-			else
-			{
-				engine.map->tiles[i+j*engine.map->width].infection = false;
-			}
-		}
-	}
-	*/
+
 	}
 	
 }
@@ -899,27 +928,35 @@ void FlareAi::update(Actor * owner)
 	if (i == 0)
 	{
 		light = new Actor(owner->x,owner->y, 171, "Flare Light", TCODColor::white);
-		light->ai = new LightAi(lightRange,1);
+		light->ai = new LightAi(lightRange,1);//,true);
 		light->blocks = false;
 		engine.actors.push(light);
 		i++;
-		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of it's phosphorus remains.",turns-i,turns);
+		//engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of it's phosphorus remains.",turns-i,turns);
 		
 	}
 	if (i < turns)
 	{
 		i++;
-		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of it's phosphorus remains.",turns-i,turns);
+		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of it's phosphorus remains.",turns-i+1,turns);
 	}
 	else
 	{
-		//engine.gui->message(TCODColor::orange, "Flare has burnt out");
+		static bool burnOut = true;
+		if (burnOut)
+		{
+			engine.gui->message(TCODColor::orange, "Flare has burnt out, leaving a pile of ash.");
+			burnOut = false;
+		}
 		//light->(LightAi)ai->onOff = false;
 		//LightAi l = (LightAi)light->ai;
 		light->ch = ' ';
+		owner->name = "a pile of ash";
+		owner->ch = 'a';
 		LightAi *l = (LightAi*)light->ai;
 		l->onOff = false;
-		l->update(owner);
+		l->update(light);
+		//l->update(owner);
 		//engine.actors.remove(light);
 		//light = NULL;
 		//SHOULD DELETE THE LIGHT PERMANENTLY 
@@ -1034,12 +1071,139 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		}
 	} else if (distance !=1 && owner->attacker) {
 		owner->attacker->shoot(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
+		engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDefense);
 	}
 	else if (owner->attacker) {
 		owner->attacker->attack(owner,engine.player);
 		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
 	}
+	
+}
+
+
+TechAi::TechAi() : moveCount(0), range(3){
+numEmpGrenades = 5;
+berserk = false;
+}
+
+void TechAi::load(TCODZip &zip) {
+	berserk = zip.getInt();
+	moveCount = zip.getInt();
+	range = zip.getInt();
+	numEmpGrenades = zip.getInt();
+}
+
+void TechAi::save(TCODZip &zip) {
+//	zip.putInt(RANGED);
+	zip.putInt(berserk);
+	zip.putInt(moveCount);
+	zip.putInt(range);
+	zip.putInt(numEmpGrenades);
+}
+
+void TechAi::update(Actor *owner) {
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	if (engine.map->isInFov(owner->x,owner->y)) {
+		//can see the palyer, move towards him
+		moveCount = TRACKING_TURNS + 2; //give tech characters longer tracking
+	} else {
+		moveCount--;
+	}
+	if (moveCount > 0) 
+	{	
+			if(!berserk)
+				moveOrAttack(owner, engine.player->x, engine.player->y);
+			else //berserk case, so you need to get the closest monster/player
+			{
+				Actor *closest = NULL;
+				float bestDistance = 1E6f;
+				for (Actor **iterator = engine.actors.begin(); iterator != engine.actors.end(); iterator++) 
+				{
+					Actor *actor = *iterator;
+					const char* name = actor->name;
+					if (actor->destructible && !actor->destructible->isDead() && strcmp(name, "infected corpse") != 0 && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24) //243 = locker
+					{
+						float distance = actor->getDistance(owner->x,owner->y);
+						if (distance < bestDistance && (distance <= range || range ==0.0f)) 
+						{
+							bestDistance = distance;
+							closest = actor;
+						}
+					}
+				}
+				
+				if(closest)
+					moveOrAttack(owner, closest->x, closest->y);
+			}
+				
+		} 
+		else 
+			moveCount = 0;
+}
+void TechAi::moveOrAttack(Actor *owner, int targetx, int targety)
+{
+	int dx = targetx - owner->x;
+	int dy = targety - owner->y;
+	int stepdx = (dx > 0 ? 1:-1);
+	int stepdy = (dy > 0 ? 1:-1);
+	float distance = sqrtf(dx*dx+dy*dy);
+	
+	//I want the grenadier to move towards if it is out of range or it is out of grenades but not right
+	if (distance > range || (distance > 1 && numEmpGrenades <= 0 )) {
+		dx = (int) (round(dx / distance));
+		dy = (int)(round(dy / distance));
+		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+			owner->x+=dx;
+			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
+			owner->x += stepdx;
+		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
+			owner->y += stepdy;
+		}
+		if (owner->oozing) {
+			engine.map->infectFloor(owner->x, owner->y);
+		}
+	} else if (distance > 1 && distance <= range && owner->attacker && numEmpGrenades > 0 && !berserk) 
+	{
+		TCODRandom *rng = TCODRandom::getInstance();
+		//Grenadiers will go berserk and attack the nearest monster or the player 15% of the time or whenever they have one grenade left
+		//The damage done is proportion to the number of grenades left
+		if(rng->getInt(0,100) < 15 || numEmpGrenades == 1)
+		{
+			berserk = true;
+			numEmpGrenades = -1*numEmpGrenades;
+			engine.gui->message(TCODColor::red,"The %s is going berserk!",owner->name);
+		}
+		else
+		{
+			float damageTaken = engine.player->destructible->takeDamage(engine.player, -3 + 3 * owner->totalIntel);
+			numEmpGrenades--;
+			engine.gui->message(TCODColor::red,"The %s uses an EMP Grenade on the player for %g hit points!",owner->name, damageTaken);
+			engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDefense);
+		}
+
+		
+	}else if (owner->attacker && !berserk) { //grenadier will melee attack if up close
+		owner->attacker->attack(owner,engine.player);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
+	}else if(owner->attacker && berserk)
+	{
+		Actor *actor = engine.getActor(targetx,targety);
+		if(owner->destructible->isDead() || actor->destructible->isDead())
+			return;
+			
+		const char* name = actor->name;
+		float damageTaken = actor->destructible->takeDamage(actor, -1*numEmpGrenades*(-3 + 3 * owner->totalIntel));
+		engine.gui->message(TCODColor::red, "The %s kamakazes on the %s for %g hit points!",owner->name,name, damageTaken);
+		if(actor == engine.player)
+			engine.damageReceived += -1*numEmpGrenades*(3 * owner->totalIntel - 3 - engine.player->destructible->totalDefense);
+			
+		MonsterDestructible* md = (MonsterDestructible*) owner->destructible;
+		md->suicide(owner);
+		
+	}	
 	
 }
 

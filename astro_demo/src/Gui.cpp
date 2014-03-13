@@ -143,12 +143,12 @@ void Gui::render() {
 	tileInfoScreen->printFrame(0, 0, TILE_INFO_WIDTH, 
 		PANEL_HEIGHT, true,TCOD_BKGND_ALPHA(50),"TILE INFO");
 	//draw the message
-	y = 2;
+	y = 1;
 	if(tileInfoLog.size() > 0){
 		for (Message **it = tileInfoLog.begin(); it != tileInfoLog.end(); it++) {
 			Message *message = *it;
 			tileInfoScreen->setDefaultForeground(message->col);
-			tileInfoScreen->print(2,y,message->text,TCOD_BKGND_ALPHA(100));
+			tileInfoScreen->print(1,y,message->text,TCOD_BKGND_ALPHA(100));
 			y++;
 		}
 		
@@ -199,16 +199,57 @@ Gui::Message::~Message() {
 //keyboard-based look
 void Gui::renderKeyLook() {
 	
+	//gets rid of everything previously printed to the tileInfoScreen by emptying the tileInfoLog
+	/*while(tileInfoLog.size() > 0) {
+		Message *toRemove = tileInfoLog.get(0);
+		tileInfoLog.remove(toRemove);
+		delete toRemove;
+	}*/
+	
+	//gets the info to send to the tileInfoLog
 	int x = engine.player->x;
 	int y = engine.player->y;
-	if (engine.pickATile(&x,&y)){
-		char buf[128] = ""; 
+	while(!engine.pickATileForInfoScreen(&x,&y)){
+	
+		while(tileInfoLog.size() > 0) {
+			Message *toRemove = tileInfoLog.get(0);
+			tileInfoLog.remove(toRemove);
+			delete toRemove;
+		}
+		
+		
+		//char buf[128] = ""; 
 		if (engine.map->isInFov(x,y)){
-			//char c = (char)engine.map->tiles[x+y*engine.map->width].num;
+			
+			tileInfoMessage(TCODColor::lightGrey, "You see:");
+			
+			int c = engine.map->tiles[x+y*engine.map->width].num;
+
 			float i = engine.map->tiles[x+y*engine.map->width].infection;
-			//strcat(buf,(char*)i);
+
+			//tileInfoMessage(TCODColor::green, "an infection level of %g",i);
+
+			//Uncomment this if you want it to go into the tileInfoScreen
+			if (i < 1){}
+				//tileInfoMessage(TCODColor::green, "an area free of any ailment");
+				//could have this be nothing
+			else if (i < 2)
+				tileInfoMessage(TCODColor::green, "an area with some green moss on it");
+			else if (i < 3)
+				tileInfoMessage(TCODColor::green, "an area with some odd green moss on it's surface");
+			else if (i < 4)
+				tileInfoMessage(TCODColor::green, "an area with has weird moss covering it");
+			else if (i < 5)
+				tileInfoMessage(TCODColor::green, "an area that has a lot of moss on it");
+			else if (i < 6)
+				tileInfoMessage(TCODColor::green, "an area almost covered in odd green moss");
+			else
+				tileInfoMessage(TCODColor::green, "an area completely covered in weird moss");
+			
+			/*
 			if (i < 1)
-				engine.gui->message(TCODColor::green, "The ground you look at is free of any apparent ailment.");
+				//engine.gui->message(TCODColor::green, "The ground you look at is free of any apparent ailment.");
+				{}
 			else if (i < 2)
 				engine.gui->message(TCODColor::green, "The ground you look at has some green moss on it.");
 			else if (i < 3)
@@ -221,84 +262,42 @@ void Gui::renderKeyLook() {
 				engine.gui->message(TCODColor::green, "The ground you look at is almost covered in odd green moss.");
 			else
 				engine.gui->message(TCODColor::green, "The ground you look at is completely covered in weird moss.");
+				
 			//engine.gui->message(TCODColor::green, "the infection level is %g",i);
+			*/
+
+			tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
+
 			
-			strcat(buf,"You see:\n");
 		}else {
-			strcat(buf,"You remember seeing:\n");
+			tileInfoMessage(TCODColor::lightGrey, "You remember seeing:");
 		}
-		bool first = true;
 		for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
 			Actor *actor = *it;
 			//find actors under the mouse cursor
 			if (actor->x == x && actor->y == y) {
-				if (!first) {
-					strcat(buf, "\n");
-				} else {
-					first = false;
-				}
-					strcat(buf,actor->name);
+					tileInfoMessage(actor->col, actor->name);
 				if (actor->attacker && !actor->destructible->isDead() && engine.map->isInFov(x,y)) {
 					engine.player->attacker->lastTarget = actor;
 				}
 			}
 		}
-		//display the list of actors under the mouse cursor
-		Actor *actor = engine.getAnyActor(x, y);
+		
+		//uncomment below(s) and replace below-below if you only want the tileInfoLog to show if there is an actor on it. Changes this since we now print out the infection level
+		/*Actor *actor = engine.getAnyActor(x, y);
 		if (!actor || !engine.map->isExplored(x,y)) {
-			memset(&buf[0], 0, sizeof(buf));
-			strcat(buf,"There is nothing interesting here.");
-		} 
-		char *lineBegin = buf;
-		char *lineEnd;
-	
-		//remove all the past messages
-			while(tileInfoLog.size() > 0) {
+		*/
+		
+		if (!engine.map->isExplored(x,y)) {
+			//clear all the messages before this
+			while(tileInfoLog.size() > 0){
 				Message *toRemove = tileInfoLog.get(0);
 				tileInfoLog.remove(toRemove);
 				delete toRemove;
 			}
 			
-		do {
-			
-			//detect the EOL
-			lineEnd = strchr(lineBegin,'\n');
-			
-			if (lineEnd) {
-				if(lineEnd - lineBegin > TILE_INFO_WIDTH - 2){
-					char temp = *(lineBegin + TILE_INFO_WIDTH - 2);
-					if(temp != ' ') {
-						*(lineBegin + TILE_INFO_WIDTH - 2) = '\0';
-						lineEnd = strrchr(lineBegin, ' ');
-						*(lineBegin + TILE_INFO_WIDTH - 2) = temp;
-					}
-					else{
-						lineEnd = lineBegin + TILE_INFO_WIDTH - 2;
-					}
-				}
-				*lineEnd = '\0';
-			}
-			else{
-				if(strlen(lineBegin) > TILE_INFO_WIDTH - 2){
-					char temp = *(lineBegin + TILE_INFO_WIDTH - 2);
-					if(temp != ' ') {
-						*(lineBegin + TILE_INFO_WIDTH - 2) = '\0';
-						lineEnd = strrchr(lineBegin, ' ');
-						*(lineBegin + TILE_INFO_WIDTH - 2) = temp;
-					}
-					else{
-						lineEnd = lineBegin + TILE_INFO_WIDTH - 2;
-					}
-					*lineEnd = '\0';
-				}
-			}
-
-			Message *msg = new Message(lineBegin,TCODColor::lightGrey);
-			tileInfoLog.push(msg);
-			
-			//go to the next line
-			lineBegin = lineEnd + 1;
-		} while (lineEnd);
+			tileInfoMessage(TCODColor::lightGrey, "\nThere is nothing interesting here.");
+		} 
 	}
 }
 
@@ -326,7 +325,69 @@ void Gui::renderMouseLook() {
 	con->setDefaultForeground(TCODColor::lightGrey);
 	con->print(1,0,buf);
 } */
+
+void Gui::tileInfoMessage(const TCODColor &col, const char *text, ...) {
+	//build the text
+
+	va_list ap;
+	char buf[128];
+	va_start(ap,text);
+	vsprintf(buf, text, ap);
+	va_end(ap);
 	
+	char *lineBegin = buf;
+	char *lineEnd;
+
+	do {
+			
+			//detect the EOL
+			lineEnd = strchr(lineBegin,'\n');
+			
+			lineEnd = wrapText(lineBegin, lineEnd, TILE_INFO_WIDTH - 2);
+
+			Message *msg = new Message(lineBegin, col);
+			tileInfoLog.push(msg);
+			
+			//go to the next line
+			lineBegin = lineEnd + 1;
+		} while (lineEnd);
+
+}
+
+char* Gui::wrapText(char* lineBegin, char* lineEnd, int maxLength) {
+	
+	if(lineEnd){
+		if(lineEnd - lineBegin > maxLength){
+			char temp = *(lineBegin + maxLength);
+			if(temp != ' ') {
+				*(lineBegin + maxLength) = '\0';
+				lineEnd = strrchr(lineBegin, ' ');
+				*(lineBegin + maxLength) = temp;
+			}
+			else{
+				lineEnd = lineBegin + maxLength;
+			}
+		}
+		*lineEnd = '\0';
+	}
+	else{
+		if(strlen(lineBegin) > (unsigned)maxLength){
+			char temp = *(lineBegin + maxLength);
+			if(temp != ' ') {
+				*(lineBegin + maxLength) = '\0';
+				lineEnd = strrchr(lineBegin, ' ');
+				*(lineBegin + maxLength) = temp;
+			}
+			else{
+				lineEnd = lineBegin + maxLength;
+			}
+			*lineEnd = '\0';
+		}
+	}
+	return lineEnd;
+
+}
+
 void Gui::message(const TCODColor &col, const char *text, ...) {
 	//build the text
 	va_list ap;
@@ -337,6 +398,7 @@ void Gui::message(const TCODColor &col, const char *text, ...) {
 	
 	char *lineBegin = buf;
 	char *lineEnd;
+	
 	
 	/*//uncomment the lines below if you want a space between each message
 	Message *space = new Message("\n",col);
@@ -350,38 +412,12 @@ void Gui::message(const TCODColor &col, const char *text, ...) {
 			delete toRemove;
 		}
 		
-		//detect the EOL
+		//detect the EOL	
 		lineEnd = strchr(lineBegin,'\n');
 		
-		if (lineEnd) {
-			if(lineEnd - lineBegin > CON_WIDTH - 2){
-				char temp = *(lineBegin + CON_WIDTH - 2);
-				if(temp != ' ') {
-					*(lineBegin + CON_WIDTH - 2) = '\0';
-					lineEnd = strrchr(lineBegin, ' ');
-					*(lineBegin + CON_WIDTH - 2) = temp;
-				}
-				else{
-					lineEnd = lineBegin + CON_WIDTH - 2;
-				}
-			}
-			*lineEnd = '\0';
-		}
-		else{
-			if(strlen(lineBegin) > CON_WIDTH - 2){
-				char temp = *(lineBegin + CON_WIDTH - 2);
-				if(temp != ' ') {
-					*(lineBegin + CON_WIDTH - 2) = '\0';
-					lineEnd = strrchr(lineBegin, ' ');
-					*(lineBegin + CON_WIDTH - 2) = temp;
-				}
-				else{
-					lineEnd = lineBegin + CON_WIDTH - 2;
-				}
-				*lineEnd = '\0';
-			}
-		}
-
+		//send in lineBegin, return lineEnd. magic will happen
+		lineEnd = wrapText(lineBegin, lineEnd, CON_WIDTH - 2);
+		
 		//add a new message to the log
 		Message *msg = new Message(lineBegin,col);
 		log.push(msg);
@@ -437,6 +473,12 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"INVENTORY MANAGER Pro");
 		//THIS LINE REMOVES THE "INVENTORY" HEADER ->
 		//TCODConsole::root->clear();
+	}else if(mode == VENDING){
+		menux = (engine.screenWidth / 2 - INVENTORY_MENU_WIDTH / 2) + 20;
+		menuy = (engine.screenHeight / 2 - INVENTORY_MENU_HEIGHT / 2) - 4;
+		TCODConsole::root->setDefaultForeground(TCODColor(100,180,250));
+		TCODConsole::root->printFrame(menux,menuy - 15,INVENTORY_MENU_WIDTH,
+			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"3D PRINTER");
 	} else if(mode == CLASS_MENU){
 		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
@@ -457,7 +499,7 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		menuy = 20 + TCODConsole::root->getHeight() / 3;
 		
 	}
-	if (mode == INVENTORY){
+	if (mode == INVENTORY || mode == VENDING){
 		//clears console when inventory is open and when you select a new dingus, mey need to adjust later if we want to move up/down
 		//
 		//TCODConsole::flush();
@@ -702,17 +744,54 @@ void Gui::classSidebar(){
 			classBar.print(1,19,"VITALITY: %d",conValue);
 			classBar.print(1,21,"STRENGTH: %d",strValue);
 			classBar.print(1,23,"DEXTERITY: %d",agValue);
+			classBar.print(1,25,"INTELLIGENCE: %d",intelValue);
 			
 			TCODConsole::blit(&classBar, 0, 0, 20, engine.screenHeight, TCODConsole::root, 0, 0);
 }
 void Gui::vendingSidebar(){
 	//create vending machine sidebar
-	TCODConsole vendBar(20,engine.screenHeight);
+	TCODConsole vendBar(16,32);
 	vendBar.setDefaultBackground(TCODColor::black);
 	vendBar.clear();
 	vendBar.setDefaultForeground(TCODColor(200,180,50));
-	vendBar.printFrame(0,0,20,engine.screenHeight,true,TCOD_BKGND_ALPHA(50),"PURCHASE INFO");
+	vendBar.printFrame(0,0,16,32,true,TCOD_BKGND_ALPHA(50),"VENDING");
 	
 	vendBar.print(1,5,"Pbc: ");
-	TCODConsole::blit(&vendBar, 0, 0, 20, engine.screenHeight, TCODConsole::root, 0, 0);
+	TCODConsole::blit(&vendBar,0,0, 16, 32, TCODConsole::root, (engine.screenWidth / 2 - INVENTORY_MENU_WIDTH / 2) + 4,(engine.screenHeight / 2 - INVENTORY_MENU_HEIGHT / 2) - 19);
+}
+Actor *Gui::vendingMenu(Actor *owner){
+	engine.gui->menu.clear();
+	engine.gui->menu.addItem(Menu::ITEMS,"ITEMS");
+	engine.gui->menu.addItem(Menu::TECH,"TECH");
+	engine.gui->menu.addItem(Menu::ARMOR,"ARMOR");
+	engine.gui->menu.addItem(Menu::WEAPONS, "WEAPONS");
+	engine.gui->menu.addItem(Menu::EXIT, "EXIT");
+	Actor *actor;
+	bool select = true;
+	while(select){
+		engine.gui->vendingSidebar();
+		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::VENDING);
+		
+		switch(menuItem){
+			case Menu::ITEMS:
+			actor = owner->ai->choseFromInventory(owner,1,true);
+			break;
+			case Menu::TECH:
+			actor = owner->ai->choseFromInventory(owner,2,true);
+			break;
+			case Menu::ARMOR:
+			actor = owner->ai->choseFromInventory(owner,3,true);
+			break;
+			case Menu::WEAPONS:
+			actor = owner->ai->choseFromInventory(owner,4,true);
+			break;
+			case Menu::EXIT:
+			select = false;
+			break;
+			case Menu::NO_CHOICE:
+			break;
+			default: break; 
+		}
+	}
+	return NULL; 
 }

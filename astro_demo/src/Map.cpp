@@ -197,12 +197,21 @@ void Map::addMonster(int x, int y) {
 	float infectedCrewMemChance = 80;
 	int infectedCrewMemAscii = 164;
 	
+	//Infected Marine Base Stats
 	float infectedMarineMaxHp = 10;
 	float infectedMarineDef = 0;
 	float infectedMarineAtk = 5;
 	float infectedMarineXp = 10;
 //	float infectedMarineChance = 80;
 	int infectedMarineAscii = 149;
+	
+	//Infected Grenadier Base Stats
+	float infectedGrenadierMaxHp = 15;
+	float infectedGrenadierDef = 0;
+	float infectedGrenadierAtk = 2;
+	float infectedGrenadierXp = 20;
+//	float infectedGrenadierChance = 80;
+	int infectedGrenadierAscii = 155; //Change this to the desired ascii
 	
 	//Infected NCO Base Stats
 	float infectedNCOMaxHp = 12;
@@ -249,8 +258,8 @@ void Map::addMonster(int x, int y) {
 	
 	int dice = rng->getInt(0,100);
 	if (dice < infectedCrewMemChance) 
-	{//10% of infectedCrewMembers are infectedMarines
-		if(dice <= (infectedCrewMemChance*9)/10) 
+	{//10% of infectedCrewMembers are infectedMarines, and 5% are infectedGrenadiers 
+		if(dice <= (infectedCrewMemChance*75)/100)
 		{
 			Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
 			infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
@@ -260,7 +269,7 @@ void Map::addMonster(int x, int y) {
 			generateRandom(infectedCrewMember, infectedCrewMemAscii);
 			engine.actors.push(infectedCrewMember);
 		}
-		else 
+		else if(dice <= (infectedCrewMemChance*85)/100) 
 		{
 			Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
 			infectedMarine->destructible = new MonsterDestructible(infectedMarineMaxHp,infectedMarineDef,"infected corpse",infectedMarineXp);
@@ -269,6 +278,17 @@ void Map::addMonster(int x, int y) {
 			infectedMarine->ai = new RangedAi();
 			generateRandom(infectedMarine, infectedMarineAscii);
 			engine.actors.push(infectedMarine);
+		}
+		else 
+		{
+			Actor *infectedGrenadier = new Actor(x,y,infectedGrenadierAscii,"Infected Grenadier",TCODColor::white);
+			infectedGrenadier->destructible = new MonsterDestructible(infectedGrenadierMaxHp,infectedGrenadierDef,"infected corpse",infectedGrenadierXp);
+			infectedGrenadier->attacker = new Attacker(infectedGrenadierAtk);
+			infectedGrenadier->container = new Container(2);
+			infectedGrenadier->ai = new TechAi();
+			generateRandom(infectedGrenadier , infectedGrenadierAscii);
+			engine.actors.push(infectedGrenadier);
+
 		}
 		
 	}
@@ -409,6 +429,12 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//put the player in the first room
 		engine.player->x = (x1+x2)/2;
 		engine.player->y = (y1+y2)/2;
+		engine.playerLight = new Actor(engine.player->x, engine.player->y, 'l', "Your Flashlight", TCODColor::white);
+		engine.playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
+		engine.actors.push(engine.playerLight);
+		engine.playerLight->blocks = false;
+		//playerLight->ai->moving = true;
+		engine.sendToBack(engine.playerLight);
 	}
 	TCODRandom *rng = TCODRandom::getInstance();
 	//add monsters
@@ -482,6 +508,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				if (isWall(filingCabX-1,filingCabY) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
 					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
+					cabinet->smashable = true;
 					engine.actors.push(cabinet);
 				}
 			}
@@ -493,6 +520,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				if (isWall(filingCabX,filingCabY-1) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
 					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
+					cabinet->smashable = true;
 					engine.actors.push(cabinet);
 				}
 			}
@@ -504,6 +532,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				if (isWall(filingCabX+1,filingCabY ) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
 					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
+					cabinet->smashable = true;
 					engine.actors.push(cabinet);
 				}
 			}
@@ -515,6 +544,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				if (isWall(filingCabX,filingCabY+1) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
 					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
+					cabinet->smashable = true;
 					engine.actors.push(cabinet);
 				}
 			}
@@ -797,6 +827,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		numLights = rmSze/30;
 		if (numLights <= 0)
 			numLights = 1;
+		TCODRandom *myRandom = new TCODRandom();
+		int chance = 0;
 		for (int i = 0; i < numLights;)
 		{
 			//bool valid = false;
@@ -805,21 +837,37 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			int x = rng->getInt(x1+1,x2-1);
 			int y = rng->getInt(y1+1,y2-1);
 			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
-				Actor *light = new Actor(x, y, 224, "An hastily erected Emergency Light", TCODColor::white);
+				Actor *light = new Actor(x, y, 224, "A hastily erected Emergency Light", TCODColor::white);
 				//4,1 = standard light, radius, flkr
-				TCODRandom *myRandom = new TCODRandom();
+				
 				//0.8 is lower limit, put closer to 1 for less flicker
-				int chance = myRandom->getInt(0,10);
+				chance = myRandom->getInt(0,10,5);
+				bool broke = false;
 				float rng2;
-				if (chance > 1)
+				if (chance >= 5 && chance < 10)//could make this number and all flickering number change based on level
 				{
-					rng2 = myRandom->getFloat(0.5000f,0.9000f,0.8500f);
+					rng2 = myRandom->getFloat(0.9000f,0.9900f,0.9500f);
+					light->name = "An flickering hastily erected Emergency Light";
+					//engine.gui->message(TCODColor::red, "flickering %d",chance);
+				}
+				else if (chance >= 10)
+				{
+					rng2 = myRandom->getFloat(0.9000f,0.9900f,0.9500f);
+					light->name = "A broken Emergency Light";
+					broke = true;
+					//engine.gui->message(TCODColor::red, "broken %d",chance);
 				}
 				else
 				{
 					rng2 = 1;
+					//engine.gui->message(TCODColor::red, "fine %d",chance);
 				}
 				light->ai = new LightAi(rng->getInt(3,6),rng2);
+				if (broke)
+				{
+					LightAi *l = (LightAi*)light->ai;
+					l->onOff = false;
+				}
 				engine.actors.push(light);
 				i++;
 			}
@@ -882,7 +930,7 @@ bool Map::isInFov(int x, int y) const {
 		return false;
 	}
 	
-	if ((map->isInFov(x,y)) && (engine.distance(engine.player->x,x,engine.player->y,y) <= 2 || isLit(x,y))) {
+	if ((map->isInFov(x,y)) && (engine.distance(engine.player->x,x,engine.player->y,y) <= 1 || isLit(x,y))) {
 		tiles[x+y*width].explored = true;
 		return true;
 	}
@@ -911,7 +959,7 @@ void Map::render() const {
 
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
-			if ((isInFov(x,y) && engine.distance(engine.player->x,x,engine.player->y,y) <= 2) || (isInFov(x,y) && isLit(x,y))){// || true) {
+			if ((isInFov(x,y) && engine.distance(engine.player->x,x,engine.player->y,y) < 1) || (isInFov(x,y) && isLit(x,y))){// || true) {
 				//TCODConsole::root->setCharBackground(x,y,isWall(x,y) ? lightWall : lightGround);
 				//this line is all that is needed if you want the tiles view. comment out all the other stuff if so
 
@@ -932,12 +980,14 @@ void Map::render() const {
 					if (isInfected(x,y)) {
 						engine.mapcon->setChar(x, y, 31);//29
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.map->tiles[x+y*engine.map->width].num++;
 						//engine.mapconCpy->setChar(x, y, 29);
 						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}
 					else {
 						engine.mapcon->setChar(x, y, 31);
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.map->tiles[x+y*engine.map->width].num++;
 						//engine.mapconCpy->setChar(x, y, 31);
 						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}
@@ -961,12 +1011,14 @@ void Map::render() const {
 					if (isInfected(x,y)) {
 						engine.mapcon->setChar(x, y, 30);//28
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.map->tiles[x+y*engine.map->width].num = 0;
 						//engine.mapconCpy->setChar(x, y, 28);
 						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}
 					else {
 						engine.mapcon->setChar(x, y, 30);
 						engine.mapcon->setCharBackground(x,y,TCODColor::blue);
+						//engine.map->tiles[x+y*engine.map->width].num = 0;
 						//engine.mapconCpy->setChar(x, y, 30);
 						//engine.mapconCpy->setCharBackground(x,y,TCODColor::blue);
 					}
@@ -1019,6 +1071,14 @@ void Map::generateRandom(Actor *owner, int ascii){
 				Actor *batt = createBatteryPack(0,0);
 				engine.actors.push(batt);
 				batt->pickable->pick(batt,owner);
+			}
+		}else if(ascii == 155) //infected grenadier
+		{
+			for(int i = 0; i < owner->container->size; i++)
+			{
+				Actor *emp = createEMP(0,0);
+				engine.actors.push(emp);
+				emp->pickable->pick(emp,owner);
 			}
 		}else if(ascii == 149) //infectedMarines have 60% chance of dropping an item with 50% chance of it being a MLR, and the other 50% chance being a battery pack
 		{

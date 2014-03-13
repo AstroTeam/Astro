@@ -26,9 +26,9 @@ protected:
 class MonsterDestructible : public Destructible {
 public:
 	MonsterDestructible(float maxHp, float defense, const char *corpseName, int xp);
+	void suicide(Actor *owner);
 	void die (Actor *owner);
 	void save(TCODZip &zip);
-	void vendingMenu(Actor *owner);
 };
 
 class PlayerDestructible : public Destructible {

@@ -9,6 +9,7 @@ public:
 	EXIT,
 	MAIN_MENU,
 	CONSTITUTION,
+	VITALITY,
 	STRENGTH,
 	AGILITY,
 	DEXTERITY,
@@ -42,6 +43,7 @@ public:
 		MAIN,
 		PAUSE,
 		INVENTORY,
+		VENDING,
 		CLASS_MENU,
 		CLASS_SELECT
 	};
@@ -93,6 +95,7 @@ public:
 	int conValue;
 	int strValue;
 	int agValue;
+	int intelValue;
 	//Values that save the last selection made in Race/Class Menus
 	/*int raceChosen;
 	int classChosen;
@@ -109,7 +112,7 @@ public:
 	void clear();
 	void classSidebar();
 	void vendingSidebar();
-	
+	Actor *vendingMenu(Actor *owner);
 protected:
 	TCODConsole *con;
 	TCODConsole *sidebar;
@@ -123,6 +126,8 @@ protected:
 	};
 	TCODList<Message *> log;
 	TCODList<Message *> tileInfoLog;
+	char* wrapText(char* lineBegin, char* lineEnd, int maxLength);
+	void tileInfoMessage(const TCODColor &col, const char *text, ...);
 	void renderBar(int x, int y, int width, const char *name, 
 		float value, float maxValue, const TCODColor &barColor, 
 		const TCODColor &backColor);

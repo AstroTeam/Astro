@@ -2,7 +2,7 @@ class Actor : public Persistent {
 public: 
 	int x, y;	//map position
 	int ch;		//ascii code for character representation 
-	int str, dex, intel, vit, totalDex, totalIntel; //strength, dexterity, intelligence, vitality
+	int str, dex, intel, vit, totalStr, totalDex, totalIntel; //strength, dexterity, intelligence, vitality
 	TCODColor col; //color for representation
 	const char *name;  //the actor's name
 	const char *race;  //the actor's race (default human)

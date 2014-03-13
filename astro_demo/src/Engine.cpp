@@ -12,7 +12,7 @@
 } */
 
 Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
-	player(NULL),map(NULL), fovRadius(3),
+	player(NULL),playerLight(NULL),map(NULL), fovRadius(3),
 	screenWidth(screenWidth),screenHeight(screenHeight),level(1),turnCount(0) {
 	mapWidth = 100;
 	mapHeight = 100;
@@ -50,12 +50,28 @@ void Engine::term() {
 void Engine::init() {
 	engine.killCount = 0;
 	player = new Actor(40,25,'@', "player","Human","Marine","Infantry",TCODColor::white);
-	
+	//playerLight = new Actor(40, 25, 'l', "Your Flashlight", TCODColor::white);
+	//playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
+	//engine.actors.push(playerLight);
+	//playerLight->blocks = false;
+	//playerLight->ai->moving = true;
+	//engine.sendToBack(playerLight);
 	player->destructible = new PlayerDestructible(100, 2, "your cadaver");
 	player->attacker = new Attacker(5,20);
 	player->ai = new PlayerAi();
 	player->container = new Container(50);
 	actors.push(player);
+	player->str=engine.gui->strValue;
+	//player->totalStr=engine.gui->strValue;
+	player->attacker->basePower=engine.gui->strValue;
+	player->attacker->totalPower=engine.gui->strValue;
+	player->dex=engine.gui->agValue;
+	player->totalDex=engine.gui->agValue;
+	player->intel=engine.gui->intelValue;
+	player->totalIntel=engine.gui->intelValue;
+	player->vit=engine.gui->conValue;
+	player->destructible->hp=engine.gui->conValue;
+	player->destructible->maxHp=engine.gui->conValue;
 	int plyrAscii = 64;
 	switch(engine.gui->raceSelection){
 		case 1:
@@ -359,10 +375,11 @@ void Engine::save() {
 		player->save(zip);
 		//then the stairs
 		stairs->save(zip);
+		playerLight->save(zip);
 		//then all the other actors
-		zip.putInt(actors.size() - 2);
+		zip.putInt(actors.size() - 3);
 		for (Actor **it = actors.begin(); it!=actors.end(); it++) {
-			if (*it != player && *it != stairs) {
+			if (*it != player && *it != stairs && *it != playerLight) {
 				(*it)->save(zip);
 			}
 		}
@@ -434,8 +451,12 @@ void Engine::load(bool pause) {
 		//the stairs
 		stairs = new Actor(0,0,0,NULL,TCODColor::white);
 		stairs->load(zip);
+		//then the player's light
+		playerLight = new Actor(0,0,0, NULL, TCODColor::white);
+		playerLight->load(zip);
 		actors.push(player);
 		actors.push(stairs);
+		actors.push(playerLight);
 		//then all other actors
 		int nbActors = zip.getInt();
 		while (nbActors > 0) {
@@ -650,6 +671,7 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {   //need to 
 		{
 			if ((player->getDistance(*x,*y) > maxRange && maxRange != 0)) {
 				gui->message(TCODColor::pink,"this tile is out of range!");
+				return false;
 			} else {
 				return true;
 			}
@@ -746,6 +768,115 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {   //need to 
 	return false;
 }
 
+bool Engine::pickATileForInfoScreen(int *x, int *y, float maxRange, float AOE) {   //need to make middle tile unique 
+		int dx = 0, dy = 0;
+		render();
+		TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&lastKey,NULL);
+		switch (lastKey.vk) {
+		case TCODK_UP: dy = -1; break;
+		case TCODK_DOWN: dy = 1; break;
+		case TCODK_LEFT: dx =-1; break;
+		case TCODK_RIGHT: dx = 1; break;
+		case TCODK_ENTER: 
+		{
+			if ((player->getDistance(*x,*y) > maxRange && maxRange != 0)) {
+				gui->message(TCODColor::pink,"this tile is out of range!");
+				return false;
+			} else {
+				return true;
+			}
+		}
+		case TCODK_ESCAPE: return false;
+		default: break;
+		}
+		*x += dx;
+		*y += dy;
+		
+		if (*x > 99) *x = 99;
+		if (*x < 0) *x = 0;
+		if (*y > 99) *y = 99;
+		if (*y < 0) *y = 0;
+		
+		//things with AOE > 1 need to have a more unique middle color so i can render them
+		if (AOE > 1.0 )
+		{
+			//make center unique
+			for (int i = 0; i < map->height; i++) {
+				for (int j = 0; j < map->width; j++) {
+					if ( distance(*x,j,*y,i) <= AOE ) {
+						if (distance(*x,j,*y,i) < 1.0) {//middle
+							mapcon->setCharBackground(j,i,TCODColor::darkerPink);
+							
+						}
+						else if ( distance(*x,player->x,*y,player->y) >= maxRange && maxRange != 0) {
+							mapcon->setCharBackground(j,i,TCODColor::desaturatedPink);
+						
+						} else {
+							mapcon->setCharBackground(j,i,TCODColor::pink);
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0; i < map->height; i++) {
+				for (int j = 0; j < map->width; j++) {
+					if ( distance(*x,j,*y,i) <= AOE ) {
+						if ( distance(*x,player->x,*y,player->y) >= maxRange && maxRange != 0) {
+							mapcon->setCharBackground(j,i,TCODColor::desaturatedPink);
+						} else {
+							mapcon->setCharBackground(j,i,TCODColor::pink);
+						}
+					}
+				}
+			}
+		}
+	//int mapx1 = 0, mapy1 = 0, mapy2 = 0, mapx2 = 0;
+	mapx1 = *x - ((screenWidth -22)/2);
+	mapy1 = *y - ((screenHeight -12)/2);
+	mapx2 = *x + ((screenWidth -22)/2);
+	mapy2 = *y + ((screenHeight -12)/2);
+	
+	
+	if (mapx1 <= 0) {// <= lets it catch the time when it needs to stop scrolling
+		mapx2 += (0-mapx1);
+		mapx1 = 0;
+		mapx2 += 1; //allows it to render the whole screen
+	}	
+	if (mapy1 <= 0) { 
+		mapy2 += (0-mapy1);
+		mapy1 = 0;
+		mapy2 += 1;
+	}
+	if (mapx2 >= 100) {
+		mapx1 += (100-mapx2);
+		//gui->message(TCODColor::green, "******************************************");
+		mapx2 = 100;
+		mapx1 -= 1;
+	}
+	if (mapy2 >= 101) {
+		mapy1 += (101-mapy2);
+		mapy2 = 101;
+		mapy1 -= 1;
+	}
+	//stops the map from spilling into the console
+	int mapy2a = mapy2;
+	if (mapy2a > TCODConsole::root->getHeight() - 12) mapy2a = TCODConsole::root->getHeight() - 12;
+	//gui->message(TCODColor::red, "y2a is %d",mapy2a);
+	//need to make a list of '.' under other chars, that there would be a difference between mapcon and mapconCpy
+	//then need to make some sort of flag
+	
+	
+	//blitting of the map onto the screen...maybe blit onto temp root copy, then render and blit back
+	TCODConsole::blit(mapcon, mapx1, mapy1, mapx2, mapy2a, 
+		TCODConsole::root, 22, 0);
+		
+	TCODConsole::flush();
+		
+	return false;
+}
+
 Actor *Engine::getActor(int x, int y) const {
 	for (Actor **it = actors.begin(); it != actors.end(); it++) {
 		Actor *actor = *it;
@@ -772,10 +903,11 @@ void Engine::win() {
 	gameStatus=Engine::VICTORY;
 }
 void Engine::classMenu(){
-	engine.gui->statPoints = 5;
+	engine.gui->statPoints = 2;
 	engine.gui->conValue = 100;
 	engine.gui->strValue = 5;
-	engine.gui->agValue = 2;
+	engine.gui->agValue = 3;
+	engine.gui->intelValue = 3;
 	engine.gui->menu.clear();
 	engine.gui->menu.addItem(Menu::RACE, "RACE");
 	engine.gui->menu.addItem(Menu::CLASS, "CLASS");
@@ -941,9 +1073,10 @@ if(cat == 1){
 	}
 }else{
 	engine.gui->classMenu.clear();
-	engine.gui->classMenu.addItem(Menu::CONSTITUTION, "CONSTITUTION");
+	engine.gui->classMenu.addItem(Menu::VITALITY, "VITALITY");
 	engine.gui->classMenu.addItem(Menu::STRENGTH, "STRENGTH");
-	engine.gui->classMenu.addItem(Menu::AGILITY, "AGILITY");
+	engine.gui->classMenu.addItem(Menu::DEXTERITY, "DEXTERITY");
+	engine.gui->classMenu.addItem(Menu::INTELLIGENCE, "INTELLIGENCE");
 	engine.gui->classMenu.addItem(Menu::RESET,"RESET SELECTIONS");
 	engine.gui->classMenu.addItem(Menu::EXIT, "DONE");
 	bool choice = true;
@@ -951,7 +1084,7 @@ if(cat == 1){
 				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
 				
 					switch (menuItem) {
-						case Menu::CONSTITUTION :
+						case Menu::VITALITY :
 							if(engine.gui->statPoints == 0)
 								choice = false;
 							else{
@@ -969,7 +1102,7 @@ if(cat == 1){
 								engine.gui->classSidebar();
 							}
 							break;
-						case Menu::AGILITY :
+						case Menu::DEXTERITY :
 							if(engine.gui->statPoints == 0)
 								choice = false;
 							else{
@@ -978,14 +1111,24 @@ if(cat == 1){
 								engine.gui->classSidebar();
 							}
 							break;
+						case Menu::INTELLIGENCE :
+							if(engine.gui->statPoints == 0)
+								choice = false;
+							else{
+								engine.gui->statPoints = engine.gui->statPoints - 1;
+								engine.gui->intelValue += 1;
+								engine.gui->classSidebar();
+							}
+							break;
 						case Menu::EXIT :
 							choice = false;
 							break;
 						case Menu::RESET:
-							engine.gui->statPoints = 5;
+							engine.gui->statPoints = 2;
 							engine.gui->conValue = 100;
 							engine.gui->strValue = 5;
-							engine.gui->agValue = 2;
+							engine.gui->agValue = 3;
+							engine.gui->intelValue = 3;
 							engine.gui->classSidebar();
 							break;
 						case Menu::NO_CHOICE:
