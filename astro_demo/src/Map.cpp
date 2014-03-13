@@ -211,7 +211,7 @@ void Map::addMonster(int x, int y) {
 	float infectedGrenadierAtk = 2;
 	float infectedGrenadierXp = 20;
 //	float infectedGrenadierChance = 80;
-	int infectedGrenadierAscii = 133; //Change this to the desired ascii
+	int infectedGrenadierAscii = 133;
 	
 	//Infected NCO Base Stats
 	float infectedNCOMaxHp = 12;
@@ -1072,7 +1072,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 				engine.actors.push(batt);
 				batt->pickable->pick(batt,owner);
 			}
-		}else if(ascii == 155) //infected grenadier
+		}else if(ascii == 133) //infected grenadier
 		{
 			for(int i = 0; i < owner->container->size; i++)
 			{

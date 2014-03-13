@@ -1168,9 +1168,10 @@ void TechAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	} else if (distance > 1 && distance <= range && owner->attacker && numEmpGrenades > 0 && !berserk) 
 	{
 		TCODRandom *rng = TCODRandom::getInstance();
-		//Grenadiers will go berserk and attack the nearest monster or the player 15% of the time or whenever they have one grenade left
+		//Grenadiers will go berserk and attack the nearest monster or the player 50%/(numEmpGrenades+1) left of the time or whenever they have one grenade left
 		//The damage done is proportion to the number of grenades left
-		if(rng->getInt(0,100) < 15 || numEmpGrenades == 1)
+		
+		if(rng->getInt(0,100) < 50/(numEmpGrenades+1) || numEmpGrenades == 1)
 		{
 			berserk = true;
 			numEmpGrenades = -1*numEmpGrenades;
