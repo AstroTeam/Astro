@@ -952,7 +952,7 @@ void FlareAi::update(Actor * owner)
 		//LightAi l = (LightAi)light->ai;
 		light->ch = ' ';
 		owner->name = "a pile of ash";
-		owner->ch = 'a';
+		owner->ch = 170;
 		LightAi *l = (LightAi*)light->ai;
 		l->onOff = false;
 		l->update(light);

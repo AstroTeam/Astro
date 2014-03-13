@@ -484,8 +484,12 @@ void Renderer::render(void *sdlSurface){
 				}
 				else if(engine.mapconDec->getChar(xM,yM) == 28)//oil drum
 				{
+					//srcRect.x +=240;
+					//srcRect.y = 48;
+					//SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 					srcRect.x +=240;
 					srcRect.y = 16;
+					//SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 				}
 				else if(engine.mapconDec->getChar(xM,yM) == 29)//generator
 				{
