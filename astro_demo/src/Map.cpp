@@ -88,6 +88,8 @@ int Map::tileType(int x, int y) {
 	{return 3;}
 	else if (tiles[i].tileType == Param::GENERATOR)
 	{return 4;}
+	else if (tiles[i].tileType == Param::KITCHEN)
+	{return 5;}
 	else
 	{return 1;}
 	//return tiles[x*y].tileType;
@@ -802,7 +804,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				}
 				else { 
 
-					Actor * midCounter = new Actor(i, y1+3,'c',"Kitchen Counter", TCODColor::white);
+					Actor * midCounter = new Actor(i, y1+3,'C',"Kitchen Counter", TCODColor::white);
 					engine.actors.push(midCounter);
 					Actor * midCounter2 = new Actor(i, y1+4,'c',"Kitchen Counter", TCODColor::white);
 					engine.actors.push(midCounter2);

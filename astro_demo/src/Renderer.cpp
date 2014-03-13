@@ -124,12 +124,19 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 32;
 				}
+				else if (r == 5)//5 is kitchen
+				{
+					srcRect.x = 160;
+				}
 				else //else is regular floors
 				{
 					srcRect.x = 0;
 				}
 				srcRect.y = 0;
 				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
+				
+				//add environment stuffs-> under things here (scorch, ice)
+				
 				
 				//render infection over it
 				if (engine.map->infectionState(xM,yM) > 0)
@@ -211,12 +218,19 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 32;
 				}
+				else if (r == 5)//5 is kitchen
+				{
+					srcRect.x = 160;
+				}
 				else
 				{
 					srcRect.x = 0;
 				}
 				srcRect.y = 16;
 				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
+				
+				//add environment stuffs-> under things here (scorch, ice)
+				
 				
 				if (engine.map->infectionState(xM,yM) > 0)
 				{
@@ -514,6 +528,10 @@ void Renderer::render(void *sdlSurface){
 				
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 			}
+			
+			//add environment stuffs-> over things here (fire)
+			
+			
 			
 			y++;
 		}
