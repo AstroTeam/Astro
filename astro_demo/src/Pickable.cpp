@@ -436,7 +436,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 		switch(bonus->type) {
 			case ItemBonus::NOBONUS: break;
 			case ItemBonus::HEALTH: wearer->destructible->maxHp += bonus->bonus; break;
-			case ItemBonus::DEFENSE: wearer->destructible->totalDefense += bonus->bonus; break;
+			case ItemBonus::DODGE: wearer->destructible->totalDodge += bonus->bonus; break;
 			case ItemBonus::ATTACK: wearer->attacker->totalPower += bonus->bonus; break;
 			default: break;
 		}
@@ -463,7 +463,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 					wearer->destructible->hp = wearer->destructible->maxHp;
 				}
 				break;
-			case ItemBonus::DEFENSE: wearer->destructible->totalDefense -= bonus->bonus; break;
+			case ItemBonus::DODGE: wearer->destructible->totalDodge -= bonus->bonus; break;
 			case ItemBonus::ATTACK: wearer->attacker->totalPower -= bonus->bonus; break;
 			default: break;
 		}
