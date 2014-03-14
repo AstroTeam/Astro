@@ -13,6 +13,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case RANGED: ai = new RangedAi(); break;
 		case LIGHT: ai = new LightAi(0,0); break;
 		case FLARE: ai = new FlareAi(0,0); break;
+		case CLEANER: ai = new CleanerAi(); break;
 	}
 	ai->load(zip);
 	return ai;
@@ -1207,4 +1208,74 @@ void TechAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	}	
 	
 }
+
+CleanerAi::CleanerAi() : moveCount(0){
+active = false;
+cleanPower = 3;
+}
+
+void CleanerAi::load(TCODZip &zip) {
+
+	moveCount = zip.getInt();
+	cleanPower = zip.getFloat();
+	active = zip.getInt();
+}
+
+void CleanerAi::save(TCODZip &zip) {
+	zip.putInt(CLEANER);
+	zip.putInt(moveCount);
+	zip.putFloat(cleanPower);
+	zip.putInt(active);
+}
+
+void CleanerAi::update(Actor *owner) {
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	
+	if(engine.map->infectionState(owner->x, owner->y) >= 1)
+		active = true;
+	
+	moveOrClean(owner);
+	
+}
+void CleanerAi::moveOrClean(Actor *owner)
+{
+	if(!active) //only moveOrClean when active
+		return;
+		
+	if(engine.map->tiles[owner->x+owner->y*(engine.map->width)].infection >0)
+	{
+		//clean tile
+		engine.map->tiles[owner->x+owner->y*(engine.map->width)].infection =- cleanPower;
+	}
+	else //once a tile is clean, move randomly and clean next tile
+	{
+		TCODRandom *rng = TCODRandom::getInstance();
+		int dx = rng->getInt(-1,1);
+		int dy = rng->getInt(-1,1);
+	
+	
+		if (dx != 0 || dy!=0) 
+		{
+			int destx = owner->x + dx;
+			int desty = owner->y + dy;
+			if (engine.map->canWalk(destx,desty)) {
+				owner->x = destx;
+				owner->y = desty;
+				engine.map->computeFov();
+			} 
+			/*else { //for now, no attacking
+				Actor *actor = engine.getActor(destx, desty);
+				if (actor) {
+					owner->attacker->attack(owner,actor);
+					engine.map->computeFov();
+				}
+			}
+				
+			*/
+		}
+	}
+}	
+
 
