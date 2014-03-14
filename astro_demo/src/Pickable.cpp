@@ -76,7 +76,7 @@ void Healer::save(TCODZip &zip) {
 
 bool Healer::use(Actor *owner, Actor *wearer) {
 	if (wearer->destructible) {
-		float amountHealed = wearer->destructible->heal(amount);
+		float amountHealed = wearer->destructible->heal(wearer->totalIntel * 3 + 6);
 		if (amountHealed > 0) {
 			return Pickable::use(owner,wearer);
 		}
