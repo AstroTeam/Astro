@@ -27,7 +27,7 @@ void Attacker::attack(Actor *owner, Actor *target) {
 	if (target->destructible && !target->destructible->isDead() ) {
 		//hit chance calculator
 		int roll = TCODRandom::getInstance()->getInt(1,20);
-		int attackRoll = roll + owner->totalStr;
+		//int attackRoll = roll + owner->totalStr;
 		float damageTaken;
 		if(roll >= 20){
 			engine.gui->message(TCODColor::red,"CRITICAL HIT!");

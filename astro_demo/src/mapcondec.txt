@@ -51,3 +51,5 @@ mapcondec:
 39 is an oven-stove combo
 
 40 is a refrigerator
+
+41 is destroyed cabinet

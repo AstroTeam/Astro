@@ -62,9 +62,9 @@ void Engine::init() {
 	player->container = new Container(50);
 	actors.push(player);
 	player->str=engine.gui->strValue;
-	//player->totalStr=engine.gui->strValue;
-	player->attacker->basePower=engine.gui->strValue;
-	player->attacker->totalPower=engine.gui->strValue;
+	player->totalStr=engine.gui->strValue;
+	player->attacker->basePower=engine.gui->strValue;  //old
+	player->attacker->totalPower=engine.gui->strValue; //old
 	player->dex=engine.gui->agValue;
 	player->totalDex=engine.gui->agValue;
 	player->intel=engine.gui->intelValue;
@@ -81,10 +81,42 @@ void Engine::init() {
 		case 2:
 			player->race="Robot";
 			plyrAscii = 159;
+			
+			player->str += 2;
+			player->totalStr += 2;
+			player->attacker->basePower += 2;   //old
+			player->attacker->totalPower += 2;  //old
+			
+			player->vit += 20;
+			player->destructible->maxHp += 20;
+			player->destructible->hp += 20;
+			
+			player->dex -= 2;
+			player->totalDex -= 2;
+			
+			player->intel += 2;
+			player->totalIntel += 2;
+			
 			break;
 		case 3:
 			player->race="Alien";
 			plyrAscii = 175;
+			
+			player->str -= 2;
+			player->totalStr -= 2;
+			player->attacker->basePower -= 2;   //old
+			player->attacker->totalPower -= 2;  //old
+			
+			player->vit -= 40;
+			player->destructible->maxHp -= 40;
+			player->destructible->hp -= 40;
+			
+			player->dex += 2;
+			player->totalDex += 2;
+			
+			player->intel += 2;
+			player->totalIntel += 2;
+			
 			break;
 	}
 	
@@ -121,8 +153,9 @@ void Engine::init() {
 		case 1:
 			player->role="Marine";
 			player->job="Infantry";
-			player->dex+=4; //job selection bonus
-			player->totalDex+=4; //job selection bonus
+			
+			player->dex+=3; //job selection bonus
+			player->totalDex+=3; //job selection bonus
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
 			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
@@ -152,7 +185,7 @@ void Engine::init() {
 			((Equipment*)(chest->pickable))->use(chest,player);
 			
 			helmet = new Actor(0,0,185,"Marine Ballistic Helmet",TCODColor::white);
-			bonusHe = new ItemBonus(ItemBonus::HEALTH,5);
+			bonusHe = new ItemBonus(ItemBonus::HEALTH,0);
 			helmet->blocks = false;
 			helmet->pickable = new Equipment(0,Equipment::HEAD,bonusHe);
 			helmet->sort = 3;
@@ -166,6 +199,9 @@ void Engine::init() {
 		case 2:
 			player->role="Marine";
 			player->job="Medic";
+			
+			player->intel += 1;		//job selection bonus
+			player->totalIntel += 1;//job selection bonus
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
 			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
@@ -193,6 +229,16 @@ void Engine::init() {
 			engine.actors.push(chest);
 			chest->pickable->pick(chest,player);
 			((Equipment*)(chest->pickable))->use(chest,player);
+			
+			//Give some medkits
+			for(int i=0; i<4; i++){
+				Actor *equip1 = new Actor(0,0,184,"Medkit", TCODColor::white);
+				equip1->sort = 1;
+				equip1->blocks = false;
+				equip1->pickable = new Healer(20);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
 			
 			break;
 		case 3:
@@ -226,6 +272,16 @@ void Engine::init() {
 			chest->pickable->pick(chest,player);
 			((Equipment*)(chest->pickable))->use(chest,player);
 			
+			//starts with 4000 quarters        (...of a PBC)
+			for(int i=0;i<10;i++){
+				Actor *equip1 = new Actor(0,0,188,"PetaBitcoins",TCODColor::yellow);
+				equip1->sort = 0;
+				equip1->blocks = false;
+				equip1->pickable = new Coinage(1,100);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
 			break;
 		case 4:
 			player->role="Explorer";
@@ -240,13 +296,15 @@ void Engine::init() {
 			chest->pickable->pick(chest,player);
 			((Equipment*)(chest->pickable))->use(chest,player);
 			
-			//add flare, for now is generic flare
-			equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
-			equip1->sort = 2;
-			equip1->blocks = false;
-			equip1->pickable = new Flare(10,5,5);
-			engine.actors.push(equip1);
-			equip1->pickable->pick(equip1,player);
+			//add flares, for now is generic flare
+			for(int i=0; i<3; i++){
+				equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Flare(10,5,5);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
 			//((Equipment*)(equip1->pickable))->use(equip1,player);
 			
 			break;
@@ -272,10 +330,31 @@ void Engine::init() {
 			feet->pickable->pick(feet,player);
 			((Equipment*)(feet->pickable))->use(feet,player);
 			
+			//add flares, for now is generic flare
+			for(int i=0; i<3; i++){
+				equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Flare(10,5,5);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
 			break;
 		case 6:
 			player->role="Explorer";
 			player->job="Merchant";
+			
+			//add flare, for now is generic flare
+			for(int i=0; i<3; i++){
+				equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Flare(10,5,5);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
 			//you don't get dick
 			break;
 		case 7:

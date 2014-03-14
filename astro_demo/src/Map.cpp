@@ -157,9 +157,28 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					
 					//engine.gui->message(TCODColor::red, "playery  %d",plyy);
 					//cout << "breaking cabinet";
+					//filing cabinets, counters, ovens, refrigerators
+					//to-do: server
 					a->blocks = false;
-					a->ch = 241;
-					a->name = "Debris";
+					if (a->ch == 243)//new decor
+					{
+						if(engine.mapconDec->getChar(a->x,a->y) == 35)//counter
+						{
+							engine.mapconDec->setChar(a->x,a->y,41);//destroyed counter
+							a->name = "destroyed countertop";
+						}
+					}
+					else if (a->ch == 240)//filing cabinet legacy
+					{
+						a->ch = 241;
+						a->name = "Destoryed Filing Cabinet";
+					}
+					else//just in case error
+					{
+						a->ch = 241;
+						a->name = "Debris";
+					}
+					
 					engine.sendToBack(a);
 					
 					int n = rng->getInt(5,8);
@@ -172,12 +191,15 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 						{
 							if (add > 3 )
 							{
-								engine.mapconDec->setChar(x+xxx, y+yyy, n);
+								if (engine.mapconDec->getChar(x+xxx, y+yyy) == ' ') {
+									engine.mapconDec->setChar(x+xxx, y+yyy, n);
+								}
 							}
 							n = rng->getInt(5,8);
 							add = rng->getInt(0,10);
 						}
 					}
+					
 					
 				}
 			}
@@ -685,13 +707,13 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				//another mapcondec number to look opened/looted
 				if (!mod2)
 				{
-					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
+					Actor *locker = new Actor((x1+x2)/2,i,243,"Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
 					locker->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
 					locker->container = new Container(3);
 					generateRandom(locker,243);
 					engine.actors.push(locker);
-					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,243,"A Government Issue Locker", TCODColor::white);
+					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,243,"Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar(((x1+x2)/2)+1,i, 23);//Locker
 					locker2->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
 					locker2->container = new Container(3);
@@ -700,7 +722,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				}
 				else
 				{
-					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
+					Actor *locker = new Actor((x1+x2)/2,i,243,"Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
 					locker->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
 					locker->container = new Container(3);
@@ -835,8 +857,19 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 
 				}
 			}
+			//below counter but not blocking walls make food processors
+			
+			if (i % 2 == 0 && i > x1 && i < x2) {
+				for (int j = y1+6; j < y2-1; j+=2) {
+					if (0 == rng->getInt(0, 4)) {
+						Actor * pcmu = new Actor(i, j, 'p', "PCMU Food Processor", TCODColor::white);
+						engine.actors.push(pcmu);
+					}
+				}
+			}
 		}
 	}
+
 	/*
 	 *
 	 * SETTINGS FOR OTHER ROOMS CAN BE PLACED HERE

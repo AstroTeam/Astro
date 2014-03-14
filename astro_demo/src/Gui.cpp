@@ -219,9 +219,9 @@ void Gui::renderKeyLook() {
 		
 		
 		//char buf[128] = ""; 
-		if (engine.map->isInFov(x,y)){
+		//if (engine.map->isInFov(x,y)){
 			
-			tileInfoMessage(TCODColor::lightGrey, "You see:");
+			//tileInfoMessage(TCODColor::lightGrey, "You see:");
 			
 			int c = engine.map->tiles[x+y*engine.map->width].num;
 
@@ -269,9 +269,9 @@ void Gui::renderKeyLook() {
 			tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
 
 			
-		}else {
-			tileInfoMessage(TCODColor::lightGrey, "You remember seeing:");
-		}
+		//}else {
+			//tileInfoMessage(TCODColor::lightGrey, "You remember seeing:");
+		//}
 		for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
 			Actor *actor = *it;
 			//find actors under the mouse cursor
@@ -766,7 +766,8 @@ Actor *Gui::vendingMenu(Actor *owner){
 	engine.gui->menu.addItem(Menu::ARMOR,"ARMOR");
 	engine.gui->menu.addItem(Menu::WEAPONS, "WEAPONS");
 	engine.gui->menu.addItem(Menu::EXIT, "EXIT");
-	Actor *actor;
+	Actor *actor = owner;	// the  "= owner" part just initializes it as a pointer to be used by the next line
+	actor->getDistance(0,0);//fixes warning of unused variable
 	bool select = true;
 	while(select){
 		engine.gui->vendingSidebar();
