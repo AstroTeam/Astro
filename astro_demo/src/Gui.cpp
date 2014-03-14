@@ -766,7 +766,8 @@ Actor *Gui::vendingMenu(Actor *owner){
 	engine.gui->menu.addItem(Menu::ARMOR,"ARMOR");
 	engine.gui->menu.addItem(Menu::WEAPONS, "WEAPONS");
 	engine.gui->menu.addItem(Menu::EXIT, "EXIT");
-	Actor *actor;
+	Actor *actor = owner;	// the  "= owner" part just initializes it as a pointer to be used by the next line
+	actor->getDistance(0,0);//fixes warning of unused variable
 	bool select = true;
 	while(select){
 		engine.gui->vendingSidebar();
