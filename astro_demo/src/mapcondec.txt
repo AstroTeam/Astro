@@ -47,3 +47,7 @@ mapcondec:
 37 is a sink
 
 38 is an upper sink
+
+39 is an oven-stove combo
+
+40 is a refrigerator

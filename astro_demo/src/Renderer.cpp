@@ -553,6 +553,16 @@ void Renderer::render(void *sdlSurface){
 					srcRect.x += 8*16;
 					srcRect.y = 64;
 				}
+				else if(engine.mapconDec->getChar(xM,yM) == 39)//oven-stove combo
+				{
+					srcRect.x += 10*16;
+					srcRect.y = 64;
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 40)//refrigerator
+				{
+					srcRect.x += 12*16;
+					srcRect.y = 64;
+				}
 				
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 			}

@@ -781,12 +781,14 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		for (int i = x1; i < x2+1; i++)
 		{
 			if (i == x2) {
-				Actor * refrigerator = new Actor(i, y1,'r',"refrigerator", TCODColor::white);
+				Actor * refrigerator = new Actor(i, y1,243,"refrigerator", TCODColor::white);
+				engine.mapconDec->setChar(i,y1, 40);//
 				refrigerator->smashable = true;
 				engine.actors.push(refrigerator);
 			}
 			else if (0 == rng->getInt(0,5)) {
-				Actor * oven = new Actor(i, y1,'o',"oven", TCODColor::white);
+				Actor * oven = new Actor(i, y1,243,"oven-stove combo", TCODColor::white);
+				engine.mapconDec->setChar(i,y1, 39);//
 				oven->smashable = true;
 				engine.actors.push(oven);
 			}
