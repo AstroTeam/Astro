@@ -172,12 +172,15 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 						{
 							if (add > 3 )
 							{
-								engine.mapconDec->setChar(x+xxx, y+yyy, n);
+								if (engine.mapconDec->getChar(x+xxx, y+yyy) == ' ') {
+									engine.mapconDec->setChar(x+xxx, y+yyy, n);
+								}
 							}
 							n = rng->getInt(5,8);
 							add = rng->getInt(0,10);
 						}
 					}
+					
 					
 				}
 			}
