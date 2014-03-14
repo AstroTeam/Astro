@@ -13,6 +13,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case RANGED: ai = new RangedAi(); break;
 		case LIGHT: ai = new LightAi(0,0); break;
 		case FLARE: ai = new FlareAi(0,0); break;
+		case GRENADIER: ai = new GrenadierAi(); break;
 		case CLEANER: ai = new CleanerAi(); break;
 	}
 	ai->load(zip);
@@ -1082,27 +1083,27 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 }
 
 
-TechAi::TechAi() : moveCount(0), range(3){
+GrenadierAi::GrenadierAi() : moveCount(0), range(3){
 numEmpGrenades = 5;
 berserk = false;
 }
 
-void TechAi::load(TCODZip &zip) {
+void GrenadierAi::load(TCODZip &zip) {
 	berserk = zip.getInt();
 	moveCount = zip.getInt();
 	range = zip.getInt();
 	numEmpGrenades = zip.getInt();
 }
 
-void TechAi::save(TCODZip &zip) {
-//	zip.putInt(RANGED);
+void GrenadierAi::save(TCODZip &zip) {
+	zip.putInt(GRENADIER);
 	zip.putInt(berserk);
 	zip.putInt(moveCount);
 	zip.putInt(range);
 	zip.putInt(numEmpGrenades);
 }
 
-void TechAi::update(Actor *owner) {
+void GrenadierAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
@@ -1143,7 +1144,7 @@ void TechAi::update(Actor *owner) {
 		else 
 			moveCount = 0;
 }
-void TechAi::moveOrAttack(Actor *owner, int targetx, int targety)
+void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 {
 	int dx = targetx - owner->x;
 	int dy = targety - owner->y;

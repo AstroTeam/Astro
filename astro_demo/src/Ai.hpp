@@ -8,7 +8,7 @@ public:
 	Actor *choseFromInventory(Actor *owner, int type, bool isVend);
 protected:
 	enum AiType {
-		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED, LIGHT, FLARE, CLEANER
+		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED, LIGHT, FLARE, GRENADIER, CLEANER
 	};
 };
 
@@ -115,10 +115,10 @@ protected:
 	Ai *oldAi;
 };
 
-class TechAi : public Ai
+class GrenadierAi : public Ai
 {
 	public:
-		TechAi();
+		GrenadierAi();
 		void update(Actor *owner);
 		void load(TCODZip &zip);
 		void save(TCODZip &zip);

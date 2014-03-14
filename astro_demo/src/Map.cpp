@@ -333,7 +333,7 @@ void Map::addMonster(int x, int y) {
 		infectedGrenadier->destructible = new MonsterDestructible(infectedGrenadierMaxHp,infectedGrenadierDef,"infected corpse",infectedGrenadierXp);
 		infectedGrenadier->attacker = new Attacker(infectedGrenadierAtk);
 		infectedGrenadier->container = new Container(2);
-		infectedGrenadier->ai = new TechAi();
+		infectedGrenadier->ai = new GrenadierAi();
 		generateRandom(infectedGrenadier , infectedGrenadierAscii);
 		engine.actors.push(infectedGrenadier);
 	}
