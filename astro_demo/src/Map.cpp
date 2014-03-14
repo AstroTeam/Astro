@@ -157,9 +157,28 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					
 					//engine.gui->message(TCODColor::red, "playery  %d",plyy);
 					//cout << "breaking cabinet";
+					//filing cabinets, counters, ovens, refrigerators
+					//to-do: server
 					a->blocks = false;
-					a->ch = 241;
-					a->name = "Debris";
+					if (a->ch == 243)//new decor
+					{
+						if(engine.mapconDec->getChar(a->x,a->y) == 35)//counter
+						{
+							engine.mapconDec->setChar(a->x,a->y,41);//destroyed counter
+							a->name = "destroyed countertop";
+						}
+					}
+					else if (a->ch == 240)//filing cabinet legacy
+					{
+						a->ch = 241;
+						a->name = "Destoryed Filing Cabinet";
+					}
+					else//just in case error
+					{
+						a->ch = 241;
+						a->name = "Debris";
+					}
+					
 					engine.sendToBack(a);
 					
 					int n = rng->getInt(5,8);

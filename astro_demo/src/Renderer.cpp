@@ -563,6 +563,11 @@ void Renderer::render(void *sdlSurface){
 					srcRect.x += 12*16;
 					srcRect.y = 64;
 				}
+				else if(engine.mapconDec->getChar(xM,yM) == 41)//destroyed counter
+				{
+					srcRect.x += 14*16;
+					srcRect.y = 64;
+				}
 				
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 			}
