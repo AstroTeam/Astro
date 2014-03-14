@@ -791,22 +791,27 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				engine.actors.push(oven);
 			}
 			else {
-				Actor * counter = new Actor(i, y1,'c',"Kitchen Counter", TCODColor::white);
+				Actor * counter = new Actor(i, y1,243,"Kitchen Counter", TCODColor::white);
+				engine.mapconDec->setChar(i,y1, 35);//
 				counter->smashable = true;
 				engine.actors.push(counter);
 			}
 			if (i > x1+1 && i < x2-1) {
 				if (i > midX-2 && i < midX+2) {
-					Actor *sink = new Actor(i, y1+3,'s',"Industrial Sink", TCODColor::white);
+					Actor *sink = new Actor(i, y1+3,243,"Industrial Sink", TCODColor::white);
+					engine.mapconDec->setChar(i,y1+3, 38);//
 					engine.actors.push(sink);
-					Actor *sink2 = new Actor(i, y1+4,'s',"Industrial Sink", TCODColor::white);
+					Actor *sink2 = new Actor(i, y1+4,243,"Industrial Sink", TCODColor::white);
+					engine.mapconDec->setChar(i,y1+4, 37);//
 					engine.actors.push(sink2);
 				}
 				else { 
 
-					Actor * midCounter = new Actor(i, y1+3,'C',"Kitchen Counter", TCODColor::white);
+					Actor * midCounter = new Actor(i, y1+3,243,"Kitchen Counter", TCODColor::white);
+					engine.mapconDec->setChar(i,y1+3, 36);//
 					engine.actors.push(midCounter);
-					Actor * midCounter2 = new Actor(i, y1+4,'c',"Kitchen Counter", TCODColor::white);
+					Actor * midCounter2 = new Actor(i, y1+4,243,"Kitchen Counter", TCODColor::white);
+					engine.mapconDec->setChar(i,y1+4, 35);//
 					engine.actors.push(midCounter2);
 
 				}
