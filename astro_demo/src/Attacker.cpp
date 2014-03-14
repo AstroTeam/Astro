@@ -28,17 +28,17 @@ void Attacker::attack(Actor *owner, Actor *target) {
 		//hit chance calculator
 		int roll = TCODRandom::getInstance()->getInt(1,20);
 		int attackRoll = roll + owner->totalStr;
-		float damageTaken;
+		float damageTaken = 0;
 		if(roll >= 20){
 			engine.gui->message(TCODColor::red,"CRITICAL HIT!");
-			damageTaken = (2 * totalPower) - target->destructible->totalDefense;
+			damageTaken = (2 * owner->totalStr); //save for DR and damage roll
 		}
 		else if(roll <= 1){
 			engine.gui->message(TCODColor::lightGrey,"critical miss...");
 			damageTaken = 0;
 		}
-		else{
-			damageTaken = totalPower - target->destructible->totalDefense;
+		else if(attackRoll >= target->destructible->totalDodge){
+			damageTaken = owner->totalStr; //save for DR and damage roll
 		}
 		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
 			if (owner->oozing && target->susceptible) {
@@ -65,7 +65,20 @@ void Attacker::attack(Actor *owner, Actor *target) {
 
 void Attacker::shoot(Actor *owner, Actor *target) {
 	if (target->destructible && !target->destructible->isDead() ) {
-		float damageTaken = (int)owner->totalDex - target->destructible->totalDefense;
+		int roll = TCODRandom::getInstance()->getInt(1,20);
+		int attackRoll = roll + owner->totalDex;
+		float damageTaken = 0;
+		if(roll >= 20){
+			engine.gui->message(TCODColor::red,"CRITICAL HIT!");
+			damageTaken = (2 * owner->totalDex); //save for DR and damage roll
+		}
+		else if(roll <= 1){
+			engine.gui->message(TCODColor::lightGrey,"critical miss...");
+			damageTaken = 0;
+		}
+		else if(attackRoll >= target->destructible->totalDodge){
+			damageTaken = owner->totalDex; //save for DR and damage roll
+		}
 		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
 			if (owner->oozing && target->susceptible) {
 				engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hit points!",owner->name, target->name,damageTaken + 1);

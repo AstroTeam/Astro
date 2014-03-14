@@ -1177,7 +1177,7 @@ Actor *Map::createEMP(int x, int y){
 Actor *Map::createTitanMail(int x, int y){
 	Actor *chainMail = new Actor(x,y,185,"Titan-mail",TCODColor::white);
 	chainMail->blocks = false;
-	ItemBonus *bonus = new ItemBonus(ItemBonus::DEFENSE,3);
+	ItemBonus *bonus = new ItemBonus(ItemBonus::DODGE,3);
 	chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus);
 	chainMail->sort = 3;
 	return chainMail;

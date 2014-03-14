@@ -139,8 +139,8 @@ void PlayerAi::update(Actor *owner) {
 				choice_made = true;
 				break;
 			case Menu::AGILITY:
-				owner->destructible->baseDefense += 1;
-				owner->destructible->totalDefense += 1;
+				owner->destructible->baseDodge += 1;
+				owner->destructible->totalDodge += 1;
 			/*case Menu::AGILITY:
 				owner->destructible->defense += 1;
 				choice_made = true;
@@ -397,7 +397,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//need to figure out how to check if the user has a gun
 			if(owner->container->ranged){
 				//engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
-				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,3);
+				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,10);
 				if (!closestMonster) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
 					return;
@@ -407,7 +407,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					if(owner->attacker && owner->attacker->battery >= 1){
 						owner->attacker->shoot(owner, closestMonster);
 						owner->attacker->usePower(owner, 1);
-						engine.damageDone += (int)owner->totalDex - closestMonster->destructible->totalDefense;
+						engine.damageDone += (int)owner->totalDex - closestMonster->destructible->totalDodge;
 						engine.gameStatus = Engine::NEW_TURN;
 					}
 					else{
@@ -445,7 +445,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					if(owner->attacker && owner->attacker->battery >= 1){
 						owner->attacker->shoot(owner, actor);
 						owner->attacker->usePower(owner, 1);
-						engine.damageDone += (int)owner->totalDex - actor->destructible->totalDefense;
+						engine.damageDone += (int)owner->totalDex - actor->destructible->totalDodge;
 						engine.gameStatus = Engine::NEW_TURN;
 					}
 					else{
@@ -664,7 +664,7 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 		}
 	} else if (owner->attacker) {
 		owner->attacker->attack(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
 	
 }
@@ -1123,11 +1123,11 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		}
 	} else if (distance !=1 && owner->attacker) {
 		owner->attacker->shoot(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
 	else if (owner->attacker) {
 		owner->attacker->attack(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
 	
 }
