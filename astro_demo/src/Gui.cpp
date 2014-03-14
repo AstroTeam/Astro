@@ -234,9 +234,9 @@ void Gui::renderKeyLook() {
 				//tileInfoMessage(TCODColor::green, "an area free of any ailment");
 				//could have this be nothing
 			else if (i < 2)
-				tileInfoMessage(TCODColor::green, "an area with some green moss on it");
+				tileInfoMessage(TCODColor::green, "an area with some green on it");
 			else if (i < 3)
-				tileInfoMessage(TCODColor::green, "an area with some odd green moss on it's surface");
+				tileInfoMessage(TCODColor::green, "an area with some odd green moss on its surface");
 			else if (i < 4)
 				tileInfoMessage(TCODColor::green, "an area with has weird moss covering it");
 			else if (i < 5)
