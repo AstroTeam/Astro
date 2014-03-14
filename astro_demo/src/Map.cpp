@@ -671,13 +671,13 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				//another mapcondec number to look opened/looted
 				if (!mod2)
 				{
-					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
+					Actor *locker = new Actor((x1+x2)/2,i,243,"Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
 					locker->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
 					locker->container = new Container(3);
 					generateRandom(locker,243);
 					engine.actors.push(locker);
-					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,243,"A Government Issue Locker", TCODColor::white);
+					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,243,"Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar(((x1+x2)/2)+1,i, 23);//Locker
 					locker2->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
 					locker2->container = new Container(3);
@@ -686,7 +686,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				}
 				else
 				{
-					Actor *locker = new Actor((x1+x2)/2,i,243,"A Government Issue Locker", TCODColor::white);
+					Actor *locker = new Actor((x1+x2)/2,i,243,"Government Issue Locker", TCODColor::white);
 					engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
 					locker->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
 					locker->container = new Container(3);
