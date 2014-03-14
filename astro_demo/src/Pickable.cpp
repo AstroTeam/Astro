@@ -233,7 +233,7 @@ bool Confuser::use(Actor *owner, Actor *wearer) {
 	} */
 	
 	//confuse the target for nbTurns turns
-	Ai *confusedAi = new ConfusedActorAi(nbTurns, actor->ai);
+	Ai *confusedAi = new ConfusedActorAi(wearer->totalIntel + 5, actor->ai);
 	actor->ai = confusedAi;
 	
 	engine.gui->message(TCODColor::lightGreen, "The flash of light confuses the %s, and they start to stumble around!",
