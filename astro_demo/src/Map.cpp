@@ -821,8 +821,19 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 
 				}
 			}
+			//below counter but not blocking walls make food processors
+			
+			if (i % 2 == 0 && i > x1 && i < x2) {
+				for (int j = y1+6; j < y2-1; j+=2) {
+					if (0 == rng->getInt(0, 4)) {
+						Actor * pcmu = new Actor(i, j, 'p', "PCMU Food Processor", TCODColor::white);
+						engine.actors.push(pcmu);
+					}
+				}
+			}
 		}
 	}
+
 	/*
 	 *
 	 * SETTINGS FOR OTHER ROOMS CAN BE PLACED HERE
