@@ -10,18 +10,18 @@ Upon investing you find that there are weird aliens all over the ship.  These al
 
 Stats
 -----
-    ○ Strength - Base melee weapon damage and carrying capacity. 
+    ○ Strength - Base melee weapon damage, melee accuracy, and carrying capacity. 
     Governs axes, swords, and maces. A large enough value may be required for some weapons and armor.
 
     ○ Dexterity - Base ranged weapon damage and combat mobility. Governs laser weapons. 
-    Increases accuracy with all lasers and melee weapon types. 
-    Increases chance of dodging enemy attacks. A large enough value may be required for some weapons.
+    Increases accuracy with all lasers. Increases chance of dodging enemy attacks. 
+    A large enough value may be required for some weapons.
 
     ○ Intelligence - Base tech usefulness and damage. 
-    Governs cryo-weapons, flamethrowers, telekinesis, and explosives. 
-    Gives bonus damage against tech-based enemies. Required for certain powerful weapons and tech.
+    Governs medkits, cryo-weapons, flamethrowers, telekinesis, and explosives. 
+    A large enough value is equired for certain powerful weapons and tech.
 
-    ○ Vitality - Base health. Potency of food. Resistance to astrocephaly.
+    ○ Vitality - Base health. Resistance to astrocephaly.
 
 
 
@@ -49,7 +49,7 @@ turns. Requires many kills to refresh.
 
     ○ Infantry - Bonus starting dexterity. 
 
-    ○ Medic - Intelligence increases chance of keeping a health pack after using it. 
+    ○ Medic - Bonus starting intelligence and medkits. 
 
     ○ Quartermaster - Starts game with 3 blank key cards. These can 
         be used to open any locks. Can hold 3 additional items at the 
@@ -61,23 +61,22 @@ more starting vision distance. Ability: Flare: Shoots a pen flare, giving
 vision surrounding a line until it hits a wall or enemy. Requires a few kills 
 to refresh. 
 
-    ○ Survivalist - Takes 1 less damage from all sources. 
+    ○ Survivalist - Bonus starting vitality. Starts with many flashbangs.
 
-    ○ Pirate - Corpses have a higher chance of dropping loot. 
+    ○ Pirate - Find more cash when exploring. 
 
-    ○ Merchant - Takes 1 more damage from all sources. Starts with 
-        one grenade, one health pack, and one food. 
+    ○ Merchant - Very low starting vitality. Starts with 
+        one grenade, one EMP, one health pack, and one flashbang. 
 
 
 ● Mercenary- Narrowly-focused classes. Start with 3 grenades. Ability: 
 Dash: Gives a free move without using a turn. Requires many kills to 
 refresh. 
 
-    ○ Assassin - Has half health (calculated after bonuses). Deals 
-        double damage. Starts with a sword and 5 throwing knives. 
+    ○ Assassin - Starts with high strength, dexterity, and intelligence.
+        Has extremely low vitality. Starts with a sword and many EMPs. 
 
-    ○ Brute - Has extra starting vitality. Starts with 6 bonus grenades 
-        and a mace. 
+    ○ Brute - Has significant bonus starting vitality. Starts with a mace. 
 
     ○ Hacker - Can hack vending machines for lower prices. Increased 
         damage against robots. Has bonus intelligence at start of game. 

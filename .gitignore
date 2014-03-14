@@ -23,6 +23,5 @@
 stderr.txt
 stdout.txt
 
-#Ignore .psds
-*.psd
+#Ignore
 *.png

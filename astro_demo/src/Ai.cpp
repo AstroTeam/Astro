@@ -13,6 +13,8 @@ Ai *Ai::create(TCODZip &zip) {
 		case RANGED: ai = new RangedAi(); break;
 		case LIGHT: ai = new LightAi(0,0); break;
 		case FLARE: ai = new FlareAi(0,0); break;
+		case GRENADIER: ai = new GrenadierAi(); break;
+		case CLEANER: ai = new CleanerAi(); break;
 	}
 	ai->load(zip);
 	return ai;
@@ -1081,27 +1083,27 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 }
 
 
-TechAi::TechAi() : moveCount(0), range(3){
+GrenadierAi::GrenadierAi() : moveCount(0), range(3){
 numEmpGrenades = 5;
 berserk = false;
 }
 
-void TechAi::load(TCODZip &zip) {
+void GrenadierAi::load(TCODZip &zip) {
 	berserk = zip.getInt();
 	moveCount = zip.getInt();
 	range = zip.getInt();
 	numEmpGrenades = zip.getInt();
 }
 
-void TechAi::save(TCODZip &zip) {
-//	zip.putInt(RANGED);
+void GrenadierAi::save(TCODZip &zip) {
+	zip.putInt(GRENADIER);
 	zip.putInt(berserk);
 	zip.putInt(moveCount);
 	zip.putInt(range);
 	zip.putInt(numEmpGrenades);
 }
 
-void TechAi::update(Actor *owner) {
+void GrenadierAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
@@ -1142,7 +1144,7 @@ void TechAi::update(Actor *owner) {
 		else 
 			moveCount = 0;
 }
-void TechAi::moveOrAttack(Actor *owner, int targetx, int targety)
+void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 {
 	int dx = targetx - owner->x;
 	int dy = targety - owner->y;
@@ -1182,13 +1184,13 @@ void TechAi::moveOrAttack(Actor *owner, int targetx, int targety)
 			float damageTaken = engine.player->destructible->takeDamage(engine.player, -3 + 3 * owner->totalIntel);
 			numEmpGrenades--;
 			engine.gui->message(TCODColor::red,"The %s uses an EMP Grenade on the player for %g hit points!",owner->name, damageTaken);
-			engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDefense);
+			engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
 		}
 
 		
 	}else if (owner->attacker && !berserk) { //grenadier will melee attack if up close
 		owner->attacker->attack(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}else if(owner->attacker && berserk)
 	{
 		Actor *actor = engine.getActor(targetx,targety);
@@ -1199,7 +1201,7 @@ void TechAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		float damageTaken = actor->destructible->takeDamage(actor, -1*numEmpGrenades*(-3 + 3 * owner->totalIntel));
 		engine.gui->message(TCODColor::red, "The %s kamakazes on the %s for %g hit points!",owner->name,name, damageTaken);
 		if(actor == engine.player)
-			engine.damageReceived += -1*numEmpGrenades*(3 * owner->totalIntel - 3 - engine.player->destructible->totalDefense);
+			engine.damageReceived += -1*numEmpGrenades*(3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
 			
 		MonsterDestructible* md = (MonsterDestructible*) owner->destructible;
 		md->suicide(owner);
@@ -1207,4 +1209,74 @@ void TechAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	}	
 	
 }
+
+CleanerAi::CleanerAi() : moveCount(0){
+active = false;
+cleanPower = 3;
+}
+
+void CleanerAi::load(TCODZip &zip) {
+
+	moveCount = zip.getInt();
+	cleanPower = zip.getFloat();
+	active = zip.getInt();
+}
+
+void CleanerAi::save(TCODZip &zip) {
+	zip.putInt(CLEANER);
+	zip.putInt(moveCount);
+	zip.putFloat(cleanPower);
+	zip.putInt(active);
+}
+
+void CleanerAi::update(Actor *owner) {
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	
+	if(engine.map->infectionState(owner->x, owner->y) >= 1)
+		active = true;
+	
+	moveOrClean(owner);
+	
+}
+void CleanerAi::moveOrClean(Actor *owner)
+{
+	if(!active) //only moveOrClean when active
+		return;
+		
+	if(engine.map->tiles[owner->x+owner->y*(engine.map->width)].infection >0)
+	{
+		//clean tile
+		engine.map->tiles[owner->x+owner->y*(engine.map->width)].infection =- cleanPower;
+	}
+	else //once a tile is clean, move randomly and clean next tile
+	{
+		TCODRandom *rng = TCODRandom::getInstance();
+		int dx = rng->getInt(-1,1);
+		int dy = rng->getInt(-1,1);
+	
+	
+		if (dx != 0 || dy!=0) 
+		{
+			int destx = owner->x + dx;
+			int desty = owner->y + dy;
+			if (engine.map->canWalk(destx,desty)) {
+				owner->x = destx;
+				owner->y = desty;
+				engine.map->computeFov();
+			} 
+			/*else { //for now, no attacking
+				Actor *actor = engine.getActor(destx, desty);
+				if (actor) {
+					owner->attacker->attack(owner,actor);
+					engine.map->computeFov();
+				}
+			}
+				
+			*/
+		}
+	}
+}	
+
 
