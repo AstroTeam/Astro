@@ -124,12 +124,19 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 32;
 				}
+				else if (r == 5)//5 is kitchen
+				{
+					srcRect.x = 160;
+				}
 				else //else is regular floors
 				{
 					srcRect.x = 0;
 				}
 				srcRect.y = 0;
 				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
+				
+				//add environment stuffs-> under things here (scorch, ice)
+				
 				
 				//render infection over it
 				if (engine.map->infectionState(xM,yM) > 0)
@@ -211,12 +218,19 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 32;
 				}
+				else if (r == 5)//5 is kitchen
+				{
+					srcRect.x = 160;
+				}
 				else
 				{
 					srcRect.x = 0;
 				}
 				srcRect.y = 16;
 				SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
+				
+				//add environment stuffs-> under things here (scorch, ice)
+				
 				
 				if (engine.map->infectionState(xM,yM) > 0)
 				{
@@ -484,8 +498,12 @@ void Renderer::render(void *sdlSurface){
 				}
 				else if(engine.mapconDec->getChar(xM,yM) == 28)//oil drum
 				{
+					//srcRect.x +=240;
+					//srcRect.y = 48;
+					//SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 					srcRect.x +=240;
 					srcRect.y = 16;
+					//SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 				}
 				else if(engine.mapconDec->getChar(xM,yM) == 29)//generator
 				{
@@ -507,9 +525,51 @@ void Renderer::render(void *sdlSurface){
 					srcRect.x +=240;
 					srcRect.y = 48;
 				}
+				////////////////////////////////////////////////////////////////////////KITCHENS
+				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white && engine.map->tileType(xM,yM) == 5){
+						//light
+						srcRect.x=0;
+				}else if (engine.map->tileType(xM,yM) == 5){
+						//dark
+						srcRect.x=16;
+				}
+				if(engine.mapconDec->getChar(xM,yM) == 35)//counter
+				{
+					srcRect.x += 32;
+					srcRect.y = 64;
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 36)//upper counter
+				{
+					srcRect.x += 64;
+					srcRect.y = 64;
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 37)//sink
+				{
+					srcRect.x += 6*16;
+					srcRect.y = 64;
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 38)//upper sink
+				{
+					srcRect.x += 8*16;
+					srcRect.y = 64;
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 39)//oven-stove combo
+				{
+					srcRect.x += 10*16;
+					srcRect.y = 64;
+				}
+				else if(engine.mapconDec->getChar(xM,yM) == 40)//refrigerator
+				{
+					srcRect.x += 12*16;
+					srcRect.y = 64;
+				}
 				
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 			}
+			
+			//add environment stuffs-> over things here (fire)
+			
+			
 			
 			y++;
 		}
@@ -591,10 +651,23 @@ void Renderer::render(void *sdlSurface){
 		//	return actor;
 		//}
 		if (actor->ch == 224 && engine.distance(actor->x,engine.player->x,actor->y,engine.player->y) < 11){
-			//LightAi *l = (LightAi*)actor->ai;
-			//TCODRandom *myRandom = new TCODRandom();
-			//float rng = myRandom->getFloat(0.0000f,1.0000f);
-			//l->flicker(actor,rng);
+			LightAi *l = (LightAi*)actor->ai;
+			/*if (!l->onOff)
+			{
+				l->onOff = true;
+				l->update(actor);
+			}
+			TCODRandom *myRandom = new TCODRandom();
+			float rng = myRandom->getFloat(0.0000f,1.0000f);
+			l->flicker(actor,rng);*/
+			TCODRandom *myRandom = new TCODRandom();
+			float rng = myRandom->getFloat(0.0000f,1.0000f,0.65000f);
+			if(l->flkr < rng || l->onAgn)
+			{
+				l->onOff = !l->onOff;
+				l->update(actor);
+				l->onAgn = !l->onAgn;
+			}
 		}
 		
 	}

@@ -39,3 +39,15 @@ mapcondec:
 33 is a workbench (left)
 
 34 is a workbench (right)
+
+35 is a countertop
+
+36 is an upper countertop
+
+37 is a sink
+
+38 is an upper sink
+
+39 is an oven-stove combo
+
+40 is a refrigerator

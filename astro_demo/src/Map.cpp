@@ -88,6 +88,8 @@ int Map::tileType(int x, int y) {
 	{return 3;}
 	else if (tiles[i].tileType == Param::GENERATOR)
 	{return 4;}
+	else if (tiles[i].tileType == Param::KITCHEN)
+	{return 5;}
 	else
 	{return 1;}
 	//return tiles[x*y].tileType;
@@ -147,7 +149,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 			
 			if (a != NULL)
 			{
-				if (strcmp(a->name,"a filing cabinet") == 0)
+				if (a->smashable)
 				{
 					//engine.actors.remove(a);
 					//CHANGE THE SPRITE TO BROKEN CABINET
@@ -157,7 +159,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					//cout << "breaking cabinet";
 					a->blocks = false;
 					a->ch = 241;
-					a->name = "a destroyed filing cabinet";
+					a->name = "Debris";
 					engine.sendToBack(a);
 					
 					int n = rng->getInt(5,8);
@@ -170,12 +172,15 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 						{
 							if (add > 3 )
 							{
-								engine.mapconDec->setChar(x+xxx, y+yyy, n);
+								if (engine.mapconDec->getChar(x+xxx, y+yyy) == ' ') {
+									engine.mapconDec->setChar(x+xxx, y+yyy, n);
+								}
 							}
 							n = rng->getInt(5,8);
 							add = rng->getInt(0,10);
 						}
 					}
+					
 					
 				}
 			}
@@ -197,12 +202,21 @@ void Map::addMonster(int x, int y) {
 	float infectedCrewMemChance = 80;
 	int infectedCrewMemAscii = 164;
 	
+	//Infected Marine Base Stats
 	float infectedMarineMaxHp = 10;
 	float infectedMarineDef = 0;
 	float infectedMarineAtk = 5;
 	float infectedMarineXp = 10;
 //	float infectedMarineChance = 80;
 	int infectedMarineAscii = 149;
+	
+	//Infected Grenadier Base Stats
+	float infectedGrenadierMaxHp = 15;
+	float infectedGrenadierDef = 0;
+	float infectedGrenadierAtk = 2;
+	float infectedGrenadierXp = 20;
+//	float infectedGrenadierChance = 80;
+	int infectedGrenadierAscii = 133;
 	
 	//Infected NCO Base Stats
 	float infectedNCOMaxHp = 12;
@@ -249,8 +263,8 @@ void Map::addMonster(int x, int y) {
 	
 	int dice = rng->getInt(0,100);
 	if (dice < infectedCrewMemChance) 
-	{//10% of infectedCrewMembers are infectedMarines
-		if(dice <= (infectedCrewMemChance*9)/10) 
+	{//10% of infectedCrewMembers are infectedMarines, and 5% are infectedGrenadiers 
+		if(dice <= (infectedCrewMemChance*75)/100)
 		{
 			Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
 			infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
@@ -260,7 +274,7 @@ void Map::addMonster(int x, int y) {
 			generateRandom(infectedCrewMember, infectedCrewMemAscii);
 			engine.actors.push(infectedCrewMember);
 		}
-		else 
+		else if(dice <= (infectedCrewMemChance*85)/100) 
 		{
 			Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
 			infectedMarine->destructible = new MonsterDestructible(infectedMarineMaxHp,infectedMarineDef,"infected corpse",infectedMarineXp);
@@ -269,6 +283,17 @@ void Map::addMonster(int x, int y) {
 			infectedMarine->ai = new RangedAi();
 			generateRandom(infectedMarine, infectedMarineAscii);
 			engine.actors.push(infectedMarine);
+		}
+		else 
+		{
+			Actor *infectedGrenadier = new Actor(x,y,infectedGrenadierAscii,"Infected Grenadier",TCODColor::white);
+			infectedGrenadier->destructible = new MonsterDestructible(infectedGrenadierMaxHp,infectedGrenadierDef,"infected corpse",infectedGrenadierXp);
+			infectedGrenadier->attacker = new Attacker(infectedGrenadierAtk);
+			infectedGrenadier->container = new Container(2);
+			infectedGrenadier->ai = new TechAi();
+			generateRandom(infectedGrenadier , infectedGrenadierAscii);
+			engine.actors.push(infectedGrenadier);
+
 		}
 		
 	}
@@ -375,6 +400,8 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 				for (int i = 0; i <= rng->getInt(1,3); i++) {
 					roomList->push(BARRACKS);
 				}	
+				roomList->push(KITCHEN);
+				roomList->push(KITCHEN);
 				//need to see if end list items are less common
 				//roomList->push(SERVER);
 				//roomList->push(ARMORY);
@@ -486,6 +513,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				if (isWall(filingCabX-1,filingCabY) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
 					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
+					cabinet->smashable = true;
 					engine.actors.push(cabinet);
 				}
 			}
@@ -497,6 +525,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				if (isWall(filingCabX,filingCabY-1) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
 					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
+					cabinet->smashable = true;
 					engine.actors.push(cabinet);
 				}
 			}
@@ -508,6 +537,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				if (isWall(filingCabX+1,filingCabY ) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
 					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
+					cabinet->smashable = true;
 					engine.actors.push(cabinet);
 				}
 			}
@@ -519,6 +549,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				if (isWall(filingCabX,filingCabY+1) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
 					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
+					cabinet->smashable = true;
 					engine.actors.push(cabinet);
 				}
 			}
@@ -746,6 +777,63 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		}
 	}
 
+	if (room->type == KITCHEN) {
+		cout << "KITCHEN Made" << endl;
+		TCODRandom *rng = TCODRandom::getInstance();
+		int midX = (x1+x2)/2;
+		for (int i = x1; i < x2+1; i++)
+		{
+			if (i == x2) {
+				Actor * refrigerator = new Actor(i, y1,243,"refrigerator", TCODColor::white);
+				engine.mapconDec->setChar(i,y1, 40);//
+				refrigerator->smashable = true;
+				engine.actors.push(refrigerator);
+			}
+			else if (0 == rng->getInt(0,5)) {
+				Actor * oven = new Actor(i, y1,243,"oven-stove combo", TCODColor::white);
+				engine.mapconDec->setChar(i,y1, 39);//
+				oven->smashable = true;
+				engine.actors.push(oven);
+			}
+			else {
+				Actor * counter = new Actor(i, y1,243,"Kitchen Counter", TCODColor::white);
+				engine.mapconDec->setChar(i,y1, 35);//
+				counter->smashable = true;
+				engine.actors.push(counter);
+			}
+			if (i > x1+1 && i < x2-1) {
+				if (i > midX-2 && i < midX+2) {
+					Actor *sink = new Actor(i, y1+3,243,"Industrial Sink", TCODColor::white);
+					engine.mapconDec->setChar(i,y1+3, 38);//
+					engine.actors.push(sink);
+					Actor *sink2 = new Actor(i, y1+4,243,"Industrial Sink", TCODColor::white);
+					engine.mapconDec->setChar(i,y1+4, 37);//
+					engine.actors.push(sink2);
+				}
+				else { 
+
+					Actor * midCounter = new Actor(i, y1+3,243,"Kitchen Counter", TCODColor::white);
+					engine.mapconDec->setChar(i,y1+3, 36);//
+					engine.actors.push(midCounter);
+					Actor * midCounter2 = new Actor(i, y1+4,243,"Kitchen Counter", TCODColor::white);
+					engine.mapconDec->setChar(i,y1+4, 35);//
+					engine.actors.push(midCounter2);
+
+				}
+			}
+			//below counter but not blocking walls make food processors
+			
+			if (i % 2 == 0 && i > x1 && i < x2) {
+				for (int j = y1+6; j < y2-1; j+=2) {
+					if (0 == rng->getInt(0, 4)) {
+						Actor * pcmu = new Actor(i, j, 'p', "PCMU Food Processor", TCODColor::white);
+						engine.actors.push(pcmu);
+					}
+				}
+			}
+		}
+	}
+
 	/*
 	 *
 	 * SETTINGS FOR OTHER ROOMS CAN BE PLACED HERE
@@ -762,6 +850,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		numLights = rmSze/30;
 		if (numLights <= 0)
 			numLights = 1;
+		TCODRandom *myRandom = new TCODRandom();
+		int chance = 0;
 		for (int i = 0; i < numLights;)
 		{
 			//bool valid = false;
@@ -770,21 +860,37 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			int x = rng->getInt(x1+1,x2-1);
 			int y = rng->getInt(y1+1,y2-1);
 			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
-				Actor *light = new Actor(x, y, 224, "An hastily erected Emergency Light", TCODColor::white);
+				Actor *light = new Actor(x, y, 224, "A hastily erected Emergency Light", TCODColor::white);
 				//4,1 = standard light, radius, flkr
-				TCODRandom *myRandom = new TCODRandom();
+				
 				//0.8 is lower limit, put closer to 1 for less flicker
-				int chance = myRandom->getInt(0,10);
+				chance = myRandom->getInt(0,10,5);
+				bool broke = false;
 				float rng2;
-				if (chance > 1)
+				if (chance >= 5 && chance < 10)//could make this number and all flickering number change based on level
 				{
-					rng2 = myRandom->getFloat(0.5000f,0.9000f,0.8500f);
+					rng2 = myRandom->getFloat(0.9000f,0.9900f,0.9500f);
+					light->name = "An flickering hastily erected Emergency Light";
+					//engine.gui->message(TCODColor::red, "flickering %d",chance);
+				}
+				else if (chance >= 10)
+				{
+					rng2 = myRandom->getFloat(0.9000f,0.9900f,0.9500f);
+					light->name = "A broken Emergency Light";
+					broke = true;
+					//engine.gui->message(TCODColor::red, "broken %d",chance);
 				}
 				else
 				{
 					rng2 = 1;
+					//engine.gui->message(TCODColor::red, "fine %d",chance);
 				}
 				light->ai = new LightAi(rng->getInt(3,6),rng2);
+				if (broke)
+				{
+					LightAi *l = (LightAi*)light->ai;
+					l->onOff = false;
+				}
 				engine.actors.push(light);
 				i++;
 			}
@@ -989,6 +1095,14 @@ void Map::generateRandom(Actor *owner, int ascii){
 				engine.actors.push(batt);
 				batt->pickable->pick(batt,owner);
 			}
+		}else if(ascii == 133) //infected grenadier
+		{
+			for(int i = 0; i < owner->container->size; i++)
+			{
+				Actor *emp = createEMP(0,0);
+				engine.actors.push(emp);
+				emp->pickable->pick(emp,owner);
+			}
 		}else if(ascii == 149) //infectedMarines have 60% chance of dropping an item with 50% chance of it being a MLR, and the other 50% chance being a battery pack
 		{
 			if(dice <= 70)
@@ -1132,7 +1246,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 	}
 }
 Actor *Map::createCurrencyStack(int x, int y){
-	Actor *currencyStack = new Actor(x,y,'B',"PetaBitcoins",TCODColor::yellow);
+	Actor *currencyStack = new Actor(x,y,188,"PetaBitcoins",TCODColor::yellow);
 	currencyStack->sort = 0;
 	currencyStack->blocks = false;
 	currencyStack->pickable = new Coinage(1,100+75*(engine.level-1));

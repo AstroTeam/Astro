@@ -209,7 +209,7 @@ void Gui::renderKeyLook() {
 	//gets the info to send to the tileInfoLog
 	int x = engine.player->x;
 	int y = engine.player->y;
-	if (engine.pickATile(&x,&y)){
+	while(!engine.pickATileForInfoScreen(&x,&y)){
 	
 		while(tileInfoLog.size() > 0) {
 			Message *toRemove = tileInfoLog.get(0);
@@ -219,9 +219,9 @@ void Gui::renderKeyLook() {
 		
 		
 		//char buf[128] = ""; 
-		if (engine.map->isInFov(x,y)){
+		//if (engine.map->isInFov(x,y)){
 			
-			tileInfoMessage(TCODColor::lightGrey, "You see:");
+			//tileInfoMessage(TCODColor::lightGrey, "You see:");
 			
 			int c = engine.map->tiles[x+y*engine.map->width].num;
 
@@ -269,9 +269,9 @@ void Gui::renderKeyLook() {
 			tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
 
 			
-		}else {
-			tileInfoMessage(TCODColor::lightGrey, "You remember seeing:");
-		}
+		//}else {
+			//tileInfoMessage(TCODColor::lightGrey, "You remember seeing:");
+		//}
 		for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
 			Actor *actor = *it;
 			//find actors under the mouse cursor
@@ -473,6 +473,12 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"INVENTORY MANAGER Pro");
 		//THIS LINE REMOVES THE "INVENTORY" HEADER ->
 		//TCODConsole::root->clear();
+	}else if(mode == VENDING){
+		menux = (engine.screenWidth / 2 - INVENTORY_MENU_WIDTH / 2) + 20;
+		menuy = (engine.screenHeight / 2 - INVENTORY_MENU_HEIGHT / 2) - 4;
+		TCODConsole::root->setDefaultForeground(TCODColor(100,180,250));
+		TCODConsole::root->printFrame(menux,menuy - 15,INVENTORY_MENU_WIDTH,
+			INVENTORY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"3D PRINTER");
 	} else if(mode == CLASS_MENU){
 		menux = engine.screenWidth / 2 - CLASS_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - CLASS_MENU_HEIGHT / 2;
@@ -493,7 +499,7 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		menuy = 20 + TCODConsole::root->getHeight() / 3;
 		
 	}
-	if (mode == INVENTORY){
+	if (mode == INVENTORY || mode == VENDING){
 		//clears console when inventory is open and when you select a new dingus, mey need to adjust later if we want to move up/down
 		//
 		//TCODConsole::flush();
@@ -744,12 +750,48 @@ void Gui::classSidebar(){
 }
 void Gui::vendingSidebar(){
 	//create vending machine sidebar
-	TCODConsole vendBar(20,engine.screenHeight);
+	TCODConsole vendBar(16,32);
 	vendBar.setDefaultBackground(TCODColor::black);
 	vendBar.clear();
 	vendBar.setDefaultForeground(TCODColor(200,180,50));
-	vendBar.printFrame(0,0,20,engine.screenHeight,true,TCOD_BKGND_ALPHA(50),"PURCHASE INFO");
+	vendBar.printFrame(0,0,16,32,true,TCOD_BKGND_ALPHA(50),"VENDING");
 	
 	vendBar.print(1,5,"Pbc: ");
-	TCODConsole::blit(&vendBar, 0, 0, 20, engine.screenHeight, TCODConsole::root, 0, 0);
+	TCODConsole::blit(&vendBar,0,0, 16, 32, TCODConsole::root, (engine.screenWidth / 2 - INVENTORY_MENU_WIDTH / 2) + 4,(engine.screenHeight / 2 - INVENTORY_MENU_HEIGHT / 2) - 19);
+}
+Actor *Gui::vendingMenu(Actor *owner){
+	engine.gui->menu.clear();
+	engine.gui->menu.addItem(Menu::ITEMS,"ITEMS");
+	engine.gui->menu.addItem(Menu::TECH,"TECH");
+	engine.gui->menu.addItem(Menu::ARMOR,"ARMOR");
+	engine.gui->menu.addItem(Menu::WEAPONS, "WEAPONS");
+	engine.gui->menu.addItem(Menu::EXIT, "EXIT");
+	Actor *actor;
+	bool select = true;
+	while(select){
+		engine.gui->vendingSidebar();
+		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::VENDING);
+		
+		switch(menuItem){
+			case Menu::ITEMS:
+			actor = owner->ai->choseFromInventory(owner,1,true);
+			break;
+			case Menu::TECH:
+			actor = owner->ai->choseFromInventory(owner,2,true);
+			break;
+			case Menu::ARMOR:
+			actor = owner->ai->choseFromInventory(owner,3,true);
+			break;
+			case Menu::WEAPONS:
+			actor = owner->ai->choseFromInventory(owner,4,true);
+			break;
+			case Menu::EXIT:
+			select = false;
+			break;
+			case Menu::NO_CHOICE:
+			break;
+			default: break; 
+		}
+	}
+	return NULL; 
 }

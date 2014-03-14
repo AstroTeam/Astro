@@ -64,6 +64,7 @@ void Destructible::die(Actor *owner) {
 	//transform the actor into a corpse
 	//check who owner was to decide what corpse they get
 	//if spore creature they get spore body
+	
 	if (owner->ch == 165){
 		owner->ch = 162;
 		owner->blocks = false;
@@ -101,7 +102,10 @@ void MonsterDestructible::die(Actor *owner) {
 		engine.gui->message(TCODColor::lightGrey,"The %s is dead! You feel a rush as it sputters its last breath.", owner->name);
 	}
 	engine.player->destructible->xp += xp;
-	//vendingMenu(owner);
+	
+	//Makes Vending UI appear upon monster death (For Testing Purposes Only)
+	//engine.gui->vendingMenu(owner);
+	
 	if(!owner->container->inventory.isEmpty()){
 		Actor **iterator=owner->container->inventory.begin();
 		for(int i = 0; i < owner->container->size; i++){
@@ -121,40 +125,29 @@ void MonsterDestructible::die(Actor *owner) {
 	}
 	Destructible::die(owner);
 }
-void MonsterDestructible::vendingMenu(Actor *owner){
-	engine.gui->menu.clear();
-	engine.gui->menu.addItem(Menu::ITEMS,"ITEMS");
-	engine.gui->menu.addItem(Menu::TECH,"TECH");
-	engine.gui->menu.addItem(Menu::ARMOR,"ARMOR");
-	engine.gui->menu.addItem(Menu::WEAPONS, "WEAPONS");
-	engine.gui->menu.addItem(Menu::EXIT, "EXIT");
-	Actor *actor;
-	bool select = true;
-	while(select){
-		engine.gui->vendingSidebar();
-		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::CLASS_MENU);
-		
-		switch(menuItem){
-			case Menu::ITEMS:
-			actor = owner->ai->choseFromInventory(owner,1);
-			break;
-			case Menu::TECH:
-			actor = owner->ai->choseFromInventory(owner,2);
-			break;
-			case Menu::ARMOR:
-			actor = owner->ai->choseFromInventory(owner,3);
-			break;
-			case Menu::WEAPONS:
-			actor = owner->ai->choseFromInventory(owner,4);
-			break;
-			case Menu::EXIT:
-			select = false;
-			break;
-			case Menu::NO_CHOICE:
-			break;
-			default: break; 
+
+void MonsterDestructible::suicide(Actor *owner) {
+	//transform it into a corpse
+	//doesnt block, cant be attacked, doesnt move
+	hp = 0;
+	if(!owner->container->inventory.isEmpty()){
+		Actor **iterator=owner->container->inventory.begin();
+		for(int i = 0; i < owner->container->size; i++){
+			if(owner->container->inventory.isEmpty()){
+				break;
+			}
+			Actor *actor = *iterator;
+			if(actor){
+				actor->pickable->drop(actor,owner,true);
+			}
+			
+			if(iterator != owner->container->inventory.end())
+			{
+				++iterator;
+			}
 		}
 	}
+	Destructible::die(owner);
 }
 void PlayerDestructible::die(Actor *owner) {
 	engine.gui->message(TCODColor::darkRed,"You died!\n");

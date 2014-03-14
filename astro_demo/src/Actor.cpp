@@ -3,12 +3,12 @@
 #include "main.hpp"
 
 Actor::Actor(int x, int y, int ch, const char *name, const TCODColor &col):
-	x(x),y(y),ch(ch),str(5),dex(3),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3),col(col),name(name),race("Human"),role("Marine"),job("Infantry"), blocks(true), oozing(false), susceptible(false), sort(0), attacker(NULL),destructible(NULL),ai(NULL),
+	x(x),y(y),ch(ch),str(5),dex(3),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3),col(col),name(name),race("Human"),role("Marine"),job("Infantry"), blocks(true), smashable(false), oozing(false), susceptible(false), sort(0), attacker(NULL),destructible(NULL),ai(NULL),
 	pickable(NULL), container(NULL) {
 }
 
 Actor::Actor(int x, int y, int ch, const char *name, const char *race, const char *role, const char *job, const TCODColor &col):
-	x(x),y(y),ch(ch),str(5),dex(2),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3),col(col),name(name),race(race),role(role),job(job), blocks(true), oozing(false), susceptible(false), sort(0), attacker(NULL),destructible(NULL),ai(NULL),
+	x(x),y(y),ch(ch),str(5),dex(2),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3),col(col),name(name),race(race),role(role),job(job), blocks(true),smashable(false), oozing(false), susceptible(false), sort(0), attacker(NULL),destructible(NULL),ai(NULL),
 	pickable(NULL), container(NULL) {
 }
 
@@ -36,6 +36,7 @@ void Actor::save(TCODZip &zip) {
 	zip.putString(role);
 	zip.putString(job);
 	zip.putInt(blocks);
+	zip.putInt(smashable);
 	zip.putInt(oozing);
 	zip.putInt(susceptible);
 	zip.putInt(sort);
@@ -68,6 +69,7 @@ void Actor::load(TCODZip &zip) {
 	role = strdup(zip.getString());
 	job = strdup(zip.getString());
 	blocks = zip.getInt();
+	smashable = zip.getInt();
 	oozing = zip.getInt();
 	susceptible = zip.getInt();
 	sort = zip.getInt();
