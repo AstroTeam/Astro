@@ -217,7 +217,7 @@ void Map::addMonster(int x, int y) {
 	float cleanerMaxHp = 10;
 	float cleanerDef = 0;
 	float cleanerXp = 0;
-	float cleanerChance = 100;
+	float cleanerChance = 70;
 	int cleanerAscii = 150; //change when desired
 
 	//Infected Crew Member Base Stats
@@ -231,7 +231,8 @@ void Map::addMonster(int x, int y) {
 	//Infected Marine Base Stats
 	float infectedMarineMaxHp = 10;
 	float infectedMarineDef = 0;
-	float infectedMarineAtk = 5;
+	float infectedMarineAtk = 3;
+	float infectedMarineTotalDex = 5;
 	float infectedMarineXp = 10;
 	float infectedMarineChance = 150;
 	int infectedMarineAscii = 149;
@@ -249,7 +250,7 @@ void Map::addMonster(int x, int y) {
 	float infectedNCODef = 1;
 	float infectedNCOAtk = 6;
 	float infectedNCOXp = 10;
-	float infectedNCOChance = 100;
+	float infectedNCOChance = 90;
 	int infectedNCOAscii = 148;
 	
 	//Infected Officer Base Stats
@@ -257,7 +258,7 @@ void Map::addMonster(int x, int y) {
 	float infectedOfficerDef = 1;
 	float infectedOfficerAtk = 7;
 	float infectedOfficerXp = 20;
-	float infectedOfficerChance = 60;
+	float infectedOfficerChance = 50;
 	int infectedOfficerAscii = 132;
 	
 	//Spore Creature Base Stats
@@ -267,8 +268,18 @@ void Map::addMonster(int x, int y) {
 	float sporeCreatureXp = 25;
 	float sporeCreatureChance = 40;
 	int sporeCreatureAscii = 165;
-
 	
+	//Turret Base Stats
+	float turretMaxHp = 10;
+	float turretDef = 3;
+	float turretAtk = 10;
+	float turretTotalDex = 5;
+	float turretXp = 25;
+	float turretChance = 50;
+	int turretAscii = 151; //change to desired ascii
+
+
+	//int str, dex, intel, vit, totalStr, totalDex, totalIntel; //strength, dexterity, intelligence, vitality
 	
 	/*
 	Temporarily removed until all enemies are done
@@ -368,6 +379,18 @@ void Map::addMonster(int x, int y) {
 		cleaner->container = new Container(2);
 		generateRandom(cleaner, cleanerAscii);
 		engine.actors.push(cleaner);
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance)
+	{
+		//create a turret
+		Actor *turret = new Actor(x,y,turretAscii,"Battle Turret",TCODColor::white);
+		turret->totalDex = turretTotalDex;
+		turret->destructible = new MonsterDestructible(turretMaxHp,turretDef,"destroyed battle turret",turretXp);
+		turret->attacker = new Attacker(turretAtk);
+		turret->ai = new TurretAi();
+		turret->container = new Container(2);
+		generateRandom(turret, turretAscii);
+		engine.actors.push(turret);
 	}
 }
 

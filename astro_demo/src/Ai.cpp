@@ -14,6 +14,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case LIGHT: ai = new LightAi(0,0); break;
 		case FLARE: ai = new FlareAi(0,0); break;
 		case GRENADIER: ai = new GrenadierAi(); break;
+		case TURRET: ai = new TurretAi(); break;
 		case CLEANER: ai = new CleanerAi(); break;
 	}
 	ai->load(zip);
@@ -1210,9 +1211,49 @@ void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	
 }
 
+TurretAi::TurretAi()
+{
+	range = 4;
+}
+
+void TurretAi::load(TCODZip &zip) {
+
+	range = zip.getInt();
+	
+}
+
+void TurretAi::save(TCODZip &zip) {
+	zip.putInt(TURRET);
+	zip.putInt(range);
+}
+void TurretAi::update(Actor *owner)
+{
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	if (engine.map->isInFov(owner->x,owner->y)) 
+	{
+		//can see the palyer, move towards him
+		attack(owner, engine.player->x, engine.player->y);
+	}
+}
+
+void TurretAi::attack(Actor *owner, int targetx, int targety)
+{
+	int dx = targetx - owner->x;
+	int dy = targety - owner->y;
+	float distance = sqrtf(dx*dx+dy*dy);
+	
+	if(distance <= range && owner->attacker) //turrets can only attack the player if they are in the range
+	{
+		owner->attacker->shoot(owner,engine.player);
+		engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDodge);
+	}
+}
+
 CleanerAi::CleanerAi() : moveCount(0){
-active = false;
-cleanPower = 3;
+	active = false;
+	cleanPower = 3;
 }
 
 void CleanerAi::load(TCODZip &zip) {
@@ -1261,8 +1302,8 @@ void CleanerAi::moveOrClean(Actor *owner)
 	{
 
 		int targetx = -1, targety = -1;
-		for(int j = -2; j <= 2; j++)
-			for(int i = -2; i <= 2; i++)
+		for(int j = -1; j <= 1; j++)
+			for(int i = -1; i <= 1; i++)
 			{
 				if((owner->x + i >= 0) && (owner->y + j >= 0) && engine.map->infectionState(owner->x + i, owner->y + j) >= 1 && engine.map->canWalk(owner->x + i,owner->y + j))
 				{

@@ -8,7 +8,7 @@ public:
 	Actor *choseFromInventory(Actor *owner, int type, bool isVend);
 protected:
 	enum AiType {
-		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED, LIGHT, FLARE, GRENADIER, CLEANER
+		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED, LIGHT, FLARE, GRENADIER, TURRET, CLEANER
 	};
 };
 
@@ -130,6 +130,20 @@ class GrenadierAi : public Ai
 		void moveOrAttack(Actor *owner, int targetx, int targety);
 };
 
+class TurretAi : public Ai
+{
+	public:
+		TurretAi();
+		void update(Actor *owner);
+		void load(TCODZip &zip);
+		void save(TCODZip &zip);
+	protected:
+		int range;
+		void attack(Actor *owner, int targetx, int target);
+
+};
+
+
 class CleanerAi : public Ai
 {
 	public:
@@ -141,10 +155,7 @@ class CleanerAi : public Ai
 	protected:
 		int moveCount;
 		float cleanPower;
-		void moveOrClean(Actor *owner); //maybe make it so the cleaners can attack spore monster do a block check
-		//move count unlimited
-		//save attr
-		//save enums
+		void moveOrClean(Actor *owner); //should I make cleaners attack sporecreatures?
 };
 
 
