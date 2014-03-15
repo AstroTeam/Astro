@@ -526,7 +526,8 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 				roomList->push(KITCHEN);
 				roomList->push(KITCHEN);
 				//need to see if end list items are less common
-				//roomList->push(SERVER);
+				roomList->push(SERVER);
+				roomList->push(SERVER);
 				//roomList->push(ARMORY);
 				//roomList->push(MESSHALL);
 				//roomList->push(OBSERVATORY);
@@ -985,6 +986,58 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			}
 		}
 	}
+
+	if (room->type == SERVER) {
+		cout << "Server room made";
+		//expand the room outwards
+		x1 = x1-1;
+		x2 = x2+1;
+		y1 = y1-1;
+		y2 = y2+1;
+		//top and bottom wall with servers
+		for (int i = x1; i <= x2; i++) {
+			map->setProperties(i,y1,true,true);
+			map->setProperties(i,y2,true,true);
+			Actor * server1 = new Actor(i, y1, 's', "A server", TCODColor::white);
+			server1->smashable = true;
+			engine.actors.push(server1);
+			Actor * server2 = new Actor(i, y2, 's', "A server", TCODColor::white);
+			server2->smashable = true;
+			engine.actors.push(server2);
+		}
+		//left and right walls with servers
+		for (int i = y1; i <= y2; i++) {
+			map->setProperties(x1,i,true,true);
+			map->setProperties(x2,i,true,true);
+			Actor * server1 = new Actor(x1, i, 's', "A server", TCODColor::white);
+			server1->smashable = true;
+			engine.actors.push(server1);
+			Actor * server2 = new Actor(x2, i, 's', "A server", TCODColor::white);
+			server2->smashable = true;
+			engine.actors.push(server2);
+		}
+		//columns of servers
+		for (int i = x1+2; i <= (x2+x1)/2; i+=2) {
+			for (int j = y1+2; j <= y2-2; j++) {
+				Actor * server1 = new Actor(i, j, 's', "A server", TCODColor::white);
+				engine.actors.push(server1);
+			}
+		}
+		for (int i = x2-2; i >= (x2+x1)/2; i-=2) {
+			for (int j = y1+2; j <= y2-2; j++) {
+				//place a console
+				if (i == x2-2 && j == y1+2) {
+					Actor * console = new Actor(i, j, 'c', "A console", TCODColor::white);
+					engine.actors.push(console);
+				}
+				else {
+					Actor * server1 = new Actor(i, j, 's', "A server", TCODColor::white);
+					engine.actors.push(server1);
+				}
+			}
+		}
+	}
+
 
 	/*
 	 *
