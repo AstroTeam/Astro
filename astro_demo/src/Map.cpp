@@ -214,7 +214,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 void Map::addMonster(int x, int y) {
 	TCODRandom *rng =TCODRandom::getInstance();
 	
-//	int level = engine.level; //Note first engine.level = 1
+	int level = engine.level; //Note first engine.level = 1
 
 	/*
 	Stats (Actor.hpp): int str, dex, intel, vit, totalStr, totalDex, totalIntel; //strength, dexterity, intelligence, vitality
@@ -243,71 +243,73 @@ void Map::addMonster(int x, int y) {
 	
 	
 	*/
-
+	float scale = 1 + .1*(level - 1); //attributes scale up 10% each level
+	
+	
 	//Fungal Cleaning Bot Stats
-	float cleanerHp = 10;
-	float cleanerDodge = 0;
-	float cleanerStr = 0;
-	float cleanerXp = 0;
+	float cleanerHp = 10*scale;
+	float cleanerDodge = 0*scale;
+	float cleanerStr = 0*scale;
+	float cleanerXp = 0*scale;
 	float cleanerChance = 70;
 	int cleanerAscii = 150; //change when desired
 
 	//Infected Crew Member Base Stats
-	float infectedCrewMemHp = 10;
-	float infectedCrewMemDodge = 0;
-	float infectedCrewMemStr = 5;
-	float infectedCrewMemXp = 10;
+	float infectedCrewMemHp = 10*scale;
+	float infectedCrewMemDodge = 0*scale;
+	float infectedCrewMemStr = 5*scale;
+	float infectedCrewMemXp = 10*scale;
 	float infectedCrewMemChance = 500;
 	int infectedCrewMemAscii = 164;
 	
 	//Infected Marine Base Stats
-	float infectedMarineHp = 10;
-	float infectedMarineDodge = 0;
-	float infectedMarineStr = 2;
-	float infectedMarineDex = 5;
-	float infectedMarineXp = 10;
+	float infectedMarineHp = 10*scale;
+	float infectedMarineDodge = 0*scale;
+	float infectedMarineStr = 2*scale;
+	float infectedMarineDex = 5*scale;
+	float infectedMarineXp = 10*scale;
 	float infectedMarineChance = 150;
 	int infectedMarineAscii = 149;
 	
 	//Infected Grenadier Base Stats
-	float infectedGrenadierHp = 10;
-	float infectedGrenadierDodge = 0;
-	float infectedGrenadierStr = 2;
-	float infectedGrenadierIntel = 3; 
-	float infectedGrenadierXp = 20;
+	float infectedGrenadierHp = 10*scale;
+	float infectedGrenadierDodge = 0*scale;
+	float infectedGrenadierStr = 2*scale;
+	float infectedGrenadierIntel = 3*scale; 
+	float infectedGrenadierXp = 20*scale;
 	float infectedGrenadierChance = 50;
 	int infectedGrenadierAscii = 133;
 	
 	//Infected NCO Base Stats
-	float infectedNCOHp = 12;
-	float infectedNCODodge = 1;
-	float infectedNCOStr = 6;
-	float infectedNCOXp = 10;
+	float infectedNCOHp = 12*scale;
+	float infectedNCODodge = 1*scale;
+	float infectedNCOStr = 6*scale;
+	float infectedNCOXp = 10*scale;
 	float infectedNCOChance = 90;
 	int infectedNCOAscii = 148;
 	
 	//Infected Officer Base Stats
-	float infectedOfficerHp = 15;
-	float infectedOfficerDodge = 1;
-	float infectedOfficerStr = 7;
-	float infectedOfficerXp = 20;
+	float infectedOfficerHp = 15*scale;
+	float infectedOfficerDodge = 1*scale;
+	float infectedOfficerStr = 7*scale;
+	float infectedOfficerXp = 20*scale;
 	float infectedOfficerChance = 50;
 	int infectedOfficerAscii = 132;
 	
 	//Spore Creature Base Stats
-	float sporeCreatureHp = 17;
-	float sporeCreatureDodge = 1;
-	float sporeCreatureStr = 10;
-	float sporeCreatureXp = 25;
+	float sporeCreatureHp = 17*scale;
+	float sporeCreatureDodge = 1*scale;
+	float sporeCreatureStr = 10*scale;
+	float sporeCreatureXp = 25*scale;
 	float sporeCreatureChance = 40;
 	int sporeCreatureAscii = 165;
 	
 	//Turret Base Stats
-	float turretHp = 10;
-	float turretDodge = 0;
-	float turretStr = 0; //no melee damage
-	float turretDex = 5;
-	float turretXp = 25;
+	float turretHp = 10*scale;
+	float turretDodge = 0*scale;
+	float turretStr = 0*scale; //no melee damage
+	float turretDex = 5*scale;
+	float turretXp = 25*scale;
 	float turretChance = 50;
 	int turretAscii = 151; //change to desired ascii
 
