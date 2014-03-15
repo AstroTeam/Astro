@@ -13,7 +13,7 @@
 
 Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	player(NULL),playerLight(NULL),map(NULL), fovRadius(3),
-	screenWidth(screenWidth),screenHeight(screenHeight),level(1),turnCount(0) {
+	screenWidth(screenWidth),screenHeight(screenHeight),level(1),turnCount(0), piratesFound(0) {
 	mapWidth = 100;
 	mapHeight = 100;
 	TCODConsole::initRoot(screenWidth,screenHeight,"Astro", false,TCOD_RENDERER_SDL);
@@ -312,6 +312,8 @@ void Engine::init() {
 			player->role="Explorer";
 			player->job="Pirate";
 			
+			piratesFound = 1; //enables more gold! Arrrrrrrrr!
+			
 			chest = new Actor(0,0,185,"Boarding Vest",TCODColor::white);
 			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
 			chest->blocks = false;
@@ -446,6 +448,7 @@ void Engine::save() {
 		zip.putInt(level);
 		zip.putInt(turnCount);
 		zip.putInt(killCount);
+		zip.putInt(piratesFound);
 		//save the map first
 		zip.putInt(map->width);
 		zip.putInt(map->height);
@@ -519,6 +522,7 @@ void Engine::load(bool pause) {
 		level = zip.getInt();
 		turnCount = zip.getInt();
 		killCount = zip.getInt();
+		piratesFound = zip.getInt();
 		//load the map
 		int width = zip.getInt();
 		int height = zip.getInt();

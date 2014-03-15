@@ -1268,7 +1268,10 @@ Actor *Map::createCurrencyStack(int x, int y){
 	Actor *currencyStack = new Actor(x,y,188,"PetaBitcoins",TCODColor::yellow);
 	currencyStack->sort = 0;
 	currencyStack->blocks = false;
-	currencyStack->pickable = new Coinage(1,100+75*(engine.level-1));
+	if(engine.piratesFound == 0)
+		currencyStack->pickable = new Coinage(1,100+75*(engine.level-1));
+	else
+		currencyStack->pickable = new Coinage(1,150+100*(engine.level-1));
 	return currencyStack;
 }
 
