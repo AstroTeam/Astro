@@ -1234,8 +1234,12 @@ void CleanerAi::update(Actor *owner) {
 		return;
 	}
 	
-	if(engine.map->infectionState(owner->x, owner->y) >= 1)
-		active = true;
+	for(int j = -2; j <= 2; j++)
+		for(int i = -2; i <= 2; i++)
+		{
+			if(engine.map->infectionState(owner->x + i, owner->y + j) >= 1)
+				active = true;
+		}
 	
 	moveOrClean(owner);
 	
