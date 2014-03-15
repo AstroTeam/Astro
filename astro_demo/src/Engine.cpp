@@ -287,6 +287,10 @@ void Engine::init() {
 			player->role="Explorer";
 			player->job="Survivalist";
 			
+			player->vit += 20;
+			player->destructible->maxHp += 20;
+			player->destructible->hp += 20;
+			
 			chest = new Actor(0,0,185,"T-Shirt (red)",TCODColor::white);
 			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
 			chest->blocks = false;
@@ -297,11 +301,20 @@ void Engine::init() {
 			((Equipment*)(chest->pickable))->use(chest,player);
 			
 			//add flares, for now is generic flare
-			for(int i=0; i<3; i++){
+			for(int i=0; i<20; i++){
 				equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
 				equip1->sort = 2;
 				equip1->blocks = false;
 				equip1->pickable = new Flare(10,5,5);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
+			for(int i=0; i<5; i++){
+				Actor *equip1 = new Actor(0,0,181,"Flashbang", TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Confuser(10,8);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -333,7 +346,7 @@ void Engine::init() {
 			((Equipment*)(feet->pickable))->use(feet,player);
 			
 			//add flares, for now is generic flare
-			for(int i=0; i<3; i++){
+			for(int i=0; i<20; i++){
 				equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
 				equip1->sort = 2;
 				equip1->blocks = false;
@@ -347,8 +360,12 @@ void Engine::init() {
 			player->role="Explorer";
 			player->job="Merchant";
 			
+			player->vit -= 40;
+			player->destructible->maxHp -= 40;
+			player->destructible->hp -= 40;
+			
 			//add flare, for now is generic flare
-			for(int i=0; i<3; i++){
+			for(int i=0; i<20; i++){
 				equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
 				equip1->sort = 2;
 				equip1->blocks = false;
@@ -357,7 +374,46 @@ void Engine::init() {
 				equip1->pickable->pick(equip1,player);
 			}
 			
-			//you don't get dick
+			//get a flashbang
+			for(int i=0; i<1; i++){
+				Actor *equip1 = new Actor(0,0,181,"Flashbang", TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Confuser(10,8);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
+			//get a firebomb
+			for(int i=0; i<1; i++){
+				Actor *equip1 = new Actor(0,0,182,"Firebomb",TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Fireball(3,12,8);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
+			//get an EMP
+			for(int i=0; i<1; i++){
+				Actor *equip1 = new Actor(0,0,183, "EMP Pulse",TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new LightningBolt(5,20);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
+			//get a health pack
+			for(int i=0; i<1; i++){
+				Actor *equip1 = new Actor(0,0,184,"Medkit", TCODColor::white);
+				equip1->sort = 1;
+				equip1->blocks = false;
+				equip1->pickable = new Healer(20);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
 			break;
 		case 7:
 			player->role="Mercenary";
