@@ -13,7 +13,7 @@
 
 Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	player(NULL),playerLight(NULL),map(NULL), fovRadius(3),
-	screenWidth(screenWidth),screenHeight(screenHeight),level(1),turnCount(0) {
+	screenWidth(screenWidth),screenHeight(screenHeight),level(1),turnCount(0), piratesFound(0) {
 	mapWidth = 100;
 	mapHeight = 100;
 	TCODConsole::initRoot(screenWidth,screenHeight,"Astro", false,TCOD_RENDERER_SDL);
@@ -287,6 +287,10 @@ void Engine::init() {
 			player->role="Explorer";
 			player->job="Survivalist";
 			
+			player->vit += 20;
+			player->destructible->maxHp += 20;
+			player->destructible->hp += 20;
+			
 			chest = new Actor(0,0,185,"T-Shirt (red)",TCODColor::white);
 			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
 			chest->blocks = false;
@@ -297,11 +301,20 @@ void Engine::init() {
 			((Equipment*)(chest->pickable))->use(chest,player);
 			
 			//add flares, for now is generic flare
-			for(int i=0; i<3; i++){
+			for(int i=0; i<20; i++){
 				equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
 				equip1->sort = 2;
 				equip1->blocks = false;
 				equip1->pickable = new Flare(10,5,5);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
+			for(int i=0; i<5; i++){
+				Actor *equip1 = new Actor(0,0,181,"Flashbang", TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Confuser(10,8);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -311,6 +324,8 @@ void Engine::init() {
 		case 5:
 			player->role="Explorer";
 			player->job="Pirate";
+			
+			piratesFound = 1; //enables more gold! Arrrrrrrrr!
 			
 			chest = new Actor(0,0,185,"Boarding Vest",TCODColor::white);
 			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
@@ -331,7 +346,7 @@ void Engine::init() {
 			((Equipment*)(feet->pickable))->use(feet,player);
 			
 			//add flares, for now is generic flare
-			for(int i=0; i<3; i++){
+			for(int i=0; i<20; i++){
 				equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
 				equip1->sort = 2;
 				equip1->blocks = false;
@@ -345,8 +360,12 @@ void Engine::init() {
 			player->role="Explorer";
 			player->job="Merchant";
 			
+			player->vit -= 40;
+			player->destructible->maxHp -= 40;
+			player->destructible->hp -= 40;
+			
 			//add flare, for now is generic flare
-			for(int i=0; i<3; i++){
+			for(int i=0; i<20; i++){
 				equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
 				equip1->sort = 2;
 				equip1->blocks = false;
@@ -355,11 +374,66 @@ void Engine::init() {
 				equip1->pickable->pick(equip1,player);
 			}
 			
-			//you don't get dick
+			//get a flashbang
+			for(int i=0; i<1; i++){
+				Actor *equip1 = new Actor(0,0,181,"Flashbang", TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Confuser(10,8);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
+			//get a firebomb
+			for(int i=0; i<1; i++){
+				Actor *equip1 = new Actor(0,0,182,"Firebomb",TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Fireball(3,12,8);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
+			//get an EMP
+			for(int i=0; i<1; i++){
+				Actor *equip1 = new Actor(0,0,183, "EMP Pulse",TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new LightningBolt(5,20);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
+			//get a health pack
+			for(int i=0; i<1; i++){
+				Actor *equip1 = new Actor(0,0,184,"Medkit", TCODColor::white);
+				equip1->sort = 1;
+				equip1->blocks = false;
+				equip1->pickable = new Healer(20);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
 			break;
 		case 7:
 			player->role="Mercenary";
 			player->job="Assassin";
+			
+			player->str += 4;
+			player->totalStr += 4;
+			player->attacker->basePower += 4;   //old
+			player->attacker->totalPower += 4;  //old
+			
+			//cut HP by 2/3
+			player->vit /= 3;
+			player->destructible->maxHp = player->vit;
+			player->destructible->hp = player->vit;
+			
+			player->dex += 6;
+			player->totalDex += 6;
+			
+			player->intel += 8;
+			player->totalIntel += 8;
 			
 			legs = new Actor(0,0,185,"Skinsuit Leggings",TCODColor::white);
 			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
@@ -393,6 +467,10 @@ void Engine::init() {
 			player->role="Mercenary";
 			player->job="Brute";
 			
+			player->vit += 60;
+			player->destructible->maxHp = player->vit;
+			player->destructible->hp = player->vit;
+			
 			hands = new Actor(0,0,185,"Bruiser Gloves",TCODColor::white);
 			bonusHa = new ItemBonus(ItemBonus::HEALTH,5);
 			hands->blocks = false;
@@ -406,6 +484,14 @@ void Engine::init() {
 		case 9:
 			player->role="Mercenary";
 			player->job="Hacker";
+			
+			player->str -= 2;
+			player->totalStr = player->str;
+			player->attacker->basePower = player->str;   //old
+			player->attacker->totalPower = player->str;  //old
+			
+			player->intel += 4;
+			player->totalIntel += 4;
 			
 			helmet = new Actor(0,0,185,"Tech Helmet",TCODColor::white);
 			bonusHe = new ItemBonus(ItemBonus::HEALTH,5);
@@ -446,6 +532,7 @@ void Engine::save() {
 		zip.putInt(level);
 		zip.putInt(turnCount);
 		zip.putInt(killCount);
+		zip.putInt(piratesFound);
 		//save the map first
 		zip.putInt(map->width);
 		zip.putInt(map->height);
@@ -519,6 +606,7 @@ void Engine::load(bool pause) {
 		level = zip.getInt();
 		turnCount = zip.getInt();
 		killCount = zip.getInt();
+		piratesFound = zip.getInt();
 		//load the map
 		int width = zip.getInt();
 		int height = zip.getInt();

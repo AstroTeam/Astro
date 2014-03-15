@@ -38,6 +38,7 @@ public:
 	int level;
 	int turnCount;
 	int killCount;
+	int piratesFound; //is one if you are a pirate
 	float damageDone;
 	float damageReceived;
 	Gui *gui;

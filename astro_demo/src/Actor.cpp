@@ -118,6 +118,13 @@ float Actor::getDistance(int cx, int cy) const {
 	int dy = y - cy;
 	return sqrt(dx*dx+dy*dy);
 }
+
+float Actor::getHpUp(){
+	if(job[0] == 'A')
+		return 7;
+	else
+		return 20;
+}
 	
 /* bool Actor::moveOrAttack(int x, int y)
 {

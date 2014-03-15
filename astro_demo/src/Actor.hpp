@@ -29,4 +29,5 @@ public:
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
 	float getDistance(int cx, int cy) const;
+	float getHpUp();
 };
