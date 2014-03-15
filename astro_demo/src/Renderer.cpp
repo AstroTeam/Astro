@@ -128,6 +128,10 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 160;
 				}
+				else if (r == 6)//6 is server
+				{
+					srcRect.x = 176;
+				}
 				else //else is regular floors
 				{
 					srcRect.x = 0;
@@ -221,6 +225,10 @@ void Renderer::render(void *sdlSurface){
 				else if (r == 5)//5 is kitchen
 				{
 					srcRect.x = 160;
+				}
+				else if (r == 6)//6 is server
+				{
+					srcRect.x = 176;
 				}
 				else
 				{
@@ -585,54 +593,6 @@ void Renderer::render(void *sdlSurface){
 				
 			}
 			
-			/*
-				
-				////////////////////////////////////////////////////////////////////////KITCHENS
-				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white && engine.map->tileType(xM,yM) == 5){
-						//light
-						srcRect.x=0;
-				}else if (engine.map->tileType(xM,yM) == 5){
-						//dark
-						srcRect.x=16;
-				}
-				if(engine.mapconDec->getChar(xM,yM) == 35)//counter
-				{
-					srcRect.x += 32;
-					srcRect.y = 64;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 36)//upper counter
-				{
-					srcRect.x += 64;
-					srcRect.y = 64;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 37)//sink
-				{
-					srcRect.x += 6*16;
-					srcRect.y = 64;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 38)//upper sink
-				{
-					srcRect.x += 8*16;
-					srcRect.y = 64;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 39)//oven-stove combo
-				{
-					srcRect.x += 10*16;
-					srcRect.y = 64;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 40)//refrigerator
-				{
-					srcRect.x += 12*16;
-					srcRect.y = 64;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 41)//destroyed counter
-				{
-					srcRect.x += 14*16;
-					srcRect.y = 64;
-				}
-				
-				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
-			}*/
 			
 			//add environment stuffs-> over things here (fire)
 			
@@ -643,7 +603,9 @@ void Renderer::render(void *sdlSurface){
 		y=0;
 		x++;
 	}
-		
+	
+	
+	
 	//OPTIMIZE ME?  INCLUDE IN PREVIOUS LOOP?, CAN'T, MUST BE AFTER ALL TILES :(
 	int x1 = 0, y1 = 0;
 	for (int xM = engine.mapx1; xM < engine.mapx2+16; xM++) {
