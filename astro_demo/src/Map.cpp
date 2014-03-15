@@ -505,8 +505,6 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		if(canWalk(x,y) && !isWall(x,y)) {
 			Actor * epicenter = new Actor(x, y, 7, "Infection Epicenter", TCODColor::white);
 			epicenter->ai=new EpicenterAi;
-			epicenterX = x;
-			epicenterY = y;
 			engine.actors.push(epicenter);
 			//intial infection, concentrated at the epicenter
 			for (int i = 0; i < width*height; i++) {

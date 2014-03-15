@@ -48,7 +48,6 @@ using namespace Param;
 class Map : public Persistent {
 public:
 	int width, height;
-	int epicenterX, epicenterY; //used for Fungal Cleaning Bot
 	Map(int width, int height, short epicenterAmount=1);
 	~Map();
 	bool isWall(int x, int y) const;

@@ -1234,11 +1234,14 @@ void CleanerAi::update(Actor *owner) {
 		return;
 	}
 	
-	for(int j = -2; j <= 2; j++)
+	for(int j = -2; j <= 2 && !active; j++)
 		for(int i = -2; i <= 2; i++)
 		{
-			if(engine.map->infectionState(owner->x + i, owner->y + j) >= 1)
+			if((owner->x + i >= 0) && (owner->y + j >= 0) && engine.map->infectionState(owner->x + i, owner->y + j) >= 1 && engine.map->canWalk(owner->x + i,owner->y + j))
+			{
 				active = true;
+				break;
+			}
 		}
 	
 	moveOrClean(owner);
@@ -1254,31 +1257,62 @@ void CleanerAi::moveOrClean(Actor *owner)
 		//clean tile
 		engine.map->tiles[owner->x+owner->y*(engine.map->width)].infection =- cleanPower;
 	}
-	else //once a tile is clean, move randomly and clean next tile
+	else //once a tile is clean, find a dirty tile to move towards or move randomly and clean next tile
 	{
-		TCODRandom *rng = TCODRandom::getInstance();
-		int dx = rng->getInt(-1,1);
-		int dy = rng->getInt(-1,1);
-	
-	
-		if (dx != 0 || dy!=0) 
-		{
-			int destx = owner->x + dx;
-			int desty = owner->y + dy;
-			if (engine.map->canWalk(destx,desty)) {
-				owner->x = destx;
-				owner->y = desty;
-				engine.map->computeFov();
-			} 
-			/*else { //for now, no attacking
-				Actor *actor = engine.getActor(destx, desty);
-				if (actor) {
-					owner->attacker->attack(owner,actor);
-					engine.map->computeFov();
+
+		int targetx = -1, targety = -1;
+		for(int j = -2; j <= 2; j++)
+			for(int i = -2; i <= 2; i++)
+			{
+				if((owner->x + i >= 0) && (owner->y + j >= 0) && engine.map->infectionState(owner->x + i, owner->y + j) >= 1 && engine.map->canWalk(owner->x + i,owner->y + j))
+				{
+					targetx = owner->x + i;
+					targety = owner->y + j;
+					break;
 				}
 			}
-				
-			*/
+		
+		if(targetx == -1) //meaning you can't find an nearby area with infection, so randomly move
+		{
+			TCODRandom *rng = TCODRandom::getInstance();
+			int dx = rng->getInt(-1,1);
+			int dy = rng->getInt(-1,1);
+			if (dx != 0 || dy!=0) 
+			{
+				int destx = owner->x + dx;
+				int desty = owner->y + dy;
+				if (engine.map->canWalk(destx,desty)) {
+					owner->x = destx;
+					owner->y = desty;
+				} 
+				/*else { //for now, no attacking
+					Actor *actor = engine.getActor(destx, desty);
+					if (actor) {
+						owner->attacker->attack(owner,actor);
+						engine.map->computeFov();
+					}
+				}
+					
+				*/
+			}
+		}
+		else //move towards area with infection
+		{
+			int dx = targetx - owner->x;
+			int dy = targety - owner->y;
+			int stepdx = (dx > 0 ? 1:-1);
+			int stepdy = (dy > 0 ? 1:-1);
+			float distance = sqrtf(dx*dx+dy*dy);
+			dx = (int) (round(dx / distance));
+			dy = (int)(round(dy / distance));
+			if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+				owner->x+=dx;
+				owner->y+=dy;
+			} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
+				owner->x += stepdx;
+			} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
+				owner->y += stepdy;
+			}
 		}
 	}
 }	
