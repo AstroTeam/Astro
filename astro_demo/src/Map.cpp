@@ -162,21 +162,23 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					a->blocks = false;
 					if (a->ch == 243)//new decor
 					{
-						if(engine.mapconDec->getChar(a->x,a->y) == 35)//counter
+						
+						if(strcmp(a->name,"countertoppppppzlol420") == 0)//counter
 						{
 							engine.mapconDec->setChar(a->x,a->y,41);//destroyed counter
 							a->name = "destroyed countertop";
 						}
-					}
-					else if (a->ch == 240)//filing cabinet legacy
-					{
-						a->ch = 241;
-						a->name = "Destoryed Filing Cabinet";
+						else if (strcmp(a->name,"a filing cabinet") == 0)
+						{
+							engine.map->tiles[a->x+a->y*engine.map->width].decoration = -1;
+							a->name = "destroyed filing cabinet";
+						}
 					}
 					else//just in case error
 					{
 						a->ch = 241;
 						a->name = "Debris";
+						
 					}
 					
 					engine.sendToBack(a);
@@ -548,7 +550,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				filingCabY = rng->getInt(y1,y2);
 				if (isWall(filingCabX-1,filingCabY) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
-					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
+					Actor * cabinet = new Actor(filingCabX,filingCabY,243,"a filing cabinet", TCODColor::white);
+					engine.map->tiles[filingCabX+filingCabY*engine.map->width].decoration = -3;
 					cabinet->smashable = true;
 					engine.actors.push(cabinet);
 				}
@@ -560,7 +563,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				filingCabX = rng->getInt(x1,x2);
 				if (isWall(filingCabX,filingCabY-1) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
-					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
+					Actor * cabinet = new Actor(filingCabX,filingCabY,243,"a filing cabinet", TCODColor::white);
+					engine.map->tiles[filingCabX+filingCabY*engine.map->width].decoration = -2;
 					cabinet->smashable = true;
 					engine.actors.push(cabinet);
 				}
@@ -572,7 +576,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				filingCabY = rng->getInt(y1,y2);
 				if (isWall(filingCabX+1,filingCabY ) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
-					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
+					Actor * cabinet = new Actor(filingCabX,filingCabY,243,"a filing cabinet", TCODColor::white);
+					engine.map->tiles[filingCabX+filingCabY*engine.map->width].decoration = -4;
 					cabinet->smashable = true;
 					engine.actors.push(cabinet);
 				}
@@ -584,7 +589,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				filingCabX = rng->getInt(x1,x2);
 				if (isWall(filingCabX,filingCabY+1) && engine.getAnyActor(filingCabX,filingCabY) == NULL)
 				{
-					Actor * cabinet = new Actor(filingCabX,filingCabY,240,"a filing cabinet", TCODColor::white);
+					Actor * cabinet = new Actor(filingCabX,filingCabY,243,"a filing cabinet", TCODColor::white);
+					engine.map->tiles[filingCabX+filingCabY*engine.map->width].decoration = -5;
 					cabinet->smashable = true;
 					engine.actors.push(cabinet);
 				}
@@ -635,7 +641,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				place = rng->getInt(1,10);
 				if (place > 4)
 				{
-					Actor * desk = new Actor(xX,yY,242,"a desk", TCODColor::white);
+					Actor * desk = new Actor(xX,yY,243,"a desk", TCODColor::white);
 					int n = rng->getInt(1,4);
 					if (n == 1)
 					{
@@ -652,8 +658,10 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					else
 					{
 						desk->name = "A desk with a nice computer";
-					}					
-					engine.mapconDec->setChar(xX, yY, n);
+						//n = 4;
+					}
+					engine.map->tiles[xX+yY*engine.map->width].decoration = n;
+					//engine.mapconDec->setChar(xX, yY, n);
 					engine.actors.push(desk);
 				}
 				//add papers
@@ -678,26 +686,32 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		for (int i = y1+1; i < y2-1;)
 		{
 			Actor * bed = new Actor(x1+1,i,243,"Bed Headboard", TCODColor::white);
-			engine.mapconDec->setChar(x1+1,i, rng->getInt(9,11));//Bed Headboard (9,10,11, add random)
+			//engine.mapconDec->setChar(x1+1,i, rng->getInt(9,11));//Bed Headboard (9,10,11, add random)
+			engine.map->tiles[x1+1+i*engine.map->width].decoration = rng->getInt(9,11);
 			engine.actors.push(bed);
 			Actor * bedf = new Actor(x1+2,i,243,"Bed foot", TCODColor::white);
-			engine.mapconDec->setChar(x1+2,i, rng->getInt(15,17));//Bed foot (12,13,14, add random)
+			//engine.mapconDec->setChar(x1+2,i, rng->getInt(15,17));//Bed foot (12,13,14, add random)
+			engine.map->tiles[x1+2+i*engine.map->width].decoration = rng->getInt(15,17);
 			engine.actors.push(bedf);
 			//send to back
 			Actor *endtable = new Actor(x1+1,i+1,243,"A bare-bones endtable", TCODColor::white);
-			engine.mapconDec->setChar(x1+1,i+1, 21);//endtable
+			//engine.mapconDec->setChar(x1+1,i+1, 21);//endtable
+			engine.map->tiles[x1+1+(i+1)*engine.map->width].decoration = 21;
 			engine.actors.push(endtable);
 			endtable->blocks = false;
 			engine.sendToBack(endtable);
 			//need to check if there is enough space
 			Actor * bed2 = new Actor(x2-1,i,243,"Bed Headboard", TCODColor::white);
-			engine.mapconDec->setChar(x2-1,i, rng->getInt(12,14));//Bed Headboard (9,10,11, add random)
+			//engine.mapconDec->setChar(x2-1,i, rng->getInt(12,14));//Bed Headboard (9,10,11, add random)
+			engine.map->tiles[x2-1+i*engine.map->width].decoration = rng->getInt(12,14);
 			engine.actors.push(bed2);
 			Actor * bedf2 = new Actor(x2-2,i,243,"Bed foot", TCODColor::white);
-			engine.mapconDec->setChar(x2-2,i, rng->getInt(18,20));//Bed Headboard (12,13,14, add random)
+			//engine.mapconDec->setChar(x2-2,i, rng->getInt(18,20));//Bed Headboard (12,13,14, add random)
+			engine.map->tiles[x2-2+i*engine.map->width].decoration = rng->getInt(18,20);
 			engine.actors.push(bedf2);
 			Actor *endtable2 = new Actor(x2-1,i+1,243,"A bare-bones endtable", TCODColor::white);
-			engine.mapconDec->setChar(x2-1,i+1, 22);//endtable
+			//engine.mapconDec->setChar(x2-1,i+1, 22);//endtable
+			engine.map->tiles[x2-1+(i+1)*engine.map->width].decoration = 22;
 			engine.actors.push(endtable2);
 			endtable2->blocks = false;
 			engine.sendToBack(endtable2);
@@ -708,13 +722,15 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				if (!mod2)
 				{
 					Actor *locker = new Actor((x1+x2)/2,i,243,"Government Issue Locker", TCODColor::white);
-					engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
+					//engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
+					engine.map->tiles[(x1+x2)/2+i*engine.map->width].decoration = 23;
 					locker->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
 					locker->container = new Container(3);
 					generateRandom(locker,243);
 					engine.actors.push(locker);
 					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,243,"Government Issue Locker", TCODColor::white);
-					engine.mapconDec->setChar(((x1+x2)/2)+1,i, 23);//Locker
+					//engine.mapconDec->setChar(((x1+x2)/2)+1,i, 23);//Locker
+					engine.map->tiles[(x1+x2)/2+i*engine.map->width].decoration = 23;
 					locker2->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
 					locker2->container = new Container(3);
 					generateRandom(locker2,243);
@@ -723,7 +739,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				else
 				{
 					Actor *locker = new Actor((x1+x2)/2,i,243,"Government Issue Locker", TCODColor::white);
-					engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
+					//engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
+					engine.map->tiles[(x1+x2)/2+i*engine.map->width].decoration = 23;
 					locker->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
 					locker->container = new Container(3);
 					generateRandom(locker,243);
@@ -737,27 +754,32 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	if (room->type == GENERATOR) {
 		cout << "Gen room Made" << endl;
 		Actor * generator = new Actor(x1+1,y1+1,243,"A floor tile that has been jerry rigged to accept a generator.", TCODColor::white);
-		engine.mapconDec->setChar(x1+1,y1+1, 25);//
+		//engine.mapconDec->setChar(x1+1,y1+1, 25);//
+		engine.map->tiles[(x1+1)+(y1+1)*engine.map->width].decoration = 25;
 		engine.actors.push(generator);
 		generator->blocks = false;
 		engine.sendToBack(generator);
 		Actor * generator1 = new Actor(x1+2,y1+1,243,"A danger sign and a small toolbox.", TCODColor::white);
-		engine.mapconDec->setChar(x1+2,y1+1, 26);//
+		//engine.mapconDec->setChar(x1+2,y1+1, 26);//
+		engine.map->tiles[(x1+2)+(y1+1)*engine.map->width].decoration = 26;
 		engine.actors.push(generator1);
 		generator1->blocks = false;
 		engine.sendToBack(generator1);
 		Actor * generator2 = new Actor(x1+1,y1+2,243,"A bundle of cables.", TCODColor::white);
-		engine.mapconDec->setChar(x1+1,y1+2, 27);//
+		//engine.mapconDec->setChar(x1+1,y1+2, 27);//
+		engine.map->tiles[(x1+1)+(y1+2)*engine.map->width].decoration = 27;
 		engine.actors.push(generator2);
 		generator2->blocks = false;
 		engine.sendToBack(generator2);
 		//Actor * generator3 = new Actor(x1+2,y1+2,'G',"a generator", TCODColor::white);
 		//engine.actors.push(generator3);
 		Actor * generator4 = new Actor(x1+1,y1+3,243,"A portable generator.", TCODColor::white);
-		engine.mapconDec->setChar(x1+1,y1+3, 29);//
+		//engine.mapconDec->setChar(x1+1,y1+3, 29);//
+		engine.map->tiles[(x1+1)+(y1+3)*engine.map->width].decoration = 29;
 		engine.actors.push(generator4);
 		Actor * generator5 = new Actor(x1+2,y1+3,243,"A generator control console.", TCODColor::white);
-		engine.mapconDec->setChar(x1+2,y1+3, 30);//
+		//engine.mapconDec->setChar(x1+2,y1+3, 30);//
+		engine.map->tiles[(x1+2)+(y1+3)*engine.map->width].decoration = 30;
 		engine.actors.push(generator5);
 		//add large generators, animated - done
 		//add workbench                  - done
@@ -773,9 +795,10 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		{	
 			int x = rng->getInt(x1+1,x2-1);
 			int y = rng->getInt(y1+1,y2-1);
-			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.map->tiles[x+y*engine.map->width].decoration == 0) {
 				Actor *Drum = new Actor(x, y, 243, "A gasoline drum.", TCODColor::white);
-				engine.mapconDec->setChar(x,y, 28);//
+				//engine.mapconDec->setChar(x,y, 28);//
+				engine.map->tiles[x+y*engine.map->width].decoration = 28;
 				engine.actors.push(Drum);
 				i++;
 			}
@@ -787,9 +810,10 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		{	
 			int x = rng->getInt(x1+1,x2-1);
 			int y = rng->getInt(y1+1,y2-1);
-			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.map->tiles[x+y*engine.map->width].decoration == 0) {
 				Actor *torch = new Actor(x, y, 243, "A blowtorch.", TCODColor::white);
-				engine.mapconDec->setChar(x,y, 31);//
+				//engine.mapconDec->setChar(x,y, 31);//
+				engine.map->tiles[x+y*engine.map->width].decoration = 31;
 				engine.actors.push(torch);
 				i++;
 			}
@@ -801,9 +825,10 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		{	
 			int x = rng->getInt(x1+1,x2-1);
 			int y = rng->getInt(y1+1,y2-1);
-			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.map->tiles[x+y*engine.map->width].decoration == 0) {
 				Actor *pallet = new Actor(x, y, 243, "An empty pallet.", TCODColor::white);
-				engine.mapconDec->setChar(x,y, 32);//
+				//engine.mapconDec->setChar(x,y, 32);//
+				engine.map->tiles[x+y*engine.map->width].decoration = 32;
 				engine.actors.push(pallet);
 				pallet->blocks = false;
 				engine.sendToBack(pallet);
@@ -821,38 +846,45 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		{
 			if (i == x2) {
 				Actor * refrigerator = new Actor(i, y1,243,"refrigerator", TCODColor::white);
-				engine.mapconDec->setChar(i,y1, 40);//
+				//engine.mapconDec->setChar(i,y1, 40);//
+				engine.map->tiles[i+y1*engine.map->width].decoration = 40;
 				refrigerator->smashable = true;
 				engine.actors.push(refrigerator);
 			}
 			else if (0 == rng->getInt(0,5)) {
 				Actor * oven = new Actor(i, y1,243,"oven-stove combo", TCODColor::white);
-				engine.mapconDec->setChar(i,y1, 39);//
+				//engine.mapconDec->setChar(i,y1, 39);//
+				engine.map->tiles[i+y1*engine.map->width].decoration = 39;
 				oven->smashable = true;
 				engine.actors.push(oven);
 			}
 			else {
 				Actor * counter = new Actor(i, y1,243,"Kitchen Counter", TCODColor::white);
-				engine.mapconDec->setChar(i,y1, 35);//
+				//engine.mapconDec->setChar(i,y1, 35);//
+				engine.map->tiles[i+y1*engine.map->width].decoration = 35;
 				counter->smashable = true;
 				engine.actors.push(counter);
 			}
 			if (i > x1+1 && i < x2-1) {
 				if (i > midX-2 && i < midX+2) {
 					Actor *sink = new Actor(i, y1+3,243,"Industrial Sink", TCODColor::white);
-					engine.mapconDec->setChar(i,y1+3, 38);//
+					//engine.mapconDec->setChar(i,y1+3, 38);//
+					engine.map->tiles[i+(y1+3)*engine.map->width].decoration = 38;
 					engine.actors.push(sink);
 					Actor *sink2 = new Actor(i, y1+4,243,"Industrial Sink", TCODColor::white);
-					engine.mapconDec->setChar(i,y1+4, 37);//
+					//engine.mapconDec->setChar(i,y1+4, 37);//
+					engine.map->tiles[i+(y1+4)*engine.map->width].decoration = 37;
 					engine.actors.push(sink2);
 				}
 				else { 
 
 					Actor * midCounter = new Actor(i, y1+3,243,"Kitchen Counter", TCODColor::white);
-					engine.mapconDec->setChar(i,y1+3, 36);//
+					//engine.mapconDec->setChar(i,y1+3, 36);//
+					engine.map->tiles[i+(y1+3)*engine.map->width].decoration = 36;
 					engine.actors.push(midCounter);
 					Actor * midCounter2 = new Actor(i, y1+4,243,"Kitchen Counter", TCODColor::white);
-					engine.mapconDec->setChar(i,y1+4, 35);//
+					//engine.mapconDec->setChar(i,y1+4, 35);//
+					engine.map->tiles[i+(y1+4)*engine.map->width].decoration = 35;
 					engine.actors.push(midCounter2);
 
 				}
