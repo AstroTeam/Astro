@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include "main.hpp"
 
-Destructible::Destructible(float maxHp, float defense, const char *corpseName, int xp) :
-	maxHp(maxHp),hp(maxHp),baseDefense(defense),totalDefense(defense), xp(xp) {
+Destructible::Destructible(float maxHp, float dodge, const char *corpseName, int xp) :
+	maxHp(maxHp),hp(maxHp),baseDodge(dodge+10),totalDodge(dodge+10), xp(xp) {
 	this->corpseName = strdup(corpseName);
 }
 
@@ -13,8 +13,8 @@ Destructible::~Destructible() {
 void Destructible::load(TCODZip &zip) {
 	maxHp = zip.getFloat();
 	hp = zip.getFloat();
-	baseDefense = zip.getFloat();
-	totalDefense = zip.getFloat();
+	baseDodge = zip.getFloat();
+	totalDodge = zip.getFloat();
 	corpseName = strdup(zip.getString());
 	xp = zip.getInt();
 }
@@ -22,8 +22,8 @@ void Destructible::load(TCODZip &zip) {
 void Destructible::save(TCODZip &zip) {
 	zip.putFloat(maxHp);
 	zip.putFloat(hp);
-	zip.putFloat(baseDefense);
-	zip.putFloat(totalDefense);
+	zip.putFloat(baseDodge);
+	zip.putFloat(totalDodge);
 	zip.putString(corpseName);
 	zip.putInt(xp);
 }
@@ -97,9 +97,14 @@ PlayerDestructible::PlayerDestructible(float maxHp, float defense, const char *c
 void MonsterDestructible::die(Actor *owner) {
 	//transform it into a corpse
 	//doesnt block, cant be attacked, doesnt move
-	if(owner->ch != 243){
+	if(owner->ch != 243 && owner->ch != 150){
 		engine.killCount++;
 		engine.gui->message(TCODColor::lightGrey,"The %s is dead! You feel a rush as it sputters its last breath.", owner->name);
+	}
+	if(owner->ch == 150) //Ascii for Cleaner bot, change when needed
+	{
+		engine.killCount++;
+		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
 	}
 	engine.player->destructible->xp += xp;
 	

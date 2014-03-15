@@ -13,6 +13,8 @@ Ai *Ai::create(TCODZip &zip) {
 		case RANGED: ai = new RangedAi(); break;
 		case LIGHT: ai = new LightAi(0,0); break;
 		case FLARE: ai = new FlareAi(0,0); break;
+		case GRENADIER: ai = new GrenadierAi(); break;
+		case CLEANER: ai = new CleanerAi(); break;
 	}
 	ai->load(zip);
 	return ai;
@@ -145,8 +147,8 @@ void PlayerAi::update(Actor *owner) {
 				choice_made = true;
 				break;
 			case Menu::AGILITY:
-				owner->destructible->baseDefense += 1;
-				owner->destructible->totalDefense += 1;
+				owner->destructible->baseDodge += 1;
+				owner->destructible->totalDodge += 1;
 			/*case Menu::AGILITY:
 				owner->destructible->defense += 1;
 				choice_made = true;
@@ -408,7 +410,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//need to figure out how to check if the user has a gun
 			if(owner->container->ranged){
 				//engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
-				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,3);
+				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,10);
 				if (!closestMonster) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
 					return;
@@ -418,7 +420,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					if(owner->attacker && owner->attacker->battery >= 1){
 						owner->attacker->shoot(owner, closestMonster);
 						owner->attacker->usePower(owner, 1);
-						engine.damageDone += (int)owner->totalDex - closestMonster->destructible->totalDefense;
+						engine.damageDone += (int)owner->totalDex - closestMonster->destructible->totalDodge;
 						engine.gameStatus = Engine::NEW_TURN;
 					}
 					else{
@@ -456,7 +458,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					if(owner->attacker && owner->attacker->battery >= 1){
 						owner->attacker->shoot(owner, actor);
 						owner->attacker->usePower(owner, 1);
-						engine.damageDone += (int)owner->totalDex - actor->destructible->totalDefense;
+						engine.damageDone += (int)owner->totalDex - actor->destructible->totalDodge;
 						engine.gameStatus = Engine::NEW_TURN;
 					}
 					else{
@@ -675,7 +677,7 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 		}
 	} else if (owner->attacker) {
 		owner->attacker->attack(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
 	
 }
@@ -1071,37 +1073,37 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		}
 	} else if (distance !=1 && owner->attacker) {
 		owner->attacker->shoot(owner,engine.player);
-		engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDefense);
+		engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDodge);
 	}
 	else if (owner->attacker) {
 		owner->attacker->attack(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
 	
 }
 
 
-TechAi::TechAi() : moveCount(0), range(3){
+GrenadierAi::GrenadierAi() : moveCount(0), range(3){
 numEmpGrenades = 5;
 berserk = false;
 }
 
-void TechAi::load(TCODZip &zip) {
+void GrenadierAi::load(TCODZip &zip) {
 	berserk = zip.getInt();
 	moveCount = zip.getInt();
 	range = zip.getInt();
 	numEmpGrenades = zip.getInt();
 }
 
-void TechAi::save(TCODZip &zip) {
-//	zip.putInt(RANGED);
+void GrenadierAi::save(TCODZip &zip) {
+	zip.putInt(GRENADIER);
 	zip.putInt(berserk);
 	zip.putInt(moveCount);
 	zip.putInt(range);
 	zip.putInt(numEmpGrenades);
 }
 
-void TechAi::update(Actor *owner) {
+void GrenadierAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
@@ -1142,7 +1144,7 @@ void TechAi::update(Actor *owner) {
 		else 
 			moveCount = 0;
 }
-void TechAi::moveOrAttack(Actor *owner, int targetx, int targety)
+void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 {
 	int dx = targetx - owner->x;
 	int dy = targety - owner->y;
@@ -1182,13 +1184,13 @@ void TechAi::moveOrAttack(Actor *owner, int targetx, int targety)
 			float damageTaken = engine.player->destructible->takeDamage(engine.player, -3 + 3 * owner->totalIntel);
 			numEmpGrenades--;
 			engine.gui->message(TCODColor::red,"The %s uses an EMP Grenade on the player for %g hit points!",owner->name, damageTaken);
-			engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDefense);
+			engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
 		}
 
 		
 	}else if (owner->attacker && !berserk) { //grenadier will melee attack if up close
 		owner->attacker->attack(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDefense);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}else if(owner->attacker && berserk)
 	{
 		Actor *actor = engine.getActor(targetx,targety);
@@ -1199,7 +1201,7 @@ void TechAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		float damageTaken = actor->destructible->takeDamage(actor, -1*numEmpGrenades*(-3 + 3 * owner->totalIntel));
 		engine.gui->message(TCODColor::red, "The %s kamakazes on the %s for %g hit points!",owner->name,name, damageTaken);
 		if(actor == engine.player)
-			engine.damageReceived += -1*numEmpGrenades*(3 * owner->totalIntel - 3 - engine.player->destructible->totalDefense);
+			engine.damageReceived += -1*numEmpGrenades*(3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
 			
 		MonsterDestructible* md = (MonsterDestructible*) owner->destructible;
 		md->suicide(owner);
@@ -1207,4 +1209,78 @@ void TechAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	}	
 	
 }
+
+CleanerAi::CleanerAi() : moveCount(0){
+active = false;
+cleanPower = 3;
+}
+
+void CleanerAi::load(TCODZip &zip) {
+
+	moveCount = zip.getInt();
+	cleanPower = zip.getFloat();
+	active = zip.getInt();
+}
+
+void CleanerAi::save(TCODZip &zip) {
+	zip.putInt(CLEANER);
+	zip.putInt(moveCount);
+	zip.putFloat(cleanPower);
+	zip.putInt(active);
+}
+
+void CleanerAi::update(Actor *owner) {
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	
+	for(int j = -2; j <= 2; j++)
+		for(int i = -2; i <= 2; i++)
+		{
+			if(engine.map->infectionState(owner->x + i, owner->y + j) >= 1)
+				active = true;
+		}
+	
+	moveOrClean(owner);
+	
+}
+void CleanerAi::moveOrClean(Actor *owner)
+{
+	if(!active) //only moveOrClean when active
+		return;
+		
+	if(engine.map->tiles[owner->x+owner->y*(engine.map->width)].infection >0)
+	{
+		//clean tile
+		engine.map->tiles[owner->x+owner->y*(engine.map->width)].infection =- cleanPower;
+	}
+	else //once a tile is clean, move randomly and clean next tile
+	{
+		TCODRandom *rng = TCODRandom::getInstance();
+		int dx = rng->getInt(-1,1);
+		int dy = rng->getInt(-1,1);
+	
+	
+		if (dx != 0 || dy!=0) 
+		{
+			int destx = owner->x + dx;
+			int desty = owner->y + dy;
+			if (engine.map->canWalk(destx,desty)) {
+				owner->x = destx;
+				owner->y = desty;
+				engine.map->computeFov();
+			} 
+			/*else { //for now, no attacking
+				Actor *actor = engine.getActor(destx, desty);
+				if (actor) {
+					owner->attacker->attack(owner,actor);
+					engine.map->computeFov();
+				}
+			}
+				
+			*/
+		}
+	}
+}	
+
 
