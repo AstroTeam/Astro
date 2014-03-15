@@ -642,6 +642,16 @@ void MonsterAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	if(engine.map->infectionState(owner->x,owner->y) >= 4 && owner->ch == 144) //change miniSporeCreatures into regular spore creatures if tile becomes infected enough
+	{
+		owner->name = "Spore Creature";
+		owner->destructible->hp = 17*(1 + .1*(engine.level - 1));
+		owner->destructible->maxHp = 17*(1 + .1*(engine.level - 1));
+		owner->destructible->totalDodge = 1*(1 + .1*(engine.level - 1));
+		owner->totalStr = 10*(1 + .1*(engine.level - 1));
+		owner->destructible->xp = 25*(1 + .1*(engine.level - 1));
+		owner->ch = 165;
+	}
 	if (engine.map->isInFov(owner->x,owner->y)) {
 		//can see the palyer, move towards him
 		moveCount = TRACKING_TURNS;

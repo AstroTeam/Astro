@@ -278,7 +278,7 @@ void Map::addMonster(int x, int y) {
 	float infectedCrewMemDodge = 0*scale;
 	float infectedCrewMemStr = 5*scale;
 	float infectedCrewMemXp = 10*scale;
-	float infectedCrewMemChance = 500;
+	float infectedCrewMemChance = 470;
 	int infectedCrewMemAscii = 164;
 	
 	//Infected Marine Base Stats
@@ -315,12 +315,20 @@ void Map::addMonster(int x, int y) {
 	float infectedOfficerChance = 50;
 	int infectedOfficerAscii = 132;
 	
+	//Mini Spore Creature Base Stats
+	float miniSporeCreatureHp = 10*scale;
+	float miniSporeCreatureDodge = 0*scale;
+	float miniSporeCreatureStr = 5*scale;
+	float miniSporeCreatureXp = 15*scale;
+	float miniSporeCreatureChance = 60;
+	int miniSporeCreatureAscii = 144; //mini spore creature ascii, change if desired
+	
 	//Spore Creature Base Stats
 	float sporeCreatureHp = 17*scale;
 	float sporeCreatureDodge = 1*scale;
 	float sporeCreatureStr = 10*scale;
 	float sporeCreatureXp = 25*scale;
-	float sporeCreatureChance = 40;
+	float sporeCreatureChance = 10;
 	int sporeCreatureAscii = 165;
 	
 	//Turret Base Stats
@@ -332,27 +340,6 @@ void Map::addMonster(int x, int y) {
 	float turretChance = 50;
 	int turretAscii = 151; //change to desired ascii
 
-
-	
-	/*
-	Temporarily removed until all enemies are done
-	if(infectedCrewMemChance - 10*(level-1) <= 20) //lowerbound for infectedCrewMemChance = 20
-	{
-		infectedCrewMemChance = 20;
-		infectedNCOChance = infectedNCOChance + 30;
-		infectedOfficerChance = infectedOfficerChance + 18;
-		sporeCreatureChance = sporeCreatureChance + 12;
-		
-	}
-	else
-	{
-		infectedCrewMemChance -= 10*(level-1); //decrement infectedCrewMemChance by 10% each level
-		infectedNCOChance += 5*(level-1); //increment infectedNCOMemChance by 5% each level
-		infectedOfficerChance += 3*(level-1); //increment infectedOfficerMemChance by 3% each level
-		sporeCreatureChance += 2*(level-1); //increment sporeCreatureChance by 2% each level
-	}
-	*/
-	
 	int dice = rng->getInt(0,1000);
 	if (dice < infectedCrewMemChance) 
 	{
@@ -392,7 +379,20 @@ void Map::addMonster(int x, int y) {
 		generateRandom(infectedOfficer, infectedOfficerAscii);
 		engine.actors.push(infectedOfficer);
 	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance)
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + miniSporeCreatureChance)
+	{
+		//create a miniSpore Creature
+		Actor *miniSporeCreature = new Actor(x,y,miniSporeCreatureAscii,"Small Spore Creature",TCODColor::white);
+		miniSporeCreature->destructible = new MonsterDestructible(miniSporeCreatureHp,miniSporeCreatureDodge,"gross spore remains",miniSporeCreatureXp);
+		miniSporeCreature->totalStr = miniSporeCreatureStr;
+		miniSporeCreature->attacker = new Attacker(miniSporeCreatureStr);
+		miniSporeCreature->container = new Container(2);
+		miniSporeCreature->ai = new MonsterAi();
+		miniSporeCreature->oozing = true;
+		generateRandom(miniSporeCreature, miniSporeCreatureAscii);
+		engine.actors.push(miniSporeCreature);
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + miniSporeCreatureChance)
 	{
 		//create a spore creature
 		Actor *sporeCreature = new Actor(x,y,sporeCreatureAscii,"Spore Creature",TCODColor::white);
@@ -405,7 +405,7 @@ void Map::addMonster(int x, int y) {
 		generateRandom(sporeCreature, sporeCreatureAscii);
 		engine.actors.push(sporeCreature);
 	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance)
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance+ miniSporeCreatureChance)
 	{
 		//create an infected marine
 		Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
@@ -418,7 +418,7 @@ void Map::addMonster(int x, int y) {
 		generateRandom(infectedMarine, infectedMarineAscii);
 		engine.actors.push(infectedMarine);
 	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance)
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance+ miniSporeCreatureChance)
 	{
 		//create an infected grenadier
 		Actor *infectedGrenadier = new Actor(x,y,infectedGrenadierAscii,"Infected Grenadier",TCODColor::white);
@@ -431,7 +431,7 @@ void Map::addMonster(int x, int y) {
 		generateRandom(infectedGrenadier , infectedGrenadierAscii);
 		engine.actors.push(infectedGrenadier);
 	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance)
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + miniSporeCreatureChance)
 	{
 		//create a fungal cleaning bot
 		Actor *cleaner = new Actor(x,y,cleanerAscii,"Fungal Cleaning Bot",TCODColor::white);
@@ -442,7 +442,7 @@ void Map::addMonster(int x, int y) {
 		generateRandom(cleaner, cleanerAscii);
 		engine.actors.push(cleaner);
 	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance)
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance)
 	{
 		//create a turret
 		Actor *turret = new Actor(x,y,turretAscii,"Battle Turret",TCODColor::white);
@@ -1299,7 +1299,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 					}
 				}
 			}
-		}else if(ascii == 165){
+		}else if(ascii == 165 || ascii == 144){
 			for(int i = 0; i < owner->container->size; i++){
 				int rndA2 = rng->getInt(0,100);
 				if(rndA2 > 45){
