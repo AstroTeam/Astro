@@ -10,7 +10,7 @@ public:
 
 	TCODConsole *mapcon;
 	TCODConsole *mapconCpy;
-	TCODConsole *mapconDec;
+	//TCODConsole *mapconDec;
 	TCODList<Actor *> actors;
 	TCODList<Actor *> purchases;
 	Actor *player;

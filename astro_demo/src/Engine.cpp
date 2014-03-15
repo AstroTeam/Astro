@@ -23,7 +23,7 @@ Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	mapcon = new TCODConsole(mapWidth,mapHeight);
 	engine.mapcon->setDefaultBackground(TCODColor::blue);
 	mapconCpy = new TCODConsole(mapWidth, mapHeight);
-	mapconDec = new TCODConsole(mapWidth, mapHeight);
+	//mapconDec = new TCODConsole(mapWidth, mapHeight);
 	gui = new Gui();
 	invState = 0;
 	selX = 0;
@@ -793,7 +793,7 @@ void Engine::nextLevel() {
 			it = actors.remove(it);
 		}
 	}
-	engine.mapconDec->clear();
+	//engine.mapconDec->clear();
 	//create a new map
 	map = new Map(mapWidth,mapHeight);
 	map->init(true, Param::GENERIC);

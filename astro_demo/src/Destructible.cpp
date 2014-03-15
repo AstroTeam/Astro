@@ -70,7 +70,7 @@ void Destructible::die(Actor *owner) {
 		owner->blocks = false;
 	}
 	else if(owner->ch == 243){
-		engine.mapconDec->setChar(owner->x,owner->y, 24);//Locker
+		//engine.mapconDec->setChar(owner->x,owner->y, 24);//Locker
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
 		owner->ch = 243;
 	}

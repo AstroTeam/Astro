@@ -163,9 +163,9 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					if (a->ch == 243)//new decor
 					{
 						
-						if(strcmp(a->name,"Kitchen Counter") == 0)//counter
+						if(strcmp(a->name,"Kitchen Counter") == 0 || strcmp(a->name,"oven-stove combo") == 0 )//counter
 						{
-							engine.mapconDec->setChar(a->x,a->y,41);//destroyed counter
+							//engine.mapconDec->setChar(a->x,a->y,41);//destroyed counter
 							engine.map->tiles[a->x+a->y*engine.map->width].decoration = 41;
 							a->name = "destroyed countertop";
 						}
@@ -184,9 +184,18 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					
 					engine.sendToBack(a);
 					
-					int n = rng->getInt(5,8);
+					
 					int x = a->x;
 					int y = a->y;
+					int n =  0;
+					if (engine.map->tileType(x,y) == 2)//if it is an office
+					{
+						n = rng->getInt(5,8);
+					}
+					else
+					{
+						n = 0;
+					}
 					int add = rng->getInt(0,10);
 					for (int xxx = -1; xxx <= 1; xxx++)/////////////////////9x9 for loop to add papers, lol xxx,yyy
 					{
@@ -194,11 +203,21 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 						{
 							if (add > 3 )
 							{
-								if (engine.mapconDec->getChar(x+xxx, y+yyy) == ' ') {
-									engine.mapconDec->setChar(x+xxx, y+yyy, n);
+								if (engine.map->tiles[(x+xxx)+(y+yyy)*engine.map->width].decoration == 0) {
+									//engine.mapconDec->setChar(x+xxx, y+yyy, n);
+									engine.map->tiles[(x+xxx)+(y+yyy)*engine.map->width].decoration = n;
+									
 								}
 							}
-							n = rng->getInt(5,8);
+							////
+							if (engine.map->tileType(x,y) == 2)//if it is an office
+							{
+								n = rng->getInt(5,8);
+							}
+							else
+							{
+								n = 0;
+							}
 							add = rng->getInt(0,10);
 						}
 					}
@@ -992,7 +1011,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			//int y = (y1+y2)/2;
 			int x = rng->getInt(x1+1,x2-1);
 			int y = rng->getInt(y1+1,y2-1);
-			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.mapconDec->getChar(x,y) == ' ') {
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y) && engine.map->tiles[x+y*engine.map->width].decoration == 0) {
 				Actor *light = new Actor(x, y, 224, "A hastily erected Emergency Light", TCODColor::white);
 				//4,1 = standard light, radius, flkr
 				

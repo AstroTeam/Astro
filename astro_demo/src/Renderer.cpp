@@ -157,7 +157,7 @@ void Renderer::render(void *sdlSurface){
 					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				}
 
-				//any decor to render just on top of floors
+				/*//any decor to render just on top of floors
 				if (engine.mapconDec->getChar(xM,yM) == ' ')
 				{
 					//do nothing if common case (i.e.) no decor
@@ -171,7 +171,7 @@ void Renderer::render(void *sdlSurface){
 					srcRect.x = 32+ (engine.mapconDec->getChar(xM,yM) - 5 ) * 16;
 					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 								
-				}
+				}*/
 						
 					
 				
@@ -250,7 +250,7 @@ void Renderer::render(void *sdlSurface){
 					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
 				}
 				
-				//render decor *DARK*
+				/*//render decor *DARK*
 				if (engine.mapconDec->getChar(xM,yM) == ' ')
 				{
 					//do nothing if common case (i.e.) no decor
@@ -263,7 +263,7 @@ void Renderer::render(void *sdlSurface){
 					srcRect.x = 32+ (engine.mapconDec->getChar(xM,yM) - 5 ) * 16;
 					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 								
-				}
+				}*/
 			}
 			
 			
@@ -355,7 +355,7 @@ void Renderer::render(void *sdlSurface){
 						//srcRect.x = 0;
 						srcRect.y = 48;
 					}
-					else
+					else if (engine.map->tiles[xM+yM*engine.map->width].decoration >= 1 && engine.map->tiles[xM+yM*engine.map->width].decoration <= 4)
 					{
 						if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white) //&& engine.map->tiles[xM+yM*engine.map->width].decoration > 0 )
 						{
@@ -393,6 +393,12 @@ void Renderer::render(void *sdlSurface){
 							//srcRect.y = 0;
 							srcRect.x = 32;
 						}
+					}
+					else if (engine.map->tiles[xM+yM*engine.map->width].decoration >= 5 && engine.map->tiles[xM+yM*engine.map->width].decoration <= 8)
+					{
+						srcRect.y = 32;
+						srcRect.x = 32+ (engine.map->tiles[xM+yM*engine.map->width].decoration - 5 ) * 16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 					}
 					
 					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
