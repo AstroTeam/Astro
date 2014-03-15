@@ -90,6 +90,8 @@ int Map::tileType(int x, int y) {
 	{return 4;}
 	else if (tiles[i].tileType == Param::KITCHEN)
 	{return 5;}
+	else if (tiles[i].tileType == Param::SERVER)
+	{return 6;}
 	else
 	{return 1;}
 	//return tiles[x*y].tileType;

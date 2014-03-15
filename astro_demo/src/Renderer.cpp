@@ -128,6 +128,10 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 160;
 				}
+				else if (r == 6)//6 is server
+				{
+					srcRect.x = 176;
+				}
 				else //else is regular floors
 				{
 					srcRect.x = 0;
@@ -221,6 +225,10 @@ void Renderer::render(void *sdlSurface){
 				else if (r == 5)//5 is kitchen
 				{
 					srcRect.x = 160;
+				}
+				else if (r == 6)//6 is server
+				{
+					srcRect.x = 176;
 				}
 				else
 				{
@@ -595,7 +603,9 @@ void Renderer::render(void *sdlSurface){
 		y=0;
 		x++;
 	}
-		
+	
+	
+	
 	//OPTIMIZE ME?  INCLUDE IN PREVIOUS LOOP?, CAN'T, MUST BE AFTER ALL TILES :(
 	int x1 = 0, y1 = 0;
 	for (int xM = engine.mapx1; xM < engine.mapx2+16; xM++) {
