@@ -216,73 +216,102 @@ void Map::addMonster(int x, int y) {
 	
 //	int level = engine.level; //Note first engine.level = 1
 
+	/*
+	Stats (Actor.hpp): int str, dex, intel, vit, totalStr, totalDex, totalIntel; //strength, dexterity, intelligence, vitality
+	(Destructible.hpp) hp, maxHp, baseDodge, totalDodge
+	Defaults: str(5),dex(3),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3)
+	Rough Damage formulae:
+	shootingDamage = totalDex
+	empGrenades damage = -3 + 3 * wearer->totalIntel
+	Firebomb damage = 2 * wearer->totalIntel
+	Firebomb range = (wearer->totalIntel - 1) /3 +1)
+	Flashbang duration = wearer->totalIntel + 5
+	health = hp (done in constructor)
+	melee == totalStr
+	dodge = def
+	base dodge = dodge + 10
+	
+	Shoot combat works:
+	roll = (0,20), ==1 -> miss, ==20, 2* damage
+	attackRoll = roll + owner->totalDex
+	else if attackRoll >= target->destructible->totalDodge + 10, damage = totalDex
+	2
+	Melee combat works:
+	roll = (0,20), ==1 -> miss, ==20, 2* damage
+	attackRoll = roll + owner->totalStr
+	else if attackRoll >= target->destructible->totalDodge, damage = totalStr
+	
+	
+	*/
+
 	//Fungal Cleaning Bot Stats
-	float cleanerMaxHp = 10;
-	float cleanerDef = 0;
+	float cleanerHp = 10;
+	float cleanerDodge = 0;
+	float cleanerStr = 0;
 	float cleanerXp = 0;
 	float cleanerChance = 70;
 	int cleanerAscii = 150; //change when desired
 
 	//Infected Crew Member Base Stats
-	float infectedCrewMemMaxHp = 10;
-	float infectedCrewMemDef = 0;
-	float infectedCrewMemAtk = 5;
+	float infectedCrewMemHp = 10;
+	float infectedCrewMemDodge = 0;
+	float infectedCrewMemStr = 5;
 	float infectedCrewMemXp = 10;
 	float infectedCrewMemChance = 500;
 	int infectedCrewMemAscii = 164;
 	
 	//Infected Marine Base Stats
-	float infectedMarineMaxHp = 10;
-	float infectedMarineDef = 0;
-	float infectedMarineAtk = 3;
-	float infectedMarineTotalDex = 5;
+	float infectedMarineHp = 10;
+	float infectedMarineDodge = 0;
+	float infectedMarineStr = 2;
+	float infectedMarineDex = 5;
 	float infectedMarineXp = 10;
 	float infectedMarineChance = 150;
 	int infectedMarineAscii = 149;
 	
 	//Infected Grenadier Base Stats
-	float infectedGrenadierMaxHp = 15;
-	float infectedGrenadierDef = 0;
-	float infectedGrenadierAtk = 2;
+	float infectedGrenadierHp = 10;
+	float infectedGrenadierDodge = 0;
+	float infectedGrenadierStr = 2;
+	float infectedGrenadierIntel = 3; 
 	float infectedGrenadierXp = 20;
 	float infectedGrenadierChance = 50;
 	int infectedGrenadierAscii = 133;
 	
 	//Infected NCO Base Stats
-	float infectedNCOMaxHp = 12;
-	float infectedNCODef = 1;
-	float infectedNCOAtk = 6;
+	float infectedNCOHp = 12;
+	float infectedNCODodge = 1;
+	float infectedNCOStr = 6;
 	float infectedNCOXp = 10;
 	float infectedNCOChance = 90;
 	int infectedNCOAscii = 148;
 	
 	//Infected Officer Base Stats
-	float infectedOfficerMaxHp = 15;
-	float infectedOfficerDef = 1;
-	float infectedOfficerAtk = 7;
+	float infectedOfficerHp = 15;
+	float infectedOfficerDodge = 1;
+	float infectedOfficerStr = 7;
 	float infectedOfficerXp = 20;
 	float infectedOfficerChance = 50;
 	int infectedOfficerAscii = 132;
 	
 	//Spore Creature Base Stats
-	float sporeCreatureMaxHp = 17;
-	float sporeCreatureDef = 1;
-	float sporeCreatureAtk = 10;
+	float sporeCreatureHp = 17;
+	float sporeCreatureDodge = 1;
+	float sporeCreatureStr = 10;
 	float sporeCreatureXp = 25;
 	float sporeCreatureChance = 40;
 	int sporeCreatureAscii = 165;
 	
 	//Turret Base Stats
-	float turretMaxHp = 10;
-	float turretDef = 3;
-	float turretAtk = 10;
-	float turretTotalDex = 5;
+	float turretHp = 10;
+	float turretDodge = 0;
+	float turretStr = 0; //no melee damage
+	float turretDex = 5;
 	float turretXp = 25;
 	float turretChance = 50;
 	int turretAscii = 151; //change to desired ascii
 
 
-	//int str, dex, intel, vit, totalStr, totalDex, totalIntel; //strength, dexterity, intelligence, vitality
 	
 	/*
 	Temporarily removed until all enemies are done
@@ -308,8 +337,9 @@ void Map::addMonster(int x, int y) {
 	{
 	
 		Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
-		infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemMaxHp,infectedCrewMemDef,"infected corpse",infectedCrewMemXp);
-		infectedCrewMember->attacker = new Attacker(infectedCrewMemAtk);
+		infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemHp,infectedCrewMemDodge,"infected corpse",infectedCrewMemXp);
+		infectedCrewMember->totalStr = infectedCrewMemStr;
+		infectedCrewMember->attacker = new Attacker(infectedCrewMemStr);
 		infectedCrewMember->container = new Container(2);
 		infectedCrewMember->ai = new MonsterAi();
 		generateRandom(infectedCrewMember, infectedCrewMemAscii);
@@ -320,8 +350,9 @@ void Map::addMonster(int x, int y) {
 	{
 		//create an infected NCO
 		Actor *infectedNCO = new Actor(x,y,infectedNCOAscii,"Infected NCO",TCODColor::white);
-		infectedNCO->destructible = new MonsterDestructible(infectedNCOMaxHp,infectedNCODef,"infected corpse",infectedNCOXp);
-		infectedNCO->attacker = new Attacker(infectedNCOAtk);
+		infectedNCO->destructible = new MonsterDestructible(infectedNCOHp,infectedNCODodge,"infected corpse",infectedNCOXp);
+		infectedNCO->totalStr = infectedNCOStr;
+		infectedNCO->attacker = new Attacker(infectedNCOStr);
 		infectedNCO->container = new Container(2);
 		infectedNCO->ai = new MonsterAi();
 		generateRandom(infectedNCO, infectedNCOAscii);
@@ -332,8 +363,9 @@ void Map::addMonster(int x, int y) {
 	{
 		//create an infected officer
 		Actor *infectedOfficer = new Actor(x,y,infectedOfficerAscii,"Infected Officer",TCODColor::white);
-		infectedOfficer->destructible = new MonsterDestructible(infectedOfficerMaxHp,infectedOfficerDef,"infected corpse",infectedOfficerXp);
-		infectedOfficer->attacker = new Attacker(infectedOfficerAtk);
+		infectedOfficer->destructible = new MonsterDestructible(infectedOfficerHp,infectedOfficerDodge,"infected corpse",infectedOfficerXp);
+		infectedOfficer->totalStr = infectedOfficerStr;
+		infectedOfficer->attacker = new Attacker(infectedOfficerStr);
 		infectedOfficer->container = new Container(2);
 		infectedOfficer->ai = new MonsterAi();
 		generateRandom(infectedOfficer, infectedOfficerAscii);
@@ -343,8 +375,9 @@ void Map::addMonster(int x, int y) {
 	{
 		//create a spore creature
 		Actor *sporeCreature = new Actor(x,y,sporeCreatureAscii,"Spore Creature",TCODColor::white);
-		sporeCreature->destructible = new MonsterDestructible(sporeCreatureMaxHp,sporeCreatureDef,"gross spore remains",sporeCreatureXp);
-		sporeCreature->attacker = new Attacker(sporeCreatureAtk);
+		sporeCreature->destructible = new MonsterDestructible(sporeCreatureHp,sporeCreatureDodge,"gross spore remains",sporeCreatureXp);
+		sporeCreature->totalStr = sporeCreatureStr;
+		sporeCreature->attacker = new Attacker(sporeCreatureStr);
 		sporeCreature->container = new Container(2);
 		sporeCreature->ai = new MonsterAi();
 		sporeCreature->oozing = true;
@@ -355,8 +388,10 @@ void Map::addMonster(int x, int y) {
 	{
 		//create an infected marine
 		Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
-		infectedMarine->destructible = new MonsterDestructible(infectedMarineMaxHp,infectedMarineDef,"infected corpse",infectedMarineXp);
-		infectedMarine->attacker = new Attacker(infectedMarineAtk);
+		infectedMarine->destructible = new MonsterDestructible(infectedMarineHp,infectedMarineDodge,"infected corpse",infectedMarineXp);
+		infectedMarine->attacker = new Attacker(infectedMarineStr);
+		infectedMarine->totalStr = infectedMarineStr;
+		infectedMarine->totalDex = infectedMarineDex;
 		infectedMarine->container = new Container(2);
 		infectedMarine->ai = new RangedAi();
 		generateRandom(infectedMarine, infectedMarineAscii);
@@ -366,8 +401,10 @@ void Map::addMonster(int x, int y) {
 	{
 		//create an infected grenadier
 		Actor *infectedGrenadier = new Actor(x,y,infectedGrenadierAscii,"Infected Grenadier",TCODColor::white);
-		infectedGrenadier->destructible = new MonsterDestructible(infectedGrenadierMaxHp,infectedGrenadierDef,"infected corpse",infectedGrenadierXp);
-		infectedGrenadier->attacker = new Attacker(infectedGrenadierAtk);
+		infectedGrenadier->destructible = new MonsterDestructible(infectedGrenadierHp,infectedGrenadierDodge,"infected corpse",infectedGrenadierXp);
+		infectedGrenadier->totalStr = infectedGrenadierStr;
+		infectedGrenadier->totalIntel = infectedGrenadierIntel;
+		infectedGrenadier->attacker = new Attacker(infectedGrenadierStr);
 		infectedGrenadier->container = new Container(2);
 		infectedGrenadier->ai = new GrenadierAi();
 		generateRandom(infectedGrenadier , infectedGrenadierAscii);
@@ -377,7 +414,8 @@ void Map::addMonster(int x, int y) {
 	{
 		//create a fungal cleaning bot
 		Actor *cleaner = new Actor(x,y,cleanerAscii,"Fungal Cleaning Bot",TCODColor::white);
-		cleaner->destructible = new MonsterDestructible(cleanerMaxHp,cleanerDef,"destroyed fungal cleaning bot",cleanerXp);
+		cleaner->destructible = new MonsterDestructible(cleanerHp,cleanerDodge,"destroyed fungal cleaning bot",cleanerXp);
+		cleaner->totalStr = cleanerStr;
 		cleaner->ai = new CleanerAi();
 		cleaner->container = new Container(2);
 		generateRandom(cleaner, cleanerAscii);
@@ -387,9 +425,10 @@ void Map::addMonster(int x, int y) {
 	{
 		//create a turret
 		Actor *turret = new Actor(x,y,turretAscii,"Battle Turret",TCODColor::white);
-		turret->totalDex = turretTotalDex;
-		turret->destructible = new MonsterDestructible(turretMaxHp,turretDef,"destroyed battle turret",turretXp);
-		turret->attacker = new Attacker(turretAtk);
+		turret->totalDex = turretDex;
+		turret->destructible = new MonsterDestructible(turretHp,turretDodge,"destroyed battle turret",turretXp);
+		turret->totalStr = turretStr;
+		turret->attacker = new Attacker(turretStr);
 		turret->ai = new TurretAi();
 		turret->container = new Container(2);
 		generateRandom(turret, turretAscii);
