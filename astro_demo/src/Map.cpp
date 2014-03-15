@@ -1019,18 +1019,21 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//columns of servers
 		for (int i = x1+2; i <= (x2+x1)/2; i+=2) {
 			for (int j = y1+2; j <= y2-2; j++) {
-				Actor * server1 = new Actor(i, j, 's', "A server", TCODColor::white);
-				engine.actors.push(server1);
+				if (j != ((y1+y2)/2))
+				{
+					Actor * server1 = new Actor(i, j, 's', "A server", TCODColor::white);
+					engine.actors.push(server1);
+				}
 			}
 		}
 		for (int i = x2-2; i >= (x2+x1)/2; i-=2) {
 			for (int j = y1+2; j <= y2-2; j++) {
 				//place a console
-				if (i == x2-2 && j == y1+2) {
+				if (i == x2-2 && j == y1+2 && j != ((y1+y2)/2)) {
 					Actor * console = new Actor(i, j, 'c', "A console", TCODColor::white);
 					engine.actors.push(console);
 				}
-				else {
+				else if (j != ((y1+y2)/2)){
 					Actor * server1 = new Actor(i, j, 's', "A server", TCODColor::white);
 					engine.actors.push(server1);
 				}

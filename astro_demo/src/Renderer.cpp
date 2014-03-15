@@ -585,54 +585,6 @@ void Renderer::render(void *sdlSurface){
 				
 			}
 			
-			/*
-				
-				////////////////////////////////////////////////////////////////////////KITCHENS
-				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white && engine.map->tileType(xM,yM) == 5){
-						//light
-						srcRect.x=0;
-				}else if (engine.map->tileType(xM,yM) == 5){
-						//dark
-						srcRect.x=16;
-				}
-				if(engine.mapconDec->getChar(xM,yM) == 35)//counter
-				{
-					srcRect.x += 32;
-					srcRect.y = 64;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 36)//upper counter
-				{
-					srcRect.x += 64;
-					srcRect.y = 64;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 37)//sink
-				{
-					srcRect.x += 6*16;
-					srcRect.y = 64;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 38)//upper sink
-				{
-					srcRect.x += 8*16;
-					srcRect.y = 64;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 39)//oven-stove combo
-				{
-					srcRect.x += 10*16;
-					srcRect.y = 64;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 40)//refrigerator
-				{
-					srcRect.x += 12*16;
-					srcRect.y = 64;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 41)//destroyed counter
-				{
-					srcRect.x += 14*16;
-					srcRect.y = 64;
-				}
-				
-				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
-			}*/
 			
 			//add environment stuffs-> over things here (fire)
 			
