@@ -795,7 +795,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					engine.actors.push(locker);
 					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,243,"Government Issue Locker", TCODColor::white);
 					//engine.mapconDec->setChar(((x1+x2)/2)+1,i, 23);//Locker
-					engine.map->tiles[(x1+x2)/2+i*engine.map->width].decoration = 23;
+					engine.map->tiles[(((x1+x2)/2)+1)+i*engine.map->width].decoration = 23;
 					locker2->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
 					locker2->container = new Container(3);
 					generateRandom(locker2,243);
