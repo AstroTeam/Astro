@@ -311,220 +311,276 @@ void Renderer::render(void *sdlSurface){
 				srcRect.y = 0;
 				SDL_BlitSurface(shadows,&srcRect,floorMap,&dstRect);
 			}
-			//filing cabinet
-			else if (engine.mapcon->getChar(xM,yM) == 240)
+			//render all decorations
+			if((engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN) && 
+			engine.map->tiles[xM+yM*engine.map->width].decoration != 0 && engine.map->tiles[xM+yM*engine.map->width].explored)
 			{
-				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
+			
+				///////////////////////////////////////////////////////////////////////////////////OFFICE
+				if (engine.map->tileType(xM,yM) == 2)
 				{
-					//light
-					srcRect.x = 0;
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
+					{
+						//light
+						srcRect.x = 0;
+					}
+					else
+					{
+						//dark
+						srcRect.x = 16;
+					}
+					
+					if (engine.map->tiles[xM+yM*engine.map->width].decoration == -1)//smashed filing cabinets
+					{
+						//srcRect.x = 0;
+						srcRect.y = 64;
+					}
+					else if (engine.map->tiles[xM+yM*engine.map->width].decoration == -2)//filing cabinets upper
+					{
+						//srcRect.x = 0;
+						srcRect.y = 0;
+					}
+					else if (engine.map->tiles[xM+yM*engine.map->width].decoration == -3)//filing cabinets left
+					{
+						//srcRect.x = 0;
+						srcRect.y = 16;
+					}
+					else if (engine.map->tiles[xM+yM*engine.map->width].decoration == -4)//filing cabinets right
+					{
+						//srcRect.x = 0;
+						srcRect.y = 32;
+					}
+					else if (engine.map->tiles[xM+yM*engine.map->width].decoration == -5)//filing cabinets lower
+					{
+						//srcRect.x = 0;
+						srcRect.y = 48;
+					}
+					else
+					{
+						if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white) //&& engine.map->tiles[xM+yM*engine.map->width].decoration > 0 )
+						{
+							//light
+							srcRect.y = 0;
+						}
+						else //if (engine.map->tiles[xM+yM*engine.map->width].decoration > 0)
+						{
+							//dark
+							
+							srcRect.y = 16;
+						}
+						
+						if (engine.map->tiles[xM+yM*engine.map->width].decoration == 1)//desk 1
+						{
+							//srcRect.x = 0;
+							//srcRect.y = 0;
+							srcRect.x=32+48;
+						}
+						else if (engine.map->tiles[xM+yM*engine.map->width].decoration == 2)//desk 2
+						{
+							//srcRect.x = 0;
+							//srcRect.y = 0;
+							srcRect.x=32+16;
+						}
+						else if (engine.map->tiles[xM+yM*engine.map->width].decoration == 3)//desk 3
+						{
+							//srcRect.x = 0;
+							//srcRect.y = 0;
+							srcRect.x=32+32;
+						}
+						else if (engine.map->tiles[xM+yM*engine.map->width].decoration == 4)//desk 4
+						{
+							//srcRect.x = 0;
+							//srcRect.y = 0;
+							srcRect.x = 32;
+						}
+					}
+					
+					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 				}
-				else
+				////////////////////////////////////////////////////////////////////BARRACKS
+				if (engine.map->tileType(xM,yM) == 3)
 				{
-					//dark
-					srcRect.x = 16;
-				}
-				if(engine.mapcon->getChar(xM,yM-1) == '^')// ||
-				   //engine.mapcon->getChar(xM+1,yM-1) == '^' ||
-				   //engine.mapcon->getChar(xM-1,yM-1) == '^')//if wall above it is wall
-				{
-					srcRect.y = 0;
-				}
-				else if (engine.mapcon->getChar(xM-1,yM) == '^')// || 
-						 //engine.mapcon->getChar(xM-1,yM-1) == '^' || 
-						 //engine.mapcon->getChar(xM-1,yM+1) == '^')//if there is a wall to the left
-				{
-					srcRect.y = 16;
-				}
-				else if (engine.mapcon->getChar(xM+1,yM) == '^')// ||
-						 //engine.mapcon->getChar(xM+1,yM-1) == '^' ||
-						 //engine.mapcon->getChar(xM+1,yM+1) == '^')//if there si a wall to the right
-				{
-					srcRect.y = 32;
-				}
-				else if (engine.mapcon->getChar(xM,yM+1) == '^')// ||
-						 //engine.mapcon->getChar(xM+1,yM+1) == '^' ||
-						 //engine.mapcon->getChar(xM-1,yM+1) == '^' )//if wall below use the backwards filing cabinet
-				{
-					srcRect.y = 48;
-				}
-				else //if nothing else or an error just print out the standard one just in case
-				{
-					srcRect.y = 0;
-				}
-				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
-			}
-			//smashed filing cabinet
-			else if (engine.mapcon->getChar(xM,yM) == 241)
-			{
-				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
-				{
-					//light
-					srcRect.x = 0;
-				}
-				else
-				{
-					//dark
-					srcRect.x = 16;
-				}
-				srcRect.y = 64;
-				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
-				
-			}
-			//desks
-			else if (engine.mapcon->getChar(xM,yM) == 242)
-			{
-				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
-				{
-					//light
-					srcRect.y = 0;
-				}
-				else
-				{
-					//dark
-					srcRect.y = 16;
-				}
-				//the different versions to add based on mapconDec's value
-				if(engine.mapconDec->getChar(xM,yM) == 1)
-				{
-					srcRect.x=32+48;
-				} else if (engine.mapconDec->getChar(xM,yM) == 2)
-				{
-					srcRect.x=32+16;
-				}else if (engine.mapconDec->getChar(xM,yM) == 3)
-				{
-					srcRect.x=32+32;
-				}else
-				{
-					srcRect.x=32;
-				}
-				
-				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
-			}
-			//barracks decor
-			else if (engine.mapcon->getChar(xM,yM) == 243)
-			{
-				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
-				{
-					//light
-					srcRect.y = 0;
-				}
-				else
-				{
-					//dark
-					srcRect.y = 16;
-				}
-				if(engine.mapconDec->getChar(xM,yM) == 9)//headboard of bed 1
-				{
-					srcRect.x=96;
-				}else if(engine.mapconDec->getChar(xM,yM) == 10)//headboard of bed 2
-				{
-					srcRect.x=112;
-				}else if(engine.mapconDec->getChar(xM,yM) == 11)//headboardof bed 3
-				{
-					srcRect.x=128;
-				}else if(engine.mapconDec->getChar(xM,yM) == 15)//foot of bed 1
-				{
-					srcRect.x=144;
-				}else if(engine.mapconDec->getChar(xM,yM) == 16)//foot of bed 2
-				{
-					srcRect.x=160;
-				}else if(engine.mapconDec->getChar(xM,yM) == 17)//foot of bed 3
-				{
-					srcRect.x=176;
-				}else if(engine.mapconDec->getChar(xM,yM) == 12)//backward headboard 1
-				{
-					srcRect.x=96;
-					srcRect.y += 32;
-				}else if(engine.mapconDec->getChar(xM,yM) == 13)//backward headboard 2
-				{
-					srcRect.x=112;
-					srcRect.y += 32;
-				}else if(engine.mapconDec->getChar(xM,yM) == 14)//backward headboard 3
-				{
-					srcRect.x=128;
-					srcRect.y += 32;
-				}else if(engine.mapconDec->getChar(xM,yM) == 18)//backward foot 1
-				{
-					srcRect.x=144;
-					srcRect.y += 32;
-				}else if(engine.mapconDec->getChar(xM,yM) == 19)//backward foot 2
-				{
-					srcRect.x=160;
-					srcRect.y += 32;
-				}else if(engine.mapconDec->getChar(xM,yM) == 20)//backward foot 3
-				{
-					srcRect.x=176;
-					srcRect.y += 32;
-				}else if(engine.mapconDec->getChar(xM,yM) == 23)//locker
-				{
-					srcRect.x=192;
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
+					{
+						//light
+						srcRect.y = 0;
+					}
+					else
+					{
+						//dark
+						srcRect.y = 16;
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 9)//headboard of bed 1
+					{
+						srcRect.x=96;
+					}else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 10)//headboard of bed 2
+					{
+						srcRect.x=112;
+					}else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 11)//headboardof bed 3
+					{
+						srcRect.x=128;
+					}else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 15)//foot of bed 1
+					{
+						srcRect.x=144;
+					}else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 16)//foot of bed 2
+					{
+						srcRect.x=160;
+					}else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 17)//foot of bed 3
+					{
+						srcRect.x=176;
+					}else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 12)//backward headboard 1
+					{
+						srcRect.x=96;
+						srcRect.y += 32;
+					}else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 13)//backward headboard 2
+					{
+						srcRect.x=112;
+						srcRect.y += 32;
+					}else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 14)//backward headboard 3
+					{
+						srcRect.x=128;
+						srcRect.y += 32;
+					}else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 18)//backward foot 1
+					{
+						srcRect.x=144;
+						srcRect.y += 32;
+					}else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 19)//backward foot 2
+					{
+						srcRect.x=160;
+						srcRect.y += 32;
+					}else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 20)//backward foot 3
+					{
+						srcRect.x=176;
+						srcRect.y += 32;
+					}else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 21)//endtable
+					{
+						srcRect.x=192;
+						srcRect.y += 32;
+					}else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 22)//endtable backwards
+					{
+						srcRect.x=208;
+						srcRect.y += 32;
+					}else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 23)//lockers
+					{
+						srcRect.x=192;
 					//srcRect.y += 32;
-				}else if(engine.mapconDec->getChar(xM,yM) == 24)//locker looted
-				{
-					srcRect.x=208;
-					//srcRect.y += 32;
-				}else if(engine.mapconDec->getChar(xM,yM) == 21)//endtable
-				{
-					srcRect.x=192;
-					srcRect.y += 32;
-				}else if(engine.mapconDec->getChar(xM,yM) == 22)//endtable backwards
-				{
-					srcRect.x=208;
-					srcRect.y += 32;
+						//srcRect.y += 32;
+					}else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 24)//locker looted
+					{
+						srcRect.x=208;
+						//srcRect.y += 32;
+					}
+					
+					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 				}
-				////////////////////////////////////////////////////////////////////////GENERATORS
-				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white && engine.map->tileType(xM,yM) == 4){
+				////////////////////////////////////////////////////////////////////GENERATORS
+				if (engine.map->tileType(xM,yM) == 4)
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
 						//light
 						srcRect.x=0;
-				}else if (engine.map->tileType(xM,yM) == 4){
+					}else if (engine.map->tileType(xM,yM) == 4){
 						//dark
 						srcRect.x=32;
+					}
+					
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 25)//jerry rigged tile
+					{
+						srcRect.x +=224;
+						srcRect.y = 0;
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 26)//danger sign
+					{
+						srcRect.x +=240;
+						srcRect.y = 0;
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 27)//cables
+					{
+						srcRect.x +=224;
+						srcRect.y = 16;
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 28)//oil drum
+					{						
+						srcRect.x +=240;
+						srcRect.y = 16;
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 29)//generator
+					{
+						srcRect.x +=224;
+						srcRect.y = 32;
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 30)//console
+					{
+						srcRect.x +=240;
+						srcRect.y = 32;
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 31)//blowtorch
+					{
+						srcRect.x +=224;
+						srcRect.y = 48;
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 32)//pallet
+					{
+						srcRect.x +=240;
+						srcRect.y = 48;
+					}
+					
+					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 				}
-				if(engine.mapconDec->getChar(xM,yM) == 25)//jerry rigged tile
+				////////////////////////////////////////////////////////////////////KITCHEN
+				if (engine.map->tileType(xM,yM) == 5)
 				{
-					srcRect.x +=224;
-					srcRect.y = 0;
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.x=0;
+					}else{
+						//dark
+						srcRect.x=16;
+					}
+					
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 35)//counter
+					{
+						srcRect.x += 32;
+						srcRect.y = 64;
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 36)//upper counter
+					{
+						srcRect.x += 64;
+						srcRect.y = 64;
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 37)//sink
+					{
+						srcRect.x += 6*16;
+						srcRect.y = 64;
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 38)//upper sink
+					{
+						srcRect.x += 8*16;
+						srcRect.y = 64;
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 39)//oven-stove combo
+					{
+						srcRect.x += 10*16;
+						srcRect.y = 64;
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 40)//refrigerator
+					{
+						srcRect.x += 12*16;
+						srcRect.y = 64;
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 41)//destroyed counter
+					{
+						srcRect.x += 14*16;
+						srcRect.y = 64;
+					}
+					
+					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 				}
-				else if(engine.mapconDec->getChar(xM,yM) == 26)//danger sign
-				{
-					srcRect.x +=240;
-					srcRect.y = 0;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 27)//cables
-				{
-					srcRect.x +=224;
-					srcRect.y = 16;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 28)//oil drum
-				{
-					//srcRect.x +=240;
-					//srcRect.y = 48;
-					//SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
-					srcRect.x +=240;
-					srcRect.y = 16;
-					//SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 29)//generator
-				{
-					srcRect.x +=224;
-					srcRect.y = 32;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 30)//console
-				{
-					srcRect.x +=240;
-					srcRect.y = 32;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 31)//blowtorch
-				{
-					srcRect.x +=224;
-					srcRect.y = 48;
-				}
-				else if(engine.mapconDec->getChar(xM,yM) == 32)//pallet
-				{
-					srcRect.x +=240;
-					srcRect.y = 48;
-				}
+				
+			}
+			
+			/*
+				
 				////////////////////////////////////////////////////////////////////////KITCHENS
 				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white && engine.map->tileType(xM,yM) == 5){
 						//light
@@ -570,7 +626,7 @@ void Renderer::render(void *sdlSurface){
 				}
 				
 				SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
-			}
+			}*/
 			
 			//add environment stuffs-> over things here (fire)
 			
