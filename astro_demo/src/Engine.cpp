@@ -419,6 +419,22 @@ void Engine::init() {
 			player->role="Mercenary";
 			player->job="Assassin";
 			
+			player->str += 4;
+			player->totalStr += 4;
+			player->attacker->basePower += 4;   //old
+			player->attacker->totalPower += 4;  //old
+			
+			//cut HP by 2/3
+			player->vit /= 3;
+			player->destructible->maxHp = player->vit;
+			player->destructible->hp = player->vit;
+			
+			player->dex += 6;
+			player->totalDex += 6;
+			
+			player->intel += 8;
+			player->totalIntel += 8;
+			
 			legs = new Actor(0,0,185,"Skinsuit Leggings",TCODColor::white);
 			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
 			legs->blocks = false;
