@@ -163,9 +163,10 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					if (a->ch == 243)//new decor
 					{
 						
-						if(strcmp(a->name,"countertoppppppzlol420") == 0)//counter
+						if(strcmp(a->name,"Kitchen Counter") == 0)//counter
 						{
 							engine.mapconDec->setChar(a->x,a->y,41);//destroyed counter
+							engine.map->tiles[a->x+a->y*engine.map->width].decoration = 41;
 							a->name = "destroyed countertop";
 						}
 						else if (strcmp(a->name,"a filing cabinet") == 0)
