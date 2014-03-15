@@ -467,6 +467,10 @@ void Engine::init() {
 			player->role="Mercenary";
 			player->job="Brute";
 			
+			player->vit += 60;
+			player->destructible->maxHp = player->vit;
+			player->destructible->hp = player->vit;
+			
 			hands = new Actor(0,0,185,"Bruiser Gloves",TCODColor::white);
 			bonusHa = new ItemBonus(ItemBonus::HEALTH,5);
 			hands->blocks = false;
@@ -480,6 +484,14 @@ void Engine::init() {
 		case 9:
 			player->role="Mercenary";
 			player->job="Hacker";
+			
+			player->str -= 2;
+			player->totalStr = player->str;
+			player->attacker->basePower = player->str;   //old
+			player->attacker->totalPower = player->str;  //old
+			
+			player->intel += 4;
+			player->totalIntel += 4;
 			
 			helmet = new Actor(0,0,185,"Tech Helmet",TCODColor::white);
 			bonusHe = new ItemBonus(ItemBonus::HEALTH,5);
