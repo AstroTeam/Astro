@@ -618,6 +618,11 @@ void Renderer::render(void *sdlSurface){
 						
 						srcRect.x = 20*16;
 					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 100)//server destroyed
+					{
+						
+						srcRect.x = 21*16;
+					}
 					
 					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 					TCODRandom *rng =TCODRandom::getInstance();

@@ -176,10 +176,16 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 							engine.map->tiles[a->x+a->y*engine.map->width].decoration = -1;
 							a->name = "destroyed filing cabinet";
 						}
+						else if (strcmp(a->name,"A server") == 0)
+						{
+							engine.map->tiles[a->x+a->y*engine.map->width].decoration = 100;
+							a->name = "a bashed-in server room door";
+						}
 					}
 					else//just in case error
 					{
 						a->ch = 241;
+						engine.map->tiles[a->x+a->y*engine.map->width].decoration = 0;
 						a->name = "Debris";
 						
 					}
@@ -1002,10 +1008,12 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			map->setProperties(i,y2,true,true);
 			Actor * server1 = new Actor(i, y1, 243, "A server", TCODColor::white);
 			engine.map->tiles[i+(y1)*engine.map->width].decoration = rng->getInt(45,47);
+			engine.map->tiles[i+(y1)*engine.map->width].tileType = SERVER;
 			server1->smashable = true;
 			engine.actors.push(server1);
 			Actor * server2 = new Actor(i, y2, 243, "A server", TCODColor::white);
 			engine.map->tiles[i+(y2)*engine.map->width].decoration = rng->getInt(45,47);
+			engine.map->tiles[i+(y2)*engine.map->width].tileType = SERVER;
 			server2->smashable = true;
 			engine.actors.push(server2);
 		}
@@ -1015,10 +1023,12 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			map->setProperties(x2,i,true,true);
 			Actor * server1 = new Actor(x1, i, 243, "A server", TCODColor::white);
 			engine.map->tiles[x1+i*engine.map->width].decoration = rng->getInt(45,47);
+			engine.map->tiles[x1+i*engine.map->width].tileType = SERVER;
 			server1->smashable = true;
 			engine.actors.push(server1);
-			Actor * server2 = new Actor(x2, i, 's', "A server", TCODColor::white);
+			Actor * server2 = new Actor(x2, i, 243, "A server", TCODColor::white);
 			engine.map->tiles[x2+i*engine.map->width].decoration = rng->getInt(45,47);
+			engine.map->tiles[x2+i*engine.map->width].tileType = SERVER;
 			server2->smashable = true;
 			engine.actors.push(server2);
 		}
