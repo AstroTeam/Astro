@@ -1,3 +1,4 @@
+
 #include "main.hpp"
 #include <iostream>
 using namespace Param;
@@ -1018,7 +1019,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			engine.actors.push(server2);
 		}
 		//left and right walls with servers
-		for (int i = y1; i <= y2; i++) {
+		for (int i = y1+1; i <= y2-1; i++) {
 			map->setProperties(x1,i,true,true);
 			map->setProperties(x2,i,true,true);
 			Actor * server1 = new Actor(x1, i, 243, "A server", TCODColor::white);
