@@ -471,7 +471,22 @@ void Map::addMonster(int x, int y) {
 		turret->container = new Container(2);
 		generateRandom(turret, turretAscii);
 		engine.actors.push(turret);
-	}else if (dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance + vendorChance) {
+		
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance)
+	{
+		//create a turret
+		Actor *turret = new Actor(x,y,turretAscii,"Sentry Turret",TCODColor::white);
+		turret->totalDex = turretDex;
+		turret->destructible = new MonsterDestructible(turretHp,turretDodge,"destroyed sentry turret",turretXp);
+		turret->totalStr = turretStr;
+		turret->attacker = new Attacker(turretStr);
+		turret->ai = new TurretAi();
+		turret->container = new Container(2);
+		generateRandom(turret, turretAscii);
+		engine.actors.push(turret);
+	}
+	else if (dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance + vendorChance) {
 		//create a vending machine
 		Actor *vendor = new Actor(x,y,vendorAscii,"Vending Machine",TCODColor::darkerBlue);
 		vendor->hostile = false;
@@ -479,21 +494,8 @@ void Map::addMonster(int x, int y) {
 		vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge, "destroyed vending machine",vendorXp);
 		vendor->ai = new VendingAi();
 		vendor->container = new Container(2);
-		generateRandom(vendor, cleanerAscii);
+		generateRandom(vendor, vendorAscii);
 		engine.actors.push(vendor);
-	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance)
-	{
-		//create a turret
-		Actor *turret = new Actor(x,y,turretAscii,"Battle Turret",TCODColor::white);
-		turret->totalDex = turretDex;
-		turret->destructible = new MonsterDestructible(turretHp,turretDodge,"destroyed battle turret",turretXp);
-		turret->totalStr = turretStr;
-		turret->attacker = new Attacker(turretStr);
-		turret->ai = new TurretAi();
-		turret->container = new Container(2);
-		generateRandom(turret, turretAscii);
-		engine.actors.push(turret);
 	}
 }
 
