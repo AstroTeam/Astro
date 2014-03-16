@@ -239,7 +239,7 @@ bool Confuser::use(Actor *owner, Actor *wearer) {
 	} */
 	
 	//confuse the target for nbTurns turns
-	if( actor->ch != 150 && actor->ch != 151) //cannot confuse turrets or cleaners with flash bangs
+	if( actor->ch != 150 && actor->ch != 151 && actor->ch != 'V') //cannot confuse turrets, vendors, or cleaners with flash bangs
 	{
 		Ai *confusedAi = new ConfusedActorAi(wearer->totalIntel + 5, actor->ai);
 		actor->ai = confusedAi;
@@ -247,7 +247,7 @@ bool Confuser::use(Actor *owner, Actor *wearer) {
 		actor->name);
 	}else
 	{
-		engine.gui->message(TCODColor::lightGreen, "The flash bangs is not effective against a %s.",
+		engine.gui->message(TCODColor::lightGreen, "The flash bang is not effective against a %s.",
 		actor->name);
 	}
 	return Pickable::use(owner,wearer);
