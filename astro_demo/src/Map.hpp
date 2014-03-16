@@ -9,8 +9,8 @@ namespace Param {
 		OFFICE,    //done
 		BARRACKS,  //done* -> must add dropping items from lockers
 		GENERATOR, //must populate with decor
-		SERVER,    //to-do
-		KITCHEN,   //doing
+		SERVER,    //arting
+		KITCHEN,   //almost done
 		MESSHALL,  //to-do
 		ARMORY,    //to-do
 		OBSERVATORY//to-do

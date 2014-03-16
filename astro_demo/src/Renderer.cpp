@@ -49,6 +49,9 @@ void Renderer::render(void *sdlSurface){
 	SDL_Surface *itemsGlow = SDL_LoadBMP("tile_assets/alphaGlow.bmp");
 	SDL_SetAlpha( itemsGlow, SDL_SRCALPHA, alpha);
 	SDL_SetColorKey(itemsGlow,SDL_SRCCOLORKEY,255);
+	SDL_Surface *serverLight = SDL_LoadBMP("tile_assets/server_lights.bmp");
+	
+	SDL_SetColorKey(serverLight,SDL_SRCCOLORKEY,255);
 	SDL_Surface *flareGlow= SDL_LoadBMP("tile_assets/alphaGlow_flare.bmp");
 	SDL_SetAlpha(flareGlow, SDL_SRCALPHA, alpha*1.25);
 	SDL_SetColorKey(flareGlow,SDL_SRCCOLORKEY,255);
@@ -590,6 +593,52 @@ void Renderer::render(void *sdlSurface){
 					
 					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 				}
+				////////////////////////////////////////////////////////////////////SERVER
+				if (engine.map->tileType(xM,yM) == 6)//|| engine.map->tileType(xM,yM) == 1)
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.y=32;
+					}else{
+						//dark/*commet*/
+						srcRect.y=48;
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 45)//server
+					{
+						
+						srcRect.x = 18*16;
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 46)//server
+					{
+						
+						srcRect.x = 19*16;
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 47)//server
+					{
+						
+						srcRect.x = 20*16;
+					}
+					
+					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					TCODRandom *rng =TCODRandom::getInstance();
+					if((engine.map->tiles[xM+yM*engine.map->width].decoration == 45 ||
+					   engine.map->tiles[xM+yM*engine.map->width].decoration == 46 ||
+					   engine.map->tiles[xM+yM*engine.map->width].decoration == 47) )//&& engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
+					{
+						
+						if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+							SDL_SetAlpha( serverLight, SDL_SRCALPHA, 255*.75);
+						}else{
+							SDL_SetAlpha( serverLight, SDL_SRCALPHA, 255*.5);
+						}
+						
+						srcRect.y = 0;
+						srcRect.x = 0;
+						srcRect.x += (rng->getInt(0,2))*16;
+						SDL_BlitSurface(serverLight,&srcRect,floorMap,&dstRect);
+					}
+					
+				}
 				
 			}
 			
@@ -855,6 +904,7 @@ void Renderer::render(void *sdlSurface){
 	//free all surfaces
 	SDL_FreeSurface(floorMap);
 	SDL_FreeSurface(screen);
+	SDL_FreeSurface(serverLight);
 	SDL_FreeSurface(floorTiles);
 	SDL_FreeSurface(itemsGlow);
 	SDL_FreeSurface(flareGlow);

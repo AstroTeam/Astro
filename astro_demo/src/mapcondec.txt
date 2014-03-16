@@ -63,3 +63,13 @@ mapcondec:
 40 is a refrigerator
 
 41 is destroyed cabinet
+
+42 is destroyed oven
+
+43 is destroyed refrigerator
+
+44 is a food processor
+
+45,46,47 is server
+
+

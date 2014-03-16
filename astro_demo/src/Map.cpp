@@ -1000,10 +1000,12 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		for (int i = x1; i <= x2; i++) {
 			map->setProperties(i,y1,true,true);
 			map->setProperties(i,y2,true,true);
-			Actor * server1 = new Actor(i, y1, 's', "A server", TCODColor::white);
+			Actor * server1 = new Actor(i, y1, 243, "A server", TCODColor::white);
+			engine.map->tiles[i+(y1)*engine.map->width].decoration = rng->getInt(45,47);
 			server1->smashable = true;
 			engine.actors.push(server1);
-			Actor * server2 = new Actor(i, y2, 's', "A server", TCODColor::white);
+			Actor * server2 = new Actor(i, y2, 243, "A server", TCODColor::white);
+			engine.map->tiles[i+(y2)*engine.map->width].decoration = rng->getInt(45,47);
 			server2->smashable = true;
 			engine.actors.push(server2);
 		}
@@ -1011,10 +1013,12 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		for (int i = y1; i <= y2; i++) {
 			map->setProperties(x1,i,true,true);
 			map->setProperties(x2,i,true,true);
-			Actor * server1 = new Actor(x1, i, 's', "A server", TCODColor::white);
+			Actor * server1 = new Actor(x1, i, 243, "A server", TCODColor::white);
+			engine.map->tiles[x1+i*engine.map->width].decoration = rng->getInt(45,47);
 			server1->smashable = true;
 			engine.actors.push(server1);
 			Actor * server2 = new Actor(x2, i, 's', "A server", TCODColor::white);
+			engine.map->tiles[x2+i*engine.map->width].decoration = rng->getInt(45,47);
 			server2->smashable = true;
 			engine.actors.push(server2);
 		}
@@ -1023,7 +1027,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			for (int j = y1+2; j <= y2-2; j++) {
 				if (j != ((y1+y2)/2))
 				{
-					Actor * server1 = new Actor(i, j, 's', "A server", TCODColor::white);
+					Actor * server1 = new Actor(i, j, 243, "A server", TCODColor::white);
+					engine.map->tiles[i+j*engine.map->width].decoration = rng->getInt(45,47);
 					engine.actors.push(server1);
 				}
 			}
@@ -1036,7 +1041,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					engine.actors.push(console);
 				}
 				else if (j != ((y1+y2)/2)){
-					Actor * server1 = new Actor(i, j, 's', "A server", TCODColor::white);
+					Actor * server1 = new Actor(i, j, 243, "A server", TCODColor::white);
+					engine.map->tiles[i+j*engine.map->width].decoration = rng->getInt(45,47);
 					engine.actors.push(server1);
 				}
 			}
