@@ -98,7 +98,7 @@ PlayerDestructible::PlayerDestructible(float maxHp, float defense, const char *c
 void MonsterDestructible::die(Actor *owner) {
 	//transform it into a corpse
 	//doesnt block, cant be attacked, doesnt move
-	if(owner->ch != 243 && owner->ch != 150 && owner->ch != 151){
+	if(owner->ch != 243 && owner->ch != 150 && owner->ch != 151 && owner->ch != 'V'){
 		engine.killCount++;
 		engine.gui->message(TCODColor::lightGrey,"The %s is dead! You feel a rush as it sputters its last breath.", owner->name);
 	}
@@ -108,6 +108,10 @@ void MonsterDestructible::die(Actor *owner) {
 		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
 	}
 	else if(owner->ch == 151) //Ascii for Battle Turret, change when needed
+	{
+		engine.killCount++;
+		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
+	}else if(owner->ch == 'V') //Vending machine, change when needed
 	{
 		engine.killCount++;
 		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);

@@ -49,6 +49,7 @@ void Engine::term() {
 
 void Engine::init() {
 	engine.killCount = 0;
+	engine.level = 1;
 	player = new Actor(40,25,'@', "player","Human","Marine","Infantry",TCODColor::white);
 	//playerLight = new Actor(40, 25, 'l', "Your Flashlight", TCODColor::white);
 	//playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
@@ -56,6 +57,7 @@ void Engine::init() {
 	//playerLight->blocks = false;
 	//playerLight->ai->moving = true;
 	//engine.sendToBack(playerLight);
+	player->hostile = false;
 	player->destructible = new PlayerDestructible(100, 2, "your cadaver");
 	player->attacker = new Attacker(5,20);
 	player->ai = new PlayerAi();

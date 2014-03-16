@@ -8,7 +8,9 @@ public:
 	Actor *choseFromInventory(Actor *owner, int type, bool isVend);
 protected:
 	enum AiType {
-		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED, LIGHT, FLARE, GRENADIER, TURRET, CLEANER
+		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED, LIGHT, 
+		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, VENDING
+
 	};
 };
 
@@ -158,5 +160,21 @@ class CleanerAi : public Ai
 		void moveOrClean(Actor *owner); //should I make cleaners attack sporecreatures?
 };
 
+class InteractibleAi: public Ai
+{
+public:
+	InteractibleAi();
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+	void update(Actor *owner);
+	virtual void interaction(Actor *owner, Actor *target);
+};
 
+class VendingAi: public InteractibleAi{
+public:
+	VendingAi();
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+	void interaction(Actor *owner, Actor *target);
+};
 

@@ -9,6 +9,8 @@ public:
 	const char *role;  //the actor's role (default Marine)
 	const char *job;   //the actor's job (default Infantry)
 	bool blocks; //can you walk over this guy?
+	bool hostile;//is he hostile by default
+	bool interact; //does this guy have an interaction function?
 	bool smashable; //can this be smashed?
 	bool oozing; //is this guy infected?
 	bool susceptible; //is this guy susceptible to the infection?

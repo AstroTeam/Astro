@@ -16,6 +16,8 @@ Ai *Ai::create(TCODZip &zip) {
 		case GRENADIER: ai = new GrenadierAi(); break;
 		case TURRET: ai = new TurretAi(); break;
 		case CLEANER: ai = new CleanerAi(); break;
+		case INTERACTIBLE: ai = new InteractibleAi(); break;
+		case VENDING: ai = new VendingAi(); break;
 	}
 	ai->load(zip);
 	return ai;
@@ -205,9 +207,12 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 		iterator != engine.actors.end(); iterator++) {
 		Actor *actor = *iterator;
 		if (actor->blocks && actor->x == targetx &&actor->y == targety) {
-			if (actor->destructible && !actor->destructible->isDead()) {
-				owner->attacker->attack(owner, actor);
-				engine.damageDone += owner->attacker->totalPower;
+			if (actor->destructible && !actor->destructible->isDead() ) {
+				if (actor->hostile||owner->hostile){
+					owner->attacker->attack(owner, actor);
+					engine.damageDone += owner->attacker->totalPower;
+				}else if(actor->interact && !owner->hostile)
+					((InteractibleAi*)actor->ai)->interaction(actor, owner);
 			}
 			return false;
 		}
@@ -475,6 +480,15 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		case 'c':
 			engine.map->computeFov();
 			displayCharacterInfo(owner);
+		break;
+		case '`':
+			if (engine.player->hostile){
+				engine.player->hostile = false;
+				engine.gui->message(TCODColor::lightRed,"You assume a normal stance.");
+			}else {
+				engine.player->hostile = true;
+				engine.gui->message(TCODColor::lightRed,"You assume a more hostile stance, ready to destroy all in your path!");
+			}
 		break;
 	}
 }
@@ -1369,3 +1383,34 @@ void CleanerAi::moveOrClean(Actor *owner)
 }	
 
 
+
+InteractibleAi::InteractibleAi() {
+}
+
+void InteractibleAi::save(TCODZip &zip){
+	zip.putInt(INTERACTIBLE);
+}
+
+void InteractibleAi::load(TCODZip &zip){
+}
+
+void InteractibleAi::update(Actor *owner){
+}
+
+void InteractibleAi::interaction(Actor *owner, Actor *target){
+}
+
+
+VendingAi::VendingAi() {
+}
+
+void VendingAi::save(TCODZip &zip){
+	zip.putInt(VENDING);
+}
+
+void VendingAi::load(TCODZip &zip){
+}
+
+void VendingAi::interaction(Actor *owner, Actor *target){
+	engine.gui->message(TCODColor::yellow,"The vending machine lets out a soft hum.");
+}

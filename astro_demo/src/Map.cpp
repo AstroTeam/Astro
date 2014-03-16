@@ -339,7 +339,7 @@ void Map::addMonster(int x, int y) {
 	float sporeCreatureXp = 25*scale;
 	float sporeCreatureChance = 10;
 	int sporeCreatureAscii = 165;
-	
+
 	//Turret Base Stats
 	float turretHp = 10*scale;
 	float turretDodge = 0*scale;
@@ -349,7 +349,15 @@ void Map::addMonster(int x, int y) {
 	float turretChance = 50;
 	int turretAscii = 151; //change to desired ascii
 
-	int dice = rng->getInt(0,1000);
+	//vendor Base Stats
+	float vendorHp = 10*scale;
+	float vendorDodge = 0*scale;
+	float vendorXp = 25*scale;
+	float vendorChance = 100;
+	int vendorAscii = 'V'; //change to desired ascii
+
+
+	int dice = rng->getInt(0,1100);
 	if (dice < infectedCrewMemChance) 
 	{
 	
@@ -444,12 +452,35 @@ void Map::addMonster(int x, int y) {
 	{
 		//create a fungal cleaning bot
 		Actor *cleaner = new Actor(x,y,cleanerAscii,"Fungal Cleaning Bot",TCODColor::white);
+		cleaner->hostile = false;
 		cleaner->destructible = new MonsterDestructible(cleanerHp,cleanerDodge,"destroyed fungal cleaning bot",cleanerXp);
 		cleaner->totalStr = cleanerStr;
 		cleaner->ai = new CleanerAi();
 		cleaner->container = new Container(2);
 		generateRandom(cleaner, cleanerAscii);
 		engine.actors.push(cleaner);
+	}else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance)
+	{
+		//create a turret
+		Actor *turret = new Actor(x,y,turretAscii,"Battle Turret",TCODColor::white);
+		turret->totalDex = turretDex;
+		turret->destructible = new MonsterDestructible(turretHp,turretDodge,"destroyed battle turret",turretXp);
+		turret->totalStr = turretStr;
+		turret->attacker = new Attacker(turretStr);
+		turret->ai = new TurretAi();
+		turret->container = new Container(2);
+		generateRandom(turret, turretAscii);
+		engine.actors.push(turret);
+	}else if (dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance + vendorChance) {
+		//create a vending machine
+		Actor *vendor = new Actor(x,y,vendorAscii,"Vending Machine",TCODColor::darkerBlue);
+		vendor->hostile = false;
+		vendor->interact = true;
+		vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge, "destroyed vending machine",vendorXp);
+		vendor->ai = new VendingAi();
+		vendor->container = new Container(2);
+		generateRandom(vendor, cleanerAscii);
+		engine.actors.push(vendor);
 	}
 	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance)
 	{

@@ -121,6 +121,9 @@ void Gui::render() {
 	
 	//display wallet amount
 	sidebar->print(3,25,"Wallet : %d",engine.player->container->wallet);
+	
+	//display player hostility towards neutrals
+	//sidebar->print(3,27,"Hostile: %d",engine.player->hostile);
 
 	//mouse look
 	//renderMouseLook();
