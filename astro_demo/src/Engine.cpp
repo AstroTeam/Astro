@@ -26,6 +26,9 @@ Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	//mapconDec = new TCODConsole(mapWidth, mapHeight);
 	gui = new Gui();
 	invState = 0;
+	menuState = 0;
+	damageDone = 0;
+	damageReceived = 0;
 	selX = 0;
 	selY = 0;
 	mapx1 = 0;
@@ -63,6 +66,7 @@ void Engine::init() {
 	player->ai = new PlayerAi();
 	player->container = new Container(50);
 	actors.push(player);
+	player->flashable = true;
 	player->str=engine.gui->strValue;
 	player->totalStr=engine.gui->strValue;
 	player->attacker->basePower=engine.gui->strValue;  //old
@@ -195,6 +199,12 @@ void Engine::init() {
 			helmet->pickable->pick(helmet,player);
 			((Equipment*)(helmet->pickable))->use(helmet,player);
 			
+			equip1 = new Actor(0,0,' ',"Super-Flare", TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Fireball(3,12,8);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
 			
 			
 			break;
@@ -534,6 +544,13 @@ void Engine::save() {
 		zip.putInt(level);
 		zip.putInt(turnCount);
 		zip.putInt(killCount);
+		zip.putInt(invState);
+		zip.putInt(menuState);
+		zip.putInt(invFrames);
+		zip.putInt(selX);
+		zip.putInt(selY);
+		zip.putInt(damageDone);
+		zip.putInt(damageReceived);
 		zip.putInt(piratesFound);
 		//save the map first
 		zip.putInt(map->width);
@@ -609,6 +626,13 @@ void Engine::load(bool pause) {
 		turnCount = zip.getInt();
 		killCount = zip.getInt();
 		piratesFound = zip.getInt();
+		damageDone = zip.getInt();
+		damageReceived = zip.getInt();
+		menuState = zip.getInt();
+		invState = zip.getInt();
+		invFrames = zip.getInt();
+		selX = zip.getInt();
+		selY = zip.getInt();
 		//load the map
 		int width = zip.getInt();
 		int height = zip.getInt();

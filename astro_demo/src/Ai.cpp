@@ -631,11 +631,15 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	TCODConsole::blit(&con,0,0,CHARACTER_WIDTH,CHARACTER_HEIGHT,
 		TCODConsole::root, engine.screenWidth/2 - CHARACTER_WIDTH/2,
 		engine.screenHeight/2 - CHARACTER_HEIGHT/2 - 2);
-	TCODConsole::flush();
-	
-	//Keep info displayed until the player presses any character
+	//engine.menuState = 1;
+	/*while(engine.menuState != 2){
+		TCODConsole::flush();
+	}*/
+	//Keep info displayed until the player presses any button
 	TCOD_key_t key;
 	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
+	//engine.menuState = 0;
+	
 }
 
 static const int TRACKING_TURNS = 3;
@@ -775,10 +779,22 @@ LightAi::LightAi(int rad, float f, bool movibility)
 	moving = movibility;
 }
 
-void LightAi::load(TCODZip &zip){}
+void LightAi::load(TCODZip &zip){
+	flkr = zip.getFloat();
+	onAgn = zip.getInt();
+	onOff = zip.getInt();
+	frst = zip.getInt();
+	moving = zip.getInt();
+}
 
 void LightAi::save(TCODZip &zip){
 	zip.putInt(LIGHT);
+	zip.putFloat(flkr);
+	zip.putInt(onAgn);
+	zip.putInt(onOff);
+	zip.putInt(frst);//to reset num
+	zip.putInt(moving);//are you static or moving
+	
 }
 
 void LightAi::flicker(Actor * owner, float chance){
@@ -943,10 +959,21 @@ FlareAi::FlareAi(int lightRange, int turns) : lightRange(lightRange),turns(turns
 	i = 0;
 }
 
-void FlareAi::load(TCODZip &zip){}
+void FlareAi::load(TCODZip &zip){
+	lightRange = zip.getInt();
+	turns = zip.getInt();
+	i = zip.getInt();
+	light = new Actor(0,0,0,NULL,TCODColor::white);
+	light->load(zip);
+	
+}
 
 void FlareAi::save(TCODZip &zip){
 	zip.putInt(FLARE);
+	zip.putInt(lightRange);
+	zip.putInt(turns);
+	zip.putInt(i);
+	light->save(zip);
 }
 
 void FlareAi::update(Actor * owner)
@@ -1022,7 +1049,7 @@ void ConfusedActorAi::update(Actor *owner) {
 				engine.map->computeFov();
 			} else {
 				Actor *actor = engine.getActor(destx, desty);
-				if (actor) {
+				if (owner->attacker) {
 					owner->attacker->attack(owner,actor);
 					engine.map->computeFov();
 				}
