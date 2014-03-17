@@ -18,6 +18,9 @@ void Renderer::render(void *sdlSurface){
 	}
 	if (engine.invState == 0)
 	{
+	
+	if (engine.menuState == 0)
+	{
 	//set fps
 	TCODSystem::setFps(60);
 	//floors
@@ -940,6 +943,24 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(equipment);
 	SDL_FreeSurface(terminal);
 	SDL_FreeSurface(decor);
+	}
+	else if (engine.menuState == 1)
+	{
+		//blitting
+		SDL_Surface *character = SDL_LoadBMP("tile_assets/character_screen_char.bmp");
+		SDL_SetColorKey(character,SDL_SRCCOLORKEY,255);
+		SDL_Rect dstRect={35*16,5*16,400,256};
+		SDL_BlitSurface(character,NULL,screen,&dstRect);
+		
+		engine.menuState = 2;
+		SDL_FreeSurface(character);
+	}
+	else if (engine.menuState == 2)
+	{
+		//nothing
+		
+	}
+	
 	}
 	//if inventory is open begin animation
 	else if (engine.invState == 1)
