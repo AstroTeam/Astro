@@ -775,10 +775,21 @@ LightAi::LightAi(int rad, float f, bool movibility)
 	moving = movibility;
 }
 
-void LightAi::load(TCODZip &zip){}
+void LightAi::load(TCODZip &zip){
+	flkr = zip.getFloat();
+	onAgn = zip.getInt();
+	onOff = zip.getInt();
+	frst = zip.getInt();
+	moving = zip.getInt();
+}
 
 void LightAi::save(TCODZip &zip){
 	zip.putInt(LIGHT);
+	zip.putFloat(flkr);
+	zip.putInt(onAgn);
+	zip.putInt(onOff);
+	zip.putInt(frst);//to reset num
+	zip.putInt(moving);//are you static or moving
 	
 }
 
