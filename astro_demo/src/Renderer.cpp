@@ -649,6 +649,14 @@ void Renderer::render(void *sdlSurface){
 			
 			
 			//add environment stuffs-> over things here (fire)
+			if ((engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN) && engine.map->tiles[xM+yM*engine.map->width].envSta == 1)
+			{
+				srcRect.y = 8*16;
+				srcRect.x = 0;
+				//srcRect.x += (rng->getInt(0,2))*16;
+				SDL_BlitSurface(terminal,&srcRect,floorMap,&dstRect);
+			}
+			
 			
 			
 			
