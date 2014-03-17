@@ -200,20 +200,22 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 		}
 	}
 	
-	/*for (int xxx = x - ((1 + (wearer->totalIntel - 1) /3)/2) ; xxx < x+((1 + (wearer->totalIntel - 1) /3)/2);xxx++)
+	for (int xxx = x - ((1 + (wearer->totalIntel - 1) /3)) ; xxx <= x+((1 + (wearer->totalIntel - 1) /3));xxx++)
 	{
-		for (int yyy = y-((1 + (wearer->totalIntel - 1) /3)/2); yyy < y+((1 + (wearer->totalIntel - 1) /3)/2);yyy++)
+		for (int yyy = y - ((1 + (wearer->totalIntel - 1) /3)); yyy <= y+((1 + (wearer->totalIntel - 1) /3));yyy++)
 		{
-			engine.map->tiles[xxx+yyy*engine.map->width].envSta = 1;	
+			if (engine.distance(x,xxx,y,yyy) <= (1 + (wearer->totalIntel - 1) /3))
+			engine.map->tiles[xxx+yyy*engine.map->width].envSta = 1;
+			
 		}
-	}*/
-	for (int xxx = x - 1 ; xxx <= x+1;xxx++)
+	}
+	/*for (int xxx = x - 1 ; xxx <= x+1;xxx++)
 	{
 		for (int yyy = y-1; yyy <= y+1;yyy++)
 		{
 			engine.map->tiles[xxx+yyy*engine.map->width].envSta = 1;	
 		}
-	}
+	}*/
 	
 	return Pickable::use(owner,wearer);
 }
