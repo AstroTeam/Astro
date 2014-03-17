@@ -633,9 +633,11 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 		engine.screenHeight/2 - CHARACTER_HEIGHT/2 - 2);
 	TCODConsole::flush();
 	
-	//Keep info displayed until the player presses any character
+	//Keep info displayed until the player presses any button
 	TCOD_key_t key;
 	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
+	
+	
 }
 
 static const int TRACKING_TURNS = 3;
@@ -775,10 +777,21 @@ LightAi::LightAi(int rad, float f, bool movibility)
 	moving = movibility;
 }
 
-void LightAi::load(TCODZip &zip){}
+void LightAi::load(TCODZip &zip){
+	flkr = zip.getFloat();
+	onAgn = zip.getInt();
+	onOff = zip.getInt();
+	frst = zip.getInt();
+	moving = zip.getInt();
+}
 
 void LightAi::save(TCODZip &zip){
 	zip.putInt(LIGHT);
+	zip.putFloat(flkr);
+	zip.putInt(onAgn);
+	zip.putInt(onOff);
+	zip.putInt(frst);//to reset num
+	zip.putInt(moving);//are you static or moving
 	
 }
 

@@ -196,6 +196,12 @@ void Engine::init() {
 			helmet->pickable->pick(helmet,player);
 			((Equipment*)(helmet->pickable))->use(helmet,player);
 			
+			equip1 = new Actor(0,0,' ',"Super-Flare", TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Fireball(3,12,8);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
 			
 			
 			break;
