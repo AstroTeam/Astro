@@ -172,6 +172,7 @@ void PlayerDestructible::die(Actor *owner) {
 	engine.gui->message(TCODColor::darkRed,"You died!\n");
 	Destructible::die(owner);
 	engine.gameStatus=Engine::DEFEAT;
+	engine.save();
 }
 
 void PlayerDestructible::save(TCODZip &zip) {
