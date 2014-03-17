@@ -943,10 +943,21 @@ FlareAi::FlareAi(int lightRange, int turns) : lightRange(lightRange),turns(turns
 	i = 0;
 }
 
-void FlareAi::load(TCODZip &zip){}
+void FlareAi::load(TCODZip &zip){
+	lightRange = zip.getInt();
+	turns = zip.getInt();
+	i = zip.getInt();
+	light = new Actor(0,0,0,NULL,TCODColor::white);
+	light->load(zip);
+	
+}
 
 void FlareAi::save(TCODZip &zip){
 	zip.putInt(FLARE);
+	zip.putInt(lightRange);
+	zip.putInt(turns);
+	zip.putInt(i);
+	light->save(zip);
 }
 
 void FlareAi::update(Actor * owner)
