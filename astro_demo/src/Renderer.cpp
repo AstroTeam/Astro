@@ -3,7 +3,7 @@
 #include "SDL/SDL.h"
 //#include "SDL/SDL_image.h"
 #include <string>
-
+//0 ->std, 1->blit, 2->nothing
 
 void Renderer::render(void *sdlSurface){
 /////////////////////////////////////////////////////////////////////rendering doubled up walkable decor!
@@ -51,7 +51,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_SetColorKey(itemsGlow,SDL_SRCCOLORKEY,255);
 	SDL_Surface *serverLight = SDL_LoadBMP("tile_assets/server_lights.bmp");
 	SDL_Surface *fire = SDL_LoadBMP("tile_assets/fire.bmp");
-	SDL_SetAlpha( itemsGlow, SDL_SRCALPHA, 255*.9);
+	SDL_SetAlpha(fire, SDL_SRCALPHA, 255*.9);
 	SDL_SetColorKey(serverLight,SDL_SRCCOLORKEY,255);
 	SDL_SetColorKey(fire,SDL_SRCCOLORKEY,255);
 	
