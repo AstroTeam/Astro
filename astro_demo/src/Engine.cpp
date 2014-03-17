@@ -619,7 +619,7 @@ void Engine::load(bool pause) {
 		//load the map
 		int width = zip.getInt();
 		int height = zip.getInt();
-		map = new Map(width,height);
+		map = new Map(width,height,1);
 		map->load(zip);
 		//then the player
 		player = new Actor(0,0,0,NULL,TCODColor::white);

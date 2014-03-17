@@ -72,8 +72,8 @@ public:
 	}
 };
 
-Map::Map(int width, int height, short epicenterAmount): width(width),height(height),epicenterAmount(epicenterAmount) {
-	seed = TCODRandom::getInstance()->getInt(0,0x7FFFFFFF);
+Map::Map(int width, int height, short epicenterAmount): width(width),height(height),seed(TCODRandom::getInstance()->getInt(0,0x7FFFFFFF)),epicenterAmount(epicenterAmount) {
+	
 }
 
 Map::~Map() {
@@ -115,6 +115,9 @@ void Map::init(bool withActors, LevelType levelType) {
 
 void Map::save(TCODZip &zip) {
 	zip.putInt(seed);
+	zip.putInt(width);
+	zip.putInt(height);
+	engine.gui->message(TCODColor::red, "Saving seed %g!", seed);
 	for (int i = 0; i < width*height; i++) {
 		zip.putInt(tiles[i].explored);
 		zip.putFloat(tiles[i].infection);
@@ -128,6 +131,9 @@ void Map::save(TCODZip &zip) {
 
 void Map::load(TCODZip &zip) {
 	seed = zip.getInt();
+	width = zip.getInt();
+	height = zip.getInt();
+	engine.gui->message(TCODColor::red, "Loading seed %i!", seed);
 	init(false);
 	for (int i = 0; i <width*height; i++) {
 		tiles[i].explored = zip.getInt();
