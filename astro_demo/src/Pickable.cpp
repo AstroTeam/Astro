@@ -183,11 +183,12 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 		return false;
 	}
 	//burn everything in range, including the player
-	engine.gui->message(TCODColor::orange, "The fireball explodes, burning everything within %g tiles!",1 + (wearer->totalIntel - 1) /3);
+	engine.gui->message(TCODColor::orange, "The fireball explodes, burning everything within %d tiles!",1 + (wearer->totalIntel - 1) /3);
 	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
 		Actor *actor = *it;
 		if (actor->destructible && !actor->destructible->isDead()
 			&&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) {
+			
 			float damageTaken = actor->destructible->takeDamage(actor, 2 * wearer->totalIntel);
 			engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
@@ -195,8 +196,25 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 			} else {
 				engine.gui->message(TCODColor::orange,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",actor->name, damageTaken);
 			}
+			//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
 		}
 	}
+	
+	/*for (int xxx = x - ((1 + (wearer->totalIntel - 1) /3)/2) ; xxx < x+((1 + (wearer->totalIntel - 1) /3)/2);xxx++)
+	{
+		for (int yyy = y-((1 + (wearer->totalIntel - 1) /3)/2); yyy < y+((1 + (wearer->totalIntel - 1) /3)/2);yyy++)
+		{
+			engine.map->tiles[xxx+yyy*engine.map->width].envSta = 1;	
+		}
+	}*/
+	for (int xxx = x - 1 ; xxx <= x+1;xxx++)
+	{
+		for (int yyy = y-1; yyy <= y+1;yyy++)
+		{
+			engine.map->tiles[xxx+yyy*engine.map->width].envSta = 1;	
+		}
+	}
+	
 	return Pickable::use(owner,wearer);
 }
 
