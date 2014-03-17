@@ -1022,7 +1022,7 @@ void ConfusedActorAi::update(Actor *owner) {
 				engine.map->computeFov();
 			} else {
 				Actor *actor = engine.getActor(destx, desty);
-				if (actor) {
+				if (actor->attacker) {
 					owner->attacker->attack(owner,actor);
 					engine.map->computeFov();
 				}

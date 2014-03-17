@@ -239,7 +239,7 @@ bool Confuser::use(Actor *owner, Actor *wearer) {
 	} */
 	
 	//confuse the target for nbTurns turns
-	if( actor->ch != 131 && actor->ch != 147 && actor->ch != 'V') //cannot confuse turrets, vendors, or cleaners with flash bangs
+	if(actor->flashable)
 	{
 		Ai *confusedAi = new ConfusedActorAi(wearer->totalIntel + 5, actor->ai);
 		actor->ai = confusedAi;

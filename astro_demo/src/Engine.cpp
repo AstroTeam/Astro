@@ -63,6 +63,7 @@ void Engine::init() {
 	player->ai = new PlayerAi();
 	player->container = new Container(50);
 	actors.push(player);
+	player->flashable = true;
 	player->str=engine.gui->strValue;
 	player->totalStr=engine.gui->strValue;
 	player->attacker->basePower=engine.gui->strValue;  //old
