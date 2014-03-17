@@ -65,7 +65,7 @@ void Destructible::die(Actor *owner) {
 	//check who owner was to decide what corpse they get
 	//if spore creature they get spore body
 	
-	if (owner->ch == 165){
+	if (owner->ch == 165 || owner->ch == 166){ 
 		owner->ch = 162;
 		owner->blocks = false;
 	}
@@ -74,7 +74,11 @@ void Destructible::die(Actor *owner) {
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
 		owner->ch = 243;
 	}
-	//else generic blood whale
+	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 'V') //roomba, vendors, and turrets show no corpse currently
+	{
+		owner->ch = ' ';
+		owner->blocks = false;
+	}//else generic blood whale
 	else
 	{
 		owner->ch = 163;
@@ -98,16 +102,16 @@ PlayerDestructible::PlayerDestructible(float maxHp, float defense, const char *c
 void MonsterDestructible::die(Actor *owner) {
 	//transform it into a corpse
 	//doesnt block, cant be attacked, doesnt move
-	if(owner->ch != 243 && owner->ch != 150 && owner->ch != 151 && owner->ch != 'V'){
+	if(owner->ch != 243 && owner->ch != 131 && owner->ch != 147 && owner->ch != 'V'){
 		engine.killCount++;
 		engine.gui->message(TCODColor::lightGrey,"The %s is dead! You feel a rush as it sputters its last breath.", owner->name);
 	}
-	else if(owner->ch == 150) //Ascii for Cleaner bot, change when needed
+	else if(owner->ch == 131) //Ascii for Cleaner bot
 	{
 		engine.killCount++;
 		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
 	}
-	else if(owner->ch == 151) //Ascii for Battle Turret, change when needed
+	else if(owner->ch == 147) //Ascii for Sentry Turret
 	{
 		engine.killCount++;
 		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);

@@ -1407,7 +1407,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 					}
 				}
 			}
-		}else if(ascii == 165 || ascii == 144){
+		}else if(ascii == 165 || ascii == 166){
 			for(int i = 0; i < owner->container->size; i++){
 				int rndA2 = rng->getInt(0,100);
 				if(rndA2 > 45){

@@ -656,7 +656,7 @@ void MonsterAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
-	if(engine.map->infectionState(owner->x,owner->y) >= 4 && owner->ch == 144) //change miniSporeCreatures into regular spore creatures if tile becomes infected enough
+	if(engine.map->infectionState(owner->x,owner->y) >= 4 && owner->ch == 166) //change miniSporeCreatures into regular spore creatures if tile becomes infected enough
 	{
 		owner->name = "Spore Creature";
 		owner->destructible->hp = 17*(1 + .1*(engine.level - 1));
