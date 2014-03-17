@@ -280,7 +280,7 @@ void Map::addMonster(int x, int y) {
 	float cleanerStr = 0*scale;
 	float cleanerXp = 0*scale;
 	float cleanerChance = 70;
-	int cleanerAscii = 150; //change when desired
+	int cleanerAscii = 131; //change when desired
 
 	//Infected Crew Member Base Stats
 	float infectedCrewMemHp = 10*scale;
@@ -330,7 +330,7 @@ void Map::addMonster(int x, int y) {
 	float miniSporeCreatureStr = 5*scale;
 	float miniSporeCreatureXp = 15*scale;
 	float miniSporeCreatureChance = 60;
-	int miniSporeCreatureAscii = 144; //mini spore creature ascii, change if desired
+	int miniSporeCreatureAscii = 166; //mini spore creature ascii, change if desired
 	
 	//Spore Creature Base Stats
 	float sporeCreatureHp = 17*scale;
@@ -347,7 +347,7 @@ void Map::addMonster(int x, int y) {
 	float turretDex = 5*scale;
 	float turretXp = 25*scale;
 	float turretChance = 50;
-	int turretAscii = 151; //change to desired ascii
+	int turretAscii = 147; //change to desired ascii
 
 	//vendor Base Stats
 	float vendorHp = 10*scale;
