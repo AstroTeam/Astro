@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include "main.hpp"
 
-Destructible::Destructible(float maxHp, float dodge, const char *corpseName, int xp) :
-	maxHp(maxHp),hp(maxHp),baseDodge(dodge+10),totalDodge(dodge+10), xp(xp) {
+Destructible::Destructible(float maxHp, float dodge, float dr, const char *corpseName, int xp) :
+	maxHp(maxHp),hp(maxHp),baseDodge(dodge+10),totalDodge(dodge+10), baseDR(dr), totalDR(dr), xp(xp) {
 	this->corpseName = strdup(corpseName);
 }
 
@@ -15,6 +15,8 @@ void Destructible::load(TCODZip &zip) {
 	hp = zip.getFloat();
 	baseDodge = zip.getFloat();
 	totalDodge = zip.getFloat();
+	baseDR = zip.getFloat();
+	totalDR = zip.getFloat();
 	corpseName = strdup(zip.getString());
 	xp = zip.getInt();
 }
@@ -24,6 +26,8 @@ void Destructible::save(TCODZip &zip) {
 	zip.putFloat(hp);
 	zip.putFloat(baseDodge);
 	zip.putFloat(totalDodge);
+	zip.putFloat(baseDR);
+	zip.putFloat(totalDR);
 	zip.putString(corpseName);
 	zip.putInt(xp);
 }
@@ -32,8 +36,8 @@ Destructible *Destructible::create(TCODZip &zip) {
 	DestructibleType type = (DestructibleType)zip.getInt();
 	Destructible *destructible = NULL;
 	switch(type) {
-		case MONSTER : destructible = new MonsterDestructible(0,0,NULL,0); break;
-		case PLAYER : destructible = new PlayerDestructible(0,0,NULL); break;
+		case MONSTER : destructible = new MonsterDestructible(0,0,0,NULL,0); break;
+		case PLAYER : destructible = new PlayerDestructible(0,0,0,NULL); break;
 	}
 	destructible->load(zip);
 	return destructible;
@@ -91,12 +95,12 @@ void Destructible::die(Actor *owner) {
 	engine.sendToBack(owner);
 }
 
-MonsterDestructible::MonsterDestructible(float maxHp, float defense, const char *corpseName, int xp) :
-	Destructible(maxHp, defense, corpseName, xp) {
+MonsterDestructible::MonsterDestructible(float maxHp, float dodge, float dr, const char *corpseName, int xp) :
+	Destructible(maxHp, dodge, dr, corpseName, xp) {
 }
 
-PlayerDestructible::PlayerDestructible(float maxHp, float defense, const char *corpseName) : 
-	Destructible(maxHp, defense, corpseName,0) {
+PlayerDestructible::PlayerDestructible(float maxHp, float dodge, float dr, const char *corpseName) : 
+	Destructible(maxHp, dodge, dr, corpseName,0) {
 }
 
 void MonsterDestructible::die(Actor *owner) {
