@@ -459,19 +459,6 @@ void Map::addMonster(int x, int y) {
 		cleaner->container = new Container(2);
 		generateRandom(cleaner, cleanerAscii);
 		engine.actors.push(cleaner);
-	}else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance)
-	{
-		//create a turret
-		Actor *turret = new Actor(x,y,turretAscii,"Battle Turret",TCODColor::white);
-		turret->totalDex = turretDex;
-		turret->destructible = new MonsterDestructible(turretHp,turretDodge,"destroyed battle turret",turretXp);
-		turret->totalStr = turretStr;
-		turret->attacker = new Attacker(turretStr);
-		turret->ai = new TurretAi();
-		turret->container = new Container(2);
-		generateRandom(turret, turretAscii);
-		engine.actors.push(turret);
-		
 	}
 	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance)
 	{
