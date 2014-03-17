@@ -779,6 +779,7 @@ void LightAi::load(TCODZip &zip){}
 
 void LightAi::save(TCODZip &zip){
 	zip.putInt(LIGHT);
+	
 }
 
 void LightAi::flicker(Actor * owner, float chance){
