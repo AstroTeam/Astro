@@ -1168,10 +1168,17 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			addItem(x,y, room->type);
 			nbItems--;
 		}
+	} 
 
-		//set the stairs position
-		engine.stairs->x = (x1+x2)/2;
-		engine.stairs->y = (y1+y2)/2;
+	//set the stairs position
+	while (true) {
+		int x = rng->getInt(x1,x2);
+		int y = rng->getInt(y1,y2);
+		if (canWalk(x,y)) {
+			engine.stairs->x = x;
+			engine.stairs->y = x;
+			break;
+		}
 	}
 }
 
