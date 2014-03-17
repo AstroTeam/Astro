@@ -118,6 +118,11 @@ void Map::save(TCODZip &zip) {
 	for (int i = 0; i < width*height; i++) {
 		zip.putInt(tiles[i].explored);
 		zip.putFloat(tiles[i].infection);
+		zip.putInt(tiles[i].tileType);
+		zip.putInt(tiles[i].decoration);
+		zip.putInt(tiles[i].num);
+		zip.putInt(tiles[i].lit);
+		zip.putInt(tiles[i].drty);
 	}
 }
 
@@ -127,6 +132,11 @@ void Map::load(TCODZip &zip) {
 	for (int i = 0; i <width*height; i++) {
 		tiles[i].explored = zip.getInt();
 		tiles[i].infection = zip.getFloat();
+		tiles[i].tileType = (RoomType)zip.getInt();
+		tiles[i].decoration = zip.getInt();
+		tiles[i].num = zip.getInt();
+		tiles[i].lit = zip.getInt();
+		tiles[i].drty = zip.getInt();
 	}
 }
 	
