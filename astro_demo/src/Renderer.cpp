@@ -50,8 +50,11 @@ void Renderer::render(void *sdlSurface){
 	SDL_SetAlpha( itemsGlow, SDL_SRCALPHA, alpha);
 	SDL_SetColorKey(itemsGlow,SDL_SRCCOLORKEY,255);
 	SDL_Surface *serverLight = SDL_LoadBMP("tile_assets/server_lights.bmp");
-	
+	SDL_Surface *fire = SDL_LoadBMP("tile_assets/fire.bmp");
+	SDL_SetAlpha( itemsGlow, SDL_SRCALPHA, 255*.9);
 	SDL_SetColorKey(serverLight,SDL_SRCCOLORKEY,255);
+	SDL_SetColorKey(fire,SDL_SRCCOLORKEY,255);
+	
 	SDL_Surface *flareGlow= SDL_LoadBMP("tile_assets/alphaGlow_flare.bmp");
 	SDL_SetAlpha(flareGlow, SDL_SRCALPHA, alpha*1.25);
 	SDL_SetColorKey(flareGlow,SDL_SRCCOLORKEY,255);
@@ -82,6 +85,8 @@ void Renderer::render(void *sdlSurface){
 	//engine.gui->message(TCODColor::red, "y2 is %d",engine.mapy2);
 	//engine.gui->message(TCODColor::red, "playerx  %d",plyx);
 	//engine.gui->message(TCODColor::red, "playery  %d",plyy);
+	static int fireInt = 0;
+	static int slowing = 0;
 	
 	SDL_Rect srcRect={0,0,16,16};
 	SDL_Rect dstRect1={22*16,0,(engine.mapx2-engine.mapx1)*16+16,(engine.mapy2-engine.mapy1)*16+16};
@@ -648,14 +653,21 @@ void Renderer::render(void *sdlSurface){
 			}
 			
 			
+			//TCODRandom *rng = TCODRandom::getInstance();
+			//fireInt = rng->getInt(0,3);
 			//add environment stuffs-> over things here (fire)
 			if ((engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN) && engine.map->tiles[xM+yM*engine.map->width].envSta == 1)
 			{
-				srcRect.y = 8*16;
-				srcRect.x = 0;
+				
+				srcRect.x = (fireInt%3) * 16;
+				srcRect.y = 0;
 				//srcRect.x += (rng->getInt(0,2))*16;
-				SDL_BlitSurface(terminal,&srcRect,floorMap,&dstRect);
+				//if (slowing%5 == 0)
+				SDL_BlitSurface(fire,&srcRect,floorMap,&dstRect);
+				
+				
 			}
+			
 			
 			
 			
@@ -665,7 +677,9 @@ void Renderer::render(void *sdlSurface){
 		y=0;
 		x++;
 	}
-	
+	slowing++;
+	if (slowing%5 == 0)
+	fireInt++;
 	
 	
 	//OPTIMIZE ME?  INCLUDE IN PREVIOUS LOOP?, CAN'T, MUST BE AFTER ALL TILES :(
@@ -918,6 +932,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(floorMap);
 	SDL_FreeSurface(screen);
 	SDL_FreeSurface(serverLight);
+	SDL_FreeSurface(fire);
 	SDL_FreeSurface(floorTiles);
 	SDL_FreeSurface(itemsGlow);
 	SDL_FreeSurface(flareGlow);
