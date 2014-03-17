@@ -596,36 +596,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	if (!withActors) {
 		return;
 	}
-	if (roomNum == 0) {
-		//put the player in the first room
-		engine.player->x = (x1+x2)/2;
-		engine.player->y = (y1+y2)/2;
-		engine.playerLight = new Actor(engine.player->x, engine.player->y, 'l', "Your Flashlight", TCODColor::white);
-		engine.playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
-		engine.actors.push(engine.playerLight);
-		engine.playerLight->blocks = false;
-		//playerLight->ai->moving = true;
-		engine.sendToBack(engine.playerLight);
-	}
-	TCODRandom *rng = TCODRandom::getInstance();
-	//add monsters
-	//horde chance
-	int nbMonsters;
-	if (roomNum >0 && rng->getInt(0,19) == 0) {
-		nbMonsters = rng->getInt(10, 25);
-	}
-	else {
-		nbMonsters = rng->getInt(0, MAX_ROOM_MONSTERS);
-	}
-	while (nbMonsters > 0) {
-		int x = rng->getInt(x1, x2);
-		int y = rng->getInt(y1, y2);
 
-		if(canWalk(x,y) && (x != engine.player->x && y!= engine.player->y)) {
-			addMonster(x,y);
-			nbMonsters--;
-		}
-	}
 	//try to place an epicenter
 	if (epicenterAmount > 0 && roomNum == 5 ) {
 		int x = rng->getInt(x1, x2);
@@ -1100,6 +1071,49 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	 *
 	 */
 	
+	//placing starting locations
+	if (roomNum == 0) {
+		//put the player in the first room
+		bool placed = false;
+		while (!placed) {
+			int x = rng->getInt(x1, x2);
+			int y = rng->getInt(y1, y2);
+
+			if(canWalk(x,y)) {
+				engine.player->x = x;
+				engine.player->y = y;
+				placed = true;
+			}
+		}
+		engine.playerLight = new Actor(engine.player->x, engine.player->y, 'l', "Your Flashlight", TCODColor::white);
+		engine.playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
+		engine.actors.push(engine.playerLight);
+		engine.playerLight->blocks = false;
+		//playerLight->ai->moving = true;
+		engine.sendToBack(engine.playerLight);
+	}
+	TCODRandom *rng = TCODRandom::getInstance();
+
+	/* monster section */
+
+	//horde chance
+	int nbMonsters;
+	if (roomNum >0 && rng->getInt(0,19) == 0) {
+		nbMonsters = rng->getInt(10, 25);
+	}
+	else {
+		nbMonsters = rng->getInt(0, MAX_ROOM_MONSTERS);
+	}
+
+	while (nbMonsters > 0) {
+		int x = rng->getInt(x1, x2);
+		int y = rng->getInt(y1, y2);
+
+		if(canWalk(x,y) && (x != engine.player->x && y!= engine.player->y)) {
+			addMonster(x,y);
+			nbMonsters--;
+		}
+	}
 	//TCODRandom *rnd = TCODRandom::getInstance();
 	//add lights to all rooms, make test later
 	if (rng->getInt(0,10) > 4)
