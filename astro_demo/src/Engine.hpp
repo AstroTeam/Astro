@@ -22,6 +22,7 @@ public:
 	
 	int invState;
 	int invFrames;
+	int menuState;
 	int selX;
 	int selY;
 	

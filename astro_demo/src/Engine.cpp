@@ -26,6 +26,7 @@ Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	//mapconDec = new TCODConsole(mapWidth, mapHeight);
 	gui = new Gui();
 	invState = 0;
+	menuState = 0;
 	selX = 0;
 	selY = 0;
 	mapx1 = 0;
@@ -541,6 +542,13 @@ void Engine::save() {
 		zip.putInt(level);
 		zip.putInt(turnCount);
 		zip.putInt(killCount);
+		zip.putInt(invState);
+		zip.putInt(menuState);
+		zip.putInt(invFrames);
+		zip.putInt(selX);
+		zip.putInt(selY);
+		zip.putInt(damageDone);
+		zip.putInt(damageReceived);
 		zip.putInt(piratesFound);
 		//save the map first
 		zip.putInt(map->width);
@@ -616,6 +624,13 @@ void Engine::load(bool pause) {
 		turnCount = zip.getInt();
 		killCount = zip.getInt();
 		piratesFound = zip.getInt();
+		damageDone = zip.getInt();
+		damageReceived = zip.getInt();
+		menuState = zip.getInt();
+		invState = zip.getInt();
+		invFrames = zip.getInt();
+		selX = zip.getInt();
+		selY = zip.getInt();
 		//load the map
 		int width = zip.getInt();
 		int height = zip.getInt();

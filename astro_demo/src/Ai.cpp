@@ -631,12 +631,14 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	TCODConsole::blit(&con,0,0,CHARACTER_WIDTH,CHARACTER_HEIGHT,
 		TCODConsole::root, engine.screenWidth/2 - CHARACTER_WIDTH/2,
 		engine.screenHeight/2 - CHARACTER_HEIGHT/2 - 2);
-	TCODConsole::flush();
-	
+	//engine.menuState = 1;
+	/*while(engine.menuState != 2){
+		TCODConsole::flush();
+	}*/
 	//Keep info displayed until the player presses any button
 	TCOD_key_t key;
 	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
-	
+	//engine.menuState = 0;
 	
 }
 
