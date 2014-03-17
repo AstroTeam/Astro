@@ -68,6 +68,16 @@ public:
 	
 	int tileType(int x, int y);
 	//int tileInf(int x, int y);
+	Actor *createCleanerBot(int x, int y);
+	Actor *createInfectedCrewMember(int x, int y);
+	Actor *createInfectedNCO(int x, int y);
+	Actor *createInfectedOfficer(int x, int y);
+	Actor *createInfectedMarine(int x, int y);
+	Actor *createInfectedGrenadier(int x, int y);
+	Actor *createSporeCreature(int x, int y);
+	Actor *createMiniSporeCreature(int x, int y);
+	Actor *createTurret(int x, int y);
+	Actor *createVendor(int x, int y);
 	
 	Actor *createCurrencyStack(int x, int y);
 	Actor *createHealthPotion(int x, int y);

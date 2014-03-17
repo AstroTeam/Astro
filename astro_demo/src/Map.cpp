@@ -251,8 +251,6 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 
 void Map::addMonster(int x, int y) {
 	TCODRandom *rng =TCODRandom::getInstance();
-	
-	int level = engine.level; //Note first engine.level = 1
 
 	/*
 	Stats (Actor.hpp): int str, dex, intel, vit, totalStr, totalDex, totalIntel; //strength, dexterity, intelligence, vitality
@@ -278,241 +276,306 @@ void Map::addMonster(int x, int y) {
 	roll = (0,20), ==1 -> miss, ==20, 2* damage
 	attackRoll = roll + owner->totalStr
 	else if attackRoll >= target->destructible->totalDodge, damage = totalStr
-	
-	
 	*/
-	float scale = 1 + .1*(level - 1); //attributes scale up 10% each level
 	
 	
-	//Fungal Cleaning Bot Stats
+	
+	float cleanerChance = 70;
+	float infectedCrewMemChance = 470;
+	float infectedMarineChance = 150;
+	float infectedGrenadierChance = 50;
+	float infectedNCOChance = 90;
+	float infectedOfficerChance = 50;
+	float miniSporeCreatureChance = 60;
+	float sporeCreatureChance = 10;
+	float turretChance = 50;
+	float vendorChance = 100;
+
+	int dice = rng->getInt(0,1100);
+	if (dice < infectedCrewMemChance) 
+	{
+		createInfectedCrewMember(x,y);	
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance)	
+	{
+		createInfectedNCO(x,y);
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance)
+	{	
+		createInfectedOfficer(x,y);
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + miniSporeCreatureChance)
+	{
+		createMiniSporeCreature(x,y);
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + miniSporeCreatureChance)
+	{
+		createSporeCreature(x,y);
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance+ miniSporeCreatureChance)
+	{
+		createInfectedMarine(x,y);
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance+ miniSporeCreatureChance)
+	{
+		createInfectedGrenadier(x,y);
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + miniSporeCreatureChance)
+	{
+		createCleanerBot(x,y);
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance)
+	{
+		createTurret(x,y);
+	}
+	else if (dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance + vendorChance) 
+	{
+		createVendor(x,y);
+	}
+}
+
+Actor* Map::createCleanerBot(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
 	float cleanerHp = 10*scale;
 	float cleanerDodge = 0*scale;
 	float cleanerDR = 0*scale;
 	float cleanerStr = 0*scale;
 	float cleanerXp = 0*scale;
-	float cleanerChance = 70;
-	int cleanerAscii = 131; //change when desired
+	int cleanerAscii = 131;
+	
+	Actor *cleaner = new Actor(x,y,cleanerAscii,"Fungal Cleaning Bot",TCODColor::white);
+	cleaner->hostile = false;
+	cleaner->destructible = new MonsterDestructible(cleanerHp,cleanerDodge,cleanerDR,"destroyed fungal cleaning bot",cleanerXp);
+	cleaner->totalStr = cleanerStr;
+	cleaner->ai = new CleanerAi();
+	cleaner->container = new Container(2);
+	generateRandom(cleaner, cleanerAscii);
+	engine.actors.push(cleaner);
+	
+	return cleaner;
 
-	//Infected Crew Member Base Stats
+}
+Actor* Map::createInfectedCrewMember(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
 	float infectedCrewMemHp = 10*scale;
 	float infectedCrewMemDodge = 0*scale;
 	float infectedCrewMemDR = 0*scale;
 	float infectedCrewMemStr = 5*scale;
 	float infectedCrewMemXp = 10*scale;
-	float infectedCrewMemChance = 470;
 	int infectedCrewMemAscii = 164;
 	
-	//Infected Marine Base Stats
+	Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
+	infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemHp,infectedCrewMemDodge,infectedCrewMemDR,"infected corpse",infectedCrewMemXp);
+	infectedCrewMember->flashable = true;
+	infectedCrewMember->totalStr = infectedCrewMemStr;
+	infectedCrewMember->attacker = new Attacker(infectedCrewMemStr);
+	infectedCrewMember->container = new Container(2);
+	infectedCrewMember->ai = new MonsterAi();
+	generateRandom(infectedCrewMember, infectedCrewMemAscii);
+	engine.actors.push(infectedCrewMember);
+	
+	return infectedCrewMember;
+
+}
+Actor* Map::createInfectedNCO(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float infectedNCOHp = 12*scale;
+	float infectedNCODodge = 1*scale;
+	float infectedNCODR = 0*scale;
+	float infectedNCOStr = 6*scale;
+	float infectedNCOXp = 10*scale;
+	int infectedNCOAscii = 148;
+	
+	Actor *infectedNCO = new Actor(x,y,infectedNCOAscii,"Infected NCO",TCODColor::white);
+	infectedNCO->destructible = new MonsterDestructible(infectedNCOHp,infectedNCODodge,infectedNCODR,"infected corpse",infectedNCOXp);
+	infectedNCO->totalStr = infectedNCOStr;
+	infectedNCO->flashable = true;
+	infectedNCO->attacker = new Attacker(infectedNCOStr);
+	infectedNCO->container = new Container(2);
+	infectedNCO->ai = new MonsterAi();
+	generateRandom(infectedNCO, infectedNCOAscii);
+	engine.actors.push(infectedNCO);
+	
+	return infectedNCO;
+}
+Actor* Map::createInfectedOfficer(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float infectedOfficerHp = 15*scale;
+	float infectedOfficerDodge = 1*scale;
+	float infectedOfficerDR = 0*scale;
+	float infectedOfficerStr = 7*scale;
+	float infectedOfficerXp = 20*scale;
+	int infectedOfficerAscii = 132;
+	
+	
+	Actor *infectedOfficer = new Actor(x,y,infectedOfficerAscii,"Infected Officer",TCODColor::white);
+	infectedOfficer->destructible = new MonsterDestructible(infectedOfficerHp,infectedOfficerDodge,infectedOfficerDR,"infected corpse",infectedOfficerXp);
+	infectedOfficer->flashable = true;
+	infectedOfficer->totalStr = infectedOfficerStr;
+	infectedOfficer->attacker = new Attacker(infectedOfficerStr);
+	infectedOfficer->container = new Container(2);
+	infectedOfficer->ai = new MonsterAi();
+	generateRandom(infectedOfficer, infectedOfficerAscii);
+	engine.actors.push(infectedOfficer);
+	
+	return infectedOfficer;
+}
+Actor* Map::createInfectedMarine(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
 	float infectedMarineHp = 10*scale;
 	float infectedMarineDodge = 0*scale;
 	float infectedMarineDR = 0*scale;
 	float infectedMarineStr = 2*scale;
 	float infectedMarineDex = 5*scale;
 	float infectedMarineXp = 10*scale;
-	float infectedMarineChance = 150;
 	int infectedMarineAscii = 149;
 	
-	//Infected Grenadier Base Stats
+	Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
+	infectedMarine->destructible = new MonsterDestructible(infectedMarineHp,infectedMarineDodge,infectedMarineDR,"infected corpse",infectedMarineXp);
+	infectedMarine->flashable = true;
+	infectedMarine->attacker = new Attacker(infectedMarineStr);
+	infectedMarine->totalStr = infectedMarineStr;
+	infectedMarine->totalDex = infectedMarineDex;
+	infectedMarine->container = new Container(2);
+	infectedMarine->ai = new RangedAi();
+	generateRandom(infectedMarine, infectedMarineAscii);
+	engine.actors.push(infectedMarine);
+	
+	return infectedMarine;
+}
+Actor* Map::createInfectedGrenadier(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
 	float infectedGrenadierHp = 10*scale;
 	float infectedGrenadierDodge = 0*scale;
 	float infectedGrenadierDR = 0*scale;
 	float infectedGrenadierStr = 2*scale;
 	float infectedGrenadierIntel = 3*scale; 
 	float infectedGrenadierXp = 20*scale;
-	float infectedGrenadierChance = 50;
 	int infectedGrenadierAscii = 133;
 	
-	//Infected NCO Base Stats
-	float infectedNCOHp = 12*scale;
-	float infectedNCODodge = 1*scale;
-	float infectedNCODR = 0*scale;
-	float infectedNCOStr = 6*scale;
-	float infectedNCOXp = 10*scale;
-	float infectedNCOChance = 90;
-	int infectedNCOAscii = 148;
 	
-	//Infected Officer Base Stats
-	float infectedOfficerHp = 15*scale;
-	float infectedOfficerDodge = 1*scale;
-	float infectedOfficerDR = 0*scale;
-	float infectedOfficerStr = 7*scale;
-	float infectedOfficerXp = 20*scale;
-	float infectedOfficerChance = 50;
-	int infectedOfficerAscii = 132;
+	Actor *infectedGrenadier = new Actor(x,y,infectedGrenadierAscii,"Infected Grenadier",TCODColor::white);
+	infectedGrenadier->destructible = new MonsterDestructible(infectedGrenadierHp,infectedGrenadierDodge,infectedGrenadierDR,"infected corpse",infectedGrenadierXp);
+	infectedGrenadier->flashable = true;
+	infectedGrenadier->totalStr = infectedGrenadierStr;
+	infectedGrenadier->totalIntel = infectedGrenadierIntel;
+	infectedGrenadier->attacker = new Attacker(infectedGrenadierStr);
+	infectedGrenadier->container = new Container(2);
+	infectedGrenadier->ai = new GrenadierAi();
+	generateRandom(infectedGrenadier , infectedGrenadierAscii);
+	engine.actors.push(infectedGrenadier);
 	
-	//Mini Spore Creature Base Stats
+	return infectedGrenadier;
+}
+Actor* Map::createMiniSporeCreature(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
 	float miniSporeCreatureHp = 10*scale;
 	float miniSporeCreatureDodge = 0*scale;
 	float miniSporeCreatureDR = 0*scale;
 	float miniSporeCreatureStr = 5*scale;
 	float miniSporeCreatureXp = 15*scale;
-	float miniSporeCreatureChance = 60;
-	int miniSporeCreatureAscii = 166; //mini spore creature ascii, change if desired
+	int miniSporeCreatureAscii = 166;
 	
-	//Spore Creature Base Stats
+	
+	Actor *miniSporeCreature = new Actor(x,y,miniSporeCreatureAscii,"Small Spore Creature",TCODColor::white);
+	miniSporeCreature->destructible = new MonsterDestructible(miniSporeCreatureHp,miniSporeCreatureDodge,miniSporeCreatureDR,"gross spore remains",miniSporeCreatureXp);
+	miniSporeCreature->flashable = true;
+	miniSporeCreature->totalStr = miniSporeCreatureStr;
+	miniSporeCreature->attacker = new Attacker(miniSporeCreatureStr);
+	miniSporeCreature->container = new Container(2);
+	miniSporeCreature->ai = new MonsterAi();
+	miniSporeCreature->oozing = true;
+	generateRandom(miniSporeCreature, miniSporeCreatureAscii);
+	engine.actors.push(miniSporeCreature);
+	
+	return miniSporeCreature;
+}
+Actor* Map::createSporeCreature(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
 	float sporeCreatureHp = 17*scale;
 	float sporeCreatureDodge = 1*scale;
 	float sporeCreatureDR = 0*scale;
 	float sporeCreatureStr = 10*scale;
 	float sporeCreatureXp = 25*scale;
-	float sporeCreatureChance = 10;
 	int sporeCreatureAscii = 165;
-
-	//Turret Base Stats
+	
+	
+	Actor *sporeCreature = new Actor(x,y,sporeCreatureAscii,"Spore Creature",TCODColor::white);
+	sporeCreature->destructible = new MonsterDestructible(sporeCreatureHp,sporeCreatureDodge,sporeCreatureDR,"gross spore remains",sporeCreatureXp);
+	sporeCreature->flashable = true;
+	sporeCreature->totalStr = sporeCreatureStr;
+	sporeCreature->attacker = new Attacker(sporeCreatureStr);
+	sporeCreature->container = new Container(2);
+	sporeCreature->ai = new MonsterAi();
+	sporeCreature->oozing = true;
+	generateRandom(sporeCreature, sporeCreatureAscii);
+	engine.actors.push(sporeCreature);
+	
+	return sporeCreature;
+	
+}
+Actor* Map::createTurret(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
 	float turretHp = 10*scale;
 	float turretDodge = 0*scale;
 	float turretDR = 0*scale;
 	float turretStr = 0*scale; //no melee damage
 	float turretDex = 5*scale;
 	float turretXp = 25*scale;
-	float turretChance = 50;
-	int turretAscii = 147; //change to desired ascii
-
-	//vendor Base Stats
+	int turretAscii = 147;
+	
+	Actor *turret = new Actor(x,y,turretAscii,"Sentry Turret",TCODColor::white);
+	turret->totalDex = turretDex;
+	turret->destructible = new MonsterDestructible(turretHp,turretDodge,turretDR,"destroyed sentry turret",turretXp);
+	turret->totalStr = turretStr;
+	turret->attacker = new Attacker(turretStr);
+	turret->ai = new TurretAi();
+	turret->container = new Container(2);
+	generateRandom(turret, turretAscii);
+	engine.actors.push(turret);
+	
+	return turret;
+	
+}
+Actor* Map::createVendor(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
 	float vendorHp = 10*scale;
 	float vendorDodge = 0*scale;
 	float vendorDR = 0*scale;
 	float vendorXp = 25*scale;
-	float vendorChance = 100;
 	int vendorAscii = 'V'; //change to desired ascii
-
-
-	int dice = rng->getInt(0,1100);
-	if (dice < infectedCrewMemChance) 
-	{
 	
-		Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
-		infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemHp,infectedCrewMemDodge,infectedCrewMemDR,"infected corpse",infectedCrewMemXp);
-		infectedCrewMember->flashable = true;
-		infectedCrewMember->totalStr = infectedCrewMemStr;
-		infectedCrewMember->attacker = new Attacker(infectedCrewMemStr);
-		infectedCrewMember->container = new Container(2);
-		infectedCrewMember->ai = new MonsterAi();
-		generateRandom(infectedCrewMember, infectedCrewMemAscii);
-		engine.actors.push(infectedCrewMember);
-		
-	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance)	
-	{
-		//create an infected NCO
-		Actor *infectedNCO = new Actor(x,y,infectedNCOAscii,"Infected NCO",TCODColor::white);
-		infectedNCO->destructible = new MonsterDestructible(infectedNCOHp,infectedNCODodge,infectedNCODR,"infected corpse",infectedNCOXp);
-		infectedNCO->totalStr = infectedNCOStr;
-		infectedNCO->flashable = true;
-		infectedNCO->attacker = new Attacker(infectedNCOStr);
-		infectedNCO->container = new Container(2);
-		infectedNCO->ai = new MonsterAi();
-		generateRandom(infectedNCO, infectedNCOAscii);
-		engine.actors.push(infectedNCO);
+	Actor *vendor = new Actor(x,y,vendorAscii,"Vending Machine",TCODColor::darkerBlue);
+	vendor->hostile = false;
+	vendor->interact = true;
+	vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge,vendorDR, "destroyed vending machine",vendorXp);
+	vendor->ai = new VendingAi();
+	vendor->container = new Container(2);
+	generateRandom(vendor, vendorAscii);
+	engine.actors.push(vendor);
 	
-	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance)
-	{
-		//create an infected officer
-		Actor *infectedOfficer = new Actor(x,y,infectedOfficerAscii,"Infected Officer",TCODColor::white);
-		infectedOfficer->destructible = new MonsterDestructible(infectedOfficerHp,infectedOfficerDodge,infectedOfficerDR,"infected corpse",infectedOfficerXp);
-		infectedOfficer->flashable = true;
-		infectedOfficer->totalStr = infectedOfficerStr;
-		infectedOfficer->attacker = new Attacker(infectedOfficerStr);
-		infectedOfficer->container = new Container(2);
-		infectedOfficer->ai = new MonsterAi();
-		generateRandom(infectedOfficer, infectedOfficerAscii);
-		engine.actors.push(infectedOfficer);
-	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + miniSporeCreatureChance)
-	{
-		//create a miniSpore Creature
-		Actor *miniSporeCreature = new Actor(x,y,miniSporeCreatureAscii,"Small Spore Creature",TCODColor::white);
-		miniSporeCreature->destructible = new MonsterDestructible(miniSporeCreatureHp,miniSporeCreatureDodge,miniSporeCreatureDR,"gross spore remains",miniSporeCreatureXp);
-		miniSporeCreature->flashable = true;
-		miniSporeCreature->totalStr = miniSporeCreatureStr;
-		miniSporeCreature->attacker = new Attacker(miniSporeCreatureStr);
-		miniSporeCreature->container = new Container(2);
-		miniSporeCreature->ai = new MonsterAi();
-		miniSporeCreature->oozing = true;
-		generateRandom(miniSporeCreature, miniSporeCreatureAscii);
-		engine.actors.push(miniSporeCreature);
-	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + miniSporeCreatureChance)
-	{
-		//create a spore creature
-		Actor *sporeCreature = new Actor(x,y,sporeCreatureAscii,"Spore Creature",TCODColor::white);
-		sporeCreature->destructible = new MonsterDestructible(sporeCreatureHp,sporeCreatureDodge,sporeCreatureDR,"gross spore remains",sporeCreatureXp);
-		sporeCreature->flashable = true;
-		sporeCreature->totalStr = sporeCreatureStr;
-		sporeCreature->attacker = new Attacker(sporeCreatureStr);
-		sporeCreature->container = new Container(2);
-		sporeCreature->ai = new MonsterAi();
-		sporeCreature->oozing = true;
-		generateRandom(sporeCreature, sporeCreatureAscii);
-		engine.actors.push(sporeCreature);
-	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance+ miniSporeCreatureChance)
-	{
-		//create an infected marine
-		Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
-		infectedMarine->destructible = new MonsterDestructible(infectedMarineHp,infectedMarineDodge,infectedMarineDR,"infected corpse",infectedMarineXp);
-		infectedMarine->flashable = true;
-		infectedMarine->attacker = new Attacker(infectedMarineStr);
-		infectedMarine->totalStr = infectedMarineStr;
-		infectedMarine->totalDex = infectedMarineDex;
-		infectedMarine->container = new Container(2);
-		infectedMarine->ai = new RangedAi();
-		generateRandom(infectedMarine, infectedMarineAscii);
-		engine.actors.push(infectedMarine);
-	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance+ miniSporeCreatureChance)
-	{
-		//create an infected grenadier
-		Actor *infectedGrenadier = new Actor(x,y,infectedGrenadierAscii,"Infected Grenadier",TCODColor::white);
-		infectedGrenadier->destructible = new MonsterDestructible(infectedGrenadierHp,infectedGrenadierDodge,infectedGrenadierDR,"infected corpse",infectedGrenadierXp);
-		infectedGrenadier->flashable = true;
-		infectedGrenadier->totalStr = infectedGrenadierStr;
-		infectedGrenadier->totalIntel = infectedGrenadierIntel;
-		infectedGrenadier->attacker = new Attacker(infectedGrenadierStr);
-		infectedGrenadier->container = new Container(2);
-		infectedGrenadier->ai = new GrenadierAi();
-		generateRandom(infectedGrenadier , infectedGrenadierAscii);
-		engine.actors.push(infectedGrenadier);
-	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + miniSporeCreatureChance)
-	{
-		//create a fungal cleaning bot
-		Actor *cleaner = new Actor(x,y,cleanerAscii,"Fungal Cleaning Bot",TCODColor::white);
-		cleaner->hostile = false;
-		cleaner->destructible = new MonsterDestructible(cleanerHp,cleanerDodge,cleanerDR,"destroyed fungal cleaning bot",cleanerXp);
-		cleaner->totalStr = cleanerStr;
-		cleaner->ai = new CleanerAi();
-		cleaner->container = new Container(2);
-		generateRandom(cleaner, cleanerAscii);
-		engine.actors.push(cleaner);
-	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance)
-	{
-		//create a turret
-		Actor *turret = new Actor(x,y,turretAscii,"Sentry Turret",TCODColor::white);
-		turret->totalDex = turretDex;
-		turret->destructible = new MonsterDestructible(turretHp,turretDodge,turretDR,"destroyed sentry turret",turretXp);
-		turret->totalStr = turretStr;
-		turret->attacker = new Attacker(turretStr);
-		turret->ai = new TurretAi();
-		turret->container = new Container(2);
-		generateRandom(turret, turretAscii);
-		engine.actors.push(turret);
-	}
-	else if (dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance + vendorChance) {
-		//create a vending machine
-		Actor *vendor = new Actor(x,y,vendorAscii,"Vending Machine",TCODColor::darkerBlue);
-		vendor->hostile = false;
-		vendor->interact = true;
-		vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge,vendorDR, "destroyed vending machine",vendorXp);
-		vendor->ai = new VendingAi();
-		vendor->container = new Container(2);
-		generateRandom(vendor, vendorAscii);
-		engine.actors.push(vendor);
-	}
+	return vendor;
 }
-
 void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
