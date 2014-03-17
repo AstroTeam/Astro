@@ -53,6 +53,8 @@ void Attacker::attack(Actor *owner, Actor *target) {
 			else {
 				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name,damageTaken);
 				target->destructible->takeDamage(target,damageTaken);
+				if(strcmp(target->name,"player") == 0)
+					engine.damageReceived += damageTaken;
 			}
 		} else {
 			engine.gui->message(TCODColor::lightGrey,"The %s attacks the %s but it has no effect...",owner->name, target->name);

@@ -210,7 +210,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 			if (actor->destructible && !actor->destructible->isDead() ) {
 				if (actor->hostile||owner->hostile){
 					owner->attacker->attack(owner, actor);
-					engine.damageDone += owner->attacker->totalPower;
+					engine.damageDone += owner->attacker->totalPower - actor->destructible->totalDodge;
 				}else if(actor->interact && !owner->hostile)
 					((InteractibleAi*)actor->ai)->interaction(actor, owner);
 			}
