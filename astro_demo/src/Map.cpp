@@ -1184,9 +1184,9 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	while (true) {
 		int x = rng->getInt(x1,x2);
 		int y = rng->getInt(y1,y2);
-		if (canWalk(x,y)) {
+		if (canWalk(x,y) && isWall(x,y)) {
 			engine.stairs->x = x;
-			engine.stairs->y = x;
+			engine.stairs->y = y;
 			break;
 		}
 	}
