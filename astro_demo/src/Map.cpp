@@ -373,6 +373,7 @@ void Map::addMonster(int x, int y) {
 	
 		Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
 		infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemHp,infectedCrewMemDodge,"infected corpse",infectedCrewMemXp);
+		infectedCrewMember->flashable = true;
 		infectedCrewMember->totalStr = infectedCrewMemStr;
 		infectedCrewMember->attacker = new Attacker(infectedCrewMemStr);
 		infectedCrewMember->container = new Container(2);
@@ -387,6 +388,7 @@ void Map::addMonster(int x, int y) {
 		Actor *infectedNCO = new Actor(x,y,infectedNCOAscii,"Infected NCO",TCODColor::white);
 		infectedNCO->destructible = new MonsterDestructible(infectedNCOHp,infectedNCODodge,"infected corpse",infectedNCOXp);
 		infectedNCO->totalStr = infectedNCOStr;
+		infectedNCO->flashable = true;
 		infectedNCO->attacker = new Attacker(infectedNCOStr);
 		infectedNCO->container = new Container(2);
 		infectedNCO->ai = new MonsterAi();
@@ -399,6 +401,7 @@ void Map::addMonster(int x, int y) {
 		//create an infected officer
 		Actor *infectedOfficer = new Actor(x,y,infectedOfficerAscii,"Infected Officer",TCODColor::white);
 		infectedOfficer->destructible = new MonsterDestructible(infectedOfficerHp,infectedOfficerDodge,"infected corpse",infectedOfficerXp);
+		infectedOfficer->flashable = true;
 		infectedOfficer->totalStr = infectedOfficerStr;
 		infectedOfficer->attacker = new Attacker(infectedOfficerStr);
 		infectedOfficer->container = new Container(2);
@@ -411,6 +414,7 @@ void Map::addMonster(int x, int y) {
 		//create a miniSpore Creature
 		Actor *miniSporeCreature = new Actor(x,y,miniSporeCreatureAscii,"Small Spore Creature",TCODColor::white);
 		miniSporeCreature->destructible = new MonsterDestructible(miniSporeCreatureHp,miniSporeCreatureDodge,"gross spore remains",miniSporeCreatureXp);
+		miniSporeCreature->flashable = true;
 		miniSporeCreature->totalStr = miniSporeCreatureStr;
 		miniSporeCreature->attacker = new Attacker(miniSporeCreatureStr);
 		miniSporeCreature->container = new Container(2);
@@ -424,6 +428,7 @@ void Map::addMonster(int x, int y) {
 		//create a spore creature
 		Actor *sporeCreature = new Actor(x,y,sporeCreatureAscii,"Spore Creature",TCODColor::white);
 		sporeCreature->destructible = new MonsterDestructible(sporeCreatureHp,sporeCreatureDodge,"gross spore remains",sporeCreatureXp);
+		sporeCreature->flashable = true;
 		sporeCreature->totalStr = sporeCreatureStr;
 		sporeCreature->attacker = new Attacker(sporeCreatureStr);
 		sporeCreature->container = new Container(2);
@@ -437,6 +442,7 @@ void Map::addMonster(int x, int y) {
 		//create an infected marine
 		Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
 		infectedMarine->destructible = new MonsterDestructible(infectedMarineHp,infectedMarineDodge,"infected corpse",infectedMarineXp);
+		infectedMarine->flashable = true;
 		infectedMarine->attacker = new Attacker(infectedMarineStr);
 		infectedMarine->totalStr = infectedMarineStr;
 		infectedMarine->totalDex = infectedMarineDex;
@@ -450,6 +456,7 @@ void Map::addMonster(int x, int y) {
 		//create an infected grenadier
 		Actor *infectedGrenadier = new Actor(x,y,infectedGrenadierAscii,"Infected Grenadier",TCODColor::white);
 		infectedGrenadier->destructible = new MonsterDestructible(infectedGrenadierHp,infectedGrenadierDodge,"infected corpse",infectedGrenadierXp);
+		infectedGrenadier->flashable = true;
 		infectedGrenadier->totalStr = infectedGrenadierStr;
 		infectedGrenadier->totalIntel = infectedGrenadierIntel;
 		infectedGrenadier->attacker = new Attacker(infectedGrenadierStr);
@@ -1178,10 +1185,17 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			addItem(x,y, room->type);
 			nbItems--;
 		}
+	} 
 
-		//set the stairs position
-		engine.stairs->x = (x1+x2)/2;
-		engine.stairs->y = (y1+y2)/2;
+	//set the stairs position
+	while (true) {
+		int x = rng->getInt(x1,x2);
+		int y = rng->getInt(y1,y2);
+		if (canWalk(x,y)) {
+			engine.stairs->x = x;
+			engine.stairs->y = x;
+			break;
+		}
 	}
 }
 

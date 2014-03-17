@@ -633,9 +633,11 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 		engine.screenHeight/2 - CHARACTER_HEIGHT/2 - 2);
 	TCODConsole::flush();
 	
-	//Keep info displayed until the player presses any character
+	//Keep info displayed until the player presses any button
 	TCOD_key_t key;
 	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
+	
+	
 }
 
 static const int TRACKING_TURNS = 3;
@@ -1045,7 +1047,7 @@ void ConfusedActorAi::update(Actor *owner) {
 				engine.map->computeFov();
 			} else {
 				Actor *actor = engine.getActor(destx, desty);
-				if (actor) {
+				if (actor->attacker) {
 					owner->attacker->attack(owner,actor);
 					engine.map->computeFov();
 				}
