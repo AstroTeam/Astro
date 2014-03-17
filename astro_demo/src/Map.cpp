@@ -117,7 +117,7 @@ void Map::save(TCODZip &zip) {
 	zip.putInt(seed);
 	zip.putInt(width);
 	zip.putInt(height);
-	engine.gui->message(TCODColor::red, "Saving seed %g!", seed);
+	engine.gui->message(TCODColor::red, "Saving seed %i!", seed);
 	for (int i = 0; i < width*height; i++) {
 		zip.putInt(tiles[i].explored);
 		zip.putFloat(tiles[i].infection);
