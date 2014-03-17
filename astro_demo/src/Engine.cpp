@@ -27,6 +27,8 @@ Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	gui = new Gui();
 	invState = 0;
 	menuState = 0;
+	damageDone = 0;
+	damageReceived = 0;
 	selX = 0;
 	selY = 0;
 	mapx1 = 0;
