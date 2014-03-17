@@ -39,6 +39,7 @@ void Actor::save(TCODZip &zip) {
 	zip.putInt(hostile);
 	zip.putInt(interact);
 	zip.putInt(smashable);
+	zip.putInt(flashable);
 	zip.putInt(oozing);
 	zip.putInt(susceptible);
 	zip.putInt(sort);
@@ -47,7 +48,7 @@ void Actor::save(TCODZip &zip) {
 	zip.putInt(ai != NULL);
 	zip.putInt(pickable != NULL);
 	zip.putInt(container != NULL);
-	zip.putInt(flashable);
+	
 	
 	if (attacker) attacker->save(zip);
 	if (destructible) destructible->save(zip);
