@@ -558,7 +558,7 @@ void Map::addItem(int x, int y, RoomType roomType) {
 TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 	TCODList<RoomType> * roomList = new TCODList<RoomType>();
 		switch (levelType) {
-			case GENERIC:
+			/*case GENERIC:
 				//hopefully one generator room is guarenteed
 				roomList->push(GENERATOR);
 				//small amount of office rooms
@@ -582,7 +582,8 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 				for (int i = 0; i <= rng->getInt(3,9); i++) {
 					roomList->push(OFFICE);
 				}
-				break;
+				break;*/
+			default: break;
 		}
 
 		return roomList;
