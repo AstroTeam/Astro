@@ -607,8 +607,8 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	con.print(1,12,"STR: %d",owner->str);
 	con.print(1,14,"INT: %d",owner->intel);
 	con.print(1,16,"KILLS: %d",engine.killCount);
-	con.print(1,18,"DMG DONE: %g",engine.damageDone);
-	con.print(1,20,"DMG TAKEN: %g",engine.damageReceived);
+	//con.print(1,18,"DMG DONE: %g",engine.damageDone);
+	//con.print(1,20,"DMG TAKEN: %g",engine.damageReceived);
 	
 	//Display Character Image
 	//con.print(20,8,"@");
