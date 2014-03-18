@@ -281,15 +281,15 @@ void Map::addMonster(int x, int y, bool isHorde) {
 	
 	
 	
-	float cleanerChance = 70;
-	float infectedCrewMemChance = 470;
-	float infectedMarineChance = 150;
-	float infectedGrenadierChance = 50;
-	float infectedNCOChance = 90;
-	float infectedOfficerChance = 50;
-	float miniSporeCreatureChance = 60;
+	float cleanerChance = 80;
+	float infectedCrewMemChance = 350;
+	float infectedMarineChance = 160;
+	float infectedGrenadierChance = 70;
+	float infectedNCOChance = 100;
+	float infectedOfficerChance = 70;
+	float miniSporeCreatureChance = 100; 
 	float sporeCreatureChance = 10;
-	float infectedEngineerChance = 50; //infected engineers have a 5% chance of spawning in rooms other than generators rooms
+	float infectedEngineerChance = 60; //infected engineers have a 5% chance of spawning in rooms other than generators rooms
 //	float turretChance = 50;
 //	float vendorChance = 100;
 
