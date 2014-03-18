@@ -18,6 +18,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case CLEANER: ai = new CleanerAi(); break;
 		case INTERACTIBLE: ai = new InteractibleAi(); break;
 		case VENDING: ai = new VendingAi(); break;
+		case ENGINEER: ai = new EngineerAi(5,5); break;
 	}
 	ai->load(zip);
 	return ai;
@@ -1443,3 +1444,160 @@ void VendingAi::load(TCODZip &zip){
 void VendingAi::interaction(Actor *owner, Actor *target){
 	engine.gui->message(TCODColor::yellow,"The vending machine lets out a soft hum.");
 }
+
+
+EngineerAi::EngineerAi(float repairPower, int deployRange) {
+moveCount = 0;
+turretDeployed = false;
+this->repairPower = repairPower;
+this->deployRange = deployRange;
+}
+
+void EngineerAi::save(TCODZip &zip){
+	zip.putInt(ENGINEER);
+	zip.putInt(turretDeployed);
+	zip.putFloat(repairPower);
+	zip.putInt(moveCount);
+	zip.putInt(turretX);
+	zip.putInt(turretY);
+	zip.putInt(deployRange);
+	
+}
+
+void EngineerAi::load(TCODZip &zip){
+	turretDeployed = zip.getInt();
+	repairPower = zip.getFloat();
+	moveCount = zip.getInt();
+	turretX = zip.getInt();
+	turretY = zip.getInt();
+	deployRange = zip.getInt();
+	
+}
+
+void EngineerAi::update(Actor *owner)
+{
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	if (engine.map->isInFov(owner->x,owner->y)) {
+		//can see the palyer, move towards him
+		moveCount = TRACKING_TURNS;
+	} else {
+		moveCount--;
+	}
+	if (moveCount > 0) {
+		moveOrBuild(owner, engine.player->x, engine.player->y);
+	} else {
+		moveCount = 0;
+	}
+}
+
+void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
+{
+	int x = owner->x, y = owner->y;
+	int dx = targetx - owner->x;
+	int dy = targety - owner->y;
+	float distance = sqrtf(dx*dx+dy*dy);
+	if(engine.map->isInFov(owner->x, owner->y) && !turretDeployed && distance <= deployRange) //and deployed range
+	{//try to deploy turret
+	
+	
+		bool case1 = engine.map->canWalk(x+1, y) && engine.getAnyActor(x + 1,y) == NULL && dx >= 0 && dy == 0;
+		bool case2 =  engine.map->canWalk(x+1, y-1) && engine.getAnyActor(x + 1,y-1) == NULL && dx > 0 && dy < 0;
+		bool case3 =  engine.map->canWalk(x, y-1) && engine.getAnyActor(x,y-1) == NULL && dy <= 0 && dx == 0;
+		bool case4 =  engine.map->canWalk(x, y+1) && engine.getAnyActor(x,y+1) == NULL && dy >= 0 && dx == 0;
+		bool case5 =  engine.map->canWalk(x-1, y+1) && engine.getAnyActor(x-1,y+1) == NULL && dy > 0 && dx < 0;
+		bool case6 =  engine.map->canWalk(x-1, y) && engine.getAnyActor(x-1,y) == NULL && dx <= 0 && dy == 0;
+		bool case7 =  engine.map->canWalk(x-1, y-1) && engine.getAnyActor(x-1,y-1) == NULL && dy < 0 && dx < 0;
+		bool case8 = engine.map->canWalk(x+1, y+1) && engine.getAnyActor(x + 1,y+1) == NULL&& dy > 0 && dx > 0;
+		
+		if(case1)
+		{
+			turretX = x+1;
+			turretY = y;
+			turretDeployed = true;
+		}else if(case2)
+		{
+			turretX = x+1;
+			turretY = y-1;
+			turretDeployed = true;
+		}else if(case3)
+		{
+			turretX = x;
+			turretY = y-1;
+			turretDeployed = true;
+		}else if(case4)
+		{
+			turretX = x;
+			turretY = y+1;
+			turretDeployed = true;
+		}else if(case5)
+		{
+			turretX = x-1;
+			turretY = y+1;
+			turretDeployed = true;
+		}else if(case6)
+		{
+			turretX = x-1;
+			turretY = y;
+			turretDeployed = true;
+		}
+		else if(case7)
+		{
+			turretX = x-1;
+			turretY = y-1;
+			turretDeployed = true;
+		}
+		else if(case8)
+		{
+			turretX = x+1;
+			turretY = y+1;
+			turretDeployed = true;
+		}
+		
+		if(turretDeployed)
+		{
+			engine.gui->message(TCODColor::red, "The %s is deploying a sentry turret!", owner->name);
+			engine.map->createTurret(turretX,turretY);
+		}
+		
+		
+	}else if(turretDeployed)
+	{
+		Actor *turret = engine.getAnyActor(turretX, turretY);
+		if(!turret->destructible->isDead() && turret->destructible->hp <= turret->destructible->maxHp)
+		{		//repair turret
+			engine.gui->message(TCODColor::red, "The %s is repairing their sentry turret!", owner->name);
+			turret->destructible->heal(repairPower);
+		}	
+		else if(turret->destructible->isDead())
+		{//attack player normally
+			int dx = targetx - owner->x;
+			int dy = targety - owner->y;
+			int stepdx = (dx > 0 ? 1:-1);
+			int stepdy = (dy > 0 ? 1:-1);
+			float distance = sqrtf(dx*dx+dy*dy);
+
+			if (distance >= 2) {
+				dx = (int) (round(dx / distance));
+				dy = (int)(round(dy / distance));
+				if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+					owner->x+=dx;
+					owner->y+=dy;
+				} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
+					owner->x += stepdx;
+				} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
+					owner->y += stepdy;
+				}
+				if (owner->oozing) {
+					engine.map->infectFloor(owner->x, owner->y);
+				}
+			} else if (owner->attacker) {
+				owner->attacker->attack(owner,engine.player);
+				engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+			}
+		}
+	}
+
+}
+

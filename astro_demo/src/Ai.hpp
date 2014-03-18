@@ -9,7 +9,7 @@ public:
 protected:
 	enum AiType {
 		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED, LIGHT, 
-		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, VENDING
+		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, VENDING, ENGINEER
 
 	};
 };
@@ -159,7 +159,23 @@ class CleanerAi : public Ai
 		float cleanPower;
 		void moveOrClean(Actor *owner); //should I make cleaners attack sporecreatures?
 };
+class EngineerAi: public Ai
+{
+public:
+	EngineerAi(float repairPower, int deployRange);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+	void update(Actor *owner);
+	int turretX;
+	int turretY;
+	bool turretDeployed;
+	float repairPower; //how much the engineer repairs the turret per turn
+	int deployRange; //the max distance between the player and the engineer that will allow the engineer to deploy his turret
+	int moveCount;
+	void moveOrBuild(Actor *owner, int targetx, int targety); 
+	
 
+};
 class InteractibleAi: public Ai
 {
 public:
