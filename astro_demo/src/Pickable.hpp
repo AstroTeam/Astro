@@ -85,7 +85,7 @@ public:
 class ItemBonus {
 public:
 	enum BonusType {
-		NOBONUS, HEALTH, DODGE, ATTACK
+		NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
 	};	
 	BonusType type;
 	float bonus;
