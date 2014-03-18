@@ -31,7 +31,7 @@ struct Tile {
 	//add number of flowers and a boolean to grow them when epicenter updates
 	//could have flower levels?  easier to make flower tiles to overlay than keep track of x,y's for every flower on a tile
 	Param::RoomType tileType;
-	Tile() : explored(true), infection (0), lit(false),num (0),drty(false), envSta(0),decoration(0), tileType(Param::STANDARD) {}
+	Tile() : explored(false), infection (0), lit(false),num (0),drty(false), envSta(0),decoration(0), tileType(Param::STANDARD) {}
 	const TCODColor * lastColor;//if color changed offscreen
 	char lastChar;//if the char changed
 };
@@ -68,17 +68,6 @@ public:
 	
 	int tileType(int x, int y);
 	//int tileInf(int x, int y);
-	Actor *createCleanerBot(int x, int y);
-	Actor *createInfectedCrewMember(int x, int y);
-	Actor *createInfectedNCO(int x, int y);
-	Actor *createInfectedOfficer(int x, int y);
-	Actor *createInfectedMarine(int x, int y);
-	Actor *createInfectedGrenadier(int x, int y);
-	Actor *createSporeCreature(int x, int y);
-	Actor *createMiniSporeCreature(int x, int y);
-	Actor *createTurret(int x, int y);
-	Actor *createVendor(int x, int y);
-	Actor *createSecurityBot(int x, int y);
 	
 	Actor *createCurrencyStack(int x, int y);
 	Actor *createHealthPotion(int x, int y);
@@ -90,7 +79,6 @@ public:
 	Actor *createTitanMail(int x, int y);
 	Actor *createMylarBoots(int x, int y);
 	Actor *createMLR(int x, int y);
-	Actor *createCombatKnife(int x, int y);
 	Tile *tiles;
 
 	
@@ -103,7 +91,7 @@ protected:
 	
 	void dig(int x1, int y1, int x2, int y2);
 	void createRoom(int roomNum, bool withActors, Room * room);
-	void addMonster(int x, int y, bool isHorde); //is this monster part of a horde?
+	void addMonster(int x, int y);
 	void addItem(int x, int y, RoomType roomType);
 	void generateRandom(Actor *owner, int ascii);
 	TCODList<RoomType> * getRoomTypes(LevelType levelType);
