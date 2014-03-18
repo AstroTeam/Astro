@@ -298,8 +298,7 @@ void Map::addMonster(int x, int y, bool isHorde) {
 		createInfectedEngineer(x,y);
 		return;
 	}
-
-
+	
 	int dice = rng->getInt(0,1000);
 	if (dice < infectedCrewMemChance) 
 	{
@@ -1338,8 +1337,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	
 	
 	
-	
-	
+	/* This code doesn't cause me any crashes but I will temporarily comment it.
 	int rand = rng->getInt(0,100);
 	//Vending Machines spawn in corners of standard rooms at random
 	if(rand <= 20 && room->type == STANDARD) //a room has a 30% chance of having a vending machine (provided it has rooms)
@@ -1382,7 +1380,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		}
 			
 	}
-	
+	*/
 
 	//set the stairs position
 	while (true) {
