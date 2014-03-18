@@ -31,14 +31,14 @@ void Attacker::attack(Actor *owner, Actor *target) {
 		float damageTaken = 0;
 		if(roll >= 20){
 			engine.gui->message(TCODColor::red,"CRITICAL HIT!");
-			damageTaken = (2 * owner->totalStr); //save for DR and damage roll
+			damageTaken = (2 * owner->totalStr) - target->destructible->totalDR; //save for damage roll
 		}
 		else if(roll <= 1){
 			engine.gui->message(TCODColor::lightGrey,"critical miss...");
 			damageTaken = 0;
 		}
 		else if(attackRoll >= target->destructible->totalDodge){
-			damageTaken = owner->totalStr; //save for DR and damage roll
+			damageTaken = owner->totalStr - target->destructible->totalDR; //save for damage roll
 		}
 		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
 			if (owner->oozing && target->susceptible) {
@@ -53,6 +53,8 @@ void Attacker::attack(Actor *owner, Actor *target) {
 			else {
 				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name,damageTaken);
 				target->destructible->takeDamage(target,damageTaken);
+				if(strcmp(target->name,"player") == 0)
+					engine.damageReceived += damageTaken;
 			}
 		} else {
 			engine.gui->message(TCODColor::lightGrey,"The %s attacks the %s but it has no effect...",owner->name, target->name);

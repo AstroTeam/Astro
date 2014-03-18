@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include "main.hpp"
 
-Destructible::Destructible(float maxHp, float dodge, const char *corpseName, int xp) :
-	maxHp(maxHp),hp(maxHp),baseDodge(dodge+10),totalDodge(dodge+10), xp(xp) {
+Destructible::Destructible(float maxHp, float dodge, float dr, const char *corpseName, int xp) :
+	maxHp(maxHp),hp(maxHp),baseDodge(dodge+10),totalDodge(dodge+10), baseDR(dr), totalDR(dr), xp(xp) {
 	this->corpseName = strdup(corpseName);
 }
 
@@ -15,6 +15,8 @@ void Destructible::load(TCODZip &zip) {
 	hp = zip.getFloat();
 	baseDodge = zip.getFloat();
 	totalDodge = zip.getFloat();
+	baseDR = zip.getFloat();
+	totalDR = zip.getFloat();
 	corpseName = strdup(zip.getString());
 	xp = zip.getInt();
 }
@@ -24,6 +26,8 @@ void Destructible::save(TCODZip &zip) {
 	zip.putFloat(hp);
 	zip.putFloat(baseDodge);
 	zip.putFloat(totalDodge);
+	zip.putFloat(baseDR);
+	zip.putFloat(totalDR);
 	zip.putString(corpseName);
 	zip.putInt(xp);
 }
@@ -32,14 +36,15 @@ Destructible *Destructible::create(TCODZip &zip) {
 	DestructibleType type = (DestructibleType)zip.getInt();
 	Destructible *destructible = NULL;
 	switch(type) {
-		case MONSTER : destructible = new MonsterDestructible(0,0,NULL,0); break;
-		case PLAYER : destructible = new PlayerDestructible(0,0,NULL); break;
+		case MONSTER : destructible = new MonsterDestructible(0,0,0,NULL,0); break;
+		case PLAYER : destructible = new PlayerDestructible(0,0,0,NULL); break;
 	}
 	destructible->load(zip);
 	return destructible;
 }
 
 float Destructible::takeDamage(Actor *owner, float damage) {
+	
 	if (damage > 0){
 		hp -= damage;
 		if (hp <= 0) {
@@ -47,6 +52,29 @@ float Destructible::takeDamage(Actor *owner, float damage) {
 		}
 	} else {
 		damage = 0;
+	}
+	if(owner->ch == 'V') //meaning you're attacking a Vending machine
+	{
+		VendingAi* va = (VendingAi*) owner->ai;
+		if(!va->deployedSecurity){
+		engine.gui->message(TCODColor::red, "Vending Machine Vandalism Deteched: Deploying Security Bot!", owner->name);
+		int x = owner->x;
+		int y = owner->y;
+		bool case1 = (engine.map->canWalk(x-1,y) && engine.getAnyActor(x-1,y) == NULL);
+		bool case2 = (engine.map->canWalk(x,y-1) && engine.getAnyActor(x,y-1) == NULL);
+		bool case3 = (engine.map->canWalk(x,y+1) && engine.getAnyActor(x,y+1) == NULL);
+		bool case4 = (engine.map->canWalk(x+1,y) && engine.getAnyActor(x+1,y) == NULL);
+		
+		if(case1)
+			engine.map->createSecurityBot(x-1, y);
+		else if(case2)
+			engine.map->createSecurityBot(x, y-1);
+		else if(case3)
+			engine.map->createSecurityBot(x, y+1);
+		else if(case4)
+			engine.map->createSecurityBot(x+1, y);
+		va->deployedSecurity = true;
+		}
 	}
 	return damage;
 }
@@ -74,7 +102,7 @@ void Destructible::die(Actor *owner) {
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
 		owner->ch = 243;
 	}
-	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 'V') //roomba, vendors, and turrets show no corpse currently
+	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 'V' || owner->ch == 'S') //roomba, vendors, and turrets, and security bots show no corpse currently
 	{
 		owner->ch = ' ';
 		owner->blocks = false;
@@ -91,12 +119,12 @@ void Destructible::die(Actor *owner) {
 	engine.sendToBack(owner);
 }
 
-MonsterDestructible::MonsterDestructible(float maxHp, float defense, const char *corpseName, int xp) :
-	Destructible(maxHp, defense, corpseName, xp) {
+MonsterDestructible::MonsterDestructible(float maxHp, float dodge, float dr, const char *corpseName, int xp) :
+	Destructible(maxHp, dodge, dr, corpseName, xp) {
 }
 
-PlayerDestructible::PlayerDestructible(float maxHp, float defense, const char *corpseName) : 
-	Destructible(maxHp, defense, corpseName,0) {
+PlayerDestructible::PlayerDestructible(float maxHp, float dodge, float dr, const char *corpseName) : 
+	Destructible(maxHp, dodge, dr, corpseName,0) {
 }
 
 void MonsterDestructible::die(Actor *owner) {

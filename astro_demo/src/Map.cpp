@@ -173,6 +173,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 					//filing cabinets, counters, ovens, refrigerators
 					//to-do: server
 					a->blocks = false;
+					bool blarg = false;//i <3 you garrett
 					if (a->ch == 243)//new decor
 					{
 						
@@ -190,7 +191,10 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 						else if (strcmp(a->name,"A server") == 0)
 						{
 							engine.map->tiles[a->x+a->y*engine.map->width].decoration = 100;
-							a->name = "a bashed-in server room door";
+							a->name = "blarg!";
+							blarg = true;
+							////////////////////////////////////////////////////////////////////////////////IS THIS OKAY?
+							engine.actors.remove(a);
 						}
 					}
 					else//just in case error
@@ -200,48 +204,49 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 						a->name = "Debris";
 						
 					}
-					
-					engine.sendToBack(a);
-					
-					
-					int x = a->x;
-					int y = a->y;
-					int n =  0;
-					if (engine.map->tileType(x,y) == 2)//if it is an office
+					if (!blarg)//if we didn't delete the thing
 					{
-						n = rng->getInt(5,8);
-					}
-					else
-					{
-						n = 0;
-					}
-					int add = rng->getInt(0,10);
-					for (int xxx = -1; xxx <= 1; xxx++)/////////////////////9x9 for loop to add papers, lol xxx,yyy
-					{
-						for (int yyy = -1; yyy <= 1; yyy++)
+						engine.sendToBack(a);
+						
+						
+						int x = a->x;
+						int y = a->y;
+						int n =  0;
+						if (engine.map->tileType(x,y) == 2)//if it is an office
 						{
-							if (add > 3 )
-							{
-								if (engine.map->tiles[(x+xxx)+(y+yyy)*engine.map->width].decoration == 0) {
-									//engine.mapconDec->setChar(x+xxx, y+yyy, n);
-									engine.map->tiles[(x+xxx)+(y+yyy)*engine.map->width].decoration = n;
-									
-								}
-							}
-							////
-							if (engine.map->tileType(x,y) == 2)//if it is an office
-							{
-								n = rng->getInt(5,8);
-							}
-							else
-							{
-								n = 0;
-							}
-							add = rng->getInt(0,10);
+							n = rng->getInt(5,8);
 						}
+						else
+						{
+							n = 0;
+						}
+						int add = rng->getInt(0,10);
+						for (int xxx = -1; xxx <= 1; xxx++)/////////////////////9x9 for loop to add papers, lol xxx,yyy
+						{
+							for (int yyy = -1; yyy <= 1; yyy++)
+							{
+								if (add > 3 )
+								{
+									if (engine.map->tiles[(x+xxx)+(y+yyy)*engine.map->width].decoration == 0) {
+										//engine.mapconDec->setChar(x+xxx, y+yyy, n);
+										engine.map->tiles[(x+xxx)+(y+yyy)*engine.map->width].decoration = n;
+										
+									}
+								}
+								////
+								if (engine.map->tileType(x,y) == 2)//if it is an office
+								{
+									n = rng->getInt(5,8);
+								}
+								else
+								{
+									n = 0;
+								}
+								add = rng->getInt(0,10);
+							}
+						}
+					
 					}
-					
-					
 				}
 			}
 			//delete a;
@@ -249,11 +254,8 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 	}
 }
 
-void Map::addMonster(int x, int y) {
+void Map::addMonster(int x, int y, bool isHorde) {
 	TCODRandom *rng =TCODRandom::getInstance();
-	
-	int level = engine.level; //Note first engine.level = 1
-
 	/*
 	Stats (Actor.hpp): int str, dex, intel, vit, totalStr, totalDex, totalIntel; //strength, dexterity, intelligence, vitality
 	(Destructible.hpp) hp, maxHp, baseDodge, totalDodge
@@ -278,231 +280,335 @@ void Map::addMonster(int x, int y) {
 	roll = (0,20), ==1 -> miss, ==20, 2* damage
 	attackRoll = roll + owner->totalStr
 	else if attackRoll >= target->destructible->totalDodge, damage = totalStr
-	
-	
 	*/
-	float scale = 1 + .1*(level - 1); //attributes scale up 10% each level
 	
 	
-	//Fungal Cleaning Bot Stats
-	float cleanerHp = 10*scale;
-	float cleanerDodge = 0*scale;
-	float cleanerStr = 0*scale;
-	float cleanerXp = 0*scale;
-	float cleanerChance = 70;
-	int cleanerAscii = 131; //change when desired
-
-	//Infected Crew Member Base Stats
-	float infectedCrewMemHp = 10*scale;
-	float infectedCrewMemDodge = 0*scale;
-	float infectedCrewMemStr = 5*scale;
-	float infectedCrewMemXp = 10*scale;
+	
+	float cleanerChance = 120;
 	float infectedCrewMemChance = 470;
-	int infectedCrewMemAscii = 164;
-	
-	//Infected Marine Base Stats
-	float infectedMarineHp = 10*scale;
-	float infectedMarineDodge = 0*scale;
-	float infectedMarineStr = 2*scale;
-	float infectedMarineDex = 5*scale;
-	float infectedMarineXp = 10*scale;
 	float infectedMarineChance = 150;
-	int infectedMarineAscii = 149;
-	
-	//Infected Grenadier Base Stats
-	float infectedGrenadierHp = 10*scale;
-	float infectedGrenadierDodge = 0*scale;
-	float infectedGrenadierStr = 2*scale;
-	float infectedGrenadierIntel = 3*scale; 
-	float infectedGrenadierXp = 20*scale;
 	float infectedGrenadierChance = 50;
-	int infectedGrenadierAscii = 133;
-	
-	//Infected NCO Base Stats
-	float infectedNCOHp = 12*scale;
-	float infectedNCODodge = 1*scale;
-	float infectedNCOStr = 6*scale;
-	float infectedNCOXp = 10*scale;
 	float infectedNCOChance = 90;
-	int infectedNCOAscii = 148;
-	
-	//Infected Officer Base Stats
-	float infectedOfficerHp = 15*scale;
-	float infectedOfficerDodge = 1*scale;
-	float infectedOfficerStr = 7*scale;
-	float infectedOfficerXp = 20*scale;
 	float infectedOfficerChance = 50;
-	int infectedOfficerAscii = 132;
-	
-	//Mini Spore Creature Base Stats
-	float miniSporeCreatureHp = 10*scale;
-	float miniSporeCreatureDodge = 0*scale;
-	float miniSporeCreatureStr = 5*scale;
-	float miniSporeCreatureXp = 15*scale;
 	float miniSporeCreatureChance = 60;
-	int miniSporeCreatureAscii = 166; //mini spore creature ascii, change if desired
-	
-	//Spore Creature Base Stats
-	float sporeCreatureHp = 17*scale;
-	float sporeCreatureDodge = 1*scale;
-	float sporeCreatureStr = 10*scale;
-	float sporeCreatureXp = 25*scale;
 	float sporeCreatureChance = 10;
-	int sporeCreatureAscii = 165;
+//	float turretChance = 50;
+//	float vendorChance = 100;
 
-	//Turret Base Stats
-	float turretHp = 10*scale;
-	float turretDodge = 0*scale;
-	float turretStr = 0*scale; //no melee damage
-	float turretDex = 5*scale;
-	float turretXp = 25*scale;
-	float turretChance = 50;
-	int turretAscii = 147; //change to desired ascii
-
-	//vendor Base Stats
-	float vendorHp = 10*scale;
-	float vendorDodge = 0*scale;
-	float vendorXp = 25*scale;
-	float vendorChance = 100;
-	int vendorAscii = 'V'; //change to desired ascii
-
-
-	int dice = rng->getInt(0,1100);
+	int dice = rng->getInt(0,1000);
 	if (dice < infectedCrewMemChance) 
 	{
-	
-		Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
-		infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemHp,infectedCrewMemDodge,"infected corpse",infectedCrewMemXp);
-		infectedCrewMember->flashable = true;
-		infectedCrewMember->totalStr = infectedCrewMemStr;
-		infectedCrewMember->attacker = new Attacker(infectedCrewMemStr);
-		infectedCrewMember->container = new Container(2);
-		infectedCrewMember->ai = new MonsterAi();
-		generateRandom(infectedCrewMember, infectedCrewMemAscii);
-		engine.actors.push(infectedCrewMember);
-		
+		createInfectedCrewMember(x,y);	
 	}
 	else if(dice < infectedCrewMemChance + infectedNCOChance)	
 	{
-		//create an infected NCO
-		Actor *infectedNCO = new Actor(x,y,infectedNCOAscii,"Infected NCO",TCODColor::white);
-		infectedNCO->destructible = new MonsterDestructible(infectedNCOHp,infectedNCODodge,"infected corpse",infectedNCOXp);
-		infectedNCO->totalStr = infectedNCOStr;
-		infectedNCO->flashable = true;
-		infectedNCO->attacker = new Attacker(infectedNCOStr);
-		infectedNCO->container = new Container(2);
-		infectedNCO->ai = new MonsterAi();
-		generateRandom(infectedNCO, infectedNCOAscii);
-		engine.actors.push(infectedNCO);
-	
+		createInfectedNCO(x,y);
 	}
 	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance)
-	{
-		//create an infected officer
-		Actor *infectedOfficer = new Actor(x,y,infectedOfficerAscii,"Infected Officer",TCODColor::white);
-		infectedOfficer->destructible = new MonsterDestructible(infectedOfficerHp,infectedOfficerDodge,"infected corpse",infectedOfficerXp);
-		infectedOfficer->flashable = true;
-		infectedOfficer->totalStr = infectedOfficerStr;
-		infectedOfficer->attacker = new Attacker(infectedOfficerStr);
-		infectedOfficer->container = new Container(2);
-		infectedOfficer->ai = new MonsterAi();
-		generateRandom(infectedOfficer, infectedOfficerAscii);
-		engine.actors.push(infectedOfficer);
+	{	
+		createInfectedOfficer(x,y);
 	}
 	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + miniSporeCreatureChance)
 	{
-		//create a miniSpore Creature
-		Actor *miniSporeCreature = new Actor(x,y,miniSporeCreatureAscii,"Small Spore Creature",TCODColor::white);
-		miniSporeCreature->destructible = new MonsterDestructible(miniSporeCreatureHp,miniSporeCreatureDodge,"gross spore remains",miniSporeCreatureXp);
-		miniSporeCreature->flashable = true;
-		miniSporeCreature->totalStr = miniSporeCreatureStr;
-		miniSporeCreature->attacker = new Attacker(miniSporeCreatureStr);
-		miniSporeCreature->container = new Container(2);
-		miniSporeCreature->ai = new MonsterAi();
-		miniSporeCreature->oozing = true;
-		generateRandom(miniSporeCreature, miniSporeCreatureAscii);
-		engine.actors.push(miniSporeCreature);
+		createMiniSporeCreature(x,y);
 	}
 	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + miniSporeCreatureChance)
 	{
-		//create a spore creature
-		Actor *sporeCreature = new Actor(x,y,sporeCreatureAscii,"Spore Creature",TCODColor::white);
-		sporeCreature->destructible = new MonsterDestructible(sporeCreatureHp,sporeCreatureDodge,"gross spore remains",sporeCreatureXp);
-		sporeCreature->flashable = true;
-		sporeCreature->totalStr = sporeCreatureStr;
-		sporeCreature->attacker = new Attacker(sporeCreatureStr);
-		sporeCreature->container = new Container(2);
-		sporeCreature->ai = new MonsterAi();
-		sporeCreature->oozing = true;
-		generateRandom(sporeCreature, sporeCreatureAscii);
-		engine.actors.push(sporeCreature);
+		createSporeCreature(x,y);
 	}
 	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance+ miniSporeCreatureChance)
 	{
-		//create an infected marine
-		Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
-		infectedMarine->destructible = new MonsterDestructible(infectedMarineHp,infectedMarineDodge,"infected corpse",infectedMarineXp);
-		infectedMarine->flashable = true;
-		infectedMarine->attacker = new Attacker(infectedMarineStr);
-		infectedMarine->totalStr = infectedMarineStr;
-		infectedMarine->totalDex = infectedMarineDex;
-		infectedMarine->container = new Container(2);
-		infectedMarine->ai = new RangedAi();
-		generateRandom(infectedMarine, infectedMarineAscii);
-		engine.actors.push(infectedMarine);
+		createInfectedMarine(x,y);
 	}
 	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance+ miniSporeCreatureChance)
 	{
-		//create an infected grenadier
-		Actor *infectedGrenadier = new Actor(x,y,infectedGrenadierAscii,"Infected Grenadier",TCODColor::white);
-		infectedGrenadier->destructible = new MonsterDestructible(infectedGrenadierHp,infectedGrenadierDodge,"infected corpse",infectedGrenadierXp);
-		infectedGrenadier->flashable = true;
-		infectedGrenadier->totalStr = infectedGrenadierStr;
-		infectedGrenadier->totalIntel = infectedGrenadierIntel;
-		infectedGrenadier->attacker = new Attacker(infectedGrenadierStr);
-		infectedGrenadier->container = new Container(2);
-		infectedGrenadier->ai = new GrenadierAi();
-		generateRandom(infectedGrenadier , infectedGrenadierAscii);
-		engine.actors.push(infectedGrenadier);
+		createInfectedGrenadier(x,y);
 	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + miniSporeCreatureChance)
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + miniSporeCreatureChance && !isHorde)
 	{
-		//create a fungal cleaning bot
-		Actor *cleaner = new Actor(x,y,cleanerAscii,"Fungal Cleaning Bot",TCODColor::white);
-		cleaner->hostile = false;
-		cleaner->destructible = new MonsterDestructible(cleanerHp,cleanerDodge,"destroyed fungal cleaning bot",cleanerXp);
-		cleaner->totalStr = cleanerStr;
-		cleaner->ai = new CleanerAi();
-		cleaner->container = new Container(2);
-		generateRandom(cleaner, cleanerAscii);
-		engine.actors.push(cleaner);
+		createCleanerBot(x,y);
 	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance)
+	/*
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance && !isHorde)
 	{
-		//create a turret
-		Actor *turret = new Actor(x,y,turretAscii,"Sentry Turret",TCODColor::white);
-		turret->totalDex = turretDex;
-		turret->destructible = new MonsterDestructible(turretHp,turretDodge,"destroyed sentry turret",turretXp);
-		turret->totalStr = turretStr;
-		turret->attacker = new Attacker(turretStr);
-		turret->ai = new TurretAi();
-		turret->container = new Container(2);
-		generateRandom(turret, turretAscii);
-		engine.actors.push(turret);
+		//createTurret(x,y);
+		//create turrets during room creation
 	}
-	else if (dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance + vendorChance) {
-		//create a vending machine
-		Actor *vendor = new Actor(x,y,vendorAscii,"Vending Machine",TCODColor::darkerBlue);
-		vendor->hostile = false;
-		vendor->interact = true;
-		vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge, "destroyed vending machine",vendorXp);
-		vendor->ai = new VendingAi();
-		vendor->container = new Container(2);
-		generateRandom(vendor, vendorAscii);
-		engine.actors.push(vendor);
+	
+	else if (dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance + vendorChance && !isHorde) 
+	{
+		//createVendor(x,y);
+		//create vending machines during room creation
 	}
+	*/
 }
 
+Actor* Map::createCleanerBot(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float cleanerHp = 10*scale;
+	float cleanerDodge = 0*scale;
+	float cleanerDR = 0*scale;
+	float cleanerStr = 0*scale;
+	float cleanerXp = 0*scale;
+	int cleanerAscii = 131;
+	
+	Actor *cleaner = new Actor(x,y,cleanerAscii,"Fungal Cleaning Bot",TCODColor::white);
+	cleaner->hostile = false;
+	cleaner->destructible = new MonsterDestructible(cleanerHp,cleanerDodge,cleanerDR,"destroyed fungal cleaning bot",cleanerXp);
+	cleaner->totalStr = cleanerStr;
+	cleaner->ai = new CleanerAi();
+	cleaner->container = new Container(2);
+	generateRandom(cleaner, cleanerAscii);
+	engine.actors.push(cleaner);
+	
+	return cleaner;
+
+}
+
+Actor* Map::createSecurityBot(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float securityBotHp = 25*scale;
+	float securityBotDodge = 0*scale;
+	float securityBotDR = 0*scale;
+	float securityBotStr = 10*scale;
+	float securityBotXp = 25*scale;
+	int securityBotAscii = 'S'; //security bot ascii change when needed
+
+	Actor *securityBot = new Actor(x,y,securityBotAscii,"Security Bot",TCODColor::white);
+	securityBot->destructible = new MonsterDestructible(securityBotHp,securityBotDodge,securityBotDR,"destroyed security bot",securityBotXp);
+	securityBot->totalStr = securityBotStr;
+	securityBot->attacker = new Attacker(securityBotStr);
+	securityBot->container = new Container(2);
+	securityBot->ai = new MonsterAi();
+	generateRandom(securityBot, securityBotAscii);
+	engine.actors.push(securityBot);
+	
+	return securityBot;
+
+}
+Actor* Map::createInfectedCrewMember(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float infectedCrewMemHp = 10*scale;
+	float infectedCrewMemDodge = 0*scale;
+	float infectedCrewMemDR = 0*scale;
+	float infectedCrewMemStr = 5*scale;
+	float infectedCrewMemXp = 10*scale;
+	int infectedCrewMemAscii = 164;
+	
+	Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
+	infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemHp,infectedCrewMemDodge,infectedCrewMemDR,"infected corpse",infectedCrewMemXp);
+	infectedCrewMember->flashable = true;
+	infectedCrewMember->totalStr = infectedCrewMemStr;
+	infectedCrewMember->attacker = new Attacker(infectedCrewMemStr);
+	infectedCrewMember->container = new Container(2);
+	infectedCrewMember->ai = new MonsterAi();
+	generateRandom(infectedCrewMember, infectedCrewMemAscii);
+	engine.actors.push(infectedCrewMember);
+	
+	return infectedCrewMember;
+
+}
+Actor* Map::createInfectedNCO(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float infectedNCOHp = 12*scale;
+	float infectedNCODodge = 1*scale;
+	float infectedNCODR = 0*scale;
+	float infectedNCOStr = 6*scale;
+	float infectedNCOXp = 10*scale;
+	int infectedNCOAscii = 148;
+	
+	Actor *infectedNCO = new Actor(x,y,infectedNCOAscii,"Infected NCO",TCODColor::white);
+	infectedNCO->destructible = new MonsterDestructible(infectedNCOHp,infectedNCODodge,infectedNCODR,"infected corpse",infectedNCOXp);
+	infectedNCO->totalStr = infectedNCOStr;
+	infectedNCO->flashable = true;
+	infectedNCO->attacker = new Attacker(infectedNCOStr);
+	infectedNCO->container = new Container(2);
+	infectedNCO->ai = new MonsterAi();
+	generateRandom(infectedNCO, infectedNCOAscii);
+	engine.actors.push(infectedNCO);
+	
+	return infectedNCO;
+}
+Actor* Map::createInfectedOfficer(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float infectedOfficerHp = 15*scale;
+	float infectedOfficerDodge = 1*scale;
+	float infectedOfficerDR = 0*scale;
+	float infectedOfficerStr = 7*scale;
+	float infectedOfficerXp = 20*scale;
+	int infectedOfficerAscii = 132;
+	
+	
+	Actor *infectedOfficer = new Actor(x,y,infectedOfficerAscii,"Infected Officer",TCODColor::white);
+	infectedOfficer->destructible = new MonsterDestructible(infectedOfficerHp,infectedOfficerDodge,infectedOfficerDR,"infected corpse",infectedOfficerXp);
+	infectedOfficer->flashable = true;
+	infectedOfficer->totalStr = infectedOfficerStr;
+	infectedOfficer->attacker = new Attacker(infectedOfficerStr);
+	infectedOfficer->container = new Container(2);
+	infectedOfficer->ai = new MonsterAi();
+	generateRandom(infectedOfficer, infectedOfficerAscii);
+	engine.actors.push(infectedOfficer);
+	
+	return infectedOfficer;
+}
+Actor* Map::createInfectedMarine(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float infectedMarineHp = 10*scale;
+	float infectedMarineDodge = 0*scale;
+	float infectedMarineDR = 0*scale;
+	float infectedMarineStr = 2*scale;
+	float infectedMarineDex = 5*scale;
+	float infectedMarineXp = 10*scale;
+	int infectedMarineAscii = 149;
+	
+	Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
+	infectedMarine->destructible = new MonsterDestructible(infectedMarineHp,infectedMarineDodge,infectedMarineDR,"infected corpse",infectedMarineXp);
+	infectedMarine->flashable = true;
+	infectedMarine->attacker = new Attacker(infectedMarineStr);
+	infectedMarine->totalStr = infectedMarineStr;
+	infectedMarine->totalDex = infectedMarineDex;
+	infectedMarine->container = new Container(2);
+	infectedMarine->ai = new RangedAi();
+	generateRandom(infectedMarine, infectedMarineAscii);
+	engine.actors.push(infectedMarine);
+	
+	return infectedMarine;
+}
+Actor* Map::createInfectedGrenadier(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float infectedGrenadierHp = 10*scale;
+	float infectedGrenadierDodge = 0*scale;
+	float infectedGrenadierDR = 0*scale;
+	float infectedGrenadierStr = 2*scale;
+	float infectedGrenadierIntel = 3*scale; 
+	float infectedGrenadierXp = 20*scale;
+	int infectedGrenadierAscii = 133;
+	
+	
+	Actor *infectedGrenadier = new Actor(x,y,infectedGrenadierAscii,"Infected Grenadier",TCODColor::white);
+	infectedGrenadier->destructible = new MonsterDestructible(infectedGrenadierHp,infectedGrenadierDodge,infectedGrenadierDR,"infected corpse",infectedGrenadierXp);
+	infectedGrenadier->flashable = true;
+	infectedGrenadier->totalStr = infectedGrenadierStr;
+	infectedGrenadier->totalIntel = infectedGrenadierIntel;
+	infectedGrenadier->attacker = new Attacker(infectedGrenadierStr);
+	infectedGrenadier->container = new Container(2);
+	infectedGrenadier->ai = new GrenadierAi();
+	generateRandom(infectedGrenadier , infectedGrenadierAscii);
+	engine.actors.push(infectedGrenadier);
+	
+	return infectedGrenadier;
+}
+Actor* Map::createMiniSporeCreature(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float miniSporeCreatureHp = 10*scale;
+	float miniSporeCreatureDodge = 0*scale;
+	float miniSporeCreatureDR = 0*scale;
+	float miniSporeCreatureStr = 5*scale;
+	float miniSporeCreatureXp = 15*scale;
+	int miniSporeCreatureAscii = 166;
+	
+	
+	Actor *miniSporeCreature = new Actor(x,y,miniSporeCreatureAscii,"Small Spore Creature",TCODColor::white);
+	miniSporeCreature->destructible = new MonsterDestructible(miniSporeCreatureHp,miniSporeCreatureDodge,miniSporeCreatureDR,"gross spore remains",miniSporeCreatureXp);
+	miniSporeCreature->flashable = true;
+	miniSporeCreature->totalStr = miniSporeCreatureStr;
+	miniSporeCreature->attacker = new Attacker(miniSporeCreatureStr);
+	miniSporeCreature->container = new Container(2);
+	miniSporeCreature->ai = new MonsterAi();
+	miniSporeCreature->oozing = true;
+	generateRandom(miniSporeCreature, miniSporeCreatureAscii);
+	engine.actors.push(miniSporeCreature);
+	
+	return miniSporeCreature;
+}
+Actor* Map::createSporeCreature(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float sporeCreatureHp = 17*scale;
+	float sporeCreatureDodge = 1*scale;
+	float sporeCreatureDR = 0*scale;
+	float sporeCreatureStr = 10*scale;
+	float sporeCreatureXp = 25*scale;
+	int sporeCreatureAscii = 165;
+	
+	
+	Actor *sporeCreature = new Actor(x,y,sporeCreatureAscii,"Spore Creature",TCODColor::white);
+	sporeCreature->destructible = new MonsterDestructible(sporeCreatureHp,sporeCreatureDodge,sporeCreatureDR,"gross spore remains",sporeCreatureXp);
+	sporeCreature->flashable = true;
+	sporeCreature->totalStr = sporeCreatureStr;
+	sporeCreature->attacker = new Attacker(sporeCreatureStr);
+	sporeCreature->container = new Container(2);
+	sporeCreature->ai = new MonsterAi();
+	sporeCreature->oozing = true;
+	generateRandom(sporeCreature, sporeCreatureAscii);
+	engine.actors.push(sporeCreature);
+	
+	return sporeCreature;
+	
+}
+Actor* Map::createTurret(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float turretHp = 10*scale;
+	float turretDodge = 0*scale;
+	float turretDR = 0*scale;
+	float turretStr = 0*scale; //no melee damage
+	float turretDex = 5*scale;
+	float turretXp = 25*scale;
+	int turretAscii = 147;
+	
+	Actor *turret = new Actor(x,y,turretAscii,"Sentry Turret",TCODColor::white);
+	turret->totalDex = turretDex;
+	turret->destructible = new MonsterDestructible(turretHp,turretDodge,turretDR,"destroyed sentry turret",turretXp);
+	turret->totalStr = turretStr;
+	turret->attacker = new Attacker(turretStr);
+	turret->ai = new TurretAi();
+	turret->container = new Container(2);
+	generateRandom(turret, turretAscii);
+	engine.actors.push(turret);
+	
+	return turret;
+	
+}
+Actor* Map::createVendor(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float vendorHp = 10*scale;
+	float vendorDodge = 0*scale;
+	float vendorDR = 0*scale;
+	float vendorXp = 25*scale;
+	int vendorAscii = 'V'; //change to desired ascii
+	
+	Actor *vendor = new Actor(x,y,vendorAscii,"Vending Machine",TCODColor::darkerBlue);
+	vendor->hostile = false;
+	vendor->interact = true;
+	vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge,vendorDR, "destroyed vending machine",vendorXp);
+	vendor->ai = new VendingAi();
+	vendor->container = new Container(2);
+	generateRandom(vendor, vendorAscii);
+	engine.actors.push(vendor);
+	
+	return vendor;
+}
 void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
@@ -578,7 +684,7 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 				//roomList->push(MESSHALL);
 				//roomList->push(OBSERVATORY);
 				break;
-			case OFFICE_FLOOR:
+			case OFFICE_FLOOR:  //what is this about?
 				for (int i = 0; i <= rng->getInt(3,9); i++) {
 					roomList->push(OFFICE);
 				}
@@ -826,14 +932,14 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					Actor *locker = new Actor((x1+x2)/2,i,243,"Government Issue Locker", TCODColor::white);
 					//engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
 					engine.map->tiles[(x1+x2)/2+i*engine.map->width].decoration = 23;
-					locker->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
+					locker->destructible = new MonsterDestructible(1,0,0,"Opened Locker",0);
 					locker->container = new Container(3);
 					generateRandom(locker,243);
 					engine.actors.push(locker);
 					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,243,"Government Issue Locker", TCODColor::white);
 					//engine.mapconDec->setChar(((x1+x2)/2)+1,i, 23);//Locker
 					engine.map->tiles[(((x1+x2)/2)+1)+i*engine.map->width].decoration = 23;
-					locker2->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
+					locker2->destructible = new MonsterDestructible(1,0,0,"Opened Locker",0);
 					locker2->container = new Container(3);
 					generateRandom(locker2,243);
 					engine.actors.push(locker2);
@@ -843,7 +949,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					Actor *locker = new Actor((x1+x2)/2,i,243,"Government Issue Locker", TCODColor::white);
 					//engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
 					engine.map->tiles[(x1+x2)/2+i*engine.map->width].decoration = 23;
-					locker->destructible = new MonsterDestructible(1,0,"Opened Locker",0);
+					locker->destructible = new MonsterDestructible(1,0,0,"Opened Locker",0);
 					locker->container = new Container(3);
 					generateRandom(locker,243);
 					engine.actors.push(locker);
@@ -1007,43 +1113,60 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	if (room->type == SERVER) {
 		cout << "Server room made";
 		//expand the room outwards
-		x1 = x1-1;
-		x2 = x2+1;
-		y1 = y1-1;
-		y2 = y2+1;
-		//top and bottom wall with servers
-		for (int i = x1; i <= x2; i++) {
-			map->setProperties(i,y1,true,true);
-			map->setProperties(i,y2,true,true);
-			Actor * server1 = new Actor(i, y1, 243, "A server", TCODColor::white);
-			engine.map->tiles[i+(y1)*engine.map->width].decoration = rng->getInt(45,47);
-			engine.map->tiles[i+(y1)*engine.map->width].tileType = SERVER;
+		int tx1 = x1-1;
+		int tx2 = x2+1;
+		int ty1 = y1-1;
+		int ty2 = y2+1;
+		/*//top and bottom wall with servers
+		for (int i = tx1; i <= tx2; i++) {
+			map->setProperties(i,ty1,true,true);
+			map->setProperties(i,ty2,true,true);
+			Actor * server1 = new Actor(i, ty1, 243, "A server", TCODColor::white);
+			engine.map->tiles[i+(ty1)*engine.map->width].decoration = rng->getInt(45,47);
+			engine.map->tiles[i+(ty1)*engine.map->width].tileType = SERVER;
 			server1->smashable = true;
 			engine.actors.push(server1);
-			Actor * server2 = new Actor(i, y2, 243, "A server", TCODColor::white);
-			engine.map->tiles[i+(y2)*engine.map->width].decoration = rng->getInt(45,47);
-			engine.map->tiles[i+(y2)*engine.map->width].tileType = SERVER;
+			Actor * server2 = new Actor(i, ty2, 243, "A server", TCODColor::white);
+			engine.map->tiles[i+(ty2)*engine.map->width].decoration = rng->getInt(45,47);
+			engine.map->tiles[i+(ty2)*engine.map->width].tileType = SERVER;
 			server2->smashable = true;
 			engine.actors.push(server2);
 		}
 		//left and right walls with servers
-		for (int i = y1+1; i <= y2-1; i++) {
-			map->setProperties(x1,i,true,true);
-			map->setProperties(x2,i,true,true);
-			Actor * server1 = new Actor(x1, i, 243, "A server", TCODColor::white);
-			engine.map->tiles[x1+i*engine.map->width].decoration = rng->getInt(45,47);
-			engine.map->tiles[x1+i*engine.map->width].tileType = SERVER;
+		for (int i = ty1; i <= ty2; i++) {
+			map->setProperties(tx1,i,true,true);
+			map->setProperties(tx2,i,true,true);
+			Actor * server1 = new Actor(tx1, i, 243, "A server", TCODColor::white);
+			engine.map->tiles[tx1+i*engine.map->width].decoration = rng->getInt(45,47);
+			engine.map->tiles[tx1+i*engine.map->width].tileType = SERVER;
 			server1->smashable = true;
 			engine.actors.push(server1);
-			Actor * server2 = new Actor(x2, i, 243, "A server", TCODColor::white);
-			engine.map->tiles[x2+i*engine.map->width].decoration = rng->getInt(45,47);
-			engine.map->tiles[x2+i*engine.map->width].tileType = SERVER;
+			Actor * server2 = new Actor(tx2, i, 243, "A server", TCODColor::white);
+			engine.map->tiles[tx2+i*engine.map->width].decoration = rng->getInt(45,47);
+			engine.map->tiles[tx2+i*engine.map->width].tileType = SERVER;
 			server2->smashable = true;
 			engine.actors.push(server2);
+		}*/
+		
+		for (int i = tx1; i <= tx2; i++) {
+			for (int j = ty1; j <= ty2; j++) {
+				if (i == tx1 || i == tx2 || j  == ty1 || j == ty2 )//|| (tx1-i)%2 == 0)
+				{
+					map->setProperties(i,j,true,true);
+					Actor * server1 = new Actor(i, j, 243, "A server", TCODColor::white);
+					engine.map->tiles[i+j*engine.map->width].decoration = rng->getInt(45,47);
+					engine.map->tiles[i+j*engine.map->width].tileType = SERVER;
+					server1->smashable = true;
+					engine.actors.push(server1);
+				}
+				
+			}
 		}
+		
 		//columns of servers
-		for (int i = x1+2; i <= (x2+x1)/2; i+=2) {
-			for (int j = y1+2; j <= y2-2; j++) {
+		for (int i = x1+1; i <= (x2+x1)/2; i+=2) {
+			for (int j = y1+1; j <= y2-1; j++) {
+				//walkway
 				if (j != ((y1+y2)/2))
 				{
 					Actor * server1 = new Actor(i, j, 243, "A server", TCODColor::white);
@@ -1052,10 +1175,11 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				}
 			}
 		}
-		for (int i = x2-2; i >= (x2+x1)/2; i-=2) {
-			for (int j = y1+2; j <= y2-2; j++) {
+		for (int i = x2-1; i > (x2+x1)/2; i-=2) {
+			for (int j = y1+1; j <= y2-1; j++) {
 				//place a console
-				if (i == x2-2 && j == y1+2 && j != ((y1+y2)/2)) {
+				//walkways
+				if (i == x2-1 && j == y1+1 && j != ((y1+y2)/2)) {
 					Actor * console = new Actor(i, j, 'c', "A console", TCODColor::white);
 					engine.actors.push(console);
 				}
@@ -1066,6 +1190,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				}
 			}
 		}
+		
 	}
 
 
@@ -1114,7 +1239,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		int y = rng->getInt(y1, y2);
 
 		if(canWalk(x,y) && (x != engine.player->x && y!= engine.player->y)) {
-			addMonster(x,y);
+		
+			addMonster(x,y,nbMonsters >= MAX_ROOM_MONSTERS);
 			nbMonsters--;
 		}
 	}
@@ -1186,6 +1312,54 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			nbItems--;
 		}
 	} 
+	
+	
+	
+	
+	
+	int rand = rng->getInt(0,100);
+	//Vending Machines spawn in corners of standard rooms at random
+	if(rand <= 20 && room->type == STANDARD) //a room has a 30% chance of having a vending machine (provided it has rooms)
+	{
+		int c = rng->getInt(0,3);
+		bool x1y1 = canWalk(x1,y1) && engine.getAnyActor(x1,y1) == NULL && ( (canWalk(x1,y1 + 1) && engine.getAnyActor(x1,y1 + 1) == NULL)  && (canWalk(x1+1,y1 + 1) && engine.getAnyActor(x1+1,y1)==NULL) ) ;
+		bool x1y2 = canWalk(x1,y2) && engine.getAnyActor(x1,y2) == NULL && ((canWalk(x1,y2 -1 ) && engine.getAnyActor(x1,y2-1) == NULL) && (canWalk(x1+1,y2) && engine.getAnyActor(x1+1,y2)== NULL));
+		bool x2y2 = canWalk(x2,y2) && engine.getAnyActor(x2,y2) == NULL && ((canWalk(x2,y2 -1 ) && engine.getAnyActor(x2,y2 - 1) == NULL) && (canWalk(x2-1,y2) && engine.getAnyActor(x2-1,y2) == NULL) ) ;
+		bool x2y1 = canWalk(x2,y1) && engine.getAnyActor(x2,y2) == NULL && ((canWalk(x2,y1 +1 ) && engine.getAnyActor(x2,y1 + 1) == NULL) && (canWalk(x2-1,y1) && engine.getAnyActor(x2-1,y1) == NULL) );
+		
+		if(c == 0 && x1y1)
+			createVendor(x1,y1);
+		if(c == 1 && x1y2)
+			createVendor(x1,y2);
+		if(c == 2 && x2y2)
+			createVendor(x2,y2);
+		if(c == 3 && x2y1)
+			createVendor(x2, y1);
+
+	}
+	//15% chance of spawning turrets in the corners of standard rooms
+	if(rand >= 15 && rand <= 30 && room->type == STANDARD)
+	{
+		int c = rng->getInt(0,3);
+		bool x1y1 = canWalk(x1,y1) && engine.getAnyActor(x1,y1)==NULL;
+		bool x1y2 = canWalk(x1,y2) && engine.getAnyActor(x1,y2)==NULL;
+		bool x2y2 = canWalk(x2,y2) && engine.getAnyActor(x2,y2)==NULL;
+		bool x2y1 = canWalk(x2,y1) && engine.getAnyActor(x2,y2)==NULL;
+		for(int i = 0; i < 4; i++)
+		{
+			c = rng->getInt(0,3);
+			if(c == 0 && x1y1)
+				createTurret(x1,y1);
+			if(c == 1 && x1y2)
+				createTurret(x1,y2);
+			if(c == 2 && x2y2)
+				createTurret(x2,y2);
+			if(c == 3 && x2y1)
+				createTurret(x2, y1);
+		}
+			
+	}
+	
 
 	//set the stairs position
 	while (true) {
@@ -1579,7 +1753,7 @@ Actor *Map::createEMP(int x, int y){
 Actor *Map::createTitanMail(int x, int y){
 	Actor *chainMail = new Actor(x,y,185,"Titan-mail",TCODColor::white);
 	chainMail->blocks = false;
-	ItemBonus *bonus = new ItemBonus(ItemBonus::DODGE,3);
+	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,3);
 	chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus);
 	chainMail->sort = 3;
 	return chainMail;
@@ -1595,10 +1769,18 @@ Actor *Map::createMylarBoots(int x, int y){
 Actor *Map::createMLR(int x, int y){
 	Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	MLR->blocks = false;
-	ItemBonus *bonus = new ItemBonus(ItemBonus::ATTACK,1);
+	ItemBonus *bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
 	MLR->pickable = new Equipment(0,Equipment::RANGED,bonus);
 	MLR->sort = 4;
 	return MLR;
+}
+Actor *Map::createCombatKnife(int x, int y){
+	Actor *combatKnife = new Actor(x,y,169,"Combat Knife",TCODColor::white);
+	combatKnife->blocks = false;
+	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+	combatKnife->pickable = new Equipment(0,Equipment::HAND1,bonus);
+	combatKnife->sort = 4;
+	return combatKnife;
 }
 Actor *Map::createBatteryPack(int x,int y){
 	Actor *batteryPack = new Actor(x,y,186,"Battery Pack", TCODColor::white);

@@ -210,7 +210,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 			if (actor->destructible && !actor->destructible->isDead() ) {
 				if (actor->hostile||owner->hostile){
 					owner->attacker->attack(owner, actor);
-					engine.damageDone += owner->attacker->totalPower;
+					engine.damageDone += owner->attacker->totalPower - actor->destructible->totalDodge;
 				}else if(actor->interact && !owner->hostile)
 					((InteractibleAi*)actor->ai)->interaction(actor, owner);
 			}
@@ -611,7 +611,7 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	con.print(1,20,"DMG TAKEN: %g",engine.damageReceived);
 	
 	//Display Character Image
-	con.print(20,8,"@");
+	//con.print(20,8,"@");
 	
 	//Display different Image based on race
 	/*switch(owner->ch){
@@ -631,14 +631,14 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	TCODConsole::blit(&con,0,0,CHARACTER_WIDTH,CHARACTER_HEIGHT,
 		TCODConsole::root, engine.screenWidth/2 - CHARACTER_WIDTH/2,
 		engine.screenHeight/2 - CHARACTER_HEIGHT/2 - 2);
-	//engine.menuState = 1;
-	/*while(engine.menuState != 2){
+	engine.menuState = 1;
+	while(engine.menuState != 2){
 		TCODConsole::flush();
-	}*/
+	}
 	//Keep info displayed until the player presses any button
 	TCOD_key_t key;
 	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
-	//engine.menuState = 0;
+	engine.menuState = 0;
 	
 }
 
@@ -1264,7 +1264,7 @@ void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 
 TurretAi::TurretAi()
 {
-	range = 4;
+	range = 5;
 }
 
 void TurretAi::load(TCODZip &zip) {
@@ -1433,9 +1433,11 @@ VendingAi::VendingAi() {
 
 void VendingAi::save(TCODZip &zip){
 	zip.putInt(VENDING);
+	zip.putInt(deployedSecurity);
 }
 
 void VendingAi::load(TCODZip &zip){
+	deployedSecurity = zip.getInt();
 }
 
 void VendingAi::interaction(Actor *owner, Actor *target){
