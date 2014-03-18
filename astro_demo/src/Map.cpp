@@ -251,6 +251,8 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 
 void Map::addMonster(int x, int y, bool isHorde) {
 	TCODRandom *rng =TCODRandom::getInstance();
+	//only engineers spawn in generator rooms
+	
 	/*
 	Stats (Actor.hpp): int str, dex, intel, vit, totalStr, totalDex, totalIntel; //strength, dexterity, intelligence, vitality
 	(Destructible.hpp) hp, maxHp, baseDodge, totalDodge
@@ -279,7 +281,7 @@ void Map::addMonster(int x, int y, bool isHorde) {
 	
 	
 	
-	float cleanerChance = 120;
+	float cleanerChance = 70;
 	float infectedCrewMemChance = 470;
 	float infectedMarineChance = 150;
 	float infectedGrenadierChance = 50;
@@ -287,8 +289,16 @@ void Map::addMonster(int x, int y, bool isHorde) {
 	float infectedOfficerChance = 50;
 	float miniSporeCreatureChance = 60;
 	float sporeCreatureChance = 10;
+	float infectedEngineerChance = 50; //infected engineers have a 5% chance of spawning in rooms other than generators rooms
 //	float turretChance = 50;
 //	float vendorChance = 100;
+
+	if(engine.map->tiles[x+y*width].tileType == GENERATOR)
+	{
+		createInfectedEngineer(x,y);
+		return;
+	}
+
 
 	int dice = rng->getInt(0,1000);
 	if (dice < infectedCrewMemChance) 
@@ -322,6 +332,13 @@ void Map::addMonster(int x, int y, bool isHorde) {
 	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + miniSporeCreatureChance && !isHorde)
 	{
 		createCleanerBot(x,y);
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + infectedEngineerChance +  miniSporeCreatureChance && !isHorde)
+	{
+	
+		createInfectedEngineer(x,y);
+		//createTurret(x,y);
+		//create turrets during room creation
 	}
 	/*
 	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance && !isHorde)
@@ -506,6 +523,36 @@ Actor* Map::createInfectedGrenadier(int x, int y)
 	engine.actors.push(infectedGrenadier);
 	
 	return infectedGrenadier;
+}
+
+Actor *Map::createInfectedEngineer(int x, int y)
+{
+
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float infectedEngineerHp = 10*scale;
+	float infectedEngineerDodge = 0*scale;
+	float infectedEngineerDR = 0*scale;
+	float infectedEngineerStr = 2*scale;
+	float infectedEngineerIntel = 5*scale; 
+	float infectedEngineerXp = 20*scale;
+	int infectedEngineerAscii = 'E';
+
+	Actor *infectedEngineer = new Actor(x,y,infectedEngineerAscii,"Infected Engineer",TCODColor::white);
+	infectedEngineer->destructible = new MonsterDestructible(infectedEngineerHp,infectedEngineerDodge,infectedEngineerDR,"infected corpse",infectedEngineerXp);
+	infectedEngineer->flashable = true;
+	infectedEngineer->totalStr = infectedEngineerStr;
+	infectedEngineer->totalIntel = infectedEngineerIntel;
+	infectedEngineer->attacker = new Attacker(infectedEngineerStr);
+	infectedEngineer->container = new Container(2);
+	infectedEngineer->ai = new EngineerAi(5,5);
+	generateRandom(infectedEngineer , infectedEngineerAscii);
+	engine.actors.push(infectedEngineer);
+	
+	return infectedEngineer;
+
+
+
 }
 Actor* Map::createMiniSporeCreature(int x, int y)
 {
