@@ -159,7 +159,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 			map->setProperties(tilex,tiley,true,true);
 			Actor* a = NULL;
 			a = engine.getAnyActor(tilex,tiley);
-			
+			bool blarg = false;
 			if (a != NULL)
 			{
 				if (a->smashable)
@@ -190,7 +190,10 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 						else if (strcmp(a->name,"A server") == 0)
 						{
 							engine.map->tiles[a->x+a->y*engine.map->width].decoration = 100;
-							a->name = "a bashed-in server room door";
+							a->name = "blarg!";
+							blarg = true;
+							////////////////////////////////////////////////////////////////////////////////IS THIS OKAY?
+							engine.actors.remove(a);
 						}
 					}
 					else//just in case error
@@ -200,44 +203,46 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 						a->name = "Debris";
 						
 					}
-					
-					engine.sendToBack(a);
-					
-					
-					int x = a->x;
-					int y = a->y;
-					int n =  0;
-					if (engine.map->tileType(x,y) == 2)//if it is an office
+					if (!blarg)
 					{
-						n = rng->getInt(5,8);
-					}
-					else
-					{
-						n = 0;
-					}
-					int add = rng->getInt(0,10);
-					for (int xxx = -1; xxx <= 1; xxx++)/////////////////////9x9 for loop to add papers, lol xxx,yyy
-					{
-						for (int yyy = -1; yyy <= 1; yyy++)
+						engine.sendToBack(a);
+						
+						
+						int x = a->x;
+						int y = a->y;
+						int n =  0;
+						if (engine.map->tileType(x,y) == 2)//if it is an office
 						{
-							if (add > 3 )
+							n = rng->getInt(5,8);
+						}
+						else
+						{
+							n = 0;
+						}
+						int add = rng->getInt(0,10);
+						for (int xxx = -1; xxx <= 1; xxx++)/////////////////////9x9 for loop to add papers, lol xxx,yyy
+						{
+							for (int yyy = -1; yyy <= 1; yyy++)
 							{
-								if (engine.map->tiles[(x+xxx)+(y+yyy)*engine.map->width].decoration == 0) {
-									//engine.mapconDec->setChar(x+xxx, y+yyy, n);
-									engine.map->tiles[(x+xxx)+(y+yyy)*engine.map->width].decoration = n;
-									
+								if (add > 3 )
+								{
+									if (engine.map->tiles[(x+xxx)+(y+yyy)*engine.map->width].decoration == 0) {
+										//engine.mapconDec->setChar(x+xxx, y+yyy, n);
+										engine.map->tiles[(x+xxx)+(y+yyy)*engine.map->width].decoration = n;
+										
+									}
 								}
+								////
+								if (engine.map->tileType(x,y) == 2)//if it is an office
+								{
+									n = rng->getInt(5,8);
+								}
+								else
+								{
+									n = 0;
+								}
+								add = rng->getInt(0,10);
 							}
-							////
-							if (engine.map->tileType(x,y) == 2)//if it is an office
-							{
-								n = rng->getInt(5,8);
-							}
-							else
-							{
-								n = 0;
-							}
-							add = rng->getInt(0,10);
 						}
 					}
 					
@@ -1106,45 +1111,62 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	}
 
 	if (room->type == SERVER) {
-		cout << "Server room made";
+cout << "Server room made";
 		//expand the room outwards
-		x1 = x1-1;
-		x2 = x2+1;
-		y1 = y1-1;
-		y2 = y2+1;
-		//top and bottom wall with servers
-		for (int i = x1; i <= x2; i++) {
-			map->setProperties(i,y1,true,true);
-			map->setProperties(i,y2,true,true);
-			Actor * server1 = new Actor(i, y1, 243, "A server", TCODColor::white);
-			engine.map->tiles[i+(y1)*engine.map->width].decoration = rng->getInt(45,47);
-			engine.map->tiles[i+(y1)*engine.map->width].tileType = SERVER;
+		int tx1 = x1-1;
+		int tx2 = x2+1;
+		int ty1 = y1-1;
+		int ty2 = y2+1;
+		/*//top and bottom wall with servers
+		for (int i = tx1; i <= tx2; i++) {
+			map->setProperties(i,ty1,true,true);
+			map->setProperties(i,ty2,true,true);
+			Actor * server1 = new Actor(i, ty1, 243, "A server", TCODColor::white);
+			engine.map->tiles[i+(ty1)*engine.map->width].decoration = rng->getInt(45,47);
+			engine.map->tiles[i+(ty1)*engine.map->width].tileType = SERVER;
 			server1->smashable = true;
 			engine.actors.push(server1);
-			Actor * server2 = new Actor(i, y2, 243, "A server", TCODColor::white);
-			engine.map->tiles[i+(y2)*engine.map->width].decoration = rng->getInt(45,47);
-			engine.map->tiles[i+(y2)*engine.map->width].tileType = SERVER;
+			Actor * server2 = new Actor(i, ty2, 243, "A server", TCODColor::white);
+			engine.map->tiles[i+(ty2)*engine.map->width].decoration = rng->getInt(45,47);
+			engine.map->tiles[i+(ty2)*engine.map->width].tileType = SERVER;
 			server2->smashable = true;
 			engine.actors.push(server2);
 		}
 		//left and right walls with servers
-		for (int i = y1+1; i <= y2-1; i++) {
-			map->setProperties(x1,i,true,true);
-			map->setProperties(x2,i,true,true);
-			Actor * server1 = new Actor(x1, i, 243, "A server", TCODColor::white);
-			engine.map->tiles[x1+i*engine.map->width].decoration = rng->getInt(45,47);
-			engine.map->tiles[x1+i*engine.map->width].tileType = SERVER;
+		for (int i = ty1; i <= ty2; i++) {
+			map->setProperties(tx1,i,true,true);
+			map->setProperties(tx2,i,true,true);
+			Actor * server1 = new Actor(tx1, i, 243, "A server", TCODColor::white);
+			engine.map->tiles[tx1+i*engine.map->width].decoration = rng->getInt(45,47);
+			engine.map->tiles[tx1+i*engine.map->width].tileType = SERVER;
 			server1->smashable = true;
 			engine.actors.push(server1);
-			Actor * server2 = new Actor(x2, i, 243, "A server", TCODColor::white);
-			engine.map->tiles[x2+i*engine.map->width].decoration = rng->getInt(45,47);
-			engine.map->tiles[x2+i*engine.map->width].tileType = SERVER;
+			Actor * server2 = new Actor(tx2, i, 243, "A server", TCODColor::white);
+			engine.map->tiles[tx2+i*engine.map->width].decoration = rng->getInt(45,47);
+			engine.map->tiles[tx2+i*engine.map->width].tileType = SERVER;
 			server2->smashable = true;
 			engine.actors.push(server2);
+		}*/
+		
+		for (int i = tx1; i <= tx2; i++) {
+			for (int j = ty1; j <= ty2; j++) {
+				if (i == tx1 || i == tx2 || j  == ty1 || j == ty2 )//|| (tx1-i)%2 == 0)
+				{
+					map->setProperties(i,j,true,true);
+					Actor * server1 = new Actor(i, j, 243, "A server", TCODColor::white);
+					engine.map->tiles[i+j*engine.map->width].decoration = rng->getInt(45,47);
+					engine.map->tiles[i+j*engine.map->width].tileType = SERVER;
+					server1->smashable = true;
+					engine.actors.push(server1);
+				}
+				
+			}
 		}
+		
 		//columns of servers
-		for (int i = x1+2; i <= (x2+x1)/2; i+=2) {
-			for (int j = y1+2; j <= y2-2; j++) {
+		for (int i = x1+1; i <= (x2+x1)/2; i+=2) {
+			for (int j = y1+1; j <= y2-1; j++) {
+				//walkway
 				if (j != ((y1+y2)/2))
 				{
 					Actor * server1 = new Actor(i, j, 243, "A server", TCODColor::white);
@@ -1153,10 +1175,11 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				}
 			}
 		}
-		for (int i = x2-2; i >= (x2+x1)/2; i-=2) {
-			for (int j = y1+2; j <= y2-2; j++) {
+		for (int i = x2-1; i > (x2+x1)/2; i-=2) {
+			for (int j = y1+1; j <= y2-1; j++) {
 				//place a console
-				if (i == x2-2 && j == y1+2 && j != ((y1+y2)/2)) {
+				//walkways
+				if (i == x2-1 && j == y1+1 && j != ((y1+y2)/2)) {
 					Actor * console = new Actor(i, j, 'c', "A console", TCODColor::white);
 					engine.actors.push(console);
 				}
