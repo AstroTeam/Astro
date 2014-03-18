@@ -1595,7 +1595,7 @@ Actor *Map::createMylarBoots(int x, int y){
 Actor *Map::createMLR(int x, int y){
 	Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	MLR->blocks = false;
-	ItemBonus *bonus = new ItemBonus(ItemBonus::ATTACK,1);
+	ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,1);
 	MLR->pickable = new Equipment(0,Equipment::RANGED,bonus);
 	MLR->sort = 4;
 	return MLR;
