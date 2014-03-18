@@ -44,6 +44,7 @@ Destructible *Destructible::create(TCODZip &zip) {
 }
 
 float Destructible::takeDamage(Actor *owner, float damage) {
+	
 	if (damage > 0){
 		hp -= damage;
 		if (hp <= 0) {
@@ -51,6 +52,29 @@ float Destructible::takeDamage(Actor *owner, float damage) {
 		}
 	} else {
 		damage = 0;
+	}
+	if(owner->ch == 'V') //meaning you're attacking a Vending machine
+	{
+		VendingAi* va = (VendingAi*) owner->ai;
+		if(!va->deployedSecurity){
+		engine.gui->message(TCODColor::red, "Vending Machine Vandalism Deteched: Deploying Security Bot!", owner->name);
+		int x = owner->x;
+		int y = owner->y;
+		bool case1 = (engine.map->canWalk(x-1,y) && engine.getAnyActor(x-1,y) == NULL);
+		bool case2 = (engine.map->canWalk(x,y-1) && engine.getAnyActor(x,y-1) == NULL);
+		bool case3 = (engine.map->canWalk(x,y+1) && engine.getAnyActor(x,y+1) == NULL);
+		bool case4 = (engine.map->canWalk(x+1,y) && engine.getAnyActor(x+1,y) == NULL);
+		
+		if(case1)
+			engine.map->createSecurityBot(x-1, y);
+		else if(case2)
+			engine.map->createSecurityBot(x, y-1);
+		else if(case3)
+			engine.map->createSecurityBot(x, y+1);
+		else if(case4)
+			engine.map->createSecurityBot(x+1, y);
+		va->deployedSecurity = true;
+		}
 	}
 	return damage;
 }
@@ -78,7 +102,7 @@ void Destructible::die(Actor *owner) {
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
 		owner->ch = 243;
 	}
-	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 'V') //roomba, vendors, and turrets show no corpse currently
+	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 'V' || owner->ch == 'S') //roomba, vendors, and turrets, and security bots show no corpse currently
 	{
 		owner->ch = ' ';
 		owner->blocks = false;

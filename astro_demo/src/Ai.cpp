@@ -1433,9 +1433,11 @@ VendingAi::VendingAi() {
 
 void VendingAi::save(TCODZip &zip){
 	zip.putInt(VENDING);
+	zip.putInt(deployedSecurity);
 }
 
 void VendingAi::load(TCODZip &zip){
+	deployedSecurity = zip.getInt();
 }
 
 void VendingAi::interaction(Actor *owner, Actor *target){

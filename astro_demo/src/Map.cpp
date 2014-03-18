@@ -251,7 +251,6 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 
 void Map::addMonster(int x, int y, bool isHorde) {
 	TCODRandom *rng =TCODRandom::getInstance();
-
 	/*
 	Stats (Actor.hpp): int str, dex, intel, vit, totalStr, totalDex, totalIntel; //strength, dexterity, intelligence, vitality
 	(Destructible.hpp) hp, maxHp, baseDodge, totalDodge
@@ -289,9 +288,9 @@ void Map::addMonster(int x, int y, bool isHorde) {
 	float miniSporeCreatureChance = 60;
 	float sporeCreatureChance = 10;
 	float turretChance = 50;
-	float vendorChance = 100;
+//	float vendorChance = 100;
 
-	int dice = rng->getInt(0,1100);
+	int dice = rng->getInt(0,1000);
 	if (dice < infectedCrewMemChance) 
 	{
 		createInfectedCrewMember(x,y);	
@@ -328,10 +327,13 @@ void Map::addMonster(int x, int y, bool isHorde) {
 	{
 		createTurret(x,y);
 	}
+	/*
 	else if (dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance + vendorChance && !isHorde) 
 	{
-		createVendor(x,y);
+		//createVendor(x,y);
+		//only create vending machines during room creation
 	}
+	*/
 }
 
 Actor* Map::createCleanerBot(int x, int y)
@@ -1284,6 +1286,28 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			nbItems--;
 		}
 	} 
+	
+	int rand = rng->getInt(0,100);
+	//Vending Machines spawn in corners of standard rooms at random
+	if(rand <= 30 && room->type == STANDARD) //a room has a 30% chance of having a vending machine (provided it has rooms)
+	{
+		int c = rng->getInt(0,3);
+		bool x1y1 = canWalk(x1,y1) && engine.getAnyActor(x1,y1) == NULL && ( (canWalk(x1,y1 + 1) && engine.getAnyActor(x1,y1 + 1) == NULL)  && (canWalk(x1+1,y1 + 1) && engine.getAnyActor(x1+1,y1)==NULL) ) ;
+		bool x1y2 = canWalk(x1,y2) && engine.getAnyActor(x1,y2) == NULL && ((canWalk(x1,y2 -1 ) && engine.getAnyActor(x1,y2-1) == NULL) && (canWalk(x1+1,y2) && engine.getAnyActor(x1+1,y2)== NULL));
+		bool x2y2 = canWalk(x2,y2) && engine.getAnyActor(x2,y2) == NULL && ((canWalk(x2,y2 -1 ) && engine.getAnyActor(x2,y2 - 1) == NULL) && (canWalk(x2-1,y2) && engine.getAnyActor(x2-1,y2) == NULL) ) ;
+		bool x2y1 = canWalk(x2,y1) && engine.getAnyActor(x2,y2) == NULL && ((canWalk(x2,y1 +1 ) && engine.getAnyActor(x2,y1 + 1) == NULL) && (canWalk(x2-1,y1) && engine.getAnyActor(x2-1,y1) == NULL) );
+		
+		if(c == 0 && x1y1)
+			createVendor(x1,y1);
+		if(c == 1 && x1y2)
+			createVendor(x1,y2);
+		if(c == 2 && x2y2)
+			createVendor(x2,y2);
+		if(c == 3 && x2y1)
+			createVendor(x2, y1);
+
+	}
+	
 
 	//set the stairs position
 	while (true) {
