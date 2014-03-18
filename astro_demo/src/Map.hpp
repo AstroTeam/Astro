@@ -103,7 +103,7 @@ protected:
 	
 	void dig(int x1, int y1, int x2, int y2);
 	void createRoom(int roomNum, bool withActors, Room * room);
-	void addMonster(int x, int y);
+	void addMonster(int x, int y, bool isHorde); //is this monster part of a horde?
 	void addItem(int x, int y, RoomType roomType);
 	void generateRandom(Actor *owner, int ascii);
 	TCODList<RoomType> * getRoomTypes(LevelType levelType);

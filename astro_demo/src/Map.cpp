@@ -249,7 +249,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 	}
 }
 
-void Map::addMonster(int x, int y) {
+void Map::addMonster(int x, int y, bool isHorde) {
 	TCODRandom *rng =TCODRandom::getInstance();
 
 	/*
@@ -320,15 +320,15 @@ void Map::addMonster(int x, int y) {
 	{
 		createInfectedGrenadier(x,y);
 	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + miniSporeCreatureChance)
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + miniSporeCreatureChance && !isHorde)
 	{
 		createCleanerBot(x,y);
 	}
-	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance)
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance && !isHorde)
 	{
 		createTurret(x,y);
 	}
-	else if (dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance + vendorChance) 
+	else if (dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance + vendorChance && !isHorde) 
 	{
 		createVendor(x,y);
 	}
@@ -1211,7 +1211,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		int y = rng->getInt(y1, y2);
 
 		if(canWalk(x,y) && (x != engine.player->x && y!= engine.player->y)) {
-			addMonster(x,y);
+		
+			addMonster(x,y,nbMonsters >= MAX_ROOM_MONSTERS);
 			nbMonsters--;
 		}
 	}
