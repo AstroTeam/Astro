@@ -1264,7 +1264,7 @@ void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 
 TurretAi::TurretAi()
 {
-	range = 4;
+	range = 5;
 }
 
 void TurretAi::load(TCODZip &zip) {
