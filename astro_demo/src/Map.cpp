@@ -357,6 +357,30 @@ Actor* Map::createCleanerBot(int x, int y)
 	return cleaner;
 
 }
+
+Actor* Map::createSecurityBot(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float securityBotHp = 25*scale;
+	float securityBotDodge = 0*scale;
+	float securityBotDR = 0*scale;
+	float securityBotStr = 10*scale;
+	float securityBotXp = 25*scale;
+	int securityBotAscii = 'S'; //security bot ascii change when needed
+
+	Actor *securityBot = new Actor(x,y,securityBotAscii,"Security Bot",TCODColor::white);
+	securityBot->destructible = new MonsterDestructible(securityBotHp,securityBotDodge,securityBotDR,"destroyed security bot",securityBotXp);
+	securityBot->totalStr = securityBotStr;
+	securityBot->attacker = new Attacker(securityBotStr);
+	securityBot->container = new Container(2);
+	securityBot->ai = new MonsterAi();
+	generateRandom(securityBot, securityBotAscii);
+	engine.actors.push(securityBot);
+	
+	return securityBot;
+
+}
 Actor* Map::createInfectedCrewMember(int x, int y)
 {
 	int level = engine.level;
