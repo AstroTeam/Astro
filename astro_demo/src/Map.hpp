@@ -91,6 +91,7 @@ public:
 	Actor *createMylarBoots(int x, int y);
 	Actor *createMLR(int x, int y);
 	Actor *createCombatKnife(int x, int y);
+	void generateRandom(Actor *owner, int ascii);
 	Tile *tiles;
 
 	
@@ -105,6 +106,5 @@ protected:
 	void createRoom(int roomNum, bool withActors, Room * room);
 	void addMonster(int x, int y, bool isHorde); //is this monster part of a horde?
 	void addItem(int x, int y, RoomType roomType);
-	void generateRandom(Actor *owner, int ascii);
 	TCODList<RoomType> * getRoomTypes(LevelType levelType);
 };

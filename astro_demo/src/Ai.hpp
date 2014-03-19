@@ -172,10 +172,14 @@ public:
 
 class VendingAi: public InteractibleAi{
 public:
+	int ink;
+	
 	VendingAi();
 	bool deployedSecurity;
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
 	void interaction(Actor *owner, Actor *target);
+	void vend(Actor *owner);
+	void vendSidebar();
 };
 
