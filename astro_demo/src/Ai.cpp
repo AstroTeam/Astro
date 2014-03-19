@@ -1545,7 +1545,6 @@ VendingAi::VendingAi() {
 	deployedSecurity = false;
 	TCODRandom *rng = TCODRandom::getInstance();
 	ink = rng->getInt(10,100,65);
-
 }
 
 void VendingAi::save(TCODZip &zip){
@@ -1560,12 +1559,11 @@ void VendingAi::load(TCODZip &zip){
 }
 
 void VendingAi::interaction(Actor *owner, Actor *target){
-	engine.map->generateRandom(owner, 164);
-	Actor *combatKnife = engine.map->createCombatKnife(0,0);
-	engine.actors.push(combatKnife);
-	combatKnife->pickable->pick(combatKnife,owner);
-	vend(owner);
 	engine.gui->message(TCODColor::yellow,"The vending machine lets out a soft hum.");
+	populate(owner);
+	vend(owner);
+	engine.gameStatus = Engine::NEW_TURN;
+	
 }
 void VendingAi::vendSidebar(){
 	//create vending machine sidebar
@@ -1589,60 +1587,84 @@ void VendingAi::vend(Actor *owner){
 	Actor *actor;
 	bool select = true;
 	while(select){
-		if(ink < 10){
-			engine.gui->message(TCODColor::red,"The vending machine needs more ink to print");
-			break;
-		}
 		vendSidebar();
 		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::VENDING);
 		
 		switch(menuItem){
 			case Menu::ITEMS:
 			actor = owner->ai->choseFromInventory(owner,1,true);
-			if(engine.player->container->wallet < 10){
-				engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase");
-				select = false;
-			}else if(actor){
-				actor->pickable->drop(actor,owner,false);
-				actor->pickable->pick(actor,engine.player);
-				ink -= 10;
-				engine.player->container->wallet -= 10;
+			if(actor){
+				if(actor->pickable->value > engine.player->container->wallet){
+					engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase!");
+					select = false;
+				}else if(actor->pickable->inkValue > ink){
+					engine.gui->message(TCODColor::red,"The vending machine does not have enough ink to print the item!");
+					select = false;
+				}else{
+					Actor *purchase = clone(actor);
+					engine.actors.push(purchase);
+					purchase->pickable->pick(purchase,engine.player);
+					engine.player->container->wallet -= actor->pickable->value;
+					ink -= actor->pickable->inkValue;
+					engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
+				}
 			}
 			break;
 			case Menu::TECH:
 			actor = owner->ai->choseFromInventory(owner,2,true);
-			if(engine.player->container->wallet < 10){
-				engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase");
-				select = false;
-			}else if(actor){
-				actor->pickable->drop(actor,owner,false);
-				actor->pickable->pick(actor,engine.player);
-				ink -= 10;
-				engine.player->container->wallet -= 10;
+			if(actor){
+				if(actor->pickable->value > engine.player->container->wallet){
+					engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase!");
+					select = false;
+				}else if(actor->pickable->inkValue > ink){
+					engine.gui->message(TCODColor::red,"The vending machine does not have enough ink to print the item!");
+					select = false;
+				}else{
+					Actor *purchase = clone(actor);
+					engine.actors.push(purchase);
+					purchase->pickable->pick(purchase,engine.player);
+					engine.player->container->wallet -= actor->pickable->value;
+					ink -= actor->pickable->inkValue;
+					engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
+				}
 			}
 			break;
 			case Menu::ARMOR:
 			actor = owner->ai->choseFromInventory(owner,3,true);
-			if(engine.player->container->wallet < 10){
-				engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase");
-				select = false;
-			}else if(actor){
-				actor->pickable->drop(actor,owner,false);
-				actor->pickable->pick(actor,engine.player);
-				ink -= 10;
-				engine.player->container->wallet -= 10;
+			if(actor){
+				if(actor->pickable->value > engine.player->container->wallet){
+					engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase!");
+					select = false;
+				}else if(actor->pickable->inkValue > ink){
+					engine.gui->message(TCODColor::red,"The vending machine does not have enough ink to print the item!");
+					select = false;
+				}else{
+					Actor *purchase = clone(actor);
+					engine.actors.push(purchase);
+					purchase->pickable->pick(purchase,engine.player);
+					engine.player->container->wallet -= actor->pickable->value;
+					ink -= actor->pickable->inkValue;
+					engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
+				}
 			}
 			break;
 			case Menu::WEAPONS:
 			actor = owner->ai->choseFromInventory(owner,4,true);
-			if(engine.player->container->wallet < 10){
-				engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase");
-				select = false;
-			}else if(actor){
-				actor->pickable->drop(actor,owner,false);
-				actor->pickable->pick(actor,engine.player);
-				ink -= 10;
-				engine.player->container->wallet -= 10;
+			if(actor){
+				if(actor->pickable->value > engine.player->container->wallet){
+					engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase!");
+					select = false;
+				}else if(actor->pickable->inkValue > ink){
+					engine.gui->message(TCODColor::red,"The vending machine does not have enough ink to print the item!");
+					select = false;
+				}else{
+					Actor *purchase = clone(actor);
+					engine.actors.push(purchase);
+					purchase->pickable->pick(purchase,engine.player);
+					engine.player->container->wallet -= actor->pickable->value;
+					ink -= actor->pickable->inkValue;
+					engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
+				}
 			}
 			break;
 			case Menu::EXIT:
@@ -1653,6 +1675,66 @@ void VendingAi::vend(Actor *owner){
 			default: break; 
 		}
 	}
+}
+Actor *VendingAi::clone(Actor *owner){
+		Actor *droppy = new Actor(owner->x, owner->y, owner->ch,owner->name,owner->col);
+		droppy->blocks = false;
+		Pickable::PickableType type = owner->pickable->type;
+		switch(type) {
+			case Pickable::CURRENCY: break;
+			case Pickable::HEALER: droppy->pickable = new Healer(((Healer*)owner->pickable)->amount); droppy->sort = 1; break;
+			case Pickable::CHARGER: droppy->pickable = new Charger(((Charger*)owner->pickable)->amount); droppy->sort = 1; break;
+			case Pickable::LIGHTNING_BOLT: droppy->pickable = new LightningBolt(((LightningBolt*)(owner->pickable))->range,((LightningBolt*)(owner->pickable))->damage); droppy->sort = 2; break;
+			case Pickable::CONFUSER: droppy->pickable = new Confuser(((Confuser*)(owner->pickable))->nbTurns,((Confuser*)(owner->pickable))->range); droppy->sort = 2; break;
+			case Pickable::FIREBALL: droppy->pickable = new Fireball(((Fireball*)(owner->pickable))->range,((Fireball*)(owner->pickable))->damage,((Fireball*)(owner->pickable))->maxRange); droppy->sort = 2; break;
+			case Pickable::FLARE: droppy->pickable = new Flare(((Flare*)(owner->pickable))->nbTurns, ((Flare*)(owner->pickable))->range, ((Flare*)(owner->pickable))->lightRange); droppy->sort = 2; break;
+			case Pickable::EQUIPMENT: droppy->pickable = new Equipment(0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus); droppy->sort = owner->sort; break;
+			case Pickable::NONE: break;
+		}
+		return droppy;
+}
+void VendingAi::populate(Actor *owner){
+	//Populates the vending machine with one of each item that can be purchased
+	
+	Actor *combatKnife = engine.map->createCombatKnife(0,0);
+	engine.actors.push(combatKnife);
+	combatKnife->pickable->pick(combatKnife,owner);
+	
+	Actor *mlr = engine.map->createMLR(0,0);
+	engine.actors.push(mlr);
+	mlr->pickable->pick(mlr,owner);
+	
+	Actor *myBoots = engine.map->createMylarBoots(0,0);
+	engine.actors.push(myBoots);
+	myBoots->pickable->pick(myBoots,owner);
+	
+	Actor *titanMail = engine.map->createTitanMail(0,0);
+	engine.actors.push(titanMail);
+	titanMail->pickable->pick(titanMail,owner);
+	
+	Actor *medKit = engine.map->createHealthPotion(0,0);
+	engine.actors.push(medKit);
+	medKit->pickable->pick(medKit,owner);
+	
+	Actor *battery = engine.map->createBatteryPack(0,0);
+	engine.actors.push(battery);
+	battery->pickable->pick(battery,owner);
+	
+	Actor *flashBang = engine.map->createFlashBang(0,0);
+	engine.actors.push(flashBang);
+	flashBang->pickable->pick(flashBang,owner);
+	
+	Actor *flare = engine.map->createFlare(0,0);
+	engine.actors.push(flare);
+	flare->pickable->pick(flare,owner);
+	
+	Actor *fireBomb = engine.map->createFireBomb(0,0);
+	engine.actors.push(fireBomb);
+	fireBomb->pickable->pick(fireBomb,owner);
+	
+	Actor *emp = engine.map->createEMP(0,0);
+	engine.actors.push(emp);
+	emp->pickable->pick(emp,owner);
 }
 
 EngineerAi::EngineerAi(float repairPower, int deployRange) {

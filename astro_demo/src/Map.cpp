@@ -668,7 +668,7 @@ Actor* Map::createVendor(int x, int y)
 	vendor->interact = true;
 	vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge,vendorDR, "destroyed vending machine",vendorXp);
 	vendor->ai = new VendingAi();
-	vendor->container = new Container(2);
+	vendor->container = new Container(50);
 	generateRandom(vendor, vendorAscii);
 	engine.actors.push(vendor);
 	
@@ -1823,6 +1823,8 @@ Actor *Map::createHealthPotion(int x,int y){
 	healthPotion->sort = 1;
 	healthPotion->blocks = false;
 	healthPotion->pickable = new Healer(20);
+	healthPotion->pickable->value = 40;
+	healthPotion->pickable->inkValue = 15;
 	return healthPotion;
 }
 Actor *Map::createFlashBang(int x, int y){
@@ -1830,6 +1832,8 @@ Actor *Map::createFlashBang(int x, int y){
 	scrollOfConfusion->sort = 2;
 	scrollOfConfusion->blocks = false;
 	scrollOfConfusion->pickable = new Confuser(10,8);
+	scrollOfConfusion->pickable->value = 25;
+	scrollOfConfusion->pickable->inkValue = 10;
 	return scrollOfConfusion;
 }
 Actor *Map::createFlare(int x, int y){
@@ -1837,6 +1841,8 @@ Actor *Map::createFlare(int x, int y){
 	scrollOfFlaring->sort = 2;
 	scrollOfFlaring->blocks = false;
 	scrollOfFlaring->pickable = new Flare(10,5,5);//10 is turns, can be random, 5 is range of throwability (constant), 5 is range of flare
+	scrollOfFlaring->pickable->value = 25;
+	scrollOfFlaring->pickable->inkValue = 10;
 	return scrollOfFlaring;
 }
 Actor *Map::createFireBomb(int x, int y){
@@ -1844,6 +1850,8 @@ Actor *Map::createFireBomb(int x, int y){
 	scrollOfFireball->sort = 2;
 	scrollOfFireball->blocks = false;
 	scrollOfFireball->pickable = new Fireball(3,12,8);
+	scrollOfFireball->pickable->value = 25;
+	scrollOfFireball->pickable->inkValue = 10;
 	return scrollOfFireball;
 }
 Actor *Map::createEMP(int x, int y){
@@ -1851,6 +1859,8 @@ Actor *Map::createEMP(int x, int y){
 	scrollOfLightningBolt->sort = 2;
 	scrollOfLightningBolt->blocks = false;
 	scrollOfLightningBolt->pickable = new LightningBolt(5,20);
+	scrollOfLightningBolt->pickable->value = 30;
+	scrollOfLightningBolt->pickable->value = 10;
 	return scrollOfLightningBolt;
 }
 Actor *Map::createTitanMail(int x, int y){
@@ -1859,6 +1869,8 @@ Actor *Map::createTitanMail(int x, int y){
 	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,3);
 	chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus);
 	chainMail->sort = 3;
+	chainMail->pickable->value = 300;
+	chainMail->pickable->inkValue = 50;
 	return chainMail;
 }
 Actor *Map::createMylarBoots(int x, int y){
@@ -1867,6 +1879,8 @@ Actor *Map::createMylarBoots(int x, int y){
 	ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
 	myBoots->pickable = new Equipment(0,Equipment::FEET,bonus);
 	myBoots->sort = 3;
+	myBoots->pickable->value = 150;
+	myBoots->pickable->inkValue = 15;
 	return myBoots;
 }
 Actor *Map::createMLR(int x, int y){
@@ -1875,6 +1889,8 @@ Actor *Map::createMLR(int x, int y){
 	ItemBonus *bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
 	MLR->pickable = new Equipment(0,Equipment::RANGED,bonus);
 	MLR->sort = 4;
+	MLR->pickable->value = 200;
+	MLR->pickable->inkValue = 30;
 	return MLR;
 }
 Actor *Map::createCombatKnife(int x, int y){
@@ -1882,6 +1898,8 @@ Actor *Map::createCombatKnife(int x, int y){
 	combatKnife->blocks = false;
 	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
 	combatKnife->pickable = new Equipment(0,Equipment::HAND1,bonus);
+	combatKnife->pickable->value = 100;
+	combatKnife->pickable->inkValue = 10;
 	combatKnife->sort = 4;
 	return combatKnife;
 }
@@ -1890,6 +1908,8 @@ Actor *Map::createBatteryPack(int x,int y){
 	batteryPack->sort = 1;
 	batteryPack->blocks = false;
 	batteryPack->pickable = new Charger(5);
+	batteryPack->pickable->value = 20;
+	batteryPack->pickable->inkValue = 5;
 	return batteryPack;
 }
 

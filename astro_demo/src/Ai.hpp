@@ -211,6 +211,8 @@ public:
 	void interaction(Actor *owner, Actor *target);
 	void vend(Actor *owner);
 	void vendSidebar();
+	Actor *clone(Actor *owner); //Makes a clone of an actor to give to the player after he purchases an item
+	void populate(Actor *owner); //Populates the vending machine with one of each item that can be purchased
 };
 
 

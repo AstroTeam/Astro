@@ -49,12 +49,16 @@ Coinage::Coinage(bool stacks, int stackSize, PickableType type)
 void Coinage::load(TCODZip &zip) {
 	stacks = zip.getInt();
 	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
 }
 
 void Coinage::save(TCODZip &zip) {
 	zip.putInt(type);
 	zip.putInt(stacks);
 	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
 }
 
 Healer::Healer(float amount, bool stacks, int stackSize, PickableType type)
@@ -65,6 +69,8 @@ void Healer::load(TCODZip &zip) {
 	amount = zip.getFloat();
 	stacks = zip.getInt();
 	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
 }
 
 void Healer::save(TCODZip &zip) {
@@ -72,6 +78,8 @@ void Healer::save(TCODZip &zip) {
 	zip.putFloat(amount);
 	zip.putInt(stacks);
 	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
 }
 
 bool Healer::use(Actor *owner, Actor *wearer) {
@@ -98,6 +106,8 @@ void Charger::load(TCODZip &zip) {
 	amount = zip.getFloat();
 	stacks = zip.getInt();
 	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
 }
 
 void Charger::save(TCODZip &zip) {
@@ -105,6 +115,8 @@ void Charger::save(TCODZip &zip) {
 	zip.putFloat(amount);
 	zip.putInt(stacks);
 	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
 }
 
 bool Charger::use(Actor *owner, Actor *wearer) {
@@ -126,6 +138,8 @@ void LightningBolt::load(TCODZip &zip) {
 	damage = zip.getFloat();
 	stacks = zip.getInt();
 	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
 }
 
 void LightningBolt::save(TCODZip &zip) {
@@ -134,6 +148,8 @@ void LightningBolt::save(TCODZip &zip) {
 	zip.putFloat(damage);
 	zip.putInt(stacks);
 	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
 }
 
 bool LightningBolt::use(Actor *owner, Actor *wearer) {
@@ -163,6 +179,8 @@ void Fireball::load(TCODZip &zip) {
 	maxRange = zip.getFloat();
 	stacks = zip.getInt();
 	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
 }
 
 void Fireball::save(TCODZip &zip) {
@@ -172,6 +190,8 @@ void Fireball::save(TCODZip &zip) {
 	zip.putFloat(maxRange);
 	zip.putInt(stacks);
 	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
 }
 
 bool Fireball::use(Actor *owner, Actor *wearer) {
@@ -232,6 +252,8 @@ void Confuser::load(TCODZip &zip) {
 	range = zip.getFloat();
 	stacks = zip.getInt();
 	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
 }
 
 void Confuser::save(TCODZip &zip) {
@@ -240,6 +262,8 @@ void Confuser::save(TCODZip &zip) {
 	zip.putFloat(range);
 	zip.putInt(stacks);
 	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
 }
 
 bool Confuser::use(Actor *owner, Actor *wearer) {
@@ -286,6 +310,8 @@ void Flare::load(TCODZip &zip) {
 	lightRange = zip.getInt();
 	stacks = zip.getInt();
 	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
 }
 
 void Flare::save(TCODZip &zip) {
@@ -295,6 +321,8 @@ void Flare::save(TCODZip &zip) {
 	zip.putInt(lightRange);
 	zip.putInt(stacks);
 	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
 }
 
 bool Flare::use(Actor *owner, Actor *wearer) {
@@ -354,7 +382,7 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 				case LIGHTNING_BOLT: droppy->pickable = new LightningBolt(((LightningBolt*)(owner->pickable))->range,((LightningBolt*)(owner->pickable))->damage); droppy->sort = 2; break;
 				case CONFUSER: droppy->pickable = new Confuser(((Confuser*)(owner->pickable))->nbTurns,((Confuser*)(owner->pickable))->range); droppy->sort = 2; break;
 				case FIREBALL: droppy->pickable = new Fireball(((Fireball*)(owner->pickable))->range,((Fireball*)(owner->pickable))->damage,((Fireball*)(owner->pickable))->maxRange); droppy->sort = 2; break;
-				case FLARE: break;
+				case FLARE: droppy->pickable = new Flare(((Flare*)(owner->pickable))->nbTurns, ((Flare*)(owner->pickable))->range, ((Flare*)(owner->pickable))->lightRange); droppy->sort = 2; break;
 				case EQUIPMENT: break;
 				case NONE: break;
 			}
@@ -395,6 +423,8 @@ void Equipment::save(TCODZip &zip) {
 	zip.putInt(slot);
 	zip.putInt(stacks);
 	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
 	bonus->save(zip);
 }
 
@@ -403,6 +433,8 @@ void Equipment::load(TCODZip &zip) {
 	slot = (SlotType)zip.getInt();
 	stacks = zip.getInt();
 	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
 	ItemBonus *bon = new ItemBonus(ItemBonus::NOBONUS,0);
 	bon->load(zip);
 	bonus = bon;

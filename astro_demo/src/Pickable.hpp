@@ -6,6 +6,8 @@ public:
 	bool stacks;
 	int stackSize;
 	PickableType type;
+	int value; //Defines the items worth in Pbc
+	int inkValue; //Defines the items cost in ink to print
 	Pickable(bool stacks,int stacksize, PickableType type = NONE);
 	bool pick(Actor *owner, Actor *wearer);
 	virtual bool use(Actor *owner, Actor *wearer);
@@ -23,6 +25,7 @@ public:
 class Healer: public Pickable {
 public: 
 	float amount; //how much it heals
+	
 	Healer(float amount, bool stacks = true, int stackSize = 1, PickableType type = HEALER);
 	bool use(Actor *owner, Actor *wearer);
 	void load(TCODZip &zip);
@@ -32,6 +35,7 @@ public:
 class Charger: public Pickable {
 public: 
 	float amount; //how much it recharges
+	
 	Charger(float amount, bool stacks = true, int stackSize = 1, PickableType type = CHARGER);
 	bool use(Actor *owner, Actor *wearer);
 	void load(TCODZip &zip);
@@ -41,6 +45,7 @@ public:
 class LightningBolt: public Pickable {
 public: 
 	float range, damage;
+	
 	LightningBolt(float range, float damage, bool stacks = true, 
 		int stackSize = 1, PickableType type = LIGHTNING_BOLT);
 	bool use(Actor *owner, Actor *wearer);
@@ -51,6 +56,7 @@ public:
 class Fireball : public LightningBolt {
 public:
 	float maxRange;
+	
 	Fireball(float range, float damage, float maxRange,
 		bool stacks = true, int stackSize = 1, PickableType type = FIREBALL);
 	bool use(Actor *owner, Actor *wearer);
@@ -102,6 +108,7 @@ public:
 	};
 	
 	bool equipped;
+	
 	SlotType slot;
 	ItemBonus *bonus;
 	Equipment(bool equipped = false, SlotType slot = NOSLOT, ItemBonus *bonus = NULL,
