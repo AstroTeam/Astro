@@ -659,14 +659,27 @@ void Renderer::render(void *sdlSurface){
 			//TCODRandom *rng = TCODRandom::getInstance();
 			//fireInt = rng->getInt(0,3);
 			//add environment stuffs-> over things here (fire)
-			if ((engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN) && engine.map->tiles[xM+yM*engine.map->width].envSta == 1)
+			if ((engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN) && engine.map->tiles[xM+yM*engine.map->width].envSta != 0)
 			{
-				
-				srcRect.x = (fireInt%3) * 16;
-				srcRect.y = 0;
-				//srcRect.x += (rng->getInt(0,2))*16;
-				//if (slowing%5 == 0)
-				SDL_BlitSurface(fire,&srcRect,floorMap,&dstRect);
+				//fire
+				if (engine.map->tiles[xM+yM*engine.map->width].envSta == 1)
+				{
+					srcRect.x = (fireInt%3) * 16;
+					srcRect.y = 0;
+					//srcRect.x += (rng->getInt(0,2))*16;
+					//if (slowing%5 == 0)
+					SDL_BlitSurface(fire,&srcRect,floorMap,&dstRect);
+					if (engine.map->tiles[xM+yM*engine.map->width].temperature == 0)
+						engine.map->tiles[xM+yM*engine.map->width].envSta = 0;
+					else if (engine.gameStatus == engine.NEW_TURN)
+					{
+						engine.map->tiles[xM+yM*engine.map->width].temperature--;
+						//engine.gui->message(TCODColor::red, "tempreature at %d,%d is %d",xM,yM,engine.map->tiles[xM+yM*engine.map->width].temperature);
+					}
+						
+					
+						
+				}
 				
 				
 			}
@@ -680,6 +693,7 @@ void Renderer::render(void *sdlSurface){
 		y=0;
 		x++;
 	}
+	//fire animating
 	slowing++;
 	if (slowing%5 == 0)
 	fireInt++;
