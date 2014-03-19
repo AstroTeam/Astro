@@ -1,5 +1,5 @@
 #include "main.hpp"
-#include "SDL/SDL.h"
+//#include "SDL/SDL.h"
 #include <math.h>
 
 /* Engine::Engine() : gameStatus(STARTUP), fovRadius(3)
