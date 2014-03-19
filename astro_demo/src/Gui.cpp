@@ -229,6 +229,10 @@ void Gui::renderKeyLook() {
 			int c = engine.map->tiles[x+y*engine.map->width].num;
 
 			float i = engine.map->tiles[x+y*engine.map->width].infection;
+			
+			//int t = engine.map->tiles[x+y*engine.map->width].temperature;
+			
+			//int e = engine.map->tiles[x+y*engine.map->width].envSta;
 
 			//tileInfoMessage(TCODColor::green, "an infection level of %g",i);
 
@@ -270,6 +274,9 @@ void Gui::renderKeyLook() {
 			*/
 
 			tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
+			if (engine.map->tiles[x+y*engine.map->width].temperature > 0)
+			tileInfoMessage(TCODColor::red, "THE TILE IS ON FIRE!");
+			//tileInfoMessage(TCODColor::yellow, "the environment is %d",e);
 
 			
 		//}else {

@@ -205,9 +205,9 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 	if (engine.map->isWall(targetx, targety) ) return false;
 	if (!owner->attacker) return false;
 	
-	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
+	if(engine.map->tiles[(owner->x)+(owner->y)*engine.map->width].temperature > 0)
 	{
-		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
+		int dmg = engine.map->tiles[(owner->x)+(owner->y)*engine.map->width].temperature*0.5;
 		owner->destructible->takeDamage(owner, (float)(dmg));
 		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
 	}

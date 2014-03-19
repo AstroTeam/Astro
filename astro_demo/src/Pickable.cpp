@@ -188,9 +188,9 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 		Actor *actor = *it;
 		if (actor->destructible && !actor->destructible->isDead()
 			&&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) {
-			
-			float damageTaken = actor->destructible->takeDamage(actor, 2 * wearer->totalIntel);
-			engine.damageDone +=  2 * wearer->totalIntel;
+			//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
+			float damageTaken = 1;//actor->destructible->takeDamage(actor, 2 * wearer->totalIntel);
+			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
 				engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damageTaken);
 			} else {
@@ -205,8 +205,10 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 		for (int yyy = y - ((1 + (wearer->totalIntel - 1) /3)); yyy <= y+((1 + (wearer->totalIntel - 1) /3));yyy++)
 		{
 			if (engine.distance(x,xxx,y,yyy) <= (1 + (wearer->totalIntel - 1) /3))
-			engine.map->tiles[xxx+yyy*engine.map->width].envSta = 1;
-			engine.map->tiles[xxx+yyy*engine.map->width].temperature = 6;
+			{
+				engine.map->tiles[xxx+yyy*engine.map->width].envSta = 1;
+				engine.map->tiles[xxx+yyy*engine.map->width].temperature = 6;
+			}
 			
 		}
 	}
