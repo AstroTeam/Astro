@@ -414,7 +414,7 @@ Actor* Map::createSecurityBot(int x, int y)
 	securityBot->totalStr = securityBotStr;
 	securityBot->attacker = new Attacker(securityBotStr);
 	securityBot->container = new Container(2);
-	securityBot->ai = new MonsterAi();
+	securityBot->ai = new SecurityBotAi();
 	generateRandom(securityBot, securityBotAscii);
 	engine.actors.push(securityBot);
 	
@@ -1378,6 +1378,7 @@ cout << "Server room made";
 	
 	int rand = rng->getInt(0,100);
 	//Vending Machines spawn in corners of standard rooms at random
+	
 	if(rand <= 20 && room->type == STANDARD) //a room has a 30% chance of having a vending machine (provided it has rooms)
 	{
 		int c = rng->getInt(0,3);
@@ -1386,14 +1387,53 @@ cout << "Server room made";
 		bool x2y2 = canWalk(x2,y2) && engine.getAnyActor(x2,y2) == NULL && ((canWalk(x2,y2 -1 ) && engine.getAnyActor(x2,y2 - 1) == NULL) && (canWalk(x2-1,y2) && engine.getAnyActor(x2-1,y2) == NULL) ) ;
 		bool x2y1 = canWalk(x2,y1) && engine.getAnyActor(x2,y2) == NULL && ((canWalk(x2,y1 +1 ) && engine.getAnyActor(x2,y1 + 1) == NULL) && (canWalk(x2-1,y1) && engine.getAnyActor(x2-1,y1) == NULL) );
 		
+		int vendX = -1, vendY = -1;
 		if(c == 0 && x1y1)
-			createVendor(x1,y1);
+		{	vendX = x1;
+			vendY = y1;
+		}
 		if(c == 1 && x1y2)
-			createVendor(x1,y2);
+		{
+			vendX = x1;
+			vendY = y2;
+		}
 		if(c == 2 && x2y2)
-			createVendor(x2,y2);
+		{
+			vendX = x2;
+			vendY = y2;
+		}
 		if(c == 3 && x2y1)
-			createVendor(x2, y1);
+		{
+			vendX = x2;
+			vendY = y1;
+		}
+		if(vendX != -1 && vendY != -1)
+		{
+			createVendor(vendX, vendY);
+			
+			bool case1 = (canWalk(vendX-1,vendY) && engine.getAnyActor(vendX-1,vendY) == NULL);
+			bool case2 = (canWalk(vendX,vendY-1) && engine.getAnyActor(vendX,vendY-1) == NULL);
+			bool case3 = (canWalk(vendX,vendY+1) && engine.getAnyActor(vendX,vendY+1) == NULL);
+			bool case4 = (canWalk(vendX+1,vendY) && engine.getAnyActor(vendX+1,vendY) == NULL);
+			Actor *securityBot = NULL;
+			
+			if(case1)
+				securityBot = createSecurityBot(vendX-1, vendY);
+			else if(case2)
+				securityBot = createSecurityBot(vendX, vendY-1);
+			else if(case3)
+				securityBot = createSecurityBot(vendX, vendY+1);
+			else if(case4)
+				securityBot = createSecurityBot(vendX+1, vendY);
+				
+			if(securityBot != NULL)
+			{
+				securityBot->hostile = false;
+				SecurityBotAi *sbAi = (SecurityBotAi*) securityBot->ai;
+				sbAi->vendingX = vendX;
+				sbAi->vendingY = vendY;
+			}
+		}
 
 	}
 	//15% chance of spawning turrets in the corners of standard rooms
@@ -1419,7 +1459,7 @@ cout << "Server room made";
 			
 	}
 	
-
+	
 	//set the stairs position
 	while (true) {
 		int x = rng->getInt(x1,x2);

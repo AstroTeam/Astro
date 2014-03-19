@@ -19,6 +19,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case INTERACTIBLE: ai = new InteractibleAi(); break;
 		case VENDING: ai = new VendingAi(); break;
 		case ENGINEER: ai = new EngineerAi(5,5); break;
+		case SECURITY: ai = new SecurityBotAi(); break;
 	}
 	ai->load(zip);
 	return ai;
@@ -211,9 +212,13 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 			if (actor->destructible && !actor->destructible->isDead() ) {
 				if (actor->hostile||owner->hostile){
 					owner->attacker->attack(owner, actor);
+					if(!actor->hostile && actor->ch == 'S') //currently this only applies to security bots, if the player attacks a nonhostile enemy, should that actor generally become hostile?
+						actor->hostile = true;
 					engine.damageDone += owner->attacker->totalPower - actor->destructible->totalDodge;
 				}else if(actor->interact && !owner->hostile)
 					((InteractibleAi*)actor->ai)->interaction(actor, owner);
+				else if(!owner->hostile && !actor->hostile && actor->ch == 'S')
+					engine.gui->message(TCODColor::grey, "The %s seems to be inactive", actor->name);
 			}
 			return false;
 		}
@@ -712,6 +717,65 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	
 }
 
+SecurityBotAi::SecurityBotAi() : moveCount(0) {
+vendingX = -1;
+vendingY = -1;
+}
+
+void SecurityBotAi::load(TCODZip &zip) {
+
+	moveCount = zip.getInt();
+	vendingX = zip.getInt();
+	vendingY = zip.getInt();
+}
+
+void SecurityBotAi::save(TCODZip &zip) {
+	zip.putInt(SECURITY);
+	zip.putInt(moveCount);
+	zip.putInt(vendingX);
+	zip.putInt(vendingY);
+}
+
+void SecurityBotAi::update(Actor *owner) {
+
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	if (engine.map->isInFov(owner->x,owner->y)) {
+		//can see the palyer, move towards him
+		moveCount = TRACKING_TURNS;
+	} else {
+		moveCount--;
+	}
+	if (moveCount > 0) {
+		moveOrAttack(owner, engine.player->x, engine.player->y);
+	} else {
+		moveCount = 0;
+	}
+}
+
+void SecurityBotAi::moveOrAttack(Actor *owner, int targetx, int targety){
+	//Cases
+	//1. Security Bot does not have any vending machine (isHostile = false ending machine x = -1, vendingmachine y = -1), function as a monster Ai normally
+	//2. If vending machinex != -1 and vendingmachiney != -1, then make an instance of vendingmachine ai using x and y. and check if it security deployed
+		//2a. If isdeployed, then change vending machine state to hostile
+		//3a else nothing
+	
+	if((vendingX == -1 && vendingY == -1) || owner->hostile)
+		MonsterAi::moveOrAttack(owner,targetx,targety);
+	else
+	{
+		Actor* vending = engine.getAnyActor(vendingX, vendingY);
+		VendingAi* vendingAi = (VendingAi*) vending->ai;
+		
+		if(vendingAi != NULL && vendingAi->deployedSecurity)
+		{
+			owner->hostile = true;
+			engine.gui->message(TCODColor::red, "Vending Machine Vandalism Deteched: %s Activated!", owner->name);
+		}
+		
+	}
+}
 
 EpicenterAi::EpicenterAi() {
 }
@@ -1430,6 +1494,7 @@ void InteractibleAi::interaction(Actor *owner, Actor *target){
 
 
 VendingAi::VendingAi() {
+	deployedSecurity = false;
 }
 
 void VendingAi::save(TCODZip &zip){

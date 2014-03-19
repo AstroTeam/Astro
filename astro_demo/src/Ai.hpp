@@ -8,7 +8,7 @@ public:
 	Actor *choseFromInventory(Actor *owner, int type, bool isVend);
 protected:
 	enum AiType {
-		MONSTER, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED, LIGHT, 
+		MONSTER, SECURITY, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED, LIGHT, 
 		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, VENDING, ENGINEER
 
 	};
@@ -41,9 +41,23 @@ public:
 	void save(TCODZip &zip);
 protected:
 	int moveCount;
-	
 	void moveOrAttack(Actor *owner, int targetx, int targety);
 };
+
+class SecurityBotAi: public MonsterAi
+{
+	public:
+		SecurityBotAi();
+		void update(Actor *owner);
+		void load(TCODZip &zip);
+		void save(TCODZip &zip);
+		int vendingX, vendingY; //the position of security bot's vending machine
+	protected:
+		int moveCount;
+		void moveOrAttack(Actor *owner, int targetx, int targety);
+	
+};
+
 
 class RangedAi : public Ai
 {
@@ -194,4 +208,6 @@ public:
 	void save(TCODZip &zip);
 	void interaction(Actor *owner, Actor *target);
 };
+
+
 

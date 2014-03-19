@@ -56,26 +56,9 @@ float Destructible::takeDamage(Actor *owner, float damage) {
 	if(owner->ch == 'V') //meaning you're attacking a Vending machine
 	{
 		VendingAi* va = (VendingAi*) owner->ai;
-		if(!va->deployedSecurity){
-		engine.gui->message(TCODColor::red, "Vending Machine Vandalism Deteched: Deploying Security Bot!", owner->name);
-		int x = owner->x;
-		int y = owner->y;
-		bool case1 = (engine.map->canWalk(x-1,y) && engine.getAnyActor(x-1,y) == NULL);
-		bool case2 = (engine.map->canWalk(x,y-1) && engine.getAnyActor(x,y-1) == NULL);
-		bool case3 = (engine.map->canWalk(x,y+1) && engine.getAnyActor(x,y+1) == NULL);
-		bool case4 = (engine.map->canWalk(x+1,y) && engine.getAnyActor(x+1,y) == NULL);
-		
-		if(case1)
-			engine.map->createSecurityBot(x-1, y);
-		else if(case2)
-			engine.map->createSecurityBot(x, y-1);
-		else if(case3)
-			engine.map->createSecurityBot(x, y+1);
-		else if(case4)
-			engine.map->createSecurityBot(x+1, y);
 		va->deployedSecurity = true;
-		}
 	}
+	
 	return damage;
 }
 
