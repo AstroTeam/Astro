@@ -1565,7 +1565,7 @@ void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
 	}else if(turretDeployed)
 	{
 		Actor *turret = engine.getAnyActor(turretX, turretY);
-		if(!turret->destructible->isDead() && turret->destructible->hp <= turret->destructible->maxHp)
+		if(!turret->destructible->isDead() && turret->destructible->hp < turret->destructible->maxHp)
 		{		//repair turret
 			engine.gui->message(TCODColor::red, "The %s is repairing their sentry turret!", owner->name);
 			turret->destructible->heal(repairPower);
