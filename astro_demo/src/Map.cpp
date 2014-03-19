@@ -110,6 +110,8 @@ void Map::init(bool withActors, LevelType levelType) {
 	listener.bspActors = withActors;
 	listener.roomList = getRoomTypes(levelType);
 	bsp.traverseInvertedLevelOrder(&listener, (void *)withActors);
+	//Create boss, for now it is a simple security bot
+	engine.boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
 	
 }
 
@@ -411,7 +413,7 @@ Actor* Map::createSecurityBot(int x, int y)
 	float securityBotDR = 0*scale;
 	float securityBotStr = 10*scale;
 	float securityBotXp = 25*scale;
-	int securityBotAscii = 'S'; //security bot ascii change when needed
+	int securityBotAscii = 130; //CHANGED
 
 	Actor *securityBot = new Actor(x,y,securityBotAscii,"Security Bot",TCODColor::white);
 	securityBot->destructible = new MonsterDestructible(securityBotHp,securityBotDodge,securityBotDR,"destroyed security bot",securityBotXp);
@@ -449,6 +451,7 @@ Actor* Map::createInfectedCrewMember(int x, int y)
 	return infectedCrewMember;
 
 }
+
 Actor* Map::createInfectedNCO(int x, int y)
 {
 	int level = engine.level;
@@ -559,7 +562,7 @@ Actor *Map::createInfectedEngineer(int x, int y)
 	float infectedEngineerStr = 2*scale;
 	float infectedEngineerIntel = 5*scale; 
 	float infectedEngineerXp = 20*scale;
-	int infectedEngineerAscii = 'E';
+	int infectedEngineerAscii = 134;  //CHANGED
 
 	Actor *infectedEngineer = new Actor(x,y,infectedEngineerAscii,"Infected Engineer",TCODColor::white);
 	infectedEngineer->destructible = new MonsterDestructible(infectedEngineerHp,infectedEngineerDodge,infectedEngineerDR,"infected corpse",infectedEngineerXp);
@@ -1468,7 +1471,7 @@ cout << "Server room made";
 	while (true) {
 		int x = rng->getInt(x1,x2);
 		int y = rng->getInt(y1,y2);
-		if (canWalk(x,y)) {
+		if (canWalk(x,y) && canWalk(x+1,y)){ //boss spawns at (stairs->x+1 stairs->y), hence the additional check)
 			engine.stairs->x = x;
 			engine.stairs->y = y;
 			break;

@@ -670,7 +670,7 @@ void Renderer::render(void *sdlSurface){
 					//if (slowing%5 == 0)
 					SDL_BlitSurface(fire,&srcRect,floorMap,&dstRect);
 					if (engine.map->tiles[xM+yM*engine.map->width].temperature == 0)
-						engine.map->tiles[xM+yM*engine.map->width].envSta = 0;
+						engine.map->tiles[xM+yM*engine.map->width].envSta = 2;
 					else if (engine.gameStatus == engine.NEW_TURN)
 					{
 						engine.map->tiles[xM+yM*engine.map->width].temperature--;
@@ -679,6 +679,14 @@ void Renderer::render(void *sdlSurface){
 						
 					
 						
+				}
+				if (engine.map->tiles[xM+yM*engine.map->width].envSta == 2 && engine.map->tiles[xM+yM*engine.map->width].decoration == 0)
+				{
+					srcRect.x = 4 * 16;
+					srcRect.y = 0;
+					SDL_SetAlpha(fire, SDL_SRCALPHA, 255*.5);
+					SDL_BlitSurface(fire,&srcRect,floorMap,&dstRect);
+					SDL_SetAlpha(fire, SDL_SRCALPHA, 255*.9);
 				}
 				
 				

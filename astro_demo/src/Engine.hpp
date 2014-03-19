@@ -16,6 +16,7 @@ public:
 	Actor *player;
 	Actor *playerLight;
 	Actor *stairs;
+	Actor *boss;
 	Map *map;
 	//Map *mapCpy;
 	//Renderer *rend;
