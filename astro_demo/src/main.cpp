@@ -18,8 +18,8 @@ Engine engine(85,44);
 
 
 int main( int argc, char* args[] ) {
-	SDL_Init( SDL_INIT_EVERYTHING );
-	TCODSystem::registerSDLRenderer(new Renderer());
+	//SDL_Init( SDL_INIT_EVERYTHING );
+	//TCODSystem::registerSDLRenderer(new Renderer());
 
 	//TCODSystem::registerSDLRenderer(new EngineRend());
 	engine.load(false);

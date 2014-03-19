@@ -1,5 +1,5 @@
 #include "libtcod.hpp"
-#include "SDL/SDL.h"
+//#include "SDL/SDL.h"
 class Actor;
 #include "Persistent.hpp"
 #include "Destructible.hpp"
@@ -10,7 +10,7 @@ class Actor;
 #include "Map.hpp"
 #include "Actor.hpp"
 #include "Gui.hpp"
-#include "Renderer.hpp"
+//#include "Renderer.hpp"
 //#include "EngineRend.hpp"
 //#include "blengine.cpp"
 #include "Engine.hpp"
