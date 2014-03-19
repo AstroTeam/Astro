@@ -206,6 +206,7 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 		{
 			if (engine.distance(x,xxx,y,yyy) <= (1 + (wearer->totalIntel - 1) /3))
 			engine.map->tiles[xxx+yyy*engine.map->width].envSta = 1;
+			engine.map->tiles[xxx+yyy*engine.map->width].temperature = 6;
 			
 		}
 	}
