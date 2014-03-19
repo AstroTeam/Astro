@@ -411,8 +411,15 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		}break;
 		case '>':
 		if (engine.stairs->x == owner->x && engine.stairs->y == owner->y) {
-			engine.player->attacker->lastTarget = NULL;
-			engine.nextLevel();
+			if(engine.boss == NULL || (engine.boss->destructible && engine.boss->destructible->isDead()))
+			{
+				engine.player->attacker->lastTarget = NULL;
+				engine.nextLevel();
+			}
+			else
+			{
+				engine.gui->message(TCODColor::lightGrey, "You must first defeat the %s that is guarding the stairs before leaving!", engine.boss->name);
+			}
 		} else {
 			engine.gui->message(TCODColor::lightGrey, "There are no stairs here. Perhaps you are disoriented?");
 		} break;

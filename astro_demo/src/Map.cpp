@@ -110,6 +110,8 @@ void Map::init(bool withActors, LevelType levelType) {
 	listener.bspActors = withActors;
 	listener.roomList = getRoomTypes(levelType);
 	bsp.traverseInvertedLevelOrder(&listener, (void *)withActors);
+	//Create boss, for now it is a simple security bot
+	engine.boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
 	
 }
 
@@ -449,6 +451,7 @@ Actor* Map::createInfectedCrewMember(int x, int y)
 	return infectedCrewMember;
 
 }
+
 Actor* Map::createInfectedNCO(int x, int y)
 {
 	int level = engine.level;
@@ -1468,7 +1471,7 @@ cout << "Server room made";
 	while (true) {
 		int x = rng->getInt(x1,x2);
 		int y = rng->getInt(y1,y2);
-		if (canWalk(x,y)) {
+		if (canWalk(x,y) && canWalk(x+1,y)){ //boss spawns at (stairs->x+1 stairs->y), hence the additional check)
 			engine.stairs->x = x;
 			engine.stairs->y = y;
 			break;

@@ -12,7 +12,7 @@
 } */
 
 Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
-	player(NULL),playerLight(NULL),map(NULL), fovRadius(3),
+	player(NULL),playerLight(NULL),boss(NULL),map(NULL), fovRadius(3),
 	screenWidth(screenWidth),screenHeight(screenHeight),level(1),turnCount(0), piratesFound(0) {
 	mapWidth = 100;
 	mapHeight = 100;
@@ -654,10 +654,12 @@ void Engine::save() {
 		//then the stairs
 		stairs->save(zip);
 		playerLight->save(zip);
+		//save the boss
+		boss->save(zip);
 		//then all the other actors
-		zip.putInt(actors.size() - 3);
+		zip.putInt(actors.size() - 3 - 1); //minus another one for boss actor?
 		for (Actor **it = actors.begin(); it!=actors.end(); it++) {
-			if (*it != player && *it != stairs && *it != playerLight) {
+			if (*it != player && *it != stairs && *it != playerLight && *it != boss) { //!= boss like stairs etc.?
 				(*it)->save(zip);
 			}
 		}
@@ -740,9 +742,13 @@ void Engine::load(bool pause) {
 		//then the player's light
 		playerLight = new Actor(0,0,0, NULL, TCODColor::white);
 		playerLight->load(zip);
+		//load the boss
+		boss = new Actor(0,0,0, NULL, TCODColor::white);
+		boss->load(zip);
 		actors.push(player);
 		actors.push(stairs);
 		actors.push(playerLight);
+		//actors.push(boss); //I push the boss to actorsList on line in Map.cpp so I don't need to push it here?
 		//then all other actors
 		int nbActors = zip.getInt();
 		while (nbActors > 0) {
