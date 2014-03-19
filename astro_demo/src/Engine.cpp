@@ -642,8 +642,8 @@ void Engine::save() {
 		zip.putInt(invFrames);
 		zip.putInt(selX);
 		zip.putInt(selY);
-		zip.putInt(damageDone);
-		zip.putInt(damageReceived);
+		//zip.putFloat(damageDone);
+		//zip.putFloat(damageReceived);
 		zip.putInt(piratesFound);
 		//save the map first
 		zip.putInt(map->width);
@@ -719,8 +719,8 @@ void Engine::load(bool pause) {
 		turnCount = zip.getInt();
 		killCount = zip.getInt();
 		piratesFound = zip.getInt();
-		damageDone = zip.getInt();
-		damageReceived = zip.getInt();
+		//damageDone = zip.getFloat();
+		//damageReceived = zip.getFloat();
 		menuState = zip.getInt();
 		invState = zip.getInt();
 		invFrames = zip.getInt();
