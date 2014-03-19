@@ -78,6 +78,13 @@ void Engine::init() {
 	player->vit=engine.gui->conValue;
 	player->destructible->hp=engine.gui->conValue;
 	player->destructible->maxHp=engine.gui->conValue;
+	
+	engine.gui->statPoints = 2;
+	engine.gui->conValue = 100;
+	engine.gui->strValue = 5;
+	engine.gui->agValue = 3;
+	engine.gui->intelValue = 3;
+	
 	int plyrAscii = 64;
 	switch(engine.gui->raceSelection){
 		case 1:
@@ -528,57 +535,62 @@ void Engine::init() {
 			((Equipment*)(chest->pickable))->use(chest,player);
 			
 			break;
-			default:
-				player->role="Marine";
-				player->job="Infantry";
+		default:
+			player->role="Marine";
+			player->job="Infantry";
+			
+			player->dex+=3; //job selection bonus
+			player->totalDex+=3; //job selection bonus
+			
+			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
+			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
+			legs->blocks = false;
+			legs->pickable = new Equipment(0,Equipment::LEGS,bonusL);
+			legs->sort = 3;
+			engine.actors.push(legs);
+			legs->pickable->pick(legs,player);
+			((Equipment*)(legs->pickable))->use(legs,player);
+			
+			feet = new Actor(0,0,185,"Combat Boots",TCODColor::white);
+			bonusF = new ItemBonus(ItemBonus::HEALTH,0);
+			feet->blocks = false;
+			feet->pickable = new Equipment(0,Equipment::FEET,bonusF);
+			feet->sort = 3;
+			engine.actors.push(feet);
+			feet->pickable->pick(feet,player);
+			((Equipment*)(feet->pickable))->use(feet,player);
+			
+			chest = new Actor(0,0,185,"Marine Fatigue Jacket",TCODColor::white);
+			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			chest->blocks = false;
+			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC);
+			chest->sort = 3;
+			engine.actors.push(chest);
+			chest->pickable->pick(chest,player);
+			((Equipment*)(chest->pickable))->use(chest,player);
 				
-				player->dex+=3; //job selection bonus
-				player->totalDex+=3; //job selection bonus
-				
-				legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
-				bonusL = new ItemBonus(ItemBonus::HEALTH,0);
-				legs->blocks = false;
-				legs->pickable = new Equipment(0,Equipment::LEGS,bonusL);
-				legs->sort = 3;
-				engine.actors.push(legs);
-				legs->pickable->pick(legs,player);
-				((Equipment*)(legs->pickable))->use(legs,player);
-				
-				feet = new Actor(0,0,185,"Combat Boots",TCODColor::white);
-				bonusF = new ItemBonus(ItemBonus::HEALTH,0);
-				feet->blocks = false;
-				feet->pickable = new Equipment(0,Equipment::FEET,bonusF);
-				feet->sort = 3;
-				engine.actors.push(feet);
-				feet->pickable->pick(feet,player);
-				((Equipment*)(feet->pickable))->use(feet,player);
-				
-				chest = new Actor(0,0,185,"Marine Fatigue Jacket",TCODColor::white);
-				bonusC = new ItemBonus(ItemBonus::HEALTH,0);
-				chest->blocks = false;
-				chest->pickable = new Equipment(0,Equipment::CHEST,bonusC);
-				chest->sort = 3;
-				engine.actors.push(chest);
-				chest->pickable->pick(chest,player);
-				((Equipment*)(chest->pickable))->use(chest,player);
-				
-				helmet = new Actor(0,0,185,"Marine Ballistic Helmet",TCODColor::white);
-				bonusHe = new ItemBonus(ItemBonus::HEALTH,0);
-				helmet->blocks = false;
-				helmet->pickable = new Equipment(0,Equipment::HEAD,bonusHe);
-				helmet->sort = 3;
-				engine.actors.push(helmet);
-				helmet->pickable->pick(helmet,player);
-				((Equipment*)(helmet->pickable))->use(helmet,player);
-				
-				equip1 = new Actor(0,0,' ',"Super-Flare", TCODColor::white);
-				equip1->sort = 2;
-				equip1->blocks = false;
-				equip1->pickable = new Fireball(3,12,8);
-				engine.actors.push(equip1);
-				equip1->pickable->pick(equip1,player);
-			break;
+			helmet = new Actor(0,0,185,"Marine Ballistic Helmet",TCODColor::white);
+			bonusHe = new ItemBonus(ItemBonus::HEALTH,0);
+			helmet->blocks = false;
+			helmet->pickable = new Equipment(0,Equipment::HEAD,bonusHe);
+			helmet->sort = 3;
+			engine.actors.push(helmet);
+			helmet->pickable->pick(helmet,player);
+			((Equipment*)(helmet->pickable))->use(helmet,player);
+			
+			equip1 = new Actor(0,0,' ',"Super-Flare", TCODColor::white);
+			equip1->sort = 2;
+			equip1->blocks = false;
+			equip1->pickable = new Fireball(3,12,8);
+			engine.actors.push(equip1);
+			equip1->pickable->pick(equip1,player);
+		break;
 	}
+	//set race and job back to 0
+	engine.gui->raceSelection = 0;
+	engine.gui->jobSelection = 0;
+	engine.gui->roleSelection = 0;
+	
 	player->ch = plyrAscii;
 	stairs = new Actor(0,0,'>', "stairs", TCODColor::white);
 	stairs->blocks = false;
