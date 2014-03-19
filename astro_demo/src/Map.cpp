@@ -256,7 +256,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 
 void Map::addMonster(int x, int y, bool isHorde) {
 	TCODRandom *rng =TCODRandom::getInstance();
-	//only engineers spawn in generator rooms
+	
 	
 	/*
 	Stats (Actor.hpp): int str, dex, intel, vit, totalStr, totalDex, totalIntel; //strength, dexterity, intelligence, vitality
@@ -306,12 +306,12 @@ void Map::addMonster(int x, int y, bool isHorde) {
 	
 	int dice = rng->getInt(0,uB);
 	
-	if(engine.map->tiles[x+y*width].tileType == GENERATOR && !isHorde)
+	if(engine.map->tiles[x+y*width].tileType == GENERATOR && !isHorde) //only engineers spawn in generator rooms (unless it's a horde)
 	{
 		createInfectedEngineer(x,y);
 		return;
 	}
-	else if(engine.map->tiles[x+y*width].tileType == BARRACKS) //Spawn infected marines and infected grenadiers in barracks
+	else if(engine.map->tiles[x+y*width].tileType == BARRACKS && !isHorde) //only infected marines and infected grenadiers in barracks (unless it's a horde)
 	{
 		if(dice < 600)
 			createInfectedMarine(x,y);
