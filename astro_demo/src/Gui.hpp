@@ -111,8 +111,6 @@ public:
 	void save (TCODZip &zip);
 	void clear();
 	void classSidebar();
-	void vendingSidebar();
-	Actor *vendingMenu(Actor *owner);
 protected:
 	TCODConsole *con;
 	TCODConsole *sidebar;

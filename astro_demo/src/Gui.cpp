@@ -229,6 +229,10 @@ void Gui::renderKeyLook() {
 			int c = engine.map->tiles[x+y*engine.map->width].num;
 
 			float i = engine.map->tiles[x+y*engine.map->width].infection;
+			
+			//int t = engine.map->tiles[x+y*engine.map->width].temperature;
+			
+			//int e = engine.map->tiles[x+y*engine.map->width].envSta;
 
 			//tileInfoMessage(TCODColor::green, "an infection level of %g",i);
 
@@ -270,6 +274,9 @@ void Gui::renderKeyLook() {
 			*/
 
 			tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
+			if (engine.map->tiles[x+y*engine.map->width].temperature > 0)
+			tileInfoMessage(TCODColor::red, "THE TILE IS ON FIRE!");
+			//tileInfoMessage(TCODColor::yellow, "the environment is %d",e);
 
 			
 		//}else {
@@ -750,52 +757,4 @@ void Gui::classSidebar(){
 			classBar.print(1,25,"INTELLIGENCE: %d",intelValue);
 			
 			TCODConsole::blit(&classBar, 0, 0, 20, engine.screenHeight, TCODConsole::root, 0, 0);
-}
-void Gui::vendingSidebar(){
-	//create vending machine sidebar
-	TCODConsole vendBar(16,32);
-	vendBar.setDefaultBackground(TCODColor::black);
-	vendBar.clear();
-	vendBar.setDefaultForeground(TCODColor(200,180,50));
-	vendBar.printFrame(0,0,16,32,true,TCOD_BKGND_ALPHA(50),"VENDING");
-	
-	vendBar.print(1,5,"Pbc: ");
-	TCODConsole::blit(&vendBar,0,0, 16, 32, TCODConsole::root, (engine.screenWidth / 2 - INVENTORY_MENU_WIDTH / 2) + 4,(engine.screenHeight / 2 - INVENTORY_MENU_HEIGHT / 2) - 19);
-}
-Actor *Gui::vendingMenu(Actor *owner){
-	engine.gui->menu.clear();
-	engine.gui->menu.addItem(Menu::ITEMS,"ITEMS");
-	engine.gui->menu.addItem(Menu::TECH,"TECH");
-	engine.gui->menu.addItem(Menu::ARMOR,"ARMOR");
-	engine.gui->menu.addItem(Menu::WEAPONS, "WEAPONS");
-	engine.gui->menu.addItem(Menu::EXIT, "EXIT");
-	Actor *actor = owner;	// the  "= owner" part just initializes it as a pointer to be used by the next line
-	actor->getDistance(0,0);//fixes warning of unused variable
-	bool select = true;
-	while(select){
-		engine.gui->vendingSidebar();
-		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::VENDING);
-		
-		switch(menuItem){
-			case Menu::ITEMS:
-			actor = owner->ai->choseFromInventory(owner,1,true);
-			break;
-			case Menu::TECH:
-			actor = owner->ai->choseFromInventory(owner,2,true);
-			break;
-			case Menu::ARMOR:
-			actor = owner->ai->choseFromInventory(owner,3,true);
-			break;
-			case Menu::WEAPONS:
-			actor = owner->ai->choseFromInventory(owner,4,true);
-			break;
-			case Menu::EXIT:
-			select = false;
-			break;
-			case Menu::NO_CHOICE:
-			break;
-			default: break; 
-		}
-	}
-	return NULL; 
 }

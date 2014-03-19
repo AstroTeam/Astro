@@ -26,12 +26,13 @@ struct Tile {
 	bool drty;
 	//environment stuff
 	int envSta;
+	int temperature;
 	//decoration int
 	int decoration;
 	//add number of flowers and a boolean to grow them when epicenter updates
 	//could have flower levels?  easier to make flower tiles to overlay than keep track of x,y's for every flower on a tile
 	Param::RoomType tileType;
-	Tile() : explored(false), infection (0), lit(false),num (0),drty(false), envSta(0),decoration(0), tileType(Param::STANDARD) {}
+	Tile() : explored(false), infection (0), lit(false),num (0),drty(false), envSta(0),temperature(0),decoration(0), tileType(Param::STANDARD) {}
 	const TCODColor * lastColor;//if color changed offscreen
 	char lastChar;//if the char changed
 };
@@ -92,6 +93,7 @@ public:
 	Actor *createMylarBoots(int x, int y);
 	Actor *createMLR(int x, int y);
 	Actor *createCombatKnife(int x, int y);
+	void generateRandom(Actor *owner, int ascii);
 	Tile *tiles;
 
 	
@@ -106,6 +108,5 @@ protected:
 	void createRoom(int roomNum, bool withActors, Room * room);
 	void addMonster(int x, int y, bool isHorde); //is this monster part of a horde?
 	void addItem(int x, int y, RoomType roomType);
-	void generateRandom(Actor *owner, int ascii);
 	TCODList<RoomType> * getRoomTypes(LevelType levelType);
 };

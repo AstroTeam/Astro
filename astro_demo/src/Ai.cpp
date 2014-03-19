@@ -110,6 +110,7 @@ void PlayerAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	
 	int levelUpXp = getNextLevelXp();
 	if (owner->destructible->xp >= levelUpXp) {
 		bool choice_made = false, first = true;
@@ -204,6 +205,14 @@ void PlayerAi::update(Actor *owner) {
 bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 	if (engine.map->isWall(targetx, targety) ) return false;
 	if (!owner->attacker) return false;
+	
+	if(engine.map->tiles[(owner->x)+(owner->y)*engine.map->width].temperature > 0)
+	{
+		int dmg = engine.map->tiles[(owner->x)+(owner->y)*engine.map->width].temperature*0.5;
+		owner->destructible->takeDamage(owner, (float)(dmg));
+		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
+	}
+	
 	
 	for (Actor **iterator = engine.actors.begin();
 		iterator != engine.actors.end(); iterator++) {
@@ -666,6 +675,14 @@ void MonsterAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	
+	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
+	{
+		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
+		owner->destructible->takeDamage(owner, (float)(dmg));
+		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
+	}
+	
 	if(engine.map->infectionState(owner->x,owner->y) >= 4 && owner->ch == 166) //change miniSporeCreatures into regular spore creatures if tile becomes infected enough
 	{
 		owner->name = "Spore Creature";
@@ -682,6 +699,7 @@ void MonsterAi::update(Actor *owner) {
 	} else {
 		moveCount--;
 	}
+	
 	if (moveCount > 0) {
 		moveOrAttack(owner, engine.player->x, engine.player->y);
 	} else {
@@ -1100,6 +1118,7 @@ void ConfusedActorAi::save(TCODZip &zip) {
 }
 
 void ConfusedActorAi::update(Actor *owner) {
+	
 	if (owner->destructible && !owner->destructible->isDead() ) {
 		TCODRandom *rng = TCODRandom::getInstance();
 		int dx = rng->getInt(-1,1);
@@ -1123,6 +1142,13 @@ void ConfusedActorAi::update(Actor *owner) {
 	}
 	nbTurns--;
 	
+	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
+	{
+		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
+		owner->destructible->takeDamage(owner, (float)(dmg));
+		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
+	}
+	
 	if(nbTurns == 0) {
 		owner->ai = oldAi;
 		delete this;
@@ -1131,6 +1157,9 @@ void ConfusedActorAi::update(Actor *owner) {
 		engine.gameStatus = Engine::NEW_TURN;
 		return;
 	}
+	
+	
+	
 }
 
 RangedAi::RangedAi() : moveCount(0), range(3){
@@ -1151,6 +1180,14 @@ void RangedAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	
+	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
+	{
+		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
+		owner->destructible->takeDamage(owner, (float)(dmg));
+		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
+	}
+	
 	if (engine.map->isInFov(owner->x,owner->y)) {
 		//can see the palyer, move towards him
 		moveCount = TRACKING_TURNS + 2; //give ranged characters longer tracking
@@ -1224,6 +1261,14 @@ void GrenadierAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	
+	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
+	{
+		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
+		owner->destructible->takeDamage(owner, (float)(dmg));
+		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
+	}
+	
 	if (engine.map->isInFov(owner->x,owner->y)) {
 		//can see the palyer, move towards him
 		moveCount = TRACKING_TURNS + 2; //give tech characters longer tracking
@@ -1347,6 +1392,9 @@ void TurretAi::update(Actor *owner)
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	
+	
+	
 	if (engine.map->isInFov(owner->x,owner->y)) 
 	{
 		//can see the palyer, move towards him
@@ -1495,21 +1543,117 @@ void InteractibleAi::interaction(Actor *owner, Actor *target){
 
 VendingAi::VendingAi() {
 	deployedSecurity = false;
+	TCODRandom *rng = TCODRandom::getInstance();
+	ink = rng->getInt(10,100,65);
+
 }
 
 void VendingAi::save(TCODZip &zip){
 	zip.putInt(VENDING);
 	zip.putInt(deployedSecurity);
+	zip.putInt(ink);
 }
 
 void VendingAi::load(TCODZip &zip){
 	deployedSecurity = zip.getInt();
+	ink = zip.getInt();
 }
 
 void VendingAi::interaction(Actor *owner, Actor *target){
+	engine.map->generateRandom(owner, 164);
+	Actor *combatKnife = engine.map->createCombatKnife(0,0);
+	engine.actors.push(combatKnife);
+	combatKnife->pickable->pick(combatKnife,owner);
+	vend(owner);
 	engine.gui->message(TCODColor::yellow,"The vending machine lets out a soft hum.");
 }
-
+void VendingAi::vendSidebar(){
+	//create vending machine sidebar
+	TCODConsole vendBar(16,32);
+	vendBar.setDefaultBackground(TCODColor::black);
+	vendBar.clear();
+	vendBar.setDefaultForeground(TCODColor(200,180,50));
+	vendBar.printFrame(0,0,16,32,true,TCOD_BKGND_ALPHA(50),"VENDING");
+	
+	vendBar.print(1,5,"Pbc: %d",engine.player->container->wallet);
+	vendBar.print(1,7,"INK: %d",ink);
+	TCODConsole::blit(&vendBar,0,0, 16, 32, TCODConsole::root, (engine.screenWidth / 2 - 38 / 2) + 4,(engine.screenHeight / 2 - 4 / 2) - 19);
+}
+void VendingAi::vend(Actor *owner){
+	engine.gui->menu.clear();
+	engine.gui->menu.addItem(Menu::ITEMS,"ITEMS");
+	engine.gui->menu.addItem(Menu::TECH,"TECH");
+	engine.gui->menu.addItem(Menu::ARMOR,"ARMOR");
+	engine.gui->menu.addItem(Menu::WEAPONS, "WEAPONS");
+	engine.gui->menu.addItem(Menu::EXIT, "EXIT");
+	Actor *actor;
+	bool select = true;
+	while(select){
+		if(ink < 10){
+			engine.gui->message(TCODColor::red,"The vending machine needs more ink to print");
+			break;
+		}
+		vendSidebar();
+		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::VENDING);
+		
+		switch(menuItem){
+			case Menu::ITEMS:
+			actor = owner->ai->choseFromInventory(owner,1,true);
+			if(engine.player->container->wallet < 10){
+				engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase");
+				select = false;
+			}else if(actor){
+				actor->pickable->drop(actor,owner,false);
+				actor->pickable->pick(actor,engine.player);
+				ink -= 10;
+				engine.player->container->wallet -= 10;
+			}
+			break;
+			case Menu::TECH:
+			actor = owner->ai->choseFromInventory(owner,2,true);
+			if(engine.player->container->wallet < 10){
+				engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase");
+				select = false;
+			}else if(actor){
+				actor->pickable->drop(actor,owner,false);
+				actor->pickable->pick(actor,engine.player);
+				ink -= 10;
+				engine.player->container->wallet -= 10;
+			}
+			break;
+			case Menu::ARMOR:
+			actor = owner->ai->choseFromInventory(owner,3,true);
+			if(engine.player->container->wallet < 10){
+				engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase");
+				select = false;
+			}else if(actor){
+				actor->pickable->drop(actor,owner,false);
+				actor->pickable->pick(actor,engine.player);
+				ink -= 10;
+				engine.player->container->wallet -= 10;
+			}
+			break;
+			case Menu::WEAPONS:
+			actor = owner->ai->choseFromInventory(owner,4,true);
+			if(engine.player->container->wallet < 10){
+				engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase");
+				select = false;
+			}else if(actor){
+				actor->pickable->drop(actor,owner,false);
+				actor->pickable->pick(actor,engine.player);
+				ink -= 10;
+				engine.player->container->wallet -= 10;
+			}
+			break;
+			case Menu::EXIT:
+			select = false;
+			break;
+			case Menu::NO_CHOICE:
+			break;
+			default: break; 
+		}
+	}
+}
 
 EngineerAi::EngineerAi(float repairPower, int deployRange) {
 moveCount = 0;
@@ -1544,6 +1688,14 @@ void EngineerAi::update(Actor *owner)
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	
+	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
+	{
+		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
+		owner->destructible->takeDamage(owner, (float)(dmg));
+		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
+	}
+	
 	if (engine.map->isInFov(owner->x,owner->y)) {
 		//can see the palyer, move towards him
 		moveCount = TRACKING_TURNS;
@@ -1665,4 +1817,3 @@ void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
 	}
 
 }
-
