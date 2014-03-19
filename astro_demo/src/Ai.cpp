@@ -109,6 +109,7 @@ void PlayerAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	
 	int levelUpXp = getNextLevelXp();
 	if (owner->destructible->xp >= levelUpXp) {
 		bool choice_made = false, first = true;
@@ -203,6 +204,14 @@ void PlayerAi::update(Actor *owner) {
 bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 	if (engine.map->isWall(targetx, targety) ) return false;
 	if (!owner->attacker) return false;
+	
+	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
+	{
+		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
+		owner->destructible->takeDamage(owner, (float)(dmg));
+		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
+	}
+	
 	
 	for (Actor **iterator = engine.actors.begin();
 		iterator != engine.actors.end(); iterator++) {
@@ -661,6 +670,14 @@ void MonsterAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	
+	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
+	{
+		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
+		owner->destructible->takeDamage(owner, (float)(dmg));
+		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
+	}
+	
 	if(engine.map->infectionState(owner->x,owner->y) >= 4 && owner->ch == 166) //change miniSporeCreatures into regular spore creatures if tile becomes infected enough
 	{
 		owner->name = "Spore Creature";
@@ -677,6 +694,7 @@ void MonsterAi::update(Actor *owner) {
 	} else {
 		moveCount--;
 	}
+	
 	if (moveCount > 0) {
 		moveOrAttack(owner, engine.player->x, engine.player->y);
 	} else {
@@ -1036,6 +1054,7 @@ void ConfusedActorAi::save(TCODZip &zip) {
 }
 
 void ConfusedActorAi::update(Actor *owner) {
+	
 	if (owner->destructible && !owner->destructible->isDead() ) {
 		TCODRandom *rng = TCODRandom::getInstance();
 		int dx = rng->getInt(-1,1);
@@ -1059,6 +1078,13 @@ void ConfusedActorAi::update(Actor *owner) {
 	}
 	nbTurns--;
 	
+	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
+	{
+		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
+		owner->destructible->takeDamage(owner, (float)(dmg));
+		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
+	}
+	
 	if(nbTurns == 0) {
 		owner->ai = oldAi;
 		delete this;
@@ -1067,6 +1093,9 @@ void ConfusedActorAi::update(Actor *owner) {
 		engine.gameStatus = Engine::NEW_TURN;
 		return;
 	}
+	
+	
+	
 }
 
 RangedAi::RangedAi() : moveCount(0), range(3){
@@ -1087,6 +1116,14 @@ void RangedAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	
+	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
+	{
+		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
+		owner->destructible->takeDamage(owner, (float)(dmg));
+		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
+	}
+	
 	if (engine.map->isInFov(owner->x,owner->y)) {
 		//can see the palyer, move towards him
 		moveCount = TRACKING_TURNS + 2; //give ranged characters longer tracking
@@ -1160,6 +1197,14 @@ void GrenadierAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	
+	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
+	{
+		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
+		owner->destructible->takeDamage(owner, (float)(dmg));
+		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
+	}
+	
 	if (engine.map->isInFov(owner->x,owner->y)) {
 		//can see the palyer, move towards him
 		moveCount = TRACKING_TURNS + 2; //give tech characters longer tracking
@@ -1283,6 +1328,9 @@ void TurretAi::update(Actor *owner)
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	
+	
+	
 	if (engine.map->isInFov(owner->x,owner->y)) 
 	{
 		//can see the palyer, move towards him
@@ -1479,6 +1527,14 @@ void EngineerAi::update(Actor *owner)
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	
+	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
+	{
+		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
+		owner->destructible->takeDamage(owner, (float)(dmg));
+		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
+	}
+	
 	if (engine.map->isInFov(owner->x,owner->y)) {
 		//can see the palyer, move towards him
 		moveCount = TRACKING_TURNS;
