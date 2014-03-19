@@ -298,13 +298,28 @@ void Map::addMonster(int x, int y, bool isHorde) {
 //	float turretChance = 50;
 //	float vendorChance = 100;
 
-	if(engine.map->tiles[x+y*width].tileType == GENERATOR)
+	int uB = 1000;
+	
+	if(isHorde) //since engineers and cleaners don't spawn in hordes, adjust uppber bounded accordingly
+		uB =- (infectedEngineerChance+cleanerChance);
+
+	
+	int dice = rng->getInt(0,uB);
+	
+	if(engine.map->tiles[x+y*width].tileType == GENERATOR && !isHorde)
 	{
 		createInfectedEngineer(x,y);
 		return;
 	}
+	else if(engine.map->tiles[x+y*width].tileType == BARRACKS) //Spawn infected marines and infected grenadiers in barracks
+	{
+		if(dice < 600)
+			createInfectedMarine(x,y);
+		else
+			createInfectedGrenadier(x,y);
+		return;
+	}
 	
-	int dice = rng->getInt(0,1000);
 	if (dice < infectedCrewMemChance) 
 	{
 		createInfectedCrewMember(x,y);	
