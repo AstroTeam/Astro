@@ -160,8 +160,8 @@ void Engine::init() {
 	ItemBonus *bonusF;
 	Actor *hands = NULL;
 	ItemBonus *bonusHa;
-	//Actor *ranged = NULL;
-	//ItemBonus *bonusR;
+	Actor *ranged = NULL;
+	ItemBonus *bonusR;
 	Actor *equip1 = NULL;
 	
 	
@@ -173,6 +173,15 @@ void Engine::init() {
 			
 			player->dex+=3; //job selection bonus
 			player->totalDex+=3; //job selection bonus
+			
+			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
+			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
+			ranged->blocks = false;
+			ranged->pickable = new Equipment(0,Equipment::RANGED,bonusR);
+			ranged->sort = 4;
+			engine.actors.push(ranged);
+			ranged->pickable->pick(ranged,player);
+			((Equipment*)(ranged->pickable))->use(ranged,player);
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
 			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
@@ -226,6 +235,15 @@ void Engine::init() {
 			player->intel += 1;		//job selection bonus
 			player->totalIntel += 1;//job selection bonus
 			
+			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
+			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
+			ranged->blocks = false;
+			ranged->pickable = new Equipment(0,Equipment::RANGED,bonusR);
+			ranged->sort = 4;
+			engine.actors.push(ranged);
+			ranged->pickable->pick(ranged,player);
+			((Equipment*)(ranged->pickable))->use(ranged,player);
+			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
 			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
 			legs->blocks = false;
@@ -267,6 +285,15 @@ void Engine::init() {
 		case 3:
 			player->role="Marine";
 			player->job="Quartermaster";
+			
+			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
+			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
+			ranged->blocks = false;
+			ranged->pickable = new Equipment(0,Equipment::RANGED,bonusR);
+			ranged->sort = 4;
+			engine.actors.push(ranged);
+			ranged->pickable->pick(ranged,player);
+			((Equipment*)(ranged->pickable))->use(ranged,player);
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
 			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
