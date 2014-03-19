@@ -156,7 +156,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 		y2 = y1;
 		y1 = tmp;
 	}
-	TCODRandom *rng = TCODRandom::getInstance();
+	//TCODRandom *rng = TCODRandom::getInstance();
 	for (int tilex = x1; tilex <=x2; tilex++) {
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
