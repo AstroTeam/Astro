@@ -87,7 +87,7 @@ void Destructible::die(Actor *owner) {
 	}
 	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 'V' || owner->ch == 130) //roomba, vendors, and turrets, and security bots show no corpse currently
 	{
-		owner->ch = ' ';
+		owner->ch = 161;
 		owner->blocks = false;
 	}//else generic blood whale
 	else
