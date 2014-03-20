@@ -668,7 +668,7 @@ Actor* Map::createVendor(int x, int y)
 	float vendorDodge = 0*scale;
 	float vendorDR = 0*scale;
 	float vendorXp = 25*scale;
-	int vendorAscii = 'V'; //change to desired ascii
+	int vendorAscii = 225; //change to desired ascii
 	
 	Actor *vendor = new Actor(x,y,vendorAscii,"Vending Machine",TCODColor::darkerBlue);
 	vendor->hostile = false;
@@ -1176,7 +1176,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			if (i % 2 == 0 && i > x1 && i < x2) {
 				for (int j = y1+6; j < y2-1; j+=2) {
 					if (0 == rng->getInt(0, 4)) {
-						Actor * pcmu = new Actor(i, j, 'p', "PCMU Food Processor", TCODColor::white);
+						Actor * pcmu = new Actor(i, j, 243, "PCMU Food Processor", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 44;
 						engine.actors.push(pcmu);
 					}
 				}

@@ -598,6 +598,11 @@ void Renderer::render(void *sdlSurface){
 						srcRect.x += 14*16;
 						srcRect.y = 64;
 					}
+					else if (engine.map->tiles[xM+yM*engine.map->width].decoration == 44)//food processor
+					{
+						srcRect.x += 16*16;
+						srcRect.y = 64;
+					}
 					
 					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 				}
