@@ -74,6 +74,7 @@ public:
 
 Map::Map(int width, int height, short epicenterAmount): width(width),height(height),epicenterAmount(epicenterAmount) {
 	seed = TCODRandom::getInstance()->getInt(0,0x7FFFFFFF);
+	cout<< "seed " << seed << endl;
 }
 
 Map::~Map() {
@@ -101,6 +102,7 @@ int Map::tileType(int x, int y) {
 void Map::init(bool withActors, LevelType levelType) {
 	cout << levelType << endl << endl;
 
+	cout << "used seed " << seed << endl;
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
@@ -111,12 +113,14 @@ void Map::init(bool withActors, LevelType levelType) {
 	listener.roomList = getRoomTypes(levelType);
 	bsp.traverseInvertedLevelOrder(&listener, (void *)withActors);
 	//Create boss, for now it is a simple security bot
-	engine.boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
-	
+	Actor *boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
+	boss->name = "BossBot";
+	engine.boss = boss;
 }
 
 void Map::save(TCODZip &zip) {
 	zip.putInt(seed);
+	cout << "saved seed " << seed << endl;
 	for (int i = 0; i < width*height; i++) {
 		zip.putInt(tiles[i].explored);
 		zip.putFloat(tiles[i].infection);
@@ -132,6 +136,7 @@ void Map::save(TCODZip &zip) {
 
 void Map::load(TCODZip &zip) {
 	seed = zip.getInt();
+	cout << "loaded seed " << seed << endl;
 	init(false);
 	for (int i = 0; i <width*height; i++) {
 		tiles[i].explored = zip.getInt();
