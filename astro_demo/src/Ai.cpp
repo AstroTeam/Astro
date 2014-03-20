@@ -1620,8 +1620,9 @@ void VendingAi::vend(Actor *owner){
 							engine.player->container->wallet -= actor->pickable->value;
 							ink -= actor->pickable->inkValue;
 							engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
-							itemBought = false;
 						}
+					}else{
+						itemBought = false;
 					}
 				}
 			break;
@@ -1648,6 +1649,8 @@ void VendingAi::vend(Actor *owner){
 							engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
 							itemBought = false;
 						}
+					}else{
+						itemBought = false;
 					}
 				}
 			break;
@@ -1674,6 +1677,8 @@ void VendingAi::vend(Actor *owner){
 							engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
 							itemBought = false;
 						}
+					}else{
+						itemBought = false;
 					}
 				}
 			break;
@@ -1700,6 +1705,8 @@ void VendingAi::vend(Actor *owner){
 							engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
 							itemBought = false;
 						}
+					}else{
+						itemBought = false;
 					}
 				}
 			break;
