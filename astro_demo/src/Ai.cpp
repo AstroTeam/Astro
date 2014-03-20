@@ -48,7 +48,13 @@ Actor *Ai::choseFromInventory(Actor *owner,int type, bool isVend) {
 			}
 			owner->container->select[shortcut] = actor->name;
 			if (actor->pickable->stacks) {
-				inventoryScreen->print(17, y, "(%d)",actor->pickable->stackSize);
+				if(isVend){
+					inventoryScreen->print(23, y, "Pbc: %d Ink: %d",actor->pickable->value,actor->pickable->inkValue);
+				}else{
+					inventoryScreen->print(17, y, "(%d)",actor->pickable->stackSize);
+				}
+			}else if(isVend){
+				inventoryScreen->print(23, y, "Pbc:%d Ink:%d",actor->pickable->value,actor->pickable->inkValue);
 			}
 			y++;
 			shortcut++;
@@ -303,7 +309,6 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			
 			while(choice){
 			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
-			//TCODConsole::root->clear();
 				switch (menuItem) {
 					case Menu::ITEMS :
 						itemUsed = true;
@@ -338,17 +343,16 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					default: break;
 				}
 			}
-			//TCODConsole::root->clear();
 			engine.invState = 0;
 			engine.invFrames = 0;
 			if (actor) {
-				bool used;
-				used = actor->pickable->use(actor,owner);
+				bool used = actor->pickable->use(actor,owner);
 				if (used) {
 					engine.gameStatus = Engine::NEW_TURN;
 				}
 			}
-		}break;
+		}
+		break;
 		case 'd': //drop an item
 		{
 			engine.map->computeFov();
