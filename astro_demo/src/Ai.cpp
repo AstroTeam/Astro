@@ -904,6 +904,9 @@ void LightAi::load(TCODZip &zip){
 	frst = zip.getInt();
 	moving = zip.getInt();
 	radius = zip.getInt();
+	frstBool = zip.getInt();
+	lstX = zip.getInt();
+	lstY = zip.getInt();
 }
 
 void LightAi::save(TCODZip &zip){
@@ -914,6 +917,9 @@ void LightAi::save(TCODZip &zip){
 	zip.putInt(frst);//to reset num
 	zip.putInt(moving);//are you static or moving
 	zip.putInt(radius);
+	zip.putInt(frstBool);
+	zip.putInt(lstX);
+	zip.putInt(lstY);
 	
 }
 
