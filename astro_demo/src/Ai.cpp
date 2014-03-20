@@ -302,13 +302,14 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			Actor *actor;
 			bool choice = true;
 			bool itemUsed = true;
+			Menu::MenuItemCode menuItem;
 			while (engine.invState != 4){
 				TCODConsole::flush();
 			}
 			//TCODConsole::root->clear();
 			
 			while(choice){
-			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
+				menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 				switch (menuItem) {
 					case Menu::ITEMS :
 						itemUsed = true;
@@ -340,15 +341,18 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 						break;
 					case Menu::EXIT:
 						choice = false;
+					break;
 					default: break;
 				}
 			}
 			engine.invState = 0;
 			engine.invFrames = 0;
-			if (actor) {
-				bool used = actor->pickable->use(actor,owner);
-				if (used) {
-					engine.gameStatus = Engine::NEW_TURN;
+			if(menuItem != Menu::EXIT){
+				if (actor) {
+					bool used = actor->pickable->use(actor,owner);
+					if (used) {
+						engine.gameStatus = Engine::NEW_TURN;
+					}
 				}
 			}
 		}
@@ -366,13 +370,12 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 			Actor *actor;
 			bool choice = true;
+			Menu::MenuItemCode menuItem;
 			while (engine.invState != 4){
 				TCODConsole::flush();
 			}
 			while(choice){
-			//inventoryScreen->setDefaultBackground(TCODColor::black);
-			//inventoryScreen->clear();
-			Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
+				menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 				switch (menuItem) {
 					case Menu::ITEMS :
 						actor = choseFromInventory(owner,1,false);
@@ -398,14 +401,17 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 						break;
 					case Menu::EXIT:
 						choice = false;
+					break;
 					default: break;
 				}
 			}
 			engine.invState = 0;
 			engine.invFrames = 0;
-			if (actor) {
-				actor->pickable->drop(actor,owner);
-				engine.gameStatus = Engine::NEW_TURN;
+			if(menuItem != Menu::EXIT){
+				if (actor) {
+					actor->pickable->drop(actor,owner);
+					engine.gameStatus = Engine::NEW_TURN;
+				}
 			}
 		}break;
 		case 'l':
@@ -1604,9 +1610,10 @@ void VendingAi::vend(Actor *owner){
 	Actor *actor;
 	bool select = true;
 	bool itemBought = true;
+	Menu::MenuItemCode menuItem;
 	while(select){
 		vendSidebar();
-		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::VENDING);
+		menuItem = engine.gui->menu.pick(Menu::VENDING);
 		
 		switch(menuItem){
 			case Menu::ITEMS:
