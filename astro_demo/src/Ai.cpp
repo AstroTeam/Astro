@@ -196,7 +196,7 @@ void PlayerAi::update(Actor *owner) {
 	case TCODK_PRINTSCREEN:
 		TCODSystem::saveScreenshot(NULL);
 		engine.gui->message(TCODColor::orange,"screenshot saved"); break;
-	case TCODK_KP5: engine.map->computeFov(); engine.gameStatus = Engine::NEW_TURN; owner->destructible->takeFireDamage(owner, 3.0); break;
+	case TCODK_KP5: engine.map->computeFov(); engine.gameStatus = Engine::NEW_TURN; owner->destructible->takeFireDamage(owner, 3.0); /*engine.gui->message(TCODColor::white,"fireDmg");*/ break;
 	case TCODK_CHAR: handleActionKey(owner, engine.lastKey.c); break;
 	default: break;
 	}
@@ -210,9 +210,18 @@ void PlayerAi::update(Actor *owner) {
 }
 
 bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
-	if (engine.map->isWall(targetx, targety) ) return false;
-	if (!owner->attacker) return false;
-	
+	if (engine.map->isWall(targetx, targety) )
+	{
+		//owner->destructible->takeFireDamage(owner, 3.0);
+		//engine.gui->message(TCODColor::white,"fireDmg");
+		return false;
+	}
+	if (!owner->attacker)
+	{
+		//owner->destructible->takeFireDamage(owner, 3.0);
+		//engine.gui->message(TCODColor::white,"fireDmg");
+		return false;
+	}
 	
 	
 	
@@ -231,6 +240,9 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 				else if(!owner->hostile && !actor->hostile && actor->ch == 130)
 					engine.gui->message(TCODColor::grey, "The %s seems to be inactive", actor->name);
 			}
+			//attacking something like a generator that doesn't have a destructible or something
+			owner->destructible->takeFireDamage(owner, 3.0);
+			//engine.gui->message(TCODColor::white,"fireDmg");
 			return false;
 		}
 	}
