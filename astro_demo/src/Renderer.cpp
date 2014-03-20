@@ -415,7 +415,18 @@ void Renderer::render(void *sdlSurface){
 					}
 					else if (engine.map->tiles[xM+yM*engine.map->width].decoration >= 5 && engine.map->tiles[xM+yM*engine.map->width].decoration <= 8)
 					{
-						srcRect.y = 32;
+						if (engine.map->tiles[xM+yM*engine.map->width].lit == true) //&& engine.map->tiles[xM+yM*engine.map->width].decoration > 0 )
+						{
+							//light
+							srcRect.y = 32;
+						}
+						else //if (engine.map->tiles[xM+yM*engine.map->width].decoration > 0)
+						{
+							//dark
+							
+							srcRect.y = 48;
+						}
+						//srcRect.y += 32;
 						srcRect.x = 32+ (engine.map->tiles[xM+yM*engine.map->width].decoration - 5 ) * 16;
 						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 					}
