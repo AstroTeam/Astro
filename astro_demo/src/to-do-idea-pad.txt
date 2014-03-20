@@ -1,0 +1,7 @@
++rooms
++items
++class specials
++machines
++infection on player
++oxygen
++"QUICK GAME" - software festival
