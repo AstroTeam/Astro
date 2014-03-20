@@ -1159,7 +1159,7 @@ void ConfusedActorAi::save(TCODZip &zip) {
 }
 
 void ConfusedActorAi::update(Actor *owner) {
-	
+
 	if (owner->destructible && !owner->destructible->isDead() ) {
 		TCODRandom *rng = TCODRandom::getInstance();
 		int dx = rng->getInt(-1,1);
@@ -1174,7 +1174,7 @@ void ConfusedActorAi::update(Actor *owner) {
 				engine.map->computeFov();
 			} else {
 				Actor *actor = engine.getActor(destx, desty);
-				if (owner->attacker) {
+				if (actor && owner->attacker) {
 					owner->attacker->attack(owner,actor);
 					engine.map->computeFov();
 				}
@@ -1182,7 +1182,6 @@ void ConfusedActorAi::update(Actor *owner) {
 		}
 	}
 	nbTurns--;
-	
 	owner->destructible->takeFireDamage(owner, 3.0);
 	if(nbTurns == 0) {
 		owner->ai = oldAi;
