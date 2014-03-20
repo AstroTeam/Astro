@@ -903,6 +903,7 @@ void LightAi::load(TCODZip &zip){
 	onOff = zip.getInt();
 	frst = zip.getInt();
 	moving = zip.getInt();
+	radius = zip.getInt();
 }
 
 void LightAi::save(TCODZip &zip){
@@ -912,7 +913,12 @@ void LightAi::save(TCODZip &zip){
 	zip.putInt(onOff);
 	zip.putInt(frst);//to reset num
 	zip.putInt(moving);//are you static or moving
+	zip.putInt(radius);
 	
+}
+
+int LightAi::giveRad() {
+	return radius;
 }
 
 void LightAi::flicker(Actor * owner, float chance){

@@ -97,6 +97,7 @@ public:
 	void update(Actor * owner);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
+	int giveRad();
 protected:
 	int radius;
 	TCODMap *lmap;
