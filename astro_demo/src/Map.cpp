@@ -113,9 +113,11 @@ void Map::init(bool withActors, LevelType levelType) {
 	listener.roomList = getRoomTypes(levelType);
 	bsp.traverseInvertedLevelOrder(&listener, (void *)withActors);
 	//Create boss, for now it is a simple security bot
-	Actor *boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
-	boss->name = "BossBot";
-	engine.boss = boss;
+	if (withActors) {
+		Actor *boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
+		boss->name = "BossBot";
+		engine.boss = boss;
+	}
 }
 
 void Map::save(TCODZip &zip) {
