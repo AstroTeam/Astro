@@ -42,19 +42,19 @@ Actor *Ai::choseFromInventory(Actor *owner,int type, bool isVend) {
 		Actor *actor = *it;
 		if(actor->sort == type){
 			if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
-				inventoryScreen->print(2,y,"(%c) %s(E)",shortcut,actor->name);
+				inventoryScreen->print(1,y,"(%c) %s(E)",shortcut,actor->name);
 			}else{
-				inventoryScreen->print(2,y,"(%c) %s",shortcut,actor->name);
+				inventoryScreen->print(1,y,"(%c) %s",shortcut,actor->name);
 			}
 			owner->container->select[shortcut] = actor->name;
 			if (actor->pickable->stacks) {
 				if(isVend){
-					inventoryScreen->print(23, y, "Pbc: %d Ink: %d",actor->pickable->value,actor->pickable->inkValue);
+					inventoryScreen->print(22, y, "Pbc: %d Ink: %d",actor->pickable->value,actor->pickable->inkValue);
 				}else{
 					inventoryScreen->print(17, y, "(%d)",actor->pickable->stackSize);
 				}
 			}else if(isVend){
-				inventoryScreen->print(23, y, "Pbc:%d Ink:%d",actor->pickable->value,actor->pickable->inkValue);
+				inventoryScreen->print(22, y, "Pbc:%d Ink:%d",actor->pickable->value,actor->pickable->inkValue);
 			}
 			y++;
 			shortcut++;

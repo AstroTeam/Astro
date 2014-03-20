@@ -1870,7 +1870,7 @@ Actor *Map::createEMP(int x, int y){
 	scrollOfLightningBolt->blocks = false;
 	scrollOfLightningBolt->pickable = new LightningBolt(5,20);
 	scrollOfLightningBolt->pickable->value = 30;
-	scrollOfLightningBolt->pickable->value = 10;
+	scrollOfLightningBolt->pickable->inkValue = 10;
 	return scrollOfLightningBolt;
 }
 Actor *Map::createTitanMail(int x, int y){
