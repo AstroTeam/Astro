@@ -43,7 +43,9 @@ public:
 			room->y1 = y;
 			room->x2 = x+w-1;
 			room->y2 = y+h-1;
-
+			
+			std::cout << "room " << room->x1 << " " << room->y1 << " " << room->x2 << " " << room->y2 << std::endl;
+			
 			//will this room be special?
 			int index = map.rng->getInt(0, 10);
 			if (index < roomList->size()) {
@@ -165,7 +167,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 		y2 = y1;
 		y1 = tmp;
 	}
-	//TCODRandom *rng = TCODRandom::getInstance();
+	TCODRandom *rng = TCODRandom::getInstance();
 	for (int tilex = x1; tilex <=x2; tilex++) {
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
@@ -781,6 +783,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	if (!withActors) {
 		return;
 	}
+	
+	TCODRandom *rng = TCODRandom::getInstance();
 
 	//try to place an epicenter
 	if (epicenterAmount > 0 && roomNum == 5 ) {
@@ -1123,7 +1127,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 
 	if (room->type == KITCHEN) {
 		cout << "KITCHEN Made" << endl;
-		TCODRandom *rng = TCODRandom::getInstance();
+		//TCODRandom *rng = TCODRandom::getInstance();
 		int midX = (x1+x2)/2;
 		for (int i = x1; i < x2+1; i++)
 		{
@@ -1295,7 +1299,7 @@ cout << "Server room made";
 		//playerLight->ai->moving = true;
 		engine.sendToBack(engine.playerLight);
 	}
-	TCODRandom *rng = TCODRandom::getInstance();
+	//TCODRandom *rng = TCODRandom::getInstance();
 
 	/* monster section */
 
