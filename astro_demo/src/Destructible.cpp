@@ -62,6 +62,31 @@ float Destructible::takeDamage(Actor *owner, float damage) {
 	return damage;
 }
 
+float Destructible::takeFireDamage(Actor *owner, float damage) {
+	if(engine.map->tiles[(owner->x)+(owner->y)*engine.map->width].temperature > 0)
+	{
+		//SHOULD SCALE WITH DUNGEON LEVEL
+		//int dmg = 0;//engine.map->tiles[(targetx)+(targety)*engine.map->width].temperature*0.5;
+		//if (engine.map->tiles[(owner->x)+(owner->y)*engine.map->width].temperature > 0)
+			//dmg = 3;
+		//owner->destructible->takeDamage(owner, (float)(dmg));
+		//if (dmg > 0)
+		
+		
+		if (damage > 0){
+			hp -= damage;
+			engine.gui->message(TCODColor::red, "%s takes %g fire damage.",owner->name,damage);
+			if (hp <= 0) {
+				die(owner);
+			}
+		} else {
+			damage = 0;
+		}
+	}
+	
+	return damage;
+}
+
 float Destructible::heal(float amount) {
 	hp += amount;
 	if (hp > maxHp) { 

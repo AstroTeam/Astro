@@ -196,7 +196,7 @@ void PlayerAi::update(Actor *owner) {
 	case TCODK_PRINTSCREEN:
 		TCODSystem::saveScreenshot(NULL);
 		engine.gui->message(TCODColor::orange,"screenshot saved"); break;
-	case TCODK_KP5: engine.map->computeFov(); engine.gameStatus = Engine::NEW_TURN; break;
+	case TCODK_KP5: engine.map->computeFov(); engine.gameStatus = Engine::NEW_TURN; owner->destructible->takeFireDamage(owner, 3.0); break;
 	case TCODK_CHAR: handleActionKey(owner, engine.lastKey.c); break;
 	default: break;
 	}
@@ -206,18 +206,14 @@ void PlayerAi::update(Actor *owner) {
 			engine.map->computeFov();
 		}
 	}
+	
 }
 
 bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 	if (engine.map->isWall(targetx, targety) ) return false;
 	if (!owner->attacker) return false;
 	
-	if(engine.map->tiles[(owner->x)+(owner->y)*engine.map->width].temperature > 0)
-	{
-		int dmg = engine.map->tiles[(owner->x)+(owner->y)*engine.map->width].temperature*0.5;
-		owner->destructible->takeDamage(owner, (float)(dmg));
-		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
-	}
+	
 	
 	
 	for (Actor **iterator = engine.actors.begin();
@@ -251,10 +247,16 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 		}
 		
 	} */
+	
+	
+	
 	owner->x = targetx;
 	engine.playerLight->x = targetx;
 	owner->y = targety;
 	engine.playerLight->y = targety;
+	
+	owner->destructible->takeFireDamage(owner, 3.0);
+	//engine.gui->message(TCODColor::white,"fireDmg");
 	return true;
 }
 
@@ -695,16 +697,14 @@ void MonsterAi::save(TCODZip &zip) {
 }
 
 void MonsterAi::update(Actor *owner) {
+	
+	
+	
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
 	
-	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
-	{
-		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
-		owner->destructible->takeDamage(owner, (float)(dmg));
-		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
-	}
+	
 	
 	if(engine.map->infectionState(owner->x,owner->y) >= 4 && owner->ch == 166) //change miniSporeCreatures into regular spore creatures if tile becomes infected enough
 	{
@@ -755,7 +755,7 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 		owner->attacker->attack(owner,engine.player);
 		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
-	
+	owner->destructible->takeFireDamage(owner, 3.0);
 }
 
 SecurityBotAi::SecurityBotAi() : moveCount(0) {
@@ -1165,13 +1165,7 @@ void ConfusedActorAi::update(Actor *owner) {
 	}
 	nbTurns--;
 	
-	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
-	{
-		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
-		owner->destructible->takeDamage(owner, (float)(dmg));
-		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
-	}
-	
+	owner->destructible->takeFireDamage(owner, 3.0);
 	if(nbTurns == 0) {
 		owner->ai = oldAi;
 		delete this;
@@ -1200,15 +1194,9 @@ void RangedAi::save(TCODZip &zip) {
 }
 
 void RangedAi::update(Actor *owner) {
+
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
-	}
-	
-	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
-	{
-		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
-		owner->destructible->takeDamage(owner, (float)(dmg));
-		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
 	}
 	
 	if (engine.map->isInFov(owner->x,owner->y)) {
@@ -1256,7 +1244,7 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		owner->attacker->attack(owner,engine.player);
 		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
-	
+	owner->destructible->takeFireDamage(owner, 3.0);
 }
 
 
@@ -1281,16 +1269,11 @@ void GrenadierAi::save(TCODZip &zip) {
 }
 
 void GrenadierAi::update(Actor *owner) {
+
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
 	
-	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
-	{
-		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
-		owner->destructible->takeDamage(owner, (float)(dmg));
-		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
-	}
 	
 	if (engine.map->isInFov(owner->x,owner->y)) {
 		//can see the palyer, move towards him
@@ -1392,7 +1375,7 @@ void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		md->suicide(owner);
 		
 	}	
-	
+	owner->destructible->takeFireDamage(owner, 3.0);
 }
 
 TurretAi::TurretAi()
@@ -1827,15 +1810,9 @@ void EngineerAi::load(TCODZip &zip){
 
 void EngineerAi::update(Actor *owner)
 {
+	
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
-	}
-	
-	if(engine.map->tiles[owner->x+owner->y*engine.map->width].temperature > 0)
-	{
-		int dmg = engine.map->tiles[owner->x+owner->y*engine.map->width].temperature*0.5;
-		owner->destructible->takeDamage(owner, (float)(dmg));
-		engine.gui->message(TCODColor::red, "%s takes %d fire damage.",owner->name,dmg);
 	}
 	
 	if (engine.map->isInFov(owner->x,owner->y)) {
@@ -1951,11 +1928,13 @@ void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
 				if (owner->oozing) {
 					engine.map->infectFloor(owner->x, owner->y);
 				}
+				
 			} else if (owner->attacker) {
 				owner->attacker->attack(owner,engine.player);
 				engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 			}
 		}
 	}
+	owner->destructible->takeFireDamage(owner, 3.0);
 
 }
