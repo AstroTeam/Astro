@@ -6,14 +6,19 @@ namespace Param {
 
 	enum RoomType {
 		STANDARD,  //done lol
-		OFFICE,    //done
-		BARRACKS,  //done* -> must add dropping items from lockers
-		GENERATOR, //must populate with decor
-		SERVER,    //arting
-		KITCHEN,   //almost done
-		MESSHALL,  //to-do
-		ARMORY,    //to-do
-		OBSERVATORY//to-do
+		OFFICE,    //done - boring
+		BARRACKS,  //done - lockers drop armor and flares
+		GENERATOR, //done - can turn on power, not yet though
+		SERVER,    //done - can look at a map of deck, not yet though
+		KITCHEN,   //done - drops food from food processors, can go into refrigerators, not yet though, steal items, frozen people come for you
+		MESSHALL,  //to-do - add tables and trash cans that drop items maybe?
+		ARMORY,    //to-do - add gun racks and security bots and glass cases, locked door?  need to kill security bot to get in?
+		OBSERVATORY//to-do - breakable floor, no oxygen
+		//lobby - stair room with seating
+		//cult rooms - blood everywhere, crazy cult enemies that have high str, low hp
+		//hydroponics - grass, spawns food in garden
+		//defended rooms - friendly marines inside, give you a gun and ammo, have a medic who will help you?
+		//THE BRIDGE - the win room, has a blackbox
 	};
 };
 

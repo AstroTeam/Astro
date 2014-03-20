@@ -670,7 +670,7 @@ Actor* Map::createVendor(int x, int y)
 	float vendorXp = 25*scale;
 	int vendorAscii = 225; //change to desired ascii
 	
-	Actor *vendor = new Actor(x,y,vendorAscii,"Vending Machine",TCODColor::darkerBlue);
+	Actor *vendor = new Actor(x,y,vendorAscii,"Vending Machine",TCODColor::white);
 	vendor->hostile = false;
 	vendor->interact = true;
 	vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge,vendorDR, "destroyed vending machine",vendorXp);
