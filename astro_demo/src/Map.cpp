@@ -671,7 +671,7 @@ Actor* Map::createVendor(int x, int y)
 	vendor->interact = true;
 	vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge,vendorDR, "destroyed vending machine",vendorXp);
 	vendor->ai = new VendingAi();
-	vendor->container = new Container(50);
+	vendor->container = new Container(10);
 	generateRandom(vendor, vendorAscii);
 	engine.actors.push(vendor);
 	

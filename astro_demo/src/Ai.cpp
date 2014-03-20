@@ -539,7 +539,13 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type, bool isVend) {
 			}
 			owner->container->select[shortcut] = actor->name;
 			if (actor->pickable->stacks) {
-				inventoryScreen->print(17, y, "(%d)",actor->pickable->stackSize);
+				if(isVend){
+					inventoryScreen->print(17, y, "Pbc: %d Ink: %d",actor->pickable->value,actor->pickable->inkValue);
+				}else{
+					inventoryScreen->print(17, y, "(%d)",actor->pickable->stackSize);
+				}
+			}else if(isVend){
+				inventoryScreen->print(17, y, "Pbc: %d Ink: %d",actor->pickable->value,actor->pickable->inkValue);
 			}
 			y++;
 			shortcut++;
