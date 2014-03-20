@@ -15,7 +15,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 		case CONFUSER: pickable = new Confuser(0,0); break;
 		case FIREBALL: pickable = new Fireball(0,0,0); break;
 		case EQUIPMENT: pickable = new Equipment(0); break;
-		case FLARE: break;
+		case FLARE: pickable = new Flare(0,0,0); break;
 		case NONE: break;
 	}
 	pickable->load(zip);
