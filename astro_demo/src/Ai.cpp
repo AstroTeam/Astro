@@ -1568,22 +1568,28 @@ VendingAi::VendingAi() {
 	deployedSecurity = false;
 	TCODRandom *rng = TCODRandom::getInstance();
 	ink = rng->getInt(10,100,65);
+	population = 1;
 }
 
 void VendingAi::save(TCODZip &zip){
 	zip.putInt(VENDING);
 	zip.putInt(deployedSecurity);
 	zip.putInt(ink);
+	zip.putInt(population);
 }
 
 void VendingAi::load(TCODZip &zip){
 	deployedSecurity = zip.getInt();
 	ink = zip.getInt();
+	population = zip.getInt();
 }
 
 void VendingAi::interaction(Actor *owner, Actor *target){
 	engine.gui->message(TCODColor::yellow,"The vending machine lets out a soft hum.");
-	populate(owner);
+	if(population <= 1){
+		populate(owner);
+		population++;
+	}
 	vend(owner);
 	engine.gameStatus = Engine::NEW_TURN;
 	
@@ -1813,6 +1819,7 @@ void EngineerAi::save(TCODZip &zip){
 	zip.putInt(turretY);
 	zip.putInt(deployRange);
 	
+	
 }
 
 void EngineerAi::load(TCODZip &zip){
@@ -1822,6 +1829,7 @@ void EngineerAi::load(TCODZip &zip){
 	turretX = zip.getInt();
 	turretY = zip.getInt();
 	deployRange = zip.getInt();
+	
 	
 }
 

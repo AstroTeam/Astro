@@ -204,6 +204,7 @@ public:
 class VendingAi: public InteractibleAi{
 public:
 	int ink;
+	int population;
 	
 	VendingAi();
 	bool deployedSecurity;
