@@ -1593,86 +1593,115 @@ void VendingAi::vend(Actor *owner){
 	engine.gui->menu.addItem(Menu::EXIT, "EXIT");
 	Actor *actor;
 	bool select = true;
+	bool itemBought = true;
 	while(select){
 		vendSidebar();
 		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::VENDING);
 		
 		switch(menuItem){
 			case Menu::ITEMS:
-			actor = owner->ai->choseFromInventory(owner,1,true);
-			if(actor){
-				if(actor->pickable->value > engine.player->container->wallet){
-					engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase!");
-					select = false;
-				}else if(actor->pickable->inkValue > ink){
-					engine.gui->message(TCODColor::red,"The vending machine does not have enough ink to print the item!");
-					select = false;
-				}else{
-					Actor *purchase = clone(actor);
-					engine.actors.push(purchase);
-					purchase->pickable->pick(purchase,engine.player);
-					engine.player->container->wallet -= actor->pickable->value;
-					ink -= actor->pickable->inkValue;
-					engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
+				itemBought = true;
+				while(itemBought){
+					vendSidebar();
+					actor = owner->ai->choseFromInventory(owner,1,true);
+					if(actor){
+						if(actor->pickable->value > engine.player->container->wallet){
+							engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase!");
+							itemBought = false;
+							select = false;
+						}else if(actor->pickable->inkValue > ink){
+							engine.gui->message(TCODColor::red,"The vending machine does not have enough ink to print the item!");
+							itemBought = false;
+							select = false;
+						}else{
+							Actor *purchase = clone(actor);
+							engine.actors.push(purchase);
+							purchase->pickable->pick(purchase,engine.player);
+							engine.player->container->wallet -= actor->pickable->value;
+							ink -= actor->pickable->inkValue;
+							engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
+							itemBought = false;
+						}
+					}
 				}
-			}
 			break;
 			case Menu::TECH:
-			actor = owner->ai->choseFromInventory(owner,2,true);
-			if(actor){
-				if(actor->pickable->value > engine.player->container->wallet){
-					engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase!");
-					select = false;
-				}else if(actor->pickable->inkValue > ink){
-					engine.gui->message(TCODColor::red,"The vending machine does not have enough ink to print the item!");
-					select = false;
-				}else{
-					Actor *purchase = clone(actor);
-					engine.actors.push(purchase);
-					purchase->pickable->pick(purchase,engine.player);
-					engine.player->container->wallet -= actor->pickable->value;
-					ink -= actor->pickable->inkValue;
-					engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
+				itemBought = true;
+				while(itemBought){
+					vendSidebar();
+					actor = owner->ai->choseFromInventory(owner,2,true);
+					if(actor){
+						if(actor->pickable->value > engine.player->container->wallet){
+							engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase!");
+							itemBought = false;
+							select = false;
+						}else if(actor->pickable->inkValue > ink){
+							engine.gui->message(TCODColor::red,"The vending machine does not have enough ink to print the item!");
+							itemBought = false;
+							select = false;
+						}else{
+							Actor *purchase = clone(actor);
+							engine.actors.push(purchase);
+							purchase->pickable->pick(purchase,engine.player);
+							engine.player->container->wallet -= actor->pickable->value;
+							ink -= actor->pickable->inkValue;
+							engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
+							itemBought = false;
+						}
+					}
 				}
-			}
 			break;
 			case Menu::ARMOR:
-			actor = owner->ai->choseFromInventory(owner,3,true);
-			if(actor){
-				if(actor->pickable->value > engine.player->container->wallet){
-					engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase!");
-					select = false;
-				}else if(actor->pickable->inkValue > ink){
-					engine.gui->message(TCODColor::red,"The vending machine does not have enough ink to print the item!");
-					select = false;
-				}else{
-					Actor *purchase = clone(actor);
-					engine.actors.push(purchase);
-					purchase->pickable->pick(purchase,engine.player);
-					engine.player->container->wallet -= actor->pickable->value;
-					ink -= actor->pickable->inkValue;
-					engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
+				itemBought = true;
+				while(itemBought){
+					vendSidebar();
+					actor = owner->ai->choseFromInventory(owner,3,true);
+					if(actor){
+						if(actor->pickable->value > engine.player->container->wallet){
+							engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase!");
+							itemBought = false;
+							select = false;
+						}else if(actor->pickable->inkValue > ink){
+							engine.gui->message(TCODColor::red,"The vending machine does not have enough ink to print the item!");
+							itemBought = false;
+							select = false;
+						}else{
+							Actor *purchase = clone(actor);
+							engine.actors.push(purchase);
+							purchase->pickable->pick(purchase,engine.player);
+							engine.player->container->wallet -= actor->pickable->value;
+							ink -= actor->pickable->inkValue;
+							engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
+							itemBought = false;
+						}
+					}
 				}
-			}
 			break;
 			case Menu::WEAPONS:
-			actor = owner->ai->choseFromInventory(owner,4,true);
-			if(actor){
-				if(actor->pickable->value > engine.player->container->wallet){
-					engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase!");
-					select = false;
-				}else if(actor->pickable->inkValue > ink){
-					engine.gui->message(TCODColor::red,"The vending machine does not have enough ink to print the item!");
-					select = false;
-				}else{
-					Actor *purchase = clone(actor);
-					engine.actors.push(purchase);
-					purchase->pickable->pick(purchase,engine.player);
-					engine.player->container->wallet -= actor->pickable->value;
-					ink -= actor->pickable->inkValue;
-					engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
+				itemBought = true;
+				while(itemBought){
+					vendSidebar();
+					actor = owner->ai->choseFromInventory(owner,4,true);
+					if(actor){
+						if(actor->pickable->value > engine.player->container->wallet){
+							engine.gui->message(TCODColor::red,"You need more PetaBitCoins to make a purchase!");
+							itemBought = false;
+							select = false;
+						}else if(actor->pickable->inkValue > ink){
+							engine.gui->message(TCODColor::red,"The vending machine does not have enough ink to print the item!");
+							itemBought = false;
+							select = false;
+						}else{
+							Actor *purchase = clone(actor);
+							engine.actors.push(purchase);
+							purchase->pickable->pick(purchase,engine.player);
+							engine.player->container->wallet -= actor->pickable->value;
+							ink -= actor->pickable->inkValue;
+							engine.gui->message(TCODColor::grey,"You purchased a %s", purchase->name);
+							itemBought = false;
+						}
+					}
 				}
-			}
 			break;
 			case Menu::EXIT:
 			select = false;
