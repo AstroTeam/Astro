@@ -53,7 +53,7 @@ float Destructible::takeDamage(Actor *owner, float damage) {
 	} else {
 		damage = 0;
 	}
-	if(owner->ch == 'V') //meaning you're attacking a Vending machine
+	if(owner->ch == 225) //meaning you're attacking a Vending machine
 	{
 		VendingAi* va = (VendingAi*) owner->ai;
 		va->deployedSecurity = true;
@@ -110,7 +110,7 @@ void Destructible::die(Actor *owner) {
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
 		owner->ch = 243;
 	}
-	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 'V' || owner->ch == 130) //roomba, vendors, and turrets, and security bots show no corpse currently
+	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 225 || owner->ch == 130) //roomba, vendors, and turrets, and security bots show no corpse currently
 	{
 		owner->ch = 161;
 		owner->blocks = false;
@@ -138,7 +138,7 @@ PlayerDestructible::PlayerDestructible(float maxHp, float dodge, float dr, const
 void MonsterDestructible::die(Actor *owner) {
 	//transform it into a corpse
 	//doesnt block, cant be attacked, doesnt move
-	if(owner->ch != 243 && owner->ch != 131 && owner->ch != 147 && owner->ch != 'V' && owner->ch != 130){
+	if(owner->ch != 243 && owner->ch != 131 && owner->ch != 147 && owner->ch != 225 && owner->ch != 130){
 		engine.killCount++;
 		engine.gui->message(TCODColor::lightGrey,"The %s is dead! You feel a rush as it sputters its last breath.", owner->name);
 	}
@@ -156,7 +156,7 @@ void MonsterDestructible::die(Actor *owner) {
 		engine.killCount++;
 		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
 	}
-	else if(owner->ch == 'V') //Vending machine, change when needed
+	else if(owner->ch == 225) //Vending machine, change when needed
 	{
 		engine.killCount++;
 		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
