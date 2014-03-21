@@ -520,7 +520,7 @@ Actor* Map::createInfectedMarine(int x, int y)
 	float infectedMarineDodge = 0*scale;
 	float infectedMarineDR = 0*scale;
 	float infectedMarineStr = 2*scale;
-	float infectedMarineDex = 5*scale;
+	float infectedMarineDex = 3*scale;
 	float infectedMarineXp = 10*scale;
 	int infectedMarineAscii = 149;
 	 
@@ -652,7 +652,7 @@ Actor* Map::createTurret(int x, int y)
 	float turretDodge = 0*scale;
 	float turretDR = 0*scale;
 	float turretStr = 0*scale; //no melee damage
-	float turretDex = 5*scale;
+	float turretDex = 3*scale;
 	float turretXp = 25*scale;
 	int turretAscii = 147;
 	
