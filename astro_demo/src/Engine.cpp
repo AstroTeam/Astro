@@ -564,6 +564,16 @@ void Engine::init() {
 			player->dex+=3; //job selection bonus
 			player->totalDex+=3; //job selection bonus
 			
+			//Get MLR
+			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
+			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
+			ranged->blocks = false;
+			ranged->pickable = new Equipment(0,Equipment::RANGED,bonusR);
+			ranged->sort = 4;
+			engine.actors.push(ranged);
+			ranged->pickable->pick(ranged,player);
+			((Equipment*)(ranged->pickable))->use(ranged,player);
+			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
 			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
 			legs->blocks = false;
