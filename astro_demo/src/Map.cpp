@@ -1877,7 +1877,7 @@ Actor *Map::createFireBomb(int x, int y){
 	return scrollOfFireball;
 }
 Actor *Map::createFrag(int x, int y){
-	Actor *scrollOfFragging = new Actor(x,y,'g',"Frag Grenade",TCODColor::white);
+	Actor *scrollOfFragging = new Actor(x,y,198,"Frag Grenade",TCODColor::white);
 	scrollOfFragging->sort = 2;
 	scrollOfFragging->blocks = false;
 	scrollOfFragging->pickable = new Fragment(3,12,8);
