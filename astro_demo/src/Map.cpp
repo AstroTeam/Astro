@@ -117,7 +117,7 @@ void Map::init(bool withActors, LevelType levelType) {
 	//Create boss, for now it is a simple security bot
 	if (withActors) {
 		Actor *boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
-		boss->name = "Elderly Assistant Bot 3000";
+		boss->name = "Infected Security Bot";
 		boss->destructible->hp = boss->destructible->hp*2;
 		boss->destructible->maxHp = boss->destructible->hp;
 		boss->totalStr = boss->totalStr*1.25;
