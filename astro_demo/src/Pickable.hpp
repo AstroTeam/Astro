@@ -1,7 +1,7 @@
 class Pickable : public Persistent {
 public:
 	enum PickableType {
-		NONE, HEALER, CHARGER, LIGHTNING_BOLT, CONFUSER, FIREBALL, EQUIPMENT, FLARE, CURRENCY
+		NONE, HEALER, CHARGER, LIGHTNING_BOLT, CONFUSER, FIREBALL, EQUIPMENT, FLARE, CURRENCY, FRAGMENT
 	};
 	bool stacks;
 	int stackSize;
@@ -59,6 +59,17 @@ public:
 	
 	Fireball(float range, float damage, float maxRange,
 		bool stacks = true, int stackSize = 1, PickableType type = FIREBALL);
+	bool use(Actor *owner, Actor *wearer);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+};
+
+class Fragment : public LightningBolt {
+public:
+	float maxRange;
+	
+	Fragment(float range, float damage, float maxRange,
+		bool stacks = true, int stackSize = 1, PickableType type = FRAGMENT);
 	bool use(Actor *owner, Actor *wearer);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);

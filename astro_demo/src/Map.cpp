@@ -44,6 +44,7 @@ public:
 			room->x2 = x+w-1;
 			room->y2 = y+h-1;
 			
+			std::cout << "room " << room->x1 << " " << room->y1 << " " << room->x2 << " " << room->y2 << std::endl;
 			
 			//will this room be special?
 			int index = map.rng->getInt(0, 10);
@@ -75,6 +76,7 @@ public:
 
 Map::Map(int width, int height, short epicenterAmount): width(width),height(height),epicenterAmount(epicenterAmount) {
 	seed = TCODRandom::getInstance()->getInt(0,0x7FFFFFFF);
+	cout<< "seed " << seed << endl;
 }
 
 Map::~Map() {
@@ -102,6 +104,7 @@ int Map::tileType(int x, int y) {
 void Map::init(bool withActors, LevelType levelType) {
 	cout << levelType << endl << endl;
 
+	cout << "used seed " << seed << endl;
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
@@ -124,6 +127,7 @@ void Map::init(bool withActors, LevelType levelType) {
 
 void Map::save(TCODZip &zip) {
 	zip.putInt(seed);
+	cout << "saved seed " << seed << endl;
 	for (int i = 0; i < width*height; i++) {
 		zip.putInt(tiles[i].explored);
 		zip.putFloat(tiles[i].infection);
@@ -139,6 +143,7 @@ void Map::save(TCODZip &zip) {
 
 void Map::load(TCODZip &zip) {
 	seed = zip.getInt();
+	cout << "loaded seed " << seed << endl;
 	init(false);
 	for (int i = 0; i <width*height; i++) {
 		tiles[i].explored = zip.getInt();
@@ -687,7 +692,7 @@ Actor* Map::createVendor(int x, int y)
 void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,335);
+	int dice = rng->getInt(0,375);
 	if (dice < 40) {
 		//create a health potion
 		Actor *healthPotion = createHealthPotion(x,y);
@@ -728,8 +733,12 @@ void Map::addItem(int x, int y, RoomType roomType) {
 		Actor *scrollOfConfusion = createFlashBang(x,y);
 		engine.actors.push(scrollOfConfusion);
 		engine.sendToBack(scrollOfConfusion);
-	}
-	else {
+	}else if(dice< 40+40+40+15+15+5+40+40+40){
+		//create a scroll of fragging
+		Actor *scrollOfFragging = createFrag(x,y);
+		engine.actors.push(scrollOfFragging);
+		engine.sendToBack(scrollOfFragging);
+	}else {
 		Actor *stackOfMoney = createCurrencyStack(x,y);
 		engine.actors.push(stackOfMoney);
 		engine.sendToBack(stackOfMoney);
@@ -1863,16 +1872,25 @@ Actor *Map::createFireBomb(int x, int y){
 	scrollOfFireball->sort = 2;
 	scrollOfFireball->blocks = false;
 	scrollOfFireball->pickable = new Fireball(3,12,8);
-	scrollOfFireball->pickable->value = 25;
+	scrollOfFireball->pickable->value = 45;
 	scrollOfFireball->pickable->inkValue = 10;
 	return scrollOfFireball;
+}
+Actor *Map::createFrag(int x, int y){
+	Actor *scrollOfFragging = new Actor(x,y,'g',"Frag Grenade",TCODColor::white);
+	scrollOfFragging->sort = 2;
+	scrollOfFragging->blocks = false;
+	scrollOfFragging->pickable = new Fragment(3,12,8);
+	scrollOfFragging->pickable->value = 55;
+	scrollOfFragging->pickable->inkValue = 10;
+	return scrollOfFragging;
 }
 Actor *Map::createEMP(int x, int y){
 	Actor *scrollOfLightningBolt = new Actor(x,y,183, "EMP Pulse",TCODColor::white);
 	scrollOfLightningBolt->sort = 2;
 	scrollOfLightningBolt->blocks = false;
 	scrollOfLightningBolt->pickable = new LightningBolt(5,20);
-	scrollOfLightningBolt->pickable->value = 30;
+	scrollOfLightningBolt->pickable->value = 60;
 	scrollOfLightningBolt->pickable->inkValue = 10;
 	return scrollOfLightningBolt;
 }
@@ -1882,7 +1900,7 @@ Actor *Map::createTitanMail(int x, int y){
 	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,3);
 	chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus);
 	chainMail->sort = 3;
-	chainMail->pickable->value = 300;
+	chainMail->pickable->value = 1600;
 	chainMail->pickable->inkValue = 50;
 	return chainMail;
 }
@@ -1921,8 +1939,8 @@ Actor *Map::createBatteryPack(int x,int y){
 	batteryPack->sort = 1;
 	batteryPack->blocks = false;
 	batteryPack->pickable = new Charger(5);
-	batteryPack->pickable->value = 20;
-	batteryPack->pickable->inkValue = 5;
+	batteryPack->pickable->value = 50;
+	batteryPack->pickable->inkValue = 10;
 	return batteryPack;
 }
 
