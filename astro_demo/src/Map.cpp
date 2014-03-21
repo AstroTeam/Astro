@@ -44,7 +44,6 @@ public:
 			room->x2 = x+w-1;
 			room->y2 = y+h-1;
 			
-			std::cout << "room " << room->x1 << " " << room->y1 << " " << room->x2 << " " << room->y2 << std::endl;
 			
 			//will this room be special?
 			int index = map.rng->getInt(0, 10);
@@ -76,7 +75,6 @@ public:
 
 Map::Map(int width, int height, short epicenterAmount): width(width),height(height),epicenterAmount(epicenterAmount) {
 	seed = TCODRandom::getInstance()->getInt(0,0x7FFFFFFF);
-	cout<< "seed " << seed << endl;
 }
 
 Map::~Map() {
@@ -104,7 +102,6 @@ int Map::tileType(int x, int y) {
 void Map::init(bool withActors, LevelType levelType) {
 	cout << levelType << endl << endl;
 
-	cout << "used seed " << seed << endl;
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
@@ -124,7 +121,6 @@ void Map::init(bool withActors, LevelType levelType) {
 
 void Map::save(TCODZip &zip) {
 	zip.putInt(seed);
-	cout << "saved seed " << seed << endl;
 	for (int i = 0; i < width*height; i++) {
 		zip.putInt(tiles[i].explored);
 		zip.putFloat(tiles[i].infection);
@@ -140,7 +136,6 @@ void Map::save(TCODZip &zip) {
 
 void Map::load(TCODZip &zip) {
 	seed = zip.getInt();
-	cout << "loaded seed " << seed << endl;
 	init(false);
 	for (int i = 0; i <width*height; i++) {
 		tiles[i].explored = zip.getInt();
@@ -673,9 +668,9 @@ Actor* Map::createVendor(int x, int y)
 	float vendorDodge = 0*scale;
 	float vendorDR = 0*scale;
 	float vendorXp = 25*scale;
-	int vendorAscii = 'V'; //change to desired ascii
+	int vendorAscii = 225; //change to desired ascii
 	
-	Actor *vendor = new Actor(x,y,vendorAscii,"Vending Machine",TCODColor::darkerBlue);
+	Actor *vendor = new Actor(x,y,vendorAscii,"Vending Machine",TCODColor::white);
 	vendor->hostile = false;
 	vendor->interact = true;
 	vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge,vendorDR, "destroyed vending machine",vendorXp);
@@ -1181,7 +1176,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			if (i % 2 == 0 && i > x1 && i < x2) {
 				for (int j = y1+6; j < y2-1; j+=2) {
 					if (0 == rng->getInt(0, 4)) {
-						Actor * pcmu = new Actor(i, j, 'p', "PCMU Food Processor", TCODColor::white);
+						Actor * pcmu = new Actor(i, j, 243, "PCMU Food Processor", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 44;
 						engine.actors.push(pcmu);
 					}
 				}
@@ -1461,7 +1457,7 @@ cout << "Server room made";
 		bool x1y1 = canWalk(x1,y1) && engine.getAnyActor(x1,y1)==NULL;
 		bool x1y2 = canWalk(x1,y2) && engine.getAnyActor(x1,y2)==NULL;
 		bool x2y2 = canWalk(x2,y2) && engine.getAnyActor(x2,y2)==NULL;
-		bool x2y1 = canWalk(x2,y1) && engine.getAnyActor(x2,y2)==NULL;
+		bool x2y1 = canWalk(x2,y1) && engine.getAnyActor(x2,y1)==NULL;
 		for(int i = 0; i < 4; i++)
 		{
 			c = rng->getInt(0,3);
@@ -1874,7 +1870,7 @@ Actor *Map::createEMP(int x, int y){
 	scrollOfLightningBolt->blocks = false;
 	scrollOfLightningBolt->pickable = new LightningBolt(5,20);
 	scrollOfLightningBolt->pickable->value = 30;
-	scrollOfLightningBolt->pickable->value = 10;
+	scrollOfLightningBolt->pickable->inkValue = 10;
 	return scrollOfLightningBolt;
 }
 Actor *Map::createTitanMail(int x, int y){
