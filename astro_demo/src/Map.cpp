@@ -1865,7 +1865,7 @@ Actor *Map::createFireBomb(int x, int y){
 	scrollOfFireball->sort = 2;
 	scrollOfFireball->blocks = false;
 	scrollOfFireball->pickable = new Fireball(3,12,8);
-	scrollOfFireball->pickable->value = 25;
+	scrollOfFireball->pickable->value = 45;
 	scrollOfFireball->pickable->inkValue = 10;
 	return scrollOfFireball;
 }
@@ -1874,7 +1874,7 @@ Actor *Map::createFrag(int x, int y){
 	scrollOfFragging->sort = 2;
 	scrollOfFragging->blocks = false;
 	scrollOfFragging->pickable = new Fragment(3,12,8);
-	scrollOfFragging->pickable->value = 25;
+	scrollOfFragging->pickable->value = 55;
 	scrollOfFragging->pickable->inkValue = 10;
 	return scrollOfFragging;
 }
@@ -1883,7 +1883,7 @@ Actor *Map::createEMP(int x, int y){
 	scrollOfLightningBolt->sort = 2;
 	scrollOfLightningBolt->blocks = false;
 	scrollOfLightningBolt->pickable = new LightningBolt(5,20);
-	scrollOfLightningBolt->pickable->value = 30;
+	scrollOfLightningBolt->pickable->value = 60;
 	scrollOfLightningBolt->pickable->inkValue = 10;
 	return scrollOfLightningBolt;
 }
@@ -1893,7 +1893,7 @@ Actor *Map::createTitanMail(int x, int y){
 	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,3);
 	chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus);
 	chainMail->sort = 3;
-	chainMail->pickable->value = 300;
+	chainMail->pickable->value = 1600;
 	chainMail->pickable->inkValue = 50;
 	return chainMail;
 }
@@ -1932,8 +1932,8 @@ Actor *Map::createBatteryPack(int x,int y){
 	batteryPack->sort = 1;
 	batteryPack->blocks = false;
 	batteryPack->pickable = new Charger(5);
-	batteryPack->pickable->value = 20;
-	batteryPack->pickable->inkValue = 5;
+	batteryPack->pickable->value = 50;
+	batteryPack->pickable->inkValue = 10;
 	return batteryPack;
 }
 
