@@ -39,7 +39,7 @@ struct Tile {
 	//add number of flowers and a boolean to grow them when epicenter updates
 	//could have flower levels?  easier to make flower tiles to overlay than keep track of x,y's for every flower on a tile
 	Param::RoomType tileType;
-	Tile() : explored(true), infection (0), lit(false),num (0),drty(false), envSta(0),temperature(0),decoration(0), tileType(Param::STANDARD) {}
+	Tile() : explored(false), infection (0), lit(false),num (0),drty(false), envSta(0),temperature(0),decoration(0), tileType(Param::STANDARD) {}
 	const TCODColor * lastColor;//if color changed offscreen
 	char lastChar;//if the char changed
 };
