@@ -740,6 +740,7 @@ void MonsterAi::update(Actor *owner) {
 	} else {
 		moveCount = 0;
 	}
+	owner->destructible->takeFireDamage(owner, 3.0);
 }
 
 void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
@@ -767,7 +768,7 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 		owner->attacker->attack(owner,engine.player);
 		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
-	owner->destructible->takeFireDamage(owner, 3.0);
+	
 }
 
 SecurityBotAi::SecurityBotAi() : moveCount(0) {
@@ -1233,6 +1234,7 @@ void RangedAi::update(Actor *owner) {
 	} else {
 		moveCount = 0;
 	}
+	owner->destructible->takeFireDamage(owner, 3.0);
 }
 void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 {
@@ -1267,7 +1269,6 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		owner->attacker->attack(owner,engine.player);
 		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
-	owner->destructible->takeFireDamage(owner, 3.0);
 }
 
 
@@ -1334,6 +1335,8 @@ void GrenadierAi::update(Actor *owner) {
 		} 
 		else 
 			moveCount = 0;
+		
+		owner->destructible->takeFireDamage(owner, 3.0);
 }
 void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 {
@@ -1398,7 +1401,6 @@ void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		md->suicide(owner);
 		
 	}	
-	owner->destructible->takeFireDamage(owner, 3.0);
 }
 
 TurretAi::TurretAi()
@@ -1862,6 +1864,7 @@ void EngineerAi::update(Actor *owner)
 	} else {
 		moveCount = 0;
 	}
+	owner->destructible->takeFireDamage(owner, 3.0);
 }
 
 void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
@@ -1971,6 +1974,5 @@ void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
 			}
 		}
 	}
-	owner->destructible->takeFireDamage(owner, 3.0);
 
 }
