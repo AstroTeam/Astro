@@ -114,7 +114,10 @@ void Map::init(bool withActors, LevelType levelType) {
 	//Create boss, for now it is a simple security bot
 	if (withActors) {
 		Actor *boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
-		boss->name = "BossBot";
+		boss->name = "Elderly Assistant Bot 3000";
+		boss->destructible->hp = boss->destructible->hp*2;
+		boss->destructible->maxHp = boss->destructible->hp;
+		boss->totalStr = boss->totalStr*1.25;
 		engine.boss = boss;
 	}
 }
@@ -514,7 +517,7 @@ Actor* Map::createInfectedMarine(int x, int y)
 	float infectedMarineDex = 5*scale;
 	float infectedMarineXp = 10*scale;
 	int infectedMarineAscii = 149;
-	
+	 
 	Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
 	infectedMarine->destructible = new MonsterDestructible(infectedMarineHp,infectedMarineDodge,infectedMarineDR,"infected corpse",infectedMarineXp);
 	infectedMarine->flashable = true;
