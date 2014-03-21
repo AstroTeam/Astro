@@ -689,7 +689,7 @@ Actor* Map::createVendor(int x, int y)
 void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,335);
+	int dice = rng->getInt(0,375);
 	if (dice < 40) {
 		//create a health potion
 		Actor *healthPotion = createHealthPotion(x,y);
@@ -730,8 +730,12 @@ void Map::addItem(int x, int y, RoomType roomType) {
 		Actor *scrollOfConfusion = createFlashBang(x,y);
 		engine.actors.push(scrollOfConfusion);
 		engine.sendToBack(scrollOfConfusion);
-	}
-	else {
+	}else if(dice< 40+40+40+15+15+5+40+40+40){
+		//create a scroll of fragging
+		Actor *scrollOfFragging = createFrag(x,y);
+		engine.actors.push(scrollOfFragging);
+		engine.sendToBack(scrollOfFragging);
+	}else {
 		Actor *stackOfMoney = createCurrencyStack(x,y);
 		engine.actors.push(stackOfMoney);
 		engine.sendToBack(stackOfMoney);
@@ -1870,7 +1874,7 @@ Actor *Map::createFireBomb(int x, int y){
 	return scrollOfFireball;
 }
 Actor *Map::createFrag(int x, int y){
-	Actor *scrollOfFragging = new Actor(x,y,'g',"Fragmentation Grenade",TCODColor::white);
+	Actor *scrollOfFragging = new Actor(x,y,'g',"Frag Grenade",TCODColor::white);
 	scrollOfFragging->sort = 2;
 	scrollOfFragging->blocks = false;
 	scrollOfFragging->pickable = new Fragment(3,12,8);

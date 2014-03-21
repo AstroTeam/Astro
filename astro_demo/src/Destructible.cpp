@@ -63,7 +63,7 @@ float Destructible::takeDamage(Actor *owner, float damage) {
 }
 
 float Destructible::takeFireDamage(Actor *owner, float damage) {
-	if(engine.map->tiles[(owner->x)+(owner->y)*engine.map->width].temperature > 0)
+	if(engine.map->tiles[(owner->x)+(owner->y)*engine.map->width].temperature > 0 && !owner->destructible->isDead())
 	{
 		//SHOULD SCALE WITH DUNGEON LEVEL
 		//int dmg = 0;//engine.map->tiles[(targetx)+(targety)*engine.map->width].temperature*0.5;
