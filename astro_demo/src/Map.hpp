@@ -17,8 +17,10 @@ namespace Param {
 		//lobby - stair room with seating
 		//cult rooms - blood everywhere, crazy cult enemies that have high str, low hp
 		//hydroponics - grass, spawns food in garden
-		//defended rooms - friendly marines inside, give you a gun and ammo, have a medic who will help you?
+		//defended rooms - friendly marines inside, give you a gun and ammo, have a medic who will help you? scientist give you tech
 		//THE BRIDGE - the win room, has a blackbox
+		//laboratory - experiment with spores, infected scientists, 
+		//infected room - all floor is infected level 6, epicenters in middle
 	};
 };
 
@@ -98,6 +100,7 @@ public:
 	Actor *createMylarBoots(int x, int y);
 	Actor *createMLR(int x, int y);
 	Actor *createCombatKnife(int x, int y);
+	Actor *createFrag(int x, int y);
 	void generateRandom(Actor *owner, int ascii);
 	Tile *tiles;
 

@@ -1761,6 +1761,7 @@ Actor *VendingAi::clone(Actor *owner){
 			case Pickable::FIREBALL: droppy->pickable = new Fireball(((Fireball*)(owner->pickable))->range,((Fireball*)(owner->pickable))->damage,((Fireball*)(owner->pickable))->maxRange); droppy->sort = 2; break;
 			case Pickable::FLARE: droppy->pickable = new Flare(((Flare*)(owner->pickable))->nbTurns, ((Flare*)(owner->pickable))->range, ((Flare*)(owner->pickable))->lightRange); droppy->sort = 2; break;
 			case Pickable::EQUIPMENT: droppy->pickable = new Equipment(0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus); droppy->sort = owner->sort; break;
+			case Pickable::FRAGMENT: droppy->pickable = new Fragment(((Fragment*)(owner->pickable))->range,((Fragment*)(owner->pickable))->damage,((Fragment*)(owner->pickable))->maxRange); droppy->sort = 2; break;
 			case Pickable::NONE: break;
 		}
 		return droppy;
@@ -1803,6 +1804,10 @@ void VendingAi::populate(Actor *owner){
 	Actor *fireBomb = engine.map->createFireBomb(0,0);
 	engine.actors.push(fireBomb);
 	fireBomb->pickable->pick(fireBomb,owner);
+	
+	Actor *frag = engine.map->createFrag(0,0);
+	engine.actors.push(frag);
+	frag->pickable->pick(frag,owner);
 	
 	Actor *emp = engine.map->createEMP(0,0);
 	engine.actors.push(emp);

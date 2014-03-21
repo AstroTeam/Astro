@@ -226,6 +226,13 @@ void Engine::init() {
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			
+			equip1 = new Actor(0,0,'G',"Frag Grenade", TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Fragment(3,12,8);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			
 			
 			break;
 		case 2:

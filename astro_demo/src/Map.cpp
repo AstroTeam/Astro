@@ -1864,6 +1864,15 @@ Actor *Map::createFireBomb(int x, int y){
 	scrollOfFireball->pickable->inkValue = 10;
 	return scrollOfFireball;
 }
+Actor *Map::createFrag(int x, int y){
+	Actor *scrollOfFragging = new Actor(x,y,'g',"Fragmentation Grenade",TCODColor::white);
+	scrollOfFragging->sort = 2;
+	scrollOfFragging->blocks = false;
+	scrollOfFragging->pickable = new Fragment(3,12,8);
+	scrollOfFragging->pickable->value = 25;
+	scrollOfFragging->pickable->inkValue = 10;
+	return scrollOfFragging;
+}
 Actor *Map::createEMP(int x, int y){
 	Actor *scrollOfLightningBolt = new Actor(x,y,183, "EMP Pulse",TCODColor::white);
 	scrollOfLightningBolt->sort = 2;
