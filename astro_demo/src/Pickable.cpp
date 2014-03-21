@@ -93,7 +93,7 @@ bool Healer::use(Actor *owner, Actor *wearer) {
 			factor *= .5;
 		if(wearer->job[0] == 'A')
 			factor *= .4;
-		amountHealed = wearer->destructible->heal((factor * (wearer->totalIntel * 3 + 6))/1);
+		amountHealed = wearer->destructible->heal((int)(factor * (wearer->totalIntel * 3 + 6))/1);
 		if (amountHealed > 0) {
 			return Pickable::use(owner,wearer);
 		}
