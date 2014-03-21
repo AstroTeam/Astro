@@ -626,25 +626,25 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 		if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
 			switch(((Equipment*)(actor->pickable))->slot){
 				case Equipment::HEAD:
-					con.print(6,22,"%s",actor->name);
+					con.print(6,24,"%s",actor->name);
 				break;
 				case Equipment::CHEST:
-					con.print(8,24,"%s",actor->name);
+					con.print(8,26,"%s",actor->name);
 				break;
 				case Equipment::LEGS:
-					con.print(6,26,"%s",actor->name);
-				break;
-				case Equipment::FEET:
 					con.print(6,28,"%s",actor->name);
 				break;
-				case Equipment::HAND1:
-					con.print(7,30,"%s",actor->name);
+				case Equipment::FEET:
+					con.print(6,30,"%s",actor->name);
 				break;
-				case Equipment::HAND2:
+				case Equipment::HAND1:
 					con.print(7,32,"%s",actor->name);
 				break;
+				case Equipment::HAND2:
+					con.print(7,34,"%s",actor->name);
+				break;
 				case Equipment::RANGED:
-					con.print(8,34,"%s",actor->name);
+					con.print(8,36,"%s",actor->name);
 				break;
 				case Equipment::NOSLOT:
 				break;
@@ -904,6 +904,9 @@ void LightAi::load(TCODZip &zip){
 	frst = zip.getInt();
 	moving = zip.getInt();
 	radius = zip.getInt();
+	frstBool = zip.getInt();
+	lstX = zip.getInt();
+	lstY = zip.getInt();
 }
 
 void LightAi::save(TCODZip &zip){
@@ -914,6 +917,9 @@ void LightAi::save(TCODZip &zip){
 	zip.putInt(frst);//to reset num
 	zip.putInt(moving);//are you static or moving
 	zip.putInt(radius);
+	zip.putInt(frstBool);
+	zip.putInt(lstX);
+	zip.putInt(lstY);
 	
 }
 
