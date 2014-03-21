@@ -232,12 +232,15 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 			if (actor->destructible && !actor->destructible->isDead() ) {
 				if (actor->hostile||owner->hostile){
 					owner->attacker->attack(owner, actor);
-					if(!actor->hostile && actor->ch == 130) //currently this only applies to security bots, if the player attacks a nonhostile enemy, should that actor generally become hostile?
+					if(!actor->hostile && actor->ch == 129) //currently this only applies to security bots, if the player attacks a nonhostile enemy, should that actor generally become hostile?
+					{
 						actor->hostile = true;
+						actor->ch = 130; //update to active security bot
+					}
 					engine.damageDone += owner->attacker->totalPower - actor->destructible->totalDodge;
 				}else if(actor->interact && !owner->hostile)
 					((InteractibleAi*)actor->ai)->interaction(actor, owner);
-				else if(!owner->hostile && !actor->hostile && actor->ch == 130)
+				else if(!owner->hostile && !actor->hostile && actor->ch == 129)
 					engine.gui->message(TCODColor::grey, "The %s seems to be inactive", actor->name);
 			}
 			//attacking something like a generator that doesn't have a destructible or something

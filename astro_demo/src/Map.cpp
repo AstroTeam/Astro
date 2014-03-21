@@ -118,6 +118,7 @@ void Map::init(bool withActors, LevelType levelType) {
 	if (withActors) {
 		Actor *boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
 		boss->name = "Infected Security Bot";
+		boss->ch = 146;
 		boss->destructible->hp = boss->destructible->hp*2;
 		boss->destructible->maxHp = boss->destructible->hp;
 		boss->totalStr = boss->totalStr*1.25;
@@ -425,7 +426,7 @@ Actor* Map::createSecurityBot(int x, int y)
 	float securityBotDR = 0*scale;
 	float securityBotStr = 10*scale;
 	float securityBotXp = 25*scale;
-	int securityBotAscii = 130; //CHANGED
+	int securityBotAscii = 129; //CHANGED
 
 	Actor *securityBot = new Actor(x,y,securityBotAscii,"Security Bot",TCODColor::white);
 	securityBot->destructible = new MonsterDestructible(securityBotHp,securityBotDodge,securityBotDR,"destroyed security bot",securityBotXp);
