@@ -309,6 +309,16 @@ void Renderer::render(void *sdlSurface){
 				SDL_BlitSurface(itemsGlow,&srcRect,floorMap,&dstRect);		
 				SDL_BlitSurface(shadows,&srcRect,floorMap,&dstRect);	
 			}
+			//frag glow
+			else if (engine.mapcon->getChar(xM,yM) == 198)  
+			{
+				srcRect.x = 64;
+				srcRect.y = 0;
+				SDL_BlitSurface(itemsGlow,&srcRect,floorMap,&dstRect);
+				srcRect.x = 0;
+				srcRect.y = 0;
+				SDL_BlitSurface(shadows,&srcRect,floorMap,&dstRect);	
+			}
 			//EMP glow
 			else if (engine.mapcon->getChar(xM,yM) == 183)  
 			{
