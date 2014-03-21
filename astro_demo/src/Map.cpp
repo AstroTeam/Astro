@@ -1457,7 +1457,7 @@ cout << "Server room made";
 		bool x1y1 = canWalk(x1,y1) && engine.getAnyActor(x1,y1)==NULL;
 		bool x1y2 = canWalk(x1,y2) && engine.getAnyActor(x1,y2)==NULL;
 		bool x2y2 = canWalk(x2,y2) && engine.getAnyActor(x2,y2)==NULL;
-		bool x2y1 = canWalk(x2,y1) && engine.getAnyActor(x2,y2)==NULL;
+		bool x2y1 = canWalk(x2,y1) && engine.getAnyActor(x2,y1)==NULL;
 		for(int i = 0; i < 4; i++)
 		{
 			c = rng->getInt(0,3);
