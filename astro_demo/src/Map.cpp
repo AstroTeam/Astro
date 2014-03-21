@@ -1684,9 +1684,23 @@ void Map::generateRandom(Actor *owner, int ascii){
 		{
 			for(int i = 0; i < owner->container->size; i++)
 			{
-				Actor *emp = createEMP(0,0);
-				engine.actors.push(emp);
-				emp->pickable->pick(emp,owner);
+				int rand = rng->getInt(0,30);
+				if(rand <= 15)
+				{
+					Actor *emp = createEMP(0,0);
+					engine.actors.push(emp);
+					emp->pickable->pick(emp,owner);
+				} else if(rand <= 25)
+				{
+					Actor *frag = createFrag(0,0);
+					engine.actors.push(frag);
+					frag->pickable->pick(frag,owner);
+				}
+				else{
+					Actor *fb = createFireBomb(0,0);
+					engine.actors.push(fb);
+					fb->pickable->pick(fb,owner);
+				}
 			}
 		}else if(ascii == 149) //infectedMarines have 60% chance of dropping an item with 50% chance of it being a MLR, and the other 50% chance being a battery pack
 		{

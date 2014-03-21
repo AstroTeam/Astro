@@ -143,7 +143,11 @@ class GrenadierAi : public Ai
 	protected:
 		int moveCount;
 		int range; //range
-		int numEmpGrenades;
+		int numGrenades;
+		void useEmpGrenade(Actor *owner, int targetx, int targety);
+		void useFirebomb(Actor *owner, int targetx, int targety);
+		void useFrag(Actor *owner, int targetx, int targety);
+		void kamikaze(Actor *owner, Actor *target);
 		void moveOrAttack(Actor *owner, int targetx, int targety);
 };
 
