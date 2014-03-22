@@ -560,9 +560,9 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type, bool isVend) {
 		Actor *actor = *it;
 		if(actor->sort == type){
 			if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
-				inventoryScreen->print(2,y,"(%c) %s(E)",shortcut,actor->name);
+				inventoryScreen->print(1,y,"(%c) %s(E)",shortcut,actor->name);
 			}else{
-				inventoryScreen->print(2,y,"(%c) %s",shortcut,actor->name);
+				inventoryScreen->print(1,y,"(%c) %s",shortcut,actor->name);
 			}
 			owner->container->select[shortcut] = actor->name;
 			if (actor->pickable->stacks) {
