@@ -1,4 +1,5 @@
 #include "main.hpp"
+#include <iostream>
 
 Pickable::Pickable(bool stacks, int stackSize, PickableType type) : 
 	stacks(stacks),stackSize(stackSize), type(type) {
@@ -6,6 +7,7 @@ Pickable::Pickable(bool stacks, int stackSize, PickableType type) :
 
 Pickable *Pickable::create(TCODZip &zip) {
 	PickableType type = (PickableType)zip.getInt();
+	std::cout << "pickabletype " << std::endl;
 	Pickable *pickable = NULL;
 	switch(type) {
 		case CURRENCY: pickable = new Coinage(0); break;
@@ -16,8 +18,10 @@ Pickable *Pickable::create(TCODZip &zip) {
 		case FIREBALL: pickable = new Fireball(0,0,0); break;
 		case EQUIPMENT: pickable = new Equipment(0); break;
 		case FLARE: pickable = new Flare(0,0,0); break;
+		case FRAGMENT: pickable = new Fragment(0,0,0); break;
 		case NONE: break;
 	}
+	std::cout << "chose a module type " << std::endl;
 	pickable->load(zip);
 	return pickable;
 }
@@ -89,8 +93,8 @@ bool Healer::use(Actor *owner, Actor *wearer) {
 		if(wearer->race[0] == 'R')
 			factor *= .5;
 		if(wearer->job[0] == 'A')
-			factor *= .4;
-		amountHealed = wearer->destructible->heal((factor * (wearer->totalIntel * 3 + 6))/1);
+			factor *= .6;
+		amountHealed = wearer->destructible->heal((int)(factor * (wearer->totalIntel * 3 + 6))/1);
 		if (amountHealed > 0) {
 			return Pickable::use(owner,wearer);
 		}
@@ -209,7 +213,8 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 		if (actor->destructible && !actor->destructible->isDead()
 			&&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) {
 			//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
-			float damageTaken = 1;//actor->destructible->takeDamage(actor, 2 * wearer->totalIntel);
+			float damageTaken = 1;
+			actor->destructible->takeDamage(actor, 1);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
 				engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damageTaken);
@@ -227,7 +232,7 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 			if (engine.distance(x,xxx,y,yyy) <= (1 + (wearer->totalIntel - 1) /3))
 			{
 				engine.map->tiles[xxx+yyy*engine.map->width].envSta = 1;
-				engine.map->tiles[xxx+yyy*engine.map->width].temperature = 6;
+				engine.map->tiles[xxx+yyy*engine.map->width].temperature = 6;//should be a function of int 
 			}
 			
 		}
@@ -239,6 +244,61 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 			engine.map->tiles[xxx+yyy*engine.map->width].envSta = 1;	
 		}
 	}*/
+	
+	return Pickable::use(owner,wearer);
+}
+
+Fragment::Fragment(float range, float damage,float maxRange, bool stacks, int stackSize, PickableType type)
+	: LightningBolt(range, damage, stacks, stackSize, type),maxRange(maxRange) {
+}
+
+void Fragment::load(TCODZip &zip) {
+	range = zip.getFloat();
+	damage = zip.getFloat();
+	maxRange = zip.getFloat();
+	stacks = zip.getInt();
+	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
+}
+
+void Fragment::save(TCODZip &zip) {
+	zip.putInt(type);
+	zip.putFloat(range);
+	zip.putFloat(damage);
+	zip.putFloat(maxRange);
+	zip.putInt(stacks);
+	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
+}
+
+bool Fragment::use(Actor *owner, Actor *wearer) {
+	engine.gui->message(TCODColor::cyan, "Please choose a tile for the grenade, "
+		"or hit escape to cancel.");
+	int x = engine.player->x;
+	int y = engine.player->y;
+	if (!engine.pickATile(&x,&y,maxRange, (wearer->totalIntel - 1) /3 +1)) {
+		return false;
+	}
+	//burn everything in range, including the player
+	engine.gui->message(TCODColor::orange, "The fragmentation grenade explodes, eviscerating everything within %d tiles!",1 + (wearer->totalIntel - 1) /3);
+	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+		Actor *actor = *it;
+		if (actor->destructible && !actor->destructible->isDead()
+			&&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) {
+			float damageTaken = 2 * wearer->totalIntel;
+			actor->destructible->takeDamage(actor, damageTaken);
+			//engine.damageDone +=  2 * wearer->totalIntel;
+			if (!actor->destructible->isDead()) {
+				engine.gui->message(TCODColor::orange,"The %s gets wounded from the blast for %g hit points.",actor->name,damageTaken);
+			} else {
+				engine.gui->message(TCODColor::orange,"The %s's guts explode outward after taking %g damage.",actor->name, damageTaken);
+			}
+			//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
+		}
+	}
+	
 	
 	return Pickable::use(owner,wearer);
 }
@@ -384,6 +444,7 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 				case FIREBALL: droppy->pickable = new Fireball(((Fireball*)(owner->pickable))->range,((Fireball*)(owner->pickable))->damage,((Fireball*)(owner->pickable))->maxRange); droppy->sort = 2; break;
 				case FLARE: droppy->pickable = new Flare(((Flare*)(owner->pickable))->nbTurns, ((Flare*)(owner->pickable))->range, ((Flare*)(owner->pickable))->lightRange); droppy->sort = 2; break;
 				case EQUIPMENT: break;
+				case FRAGMENT: droppy->pickable = new Fragment(((Fragment*)(owner->pickable))->range,((Fragment*)(owner->pickable))->damage,((Fragment*)(owner->pickable))->maxRange); droppy->sort = 2; break;
 				case NONE: break;
 			}
 			droppy->pickable->stackSize = numberDropped;

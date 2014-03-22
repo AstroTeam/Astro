@@ -44,6 +44,7 @@ public:
 			room->x2 = x+w-1;
 			room->y2 = y+h-1;
 			
+			std::cout << "room " << room->x1 << " " << room->y1 << " " << room->x2 << " " << room->y2 << std::endl;
 			
 			//will this room be special?
 			int index = map.rng->getInt(0, 10);
@@ -75,6 +76,7 @@ public:
 
 Map::Map(int width, int height, short epicenterAmount): width(width),height(height),epicenterAmount(epicenterAmount) {
 	seed = TCODRandom::getInstance()->getInt(0,0x7FFFFFFF);
+	cout<< "seed " << seed << endl;
 }
 
 Map::~Map() {
@@ -102,6 +104,7 @@ int Map::tileType(int x, int y) {
 void Map::init(bool withActors, LevelType levelType) {
 	cout << levelType << endl << endl;
 
+	cout << "used seed " << seed << endl;
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
@@ -114,13 +117,18 @@ void Map::init(bool withActors, LevelType levelType) {
 	//Create boss, for now it is a simple security bot
 	if (withActors) {
 		Actor *boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
-		boss->name = "BossBot";
+		boss->name = "Infected Security Bot";
+		boss->ch = 146;
+		boss->destructible->hp = boss->destructible->hp*2;
+		boss->destructible->maxHp = boss->destructible->hp;
+		boss->totalStr = boss->totalStr*1.25;
 		engine.boss = boss;
 	}
 }
 
 void Map::save(TCODZip &zip) {
 	zip.putInt(seed);
+	cout << "saved seed " << seed << endl;
 	for (int i = 0; i < width*height; i++) {
 		zip.putInt(tiles[i].explored);
 		zip.putFloat(tiles[i].infection);
@@ -136,6 +144,7 @@ void Map::save(TCODZip &zip) {
 
 void Map::load(TCODZip &zip) {
 	seed = zip.getInt();
+	cout << "loaded seed " << seed << endl;
 	init(false);
 	for (int i = 0; i <width*height; i++) {
 		tiles[i].explored = zip.getInt();
@@ -417,7 +426,7 @@ Actor* Map::createSecurityBot(int x, int y)
 	float securityBotDR = 0*scale;
 	float securityBotStr = 10*scale;
 	float securityBotXp = 25*scale;
-	int securityBotAscii = 130; //CHANGED
+	int securityBotAscii = 129; //CHANGED
 
 	Actor *securityBot = new Actor(x,y,securityBotAscii,"Security Bot",TCODColor::white);
 	securityBot->destructible = new MonsterDestructible(securityBotHp,securityBotDodge,securityBotDR,"destroyed security bot",securityBotXp);
@@ -511,10 +520,10 @@ Actor* Map::createInfectedMarine(int x, int y)
 	float infectedMarineDodge = 0*scale;
 	float infectedMarineDR = 0*scale;
 	float infectedMarineStr = 2*scale;
-	float infectedMarineDex = 5*scale;
+	float infectedMarineDex = 3*scale;
 	float infectedMarineXp = 10*scale;
 	int infectedMarineAscii = 149;
-	
+	 
 	Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
 	infectedMarine->destructible = new MonsterDestructible(infectedMarineHp,infectedMarineDodge,infectedMarineDR,"infected corpse",infectedMarineXp);
 	infectedMarine->flashable = true;
@@ -643,7 +652,7 @@ Actor* Map::createTurret(int x, int y)
 	float turretDodge = 0*scale;
 	float turretDR = 0*scale;
 	float turretStr = 0*scale; //no melee damage
-	float turretDex = 5*scale;
+	float turretDex = 3*scale;
 	float turretXp = 25*scale;
 	int turretAscii = 147;
 	
@@ -684,7 +693,7 @@ Actor* Map::createVendor(int x, int y)
 void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,335);
+	int dice = rng->getInt(0,375);
 	if (dice < 40) {
 		//create a health potion
 		Actor *healthPotion = createHealthPotion(x,y);
@@ -725,8 +734,12 @@ void Map::addItem(int x, int y, RoomType roomType) {
 		Actor *scrollOfConfusion = createFlashBang(x,y);
 		engine.actors.push(scrollOfConfusion);
 		engine.sendToBack(scrollOfConfusion);
-	}
-	else {
+	}else if(dice< 40+40+40+15+15+5+40+40+40){
+		//create a scroll of fragging
+		Actor *scrollOfFragging = createFrag(x,y);
+		engine.actors.push(scrollOfFragging);
+		engine.sendToBack(scrollOfFragging);
+	}else {
 		Actor *stackOfMoney = createCurrencyStack(x,y);
 		engine.actors.push(stackOfMoney);
 		engine.sendToBack(stackOfMoney);
@@ -1457,7 +1470,7 @@ cout << "Server room made";
 		bool x1y1 = canWalk(x1,y1) && engine.getAnyActor(x1,y1)==NULL;
 		bool x1y2 = canWalk(x1,y2) && engine.getAnyActor(x1,y2)==NULL;
 		bool x2y2 = canWalk(x2,y2) && engine.getAnyActor(x2,y2)==NULL;
-		bool x2y1 = canWalk(x2,y1) && engine.getAnyActor(x2,y2)==NULL;
+		bool x2y1 = canWalk(x2,y1) && engine.getAnyActor(x2,y1)==NULL;
 		for(int i = 0; i < 4; i++)
 		{
 			c = rng->getInt(0,3);
@@ -1671,9 +1684,23 @@ void Map::generateRandom(Actor *owner, int ascii){
 		{
 			for(int i = 0; i < owner->container->size; i++)
 			{
-				Actor *emp = createEMP(0,0);
-				engine.actors.push(emp);
-				emp->pickable->pick(emp,owner);
+				int rand = rng->getInt(0,30);
+				if(rand <= 15)
+				{
+					Actor *emp = createEMP(0,0);
+					engine.actors.push(emp);
+					emp->pickable->pick(emp,owner);
+				} else if(rand <= 25)
+				{
+					Actor *frag = createFrag(0,0);
+					engine.actors.push(frag);
+					frag->pickable->pick(frag,owner);
+				}
+				else{
+					Actor *fb = createFireBomb(0,0);
+					engine.actors.push(fb);
+					fb->pickable->pick(fb,owner);
+				}
 			}
 		}else if(ascii == 149) //infectedMarines have 60% chance of dropping an item with 50% chance of it being a MLR, and the other 50% chance being a battery pack
 		{
@@ -1860,16 +1887,25 @@ Actor *Map::createFireBomb(int x, int y){
 	scrollOfFireball->sort = 2;
 	scrollOfFireball->blocks = false;
 	scrollOfFireball->pickable = new Fireball(3,12,8);
-	scrollOfFireball->pickable->value = 25;
+	scrollOfFireball->pickable->value = 45;
 	scrollOfFireball->pickable->inkValue = 10;
 	return scrollOfFireball;
+}
+Actor *Map::createFrag(int x, int y){
+	Actor *scrollOfFragging = new Actor(x,y,198,"Frag Grenade",TCODColor::white);
+	scrollOfFragging->sort = 2;
+	scrollOfFragging->blocks = false;
+	scrollOfFragging->pickable = new Fragment(3,12,8);
+	scrollOfFragging->pickable->value = 55;
+	scrollOfFragging->pickable->inkValue = 10;
+	return scrollOfFragging;
 }
 Actor *Map::createEMP(int x, int y){
 	Actor *scrollOfLightningBolt = new Actor(x,y,183, "EMP Pulse",TCODColor::white);
 	scrollOfLightningBolt->sort = 2;
 	scrollOfLightningBolt->blocks = false;
 	scrollOfLightningBolt->pickable = new LightningBolt(5,20);
-	scrollOfLightningBolt->pickable->value = 30;
+	scrollOfLightningBolt->pickable->value = 60;
 	scrollOfLightningBolt->pickable->inkValue = 10;
 	return scrollOfLightningBolt;
 }
@@ -1880,7 +1916,7 @@ Actor *Map::createTitanMail(int x, int y){
 	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,8);
 	chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus,requirement);
 	chainMail->sort = 3;
-	chainMail->pickable->value = 300;
+	chainMail->pickable->value = 1600;
 	chainMail->pickable->inkValue = 50;
 	return chainMail;
 }
@@ -1922,8 +1958,8 @@ Actor *Map::createBatteryPack(int x,int y){
 	batteryPack->sort = 1;
 	batteryPack->blocks = false;
 	batteryPack->pickable = new Charger(5);
-	batteryPack->pickable->value = 20;
-	batteryPack->pickable->inkValue = 5;
+	batteryPack->pickable->value = 50;
+	batteryPack->pickable->inkValue = 10;
 	return batteryPack;
 }
 

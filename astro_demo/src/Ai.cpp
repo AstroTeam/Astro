@@ -178,10 +178,10 @@ void PlayerAi::update(Actor *owner) {
 	case TCODK_DOWN: case TCODK_KP2: dy = 1; break;
 	case TCODK_LEFT: case TCODK_KP4: dx =-1; break;
 	case TCODK_RIGHT: case TCODK_KP6: dx = 1; break;
-	case TCODK_KP7: dy = dx = -1; break;
-	case TCODK_KP9: dy = -1; dx = 1; break;
-	case TCODK_KP1: dx = -1; dy = 1; break;
-	case TCODK_KP3: dx = dy = 1; break;
+	case TCODK_KP7: case TCODK_7: dy = dx = -1; break;
+	case TCODK_KP9: case TCODK_9: dy = -1; dx = 1; break;
+	case TCODK_KP1: case TCODK_1: dx = -1; dy = 1; break;
+	case TCODK_KP3: case TCODK_3: dx = dy = 1; break;
 	case TCODK_TAB: 
 		engine.save();
 		engine.gui->message(TCODColor::pink, "saved"); break;
@@ -232,12 +232,15 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 			if (actor->destructible && !actor->destructible->isDead() ) {
 				if (actor->hostile||owner->hostile){
 					owner->attacker->attack(owner, actor);
-					if(!actor->hostile && actor->ch == 130) //currently this only applies to security bots, if the player attacks a nonhostile enemy, should that actor generally become hostile?
+					if(!actor->hostile && actor->ch == 129) //currently this only applies to security bots, if the player attacks a nonhostile enemy, should that actor generally become hostile?
+					{
 						actor->hostile = true;
+						actor->ch = 130; //update to active security bot
+					}
 					engine.damageDone += owner->attacker->totalPower - actor->destructible->totalDodge;
 				}else if(actor->interact && !owner->hostile)
 					((InteractibleAi*)actor->ai)->interaction(actor, owner);
-				else if(!owner->hostile && !actor->hostile && actor->ch == 130)
+				else if(!owner->hostile && !actor->hostile && actor->ch == 129)
 					engine.gui->message(TCODColor::grey, "The %s seems to be inactive", actor->name);
 			}
 			//attacking something like a generator that doesn't have a destructible or something
@@ -740,6 +743,7 @@ void MonsterAi::update(Actor *owner) {
 	} else {
 		moveCount = 0;
 	}
+	owner->destructible->takeFireDamage(owner, 3.0);
 }
 
 void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
@@ -767,7 +771,7 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 		owner->attacker->attack(owner,engine.player);
 		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
-	owner->destructible->takeFireDamage(owner, 3.0);
+	
 }
 
 SecurityBotAi::SecurityBotAi() : moveCount(0) {
@@ -1233,6 +1237,7 @@ void RangedAi::update(Actor *owner) {
 	} else {
 		moveCount = 0;
 	}
+	owner->destructible->takeFireDamage(owner, 3.0);
 }
 void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 {
@@ -1267,12 +1272,11 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		owner->attacker->attack(owner,engine.player);
 		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
-	owner->destructible->takeFireDamage(owner, 3.0);
 }
 
 
 GrenadierAi::GrenadierAi() : moveCount(0), range(3){
-numEmpGrenades = 5;
+numGrenades = 5;
 berserk = false;
 }
 
@@ -1280,7 +1284,7 @@ void GrenadierAi::load(TCODZip &zip) {
 	berserk = zip.getInt();
 	moveCount = zip.getInt();
 	range = zip.getInt();
-	numEmpGrenades = zip.getInt();
+	numGrenades = zip.getInt();
 }
 
 void GrenadierAi::save(TCODZip &zip) {
@@ -1288,7 +1292,7 @@ void GrenadierAi::save(TCODZip &zip) {
 	zip.putInt(berserk);
 	zip.putInt(moveCount);
 	zip.putInt(range);
-	zip.putInt(numEmpGrenades);
+	zip.putInt(numGrenades);
 }
 
 void GrenadierAi::update(Actor *owner) {
@@ -1334,6 +1338,170 @@ void GrenadierAi::update(Actor *owner) {
 		} 
 		else 
 			moveCount = 0;
+		
+		owner->destructible->takeFireDamage(owner, 3.0);
+}
+void GrenadierAi::useEmpGrenade(Actor *owner, int targetx, int targety)
+{
+	float damageTaken = engine.player->destructible->takeDamage(engine.player, -3 + 3 * owner->totalIntel);
+	numGrenades--;
+	engine.gui->message(TCODColor::red,"The %s uses an EMP Grenade on the player for %g hit points!",owner->name, damageTaken);
+	engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
+	
+}
+void GrenadierAi::useFirebomb(Actor *owner, int targetx, int targety)
+{
+	int x = targetx;
+	int y = targety;
+
+	engine.gui->message(TCODColor::red, "The %s throws a firebomb and it explodes, burning everything within %d tiles!",owner->name, 1 + (owner->totalIntel - 1) /3);
+	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+		Actor *actor = *it;
+		if (actor->destructible && !actor->destructible->isDead()
+			&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
+			//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
+			float damageTaken = 1;
+			actor->destructible->takeDamage(actor, 1);
+			//engine.damageDone +=  2 * wearer->totalIntel;
+			if (!actor->destructible->isDead()) {
+				if(actor == engine.player)
+					engine.damageReceived += damageTaken;
+				engine.gui->message(TCODColor::red,"The %s gets burned for %g hit points.",actor->name,damageTaken);
+			} else {
+				engine.gui->message(TCODColor::red,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",actor->name, damageTaken);
+			}
+			//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
+		}
+	}
+	
+	for (int xxx = x - ((1 + (owner->totalIntel - 1) /3)) ; xxx <= x+((1 + (owner->totalIntel - 1) /3));xxx++)
+	{
+		for (int yyy = y - ((1 + (owner->totalIntel - 1) /3)); yyy <= y+((1 + (owner->totalIntel - 1) /3));yyy++)
+		{
+			if (engine.distance(x,xxx,y,yyy) <= (1 + (owner->totalIntel - 1) /3))
+			{
+				engine.map->tiles[xxx+yyy*engine.map->width].envSta = 1;
+				engine.map->tiles[xxx+yyy*engine.map->width].temperature = 6;//should be a function of int 
+			}
+			
+		}
+	}
+	numGrenades--;
+}
+void GrenadierAi::useFrag(Actor *owner, int targetx, int targety)
+{
+	int x = targetx;
+	int y = targety;
+	
+	engine.gui->message(TCODColor::red, "The %s throws a fragmentation grenade and it explodes, eviscerating everything within %d tiles!",owner->name, 1 + (owner->totalIntel - 1) /3);
+	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+		Actor *actor = *it;
+		if (actor->destructible && !actor->destructible->isDead()
+			&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
+		{
+			float damageTaken = 2 * owner->totalIntel;
+			actor->destructible->takeDamage(actor, damageTaken);
+			//engine.damageDone +=  2 * wearer->totalIntel;
+			if (!actor->destructible->isDead()) 
+			{	if(actor == engine.player)
+					engine.damageReceived += damageTaken;
+				engine.gui->message(TCODColor::red,"The %s gets wounded from the blast for %g hit points.",actor->name,damageTaken);
+			} else {
+				engine.gui->message(TCODColor::red,"The %s's guts explode outward after taking %g damage.",actor->name,damageTaken);
+			}
+			//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
+		}
+	}
+	
+	numGrenades--;
+}
+void GrenadierAi::kamikaze(Actor *owner, Actor *target)
+{
+	TCODRandom *rng = TCODRandom::getInstance();
+	const char* name = target->name;
+	//three cases, randomly determine which grenade to use
+	int dice = rng->getInt(0,30);
+	if(dice <= 15)
+	{
+		//emp grenade
+		float damageTaken = target->destructible->takeDamage(target, -1*numGrenades*(-3 + 3 * owner->totalIntel));
+		engine.gui->message(TCODColor::red, "The %s kamikazes with an EMP Grenade on the %s for %g hit points!",owner->name,name, damageTaken);
+		if(target == engine.player)
+			engine.damageReceived += -1*numGrenades*(3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
+		
+	}
+	else if(dice <= 25)
+	{
+		//frag
+		int x = owner->x;
+		int y = owner->y;
+		
+		engine.gui->message(TCODColor::red, "The %s kamikazes with a fragmentation grenade and it explodes, eviscerating everything within %d tiles!",owner->name, 1 + (owner->totalIntel - 1) /3);
+		for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+			Actor *actor = *it;
+			if (actor->destructible && !actor->destructible->isDead()
+				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
+			{
+				float damageTaken = 2 * owner->totalIntel;
+				actor->destructible->takeDamage(actor, damageTaken);
+				//engine.damageDone +=  2 * wearer->totalIntel;
+				if (!actor->destructible->isDead()) 
+				{	if(actor == engine.player)
+						engine.damageReceived += damageTaken;
+					engine.gui->message(TCODColor::red,"The %s gets wounded from the %s for %g hit points.",name, owner->name,damageTaken);
+				} else {
+					engine.gui->message(TCODColor::red,"The %s's guts explode outward after taking %g damage.",name,damageTaken);
+				}
+				//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
+			}
+		}
+	
+		
+		
+	}
+	else
+	{
+		//firebomb
+		int x =	owner->x;
+		int y = owner->y;
+
+		engine.gui->message(TCODColor::red, "The %s kamikazes with a firebomb and it explodes, burning everything within %d tiles!",owner->name, 1 + (owner->totalIntel - 1) /3);
+		for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+			Actor *actor = *it;
+			if (actor->destructible && !actor->destructible->isDead()
+				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
+				//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
+				float damageTaken = 1;
+				actor->destructible->takeDamage(actor, 1);
+				//engine.damageDone +=  2 * wearer->totalIntel;
+				if (!actor->destructible->isDead()) {
+					if(actor == engine.player)
+						engine.damageReceived += damageTaken;
+					engine.gui->message(TCODColor::red,"The %s gets burned from the %s for %g hit points.",name,owner->name, damageTaken);
+				} else {
+					engine.gui->message(TCODColor::red,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",name, damageTaken);
+				}
+				//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
+			}
+		}
+
+		for (int xxx = x - ((1 + (owner->totalIntel - 1) /3)) ; xxx <= x+((1 + (owner->totalIntel - 1) /3));xxx++)
+		{
+			for (int yyy = y - ((1 + (owner->totalIntel - 1) /3)); yyy <= y+((1 + (owner->totalIntel - 1) /3));yyy++)
+			{
+				if (engine.distance(x,xxx,y,yyy) <= (1 + (owner->totalIntel - 1) /3))
+				{
+					engine.map->tiles[xxx+yyy*engine.map->width].envSta = 1;
+					engine.map->tiles[xxx+yyy*engine.map->width].temperature = 6;//should be a function of int 
+				}
+				
+			}
+		}
+	}
+	
+	MonsterDestructible* md = (MonsterDestructible*) owner->destructible;
+	md->suicide(owner);
+
 }
 void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 {
@@ -1344,7 +1512,7 @@ void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	float distance = sqrtf(dx*dx+dy*dy);
 	
 	//I want the grenadier to move towards if it is out of range or it is out of grenades but not right
-	if (distance > range || (distance > 1 && numEmpGrenades <= 0 )) {
+	if (distance > range || (distance > 1 && numGrenades <= 0 )) {
 		dx = (int) (round(dx / distance));
 		dy = (int)(round(dy / distance));
 		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
@@ -1358,47 +1526,46 @@ void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		if (owner->oozing) {
 			engine.map->infectFloor(owner->x, owner->y);
 		}
-	} else if (distance > 1 && distance <= range && owner->attacker && numEmpGrenades > 0 && !berserk) 
+	} else if (distance > 1 && distance <= range && owner->attacker && numGrenades > 0 && !berserk) 
 	{
 		TCODRandom *rng = TCODRandom::getInstance();
-		//Grenadiers will go berserk and attack the nearest monster or the player 50%/(numEmpGrenades+1) left of the time or whenever they have one grenade left
+		//Grenadiers will go berserk and attack the nearest monster or the player 50%/(numGrenades+1) left of the time or whenever they have one grenade left
 		//The damage done is proportion to the number of grenades left
 		
-		if(rng->getInt(0,100) < 50/(numEmpGrenades+1) || numEmpGrenades == 1)
+		if(rng->getInt(0,100) < 50/(numGrenades+1) || numGrenades == 1)
 		{
 			berserk = true;
-			numEmpGrenades = -1*numEmpGrenades;
+			numGrenades = -1*numGrenades;
 			engine.gui->message(TCODColor::red,"The %s is going berserk!",owner->name);
 		}
 		else
 		{
-			float damageTaken = engine.player->destructible->takeDamage(engine.player, -3 + 3 * owner->totalIntel);
-			numEmpGrenades--;
-			engine.gui->message(TCODColor::red,"The %s uses an EMP Grenade on the player for %g hit points!",owner->name, damageTaken);
-			engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
+			int dice = rng->getInt(0,30);
+			if(dice <= 15)
+				useEmpGrenade(owner, engine.player->x, engine.player->y);
+			else if(dice <= 25)
+				useFrag(owner, engine.player->x, engine.player->y);
+			else
+				useFirebomb(owner, engine.player->x, engine.player->y);
 		}
 
 		
-	}else if (owner->attacker && !berserk) { //grenadier will melee attack if up close
+	}else if (owner->attacker && !berserk) 
+	{ //grenadier will melee attack if up close
 		owner->attacker->attack(owner,engine.player);
 		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}else if(owner->attacker && berserk)
 	{
+		//kamkaze on the actor closetest to you, given by targetx, targety
 		Actor *actor = engine.getActor(targetx,targety);
-		if(owner->destructible->isDead() || actor->destructible->isDead())
+		
+		if(owner->destructible->isDead() || actor == NULL || actor->destructible == NULL || (actor && actor->destructible && actor->destructible->isDead()))
 			return;
-			
-		const char* name = actor->name;
-		float damageTaken = actor->destructible->takeDamage(actor, -1*numEmpGrenades*(-3 + 3 * owner->totalIntel));
-		engine.gui->message(TCODColor::red, "The %s kamakazes on the %s for %g hit points!",owner->name,name, damageTaken);
-		if(actor == engine.player)
-			engine.damageReceived += -1*numEmpGrenades*(3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
-			
-		MonsterDestructible* md = (MonsterDestructible*) owner->destructible;
-		md->suicide(owner);
+		
+		kamikaze(owner, actor);
+		
 		
 	}	
-	owner->destructible->takeFireDamage(owner, 3.0);
 }
 
 TurretAi::TurretAi()
@@ -1761,6 +1928,7 @@ Actor *VendingAi::clone(Actor *owner){
 			case Pickable::FIREBALL: droppy->pickable = new Fireball(((Fireball*)(owner->pickable))->range,((Fireball*)(owner->pickable))->damage,((Fireball*)(owner->pickable))->maxRange); droppy->sort = 2; break;
 			case Pickable::FLARE: droppy->pickable = new Flare(((Flare*)(owner->pickable))->nbTurns, ((Flare*)(owner->pickable))->range, ((Flare*)(owner->pickable))->lightRange); droppy->sort = 2; break;
 			case Pickable::EQUIPMENT: droppy->pickable = new Equipment(0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus); droppy->sort = owner->sort; break;
+			case Pickable::FRAGMENT: droppy->pickable = new Fragment(((Fragment*)(owner->pickable))->range,((Fragment*)(owner->pickable))->damage,((Fragment*)(owner->pickable))->maxRange); droppy->sort = 2; break;
 			case Pickable::NONE: break;
 		}
 		return droppy;
@@ -1803,6 +1971,10 @@ void VendingAi::populate(Actor *owner){
 	Actor *fireBomb = engine.map->createFireBomb(0,0);
 	engine.actors.push(fireBomb);
 	fireBomb->pickable->pick(fireBomb,owner);
+	
+	Actor *frag = engine.map->createFrag(0,0);
+	engine.actors.push(frag);
+	frag->pickable->pick(frag,owner);
 	
 	Actor *emp = engine.map->createEMP(0,0);
 	engine.actors.push(emp);
@@ -1857,6 +2029,7 @@ void EngineerAi::update(Actor *owner)
 	} else {
 		moveCount = 0;
 	}
+	owner->destructible->takeFireDamage(owner, 3.0);
 }
 
 void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
@@ -1966,6 +2139,5 @@ void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
 			}
 		}
 	}
-	owner->destructible->takeFireDamage(owner, 3.0);
 
 }

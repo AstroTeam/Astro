@@ -1,6 +1,7 @@
 #include "main.hpp"
 #include "SDL/SDL.h"
 #include <math.h>
+#include <iostream>
 
 /* Engine::Engine() : gameStatus(STARTUP), fovRadius(3)
 {
@@ -174,6 +175,7 @@ void Engine::init() {
 	
 	switch(engine.gui->jobSelection){
 		
+
 		case 1:
 			player->role="Marine";
 			player->job="Infantry";
@@ -234,7 +236,7 @@ void Engine::init() {
 			equip1->pickable->pick(equip1,player);
 			
 			
-			break;
+		break;
 		case 2:
 			player->role="Marine";
 			player->job="Medic";
@@ -471,15 +473,27 @@ void Engine::init() {
 				equip1->pickable->pick(equip1,player);
 			}
 			
+			//get a frag grenade
+			for(int i=0; i<1; i++){
+				Actor *equip1 = new Actor(0,0,'g',"Fragmentation Grenade",TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Fragment(3,12,8);
+				equip1->pickable->value = 55;
+				equip1->pickable->inkValue = 10;
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
 			break;
 		case 7:
 			player->role="Mercenary";
 			player->job="Assassin";
 			
-			player->str += 4;
-			player->totalStr += 4;
-			player->attacker->basePower += 4;   //old
-			player->attacker->totalPower += 4;  //old
+			player->str += 8;
+			player->totalStr += 8;
+			player->attacker->basePower += 8;   //old
+			player->attacker->totalPower += 8;  //old
 			
 			//cut HP by 2/3
 			player->vit /= 3;
@@ -489,8 +503,20 @@ void Engine::init() {
 			player->dex += 6;
 			player->totalDex += 6;
 			
-			player->intel += 8;
-			player->totalIntel += 8;
+			player->intel += 4;
+			player->totalIntel += 4;
+			
+			//get frag grenades
+			for(int i=0; i<3; i++){
+				Actor *equip1 = new Actor(0,0,'g',"Fragmentation Grenade",TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Fragment(3,12,8);
+				equip1->pickable->value = 55;
+				equip1->pickable->inkValue = 10;
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
 			
 			legs = new Actor(0,0,185,"Skinsuit Leggings",TCODColor::white);
 			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
@@ -528,6 +554,18 @@ void Engine::init() {
 			player->destructible->maxHp = player->vit;
 			player->destructible->hp = player->vit;
 			
+			//get frag grenades
+			for(int i=0; i<3; i++){
+				Actor *equip1 = new Actor(0,0,'g',"Fragmentation Grenade",TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Fragment(3,12,8);
+				equip1->pickable->value = 55;
+				equip1->pickable->inkValue = 10;
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
 			hands = new Actor(0,0,185,"Bruiser Gloves",TCODColor::white);
 			bonusHa = new ItemBonus(ItemBonus::HEALTH,5);
 			hands->blocks = false;
@@ -542,13 +580,32 @@ void Engine::init() {
 			player->role="Mercenary";
 			player->job="Hacker";
 			
+			player->vit -= 40;
+			player->destructible->maxHp = player->vit;
+			player->destructible->hp = player->vit;
+			
 			player->str -= 2;
 			player->totalStr = player->str;
 			player->attacker->basePower = player->str;   //old
 			player->attacker->totalPower = player->str;  //old
 			
-			player->intel += 4;
-			player->totalIntel += 4;
+			player->dex += 1;
+			player->totalDex += 1;
+			
+			player->intel += 6;
+			player->totalIntel += 6;
+			
+			//get frag grenades
+			for(int i=0; i<3; i++){
+				Actor *equip1 = new Actor(0,0,'g',"Fragmentation Grenade",TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Fragment(3,12,8);
+				equip1->pickable->value = 55;
+				equip1->pickable->inkValue = 10;
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
 			
 			helmet = new Actor(0,0,185,"Tech Helmet",TCODColor::white);
 			bonusHe = new ItemBonus(ItemBonus::HEALTH,5);
@@ -576,6 +633,7 @@ void Engine::init() {
 			player->dex+=3; //job selection bonus
 			player->totalDex+=3; //job selection bonus
 			
+
 			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
 			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
 			ranged->blocks = false;
@@ -671,15 +729,20 @@ void Engine::save() {
 		stairs->save(zip);
 		playerLight->save(zip);
 		//save the boss
+		std::cout << "got to boss " << std::endl;
 		boss->save(zip);
 		//then all the other actors
 		zip.putInt(actors.size() - 4); //minus another one for boss actor?
+		std::cout << "saving other actors " << std::endl;
+		std::cout << "number of actors " << actors.size() - 4 << std::endl;
 		for (Actor **it = actors.begin(); it!=actors.end(); it++) {
 			if (*it != player && *it != stairs && *it != playerLight && *it != boss) { //!= boss like stairs etc.?
+				std::cout << "saving " << (*it)->name << std::endl;
 				(*it)->save(zip);
 			}
 		}
 		//finally the message log
+		std::cout << "saving gui " <<std::endl;
 		gui->save(zip);
 		zip.saveToFile("game.sav");
 	}
@@ -692,9 +755,10 @@ void Engine::load(bool pause) {
 	}
 	if (!pause) {
 	engine.gui->menu.addItem(Menu::NEW_GAME, "NEW GAME");
-	} else {
-		engine.gui->menu.addItem(Menu::MAIN_MENU, "MAIN MENU");
 	}
+	//  else {
+	// engine.gui->menu.addItem(Menu::MAIN_MENU, "MAIN MENU");
+	// }
 	
 	if (pause) {
 		engine.gui->menu.addItem(Menu::SAVE, "SAVE");
@@ -768,14 +832,19 @@ void Engine::load(bool pause) {
 		//actors.push(boss); //I push the boss to actorsList on line in Map.cpp so I don't need to push it here?
 		//then all other actors
 		int nbActors = zip.getInt();
+		std::cout << "loading other actors" << std::endl;
+		std::cout << "number of actors " << nbActors << std::endl;
 		while (nbActors > 0) {
 			Actor *actor = new Actor(0,0,0,NULL, TCODColor::white);
 			actor->load(zip);
 			actors.push(actor);
+			std::cout << "loaded " << actor->name << std::endl;
 			nbActors--;
 		}
 		//finally, the message log
+		std::cout << "got to gui " << std::endl;
 		gui->load(zip);
+		std::cout << "got past gui " <<std::endl;
 		gui->message(TCODColor::pink,"loaded");
 		gameStatus = STARTUP;
 	} 
@@ -798,9 +867,12 @@ void Engine::update() {
 	}
 	if (gameStatus == NEW_TURN){
 		engine.turnCount++;
+		std::cout << "updating actors " <<std::endl;
+		std::cout << "number of actors " << actors.size() - 1 << std::endl;
 		for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 			Actor *actor = *iterator;
 			if ( actor != player) {
+				std::cout << "updating " << actor->name << std::endl;
 				actor->update();
 			}
 		}

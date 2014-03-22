@@ -1,0 +1,22 @@
+Run the python code in FreePIE. I couldn't find a way to change stances.
+
+Xbox360 Key Bindings
+--------------------
+
+LeftStick     Movement
+RightTrigger  Fire
+RightBumper   Save
+LeftBumper    LeftMouseClick
+LeftThumb     Wait
+RightThumb    Look
+Start         Menu/Enter
+LeftTrigger   Shift
+Back          Stairs(With Shift)
+A             Enter
+B             Grab
+X             Character Menu
+Y             Inventory
+LeftDPad      Drop
+
+DPad(Up,Right,Down,Left)           InventorySelection(a-d)
+RightStick(Up,Right,Down,Left)     MoreInventorySelection(e-h)
