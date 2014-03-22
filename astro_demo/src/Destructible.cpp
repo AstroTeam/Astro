@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "main.hpp"
+#include <cstring>
 
 Destructible::Destructible(float maxHp, float dodge, float dr, const char *corpseName, int xp) :
 	maxHp(maxHp),hp(maxHp),baseDodge(dodge+10),totalDodge(dodge+10), baseDR(dr), totalDR(dr), xp(xp) {
@@ -121,7 +122,10 @@ void Destructible::die(Actor *owner) {
 		owner->blocks = false;
 	}
 	owner->col = TCODColor::white;
-	owner->name = corpseName;
+	char* newname = new char[100];
+	strcpy(newname,owner->name);
+	owner->name = strcat(newname,"'s remains");
+	//corpseName;
 	//owner->blocks = false;
 	//make sure corpses are drawn before other important things
 	engine.sendToBack(owner);
