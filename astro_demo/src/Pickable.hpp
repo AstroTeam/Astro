@@ -111,6 +111,18 @@ public:
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
 };
+class ItemReq{
+	public:
+		enum ReqType{
+			NOREQ, STRENGTH, DEXTERITY, INTELLIGENCE
+		};
+		ReqType type;
+		float requirement;
+		
+		ItemReq(ReqType type, float requirement);
+		void load(TCODZip &zip);
+		void save(TCODZip &zip);
+};
 
 class Equipment : public Pickable {
 public:
@@ -122,9 +134,11 @@ public:
 	
 	SlotType slot;
 	ItemBonus *bonus;
-	Equipment(bool equipped = false, SlotType slot = NOSLOT, ItemBonus *bonus = NULL,
+	ItemReq *requirement;
+	Equipment(bool equipped = false, SlotType slot = NOSLOT, ItemBonus *bonus = NULL, ItemReq *requirement = NULL,
 		bool stacks = false, int stackSize = 1, PickableType type = EQUIPMENT);
 	bool use(Actor *owner, Actor *wearer);
+	bool requirementsMet(Actor *owner, Actor *wearer);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
 };
