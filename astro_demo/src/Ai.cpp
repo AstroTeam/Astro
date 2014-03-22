@@ -178,10 +178,10 @@ void PlayerAi::update(Actor *owner) {
 	case TCODK_DOWN: case TCODK_KP2: dy = 1; break;
 	case TCODK_LEFT: case TCODK_KP4: dx =-1; break;
 	case TCODK_RIGHT: case TCODK_KP6: dx = 1; break;
-	case TCODK_KP7: dy = dx = -1; break;
-	case TCODK_KP9: dy = -1; dx = 1; break;
-	case TCODK_KP1: dx = -1; dy = 1; break;
-	case TCODK_KP3: dx = dy = 1; break;
+	case TCODK_KP7: case TCODK_7: dy = dx = -1; break;
+	case TCODK_KP9: case TCODK_9: dy = -1; dx = 1; break;
+	case TCODK_KP1: case TCODK_1: dx = -1; dy = 1; break;
+	case TCODK_KP3: case TCODK_3: dx = dy = 1; break;
 	case TCODK_TAB: 
 		engine.save();
 		engine.gui->message(TCODColor::pink, "saved"); break;
