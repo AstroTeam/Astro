@@ -6,11 +6,10 @@ public:
 	float totalDodge; //must be overcome by the attacker
 	float baseDR; //base damage mitigated
 	float totalDR; //base damage mitigated
-	char *corpseName; //the actor's name once dead/destroyed
 	int xp; //xp gained when killing this monster, or player xp
 	
 	float heal(float amount);
-	Destructible(float maxHp, float dodge, float dr, const char *corpseName, int xp);
+	Destructible(float maxHp, float dodge, float dr, int xp);
 	~Destructible();
 	inline bool isDead() {return hp <= 0;}
 	float takeDamage(Actor *owner, float damage);
@@ -28,7 +27,7 @@ protected:
 
 class MonsterDestructible : public Destructible {
 public:
-	MonsterDestructible(float maxHp, float dodge, float dr, const char *corpseName, int xp);
+	MonsterDestructible(float maxHp, float dodge, float dr, int xp);
 	void suicide(Actor *owner);
 	void die (Actor *owner);
 	void save(TCODZip &zip);
@@ -36,7 +35,7 @@ public:
 
 class PlayerDestructible : public Destructible {
 public:
-	PlayerDestructible(float maxHp, float dodge, float dr, const char *corpseName);
+	PlayerDestructible(float maxHp, float dodge, float dr);
 	void die(Actor *owner);
 	void save(TCODZip &zip);
 };

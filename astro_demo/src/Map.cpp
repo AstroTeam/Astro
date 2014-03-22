@@ -406,7 +406,7 @@ Actor* Map::createCleanerBot(int x, int y)
 	
 	Actor *cleaner = new Actor(x,y,cleanerAscii,"Fungal Cleaning Bot",TCODColor::white);
 	cleaner->hostile = false;
-	cleaner->destructible = new MonsterDestructible(cleanerHp,cleanerDodge,cleanerDR,"destroyed fungal cleaning bot",cleanerXp);
+	cleaner->destructible = new MonsterDestructible(cleanerHp,cleanerDodge,cleanerDR,cleanerXp);
 	cleaner->totalStr = cleanerStr;
 	cleaner->ai = new CleanerAi();
 	cleaner->container = new Container(2);
@@ -429,7 +429,7 @@ Actor* Map::createSecurityBot(int x, int y)
 	int securityBotAscii = 129; //CHANGED
 
 	Actor *securityBot = new Actor(x,y,securityBotAscii,"Security Bot",TCODColor::white);
-	securityBot->destructible = new MonsterDestructible(securityBotHp,securityBotDodge,securityBotDR,"destroyed security bot",securityBotXp);
+	securityBot->destructible = new MonsterDestructible(securityBotHp,securityBotDodge,securityBotDR,securityBotXp);
 	securityBot->totalStr = securityBotStr;
 	securityBot->attacker = new Attacker(securityBotStr);
 	securityBot->container = new Container(2);
@@ -452,7 +452,7 @@ Actor* Map::createInfectedCrewMember(int x, int y)
 	int infectedCrewMemAscii = 164;
 	
 	Actor *infectedCrewMember = new Actor(x,y,infectedCrewMemAscii,"Infected Crewmember",TCODColor::white);
-	infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemHp,infectedCrewMemDodge,infectedCrewMemDR,"infected corpse",infectedCrewMemXp);
+	infectedCrewMember->destructible = new MonsterDestructible(infectedCrewMemHp,infectedCrewMemDodge,infectedCrewMemDR,infectedCrewMemXp);
 	infectedCrewMember->flashable = true;
 	infectedCrewMember->totalStr = infectedCrewMemStr;
 	infectedCrewMember->attacker = new Attacker(infectedCrewMemStr);
@@ -477,7 +477,7 @@ Actor* Map::createInfectedNCO(int x, int y)
 	int infectedNCOAscii = 148;
 	
 	Actor *infectedNCO = new Actor(x,y,infectedNCOAscii,"Infected NCO",TCODColor::white);
-	infectedNCO->destructible = new MonsterDestructible(infectedNCOHp,infectedNCODodge,infectedNCODR,"infected corpse",infectedNCOXp);
+	infectedNCO->destructible = new MonsterDestructible(infectedNCOHp,infectedNCODodge,infectedNCODR,infectedNCOXp);
 	infectedNCO->totalStr = infectedNCOStr;
 	infectedNCO->flashable = true;
 	infectedNCO->attacker = new Attacker(infectedNCOStr);
@@ -501,7 +501,7 @@ Actor* Map::createInfectedOfficer(int x, int y)
 	
 	
 	Actor *infectedOfficer = new Actor(x,y,infectedOfficerAscii,"Infected Officer",TCODColor::white);
-	infectedOfficer->destructible = new MonsterDestructible(infectedOfficerHp,infectedOfficerDodge,infectedOfficerDR,"infected corpse",infectedOfficerXp);
+	infectedOfficer->destructible = new MonsterDestructible(infectedOfficerHp,infectedOfficerDodge,infectedOfficerDR,infectedOfficerXp);
 	infectedOfficer->flashable = true;
 	infectedOfficer->totalStr = infectedOfficerStr;
 	infectedOfficer->attacker = new Attacker(infectedOfficerStr);
@@ -525,7 +525,7 @@ Actor* Map::createInfectedMarine(int x, int y)
 	int infectedMarineAscii = 149;
 	 
 	Actor *infectedMarine = new Actor(x,y,infectedMarineAscii,"Infected Marine",TCODColor::white);
-	infectedMarine->destructible = new MonsterDestructible(infectedMarineHp,infectedMarineDodge,infectedMarineDR,"infected corpse",infectedMarineXp);
+	infectedMarine->destructible = new MonsterDestructible(infectedMarineHp,infectedMarineDodge,infectedMarineDR,infectedMarineXp);
 	infectedMarine->flashable = true;
 	infectedMarine->attacker = new Attacker(infectedMarineStr);
 	infectedMarine->totalStr = infectedMarineStr;
@@ -551,7 +551,7 @@ Actor* Map::createInfectedGrenadier(int x, int y)
 	
 	
 	Actor *infectedGrenadier = new Actor(x,y,infectedGrenadierAscii,"Infected Grenadier",TCODColor::white);
-	infectedGrenadier->destructible = new MonsterDestructible(infectedGrenadierHp,infectedGrenadierDodge,infectedGrenadierDR,"infected corpse",infectedGrenadierXp);
+	infectedGrenadier->destructible = new MonsterDestructible(infectedGrenadierHp,infectedGrenadierDodge,infectedGrenadierDR,infectedGrenadierXp);
 	infectedGrenadier->flashable = true;
 	infectedGrenadier->totalStr = infectedGrenadierStr;
 	infectedGrenadier->totalIntel = infectedGrenadierIntel;
@@ -578,7 +578,7 @@ Actor *Map::createInfectedEngineer(int x, int y)
 	int infectedEngineerAscii = 134;  //CHANGED
 
 	Actor *infectedEngineer = new Actor(x,y,infectedEngineerAscii,"Infected Engineer",TCODColor::white);
-	infectedEngineer->destructible = new MonsterDestructible(infectedEngineerHp,infectedEngineerDodge,infectedEngineerDR,"infected corpse",infectedEngineerXp);
+	infectedEngineer->destructible = new MonsterDestructible(infectedEngineerHp,infectedEngineerDodge,infectedEngineerDR,infectedEngineerXp);
 	infectedEngineer->flashable = true;
 	infectedEngineer->totalStr = infectedEngineerStr;
 	infectedEngineer->totalIntel = infectedEngineerIntel;
@@ -606,7 +606,7 @@ Actor* Map::createMiniSporeCreature(int x, int y)
 	
 	
 	Actor *miniSporeCreature = new Actor(x,y,miniSporeCreatureAscii,"Small Spore Creature",TCODColor::white);
-	miniSporeCreature->destructible = new MonsterDestructible(miniSporeCreatureHp,miniSporeCreatureDodge,miniSporeCreatureDR,"gross spore remains",miniSporeCreatureXp);
+	miniSporeCreature->destructible = new MonsterDestructible(miniSporeCreatureHp,miniSporeCreatureDodge,miniSporeCreatureDR,miniSporeCreatureXp);
 	miniSporeCreature->flashable = true;
 	miniSporeCreature->totalStr = miniSporeCreatureStr;
 	miniSporeCreature->attacker = new Attacker(miniSporeCreatureStr);
@@ -631,7 +631,7 @@ Actor* Map::createSporeCreature(int x, int y)
 	
 	
 	Actor *sporeCreature = new Actor(x,y,sporeCreatureAscii,"Spore Creature",TCODColor::white);
-	sporeCreature->destructible = new MonsterDestructible(sporeCreatureHp,sporeCreatureDodge,sporeCreatureDR,"gross spore remains",sporeCreatureXp);
+	sporeCreature->destructible = new MonsterDestructible(sporeCreatureHp,sporeCreatureDodge,sporeCreatureDR,sporeCreatureXp);
 	sporeCreature->flashable = true;
 	sporeCreature->totalStr = sporeCreatureStr;
 	sporeCreature->attacker = new Attacker(sporeCreatureStr);
@@ -658,7 +658,7 @@ Actor* Map::createTurret(int x, int y)
 	
 	Actor *turret = new Actor(x,y,turretAscii,"Sentry Turret",TCODColor::white);
 	turret->totalDex = turretDex;
-	turret->destructible = new MonsterDestructible(turretHp,turretDodge,turretDR,"destroyed sentry turret",turretXp);
+	turret->destructible = new MonsterDestructible(turretHp,turretDodge,turretDR,turretXp);
 	turret->totalStr = turretStr;
 	turret->attacker = new Attacker(turretStr);
 	turret->ai = new TurretAi();
@@ -682,7 +682,7 @@ Actor* Map::createVendor(int x, int y)
 	Actor *vendor = new Actor(x,y,vendorAscii,"Vending Machine",TCODColor::white);
 	vendor->hostile = false;
 	vendor->interact = true;
-	vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge,vendorDR, "destroyed vending machine",vendorXp);
+	vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge,vendorDR,vendorXp);
 	vendor->ai = new VendingAi();
 	vendor->container = new Container(10);
 	generateRandom(vendor, vendorAscii);
@@ -1019,14 +1019,14 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					Actor *locker = new Actor((x1+x2)/2,i,243,"Government Issue Locker", TCODColor::white);
 					//engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
 					engine.map->tiles[(x1+x2)/2+i*engine.map->width].decoration = 23;
-					locker->destructible = new MonsterDestructible(1,0,0,"Opened Locker",0);
+					locker->destructible = new MonsterDestructible(1,0,0,0);
 					locker->container = new Container(3);
 					generateRandom(locker,243);
 					engine.actors.push(locker);
 					Actor *locker2 = new Actor(((x1+x2)/2)+1,i,243,"Government Issue Locker", TCODColor::white);
 					//engine.mapconDec->setChar(((x1+x2)/2)+1,i, 23);//Locker
 					engine.map->tiles[(((x1+x2)/2)+1)+i*engine.map->width].decoration = 23;
-					locker2->destructible = new MonsterDestructible(1,0,0,"Opened Locker",0);
+					locker2->destructible = new MonsterDestructible(1,0,0,0);
 					locker2->container = new Container(3);
 					generateRandom(locker2,243);
 					engine.actors.push(locker2);
@@ -1036,7 +1036,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					Actor *locker = new Actor((x1+x2)/2,i,243,"Government Issue Locker", TCODColor::white);
 					//engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
 					engine.map->tiles[(x1+x2)/2+i*engine.map->width].decoration = 23;
-					locker->destructible = new MonsterDestructible(1,0,0,"Opened Locker",0);
+					locker->destructible = new MonsterDestructible(1,0,0,0);
 					locker->container = new Container(3);
 					generateRandom(locker,243);
 					engine.actors.push(locker);

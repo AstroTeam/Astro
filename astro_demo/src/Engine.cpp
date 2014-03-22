@@ -62,7 +62,7 @@ void Engine::init() {
 	//playerLight->ai->moving = true;
 	//engine.sendToBack(playerLight);
 	player->hostile = false;
-	player->destructible = new PlayerDestructible(100, 2, 0, "your cadaver");
+	player->destructible = new PlayerDestructible(100, 2, 0);
 	player->attacker = new Attacker(5,20);
 	player->ai = new PlayerAi();
 	player->container = new Container(50);
