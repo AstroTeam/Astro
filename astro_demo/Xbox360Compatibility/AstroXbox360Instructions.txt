@@ -1,4 +1,5 @@
-Run the python code in FreePIE. I couldn't find a way to change stances.
+Run the python code in FreePIE. I couldn't find a way to change stances. 
+LTDiagonalMode has cleaner movements, but takes a minute to get used to because it is a little less intuitive.
 
 Xbox360 Key Bindings
 --------------------
@@ -10,8 +11,8 @@ LeftBumper    LeftMouseClick
 LeftThumb     Wait
 RightThumb    Look
 Start         Menu/Enter
-LeftTrigger   Shift
-Back          Stairs(With Shift)
+LeftTrigger   Shift(Also enables diagonal movement in LTDiagonalMode)
+Back          Stairs
 A             Enter
 B             Grab
 X             Character Menu

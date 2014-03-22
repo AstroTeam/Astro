@@ -3,7 +3,7 @@ def update():
    #RightTrigger  Fire
    keyboard.setKey(Key.F, xbox360[0].rightTrigger or (xbox360[0].rightStickX >  0.95))
    
-   #LeftTrigger   Shift(included on stair climb command)
+   #LeftTrigger   Shift
    keyboard.setKey(Key.LeftShift, xbox360[0].leftTrigger or xbox360[0].back)
    
    #RightBumper   Save
@@ -51,15 +51,15 @@ def update():
    #For g, see B
    keyboard.setKey(Key.H, xbox360[0].rightStickX < -0.95)
 
-   #Movement   
-   keyboard.setKey(Key.LeftArrow,  xbox360[0].leftStickX < -0.95) #left
-   keyboard.setKey(Key.DownArrow,  xbox360[0].leftStickY < -0.95) #down
-   keyboard.setKey(Key.RightArrow, xbox360[0].leftStickX >  0.95) #right
-   keyboard.setKey(Key.UpArrow,    xbox360[0].leftStickY >  0.95) #up   
-   keyboard.setKey(Key.NumberPad1, xbox360[0].leftStickY < -0.4 and xbox360[0].leftStickX < -0.4) #DownLeft
-   keyboard.setKey(Key.NumberPad3, xbox360[0].leftStickY < -0.4 and xbox360[0].leftStickX >  0.4) #DownRight
-   keyboard.setKey(Key.NumberPad7, xbox360[0].leftStickY >  0.4 and xbox360[0].leftStickX < -0.4) #UpLeft
-   keyboard.setKey(Key.NumberPad9, xbox360[0].leftStickY >  0.4 and xbox360[0].leftStickX >  0.4) #UpRight
+   #Movement   (Hold left trigger to go diagonally)
+   keyboard.setKey(Key.LeftArrow,  xbox360[0].leftStickX < -0.95 and not xbox360[0].leftTrigger) #left
+   keyboard.setKey(Key.DownArrow,  xbox360[0].leftStickY < -0.95 and not xbox360[0].leftTrigger) #down
+   keyboard.setKey(Key.RightArrow, xbox360[0].leftStickX >  0.95 and not xbox360[0].leftTrigger) #right
+   keyboard.setKey(Key.UpArrow,    xbox360[0].leftStickY >  0.95 and not xbox360[0].leftTrigger) #up   
+   keyboard.setKey(Key.NumberPad1, xbox360[0].leftStickY < -0.4 and xbox360[0].leftStickX < -0.4 and xbox360[0].leftTrigger) #DownLeft
+   keyboard.setKey(Key.NumberPad3, xbox360[0].leftStickY < -0.4 and xbox360[0].leftStickX >  0.4 and xbox360[0].leftTrigger) #DownRight
+   keyboard.setKey(Key.NumberPad7, xbox360[0].leftStickY >  0.4 and xbox360[0].leftStickX < -0.4 and xbox360[0].leftTrigger) #UpLeft
+   keyboard.setKey(Key.NumberPad9, xbox360[0].leftStickY >  0.4 and xbox360[0].leftStickX >  0.4 and xbox360[0].leftTrigger) #UpRight
 
 update()
     
