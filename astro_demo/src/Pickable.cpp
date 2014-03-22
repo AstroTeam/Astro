@@ -412,9 +412,22 @@ void ItemBonus::load(TCODZip &zip) {
 	bonus = zip.getFloat();	
 }
 
-Equipment::Equipment(bool equipped, SlotType slot, ItemBonus *bonus, bool stacks, int stackSize, PickableType type)
+ItemReq::ItemReq(ReqType type, float requirement) : type(type), requirement(requirement){
+}
+
+void ItemReq::save(TCODZip &zip) {
+	zip.putInt(type);
+	zip.putFloat(requirement);
+}
+
+void ItemReq::load(TCODZip &zip) {
+	type = (ReqType)zip.getInt();
+	requirement = zip.getFloat();	
+}
+
+Equipment::Equipment(bool equipped, SlotType slot, ItemBonus *bonus, ItemReq *requirement, bool stacks, int stackSize, PickableType type)
 	: Pickable(stacks, stackSize,type), equipped(equipped), slot(slot), 
-	bonus(bonus) {
+	bonus(bonus), requirement(requirement) {
 }
 
 void Equipment::save(TCODZip &zip) {
@@ -426,6 +439,7 @@ void Equipment::save(TCODZip &zip) {
 	zip.putInt(value);
 	zip.putInt(inkValue);
 	bonus->save(zip);
+	requirement->save(zip);
 }
 
 void Equipment::load(TCODZip &zip) {
@@ -438,6 +452,9 @@ void Equipment::load(TCODZip &zip) {
 	ItemBonus *bon = new ItemBonus(ItemBonus::NOBONUS,0);
 	bon->load(zip);
 	bonus = bon;
+	ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	req->load(zip);
+	requirement = req;
 }
 
 bool Equipment::use(Actor *owner, Actor *wearer) {
@@ -448,49 +465,177 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 					engine.gui->message(TCODColor::orange,"You already have a head item equipped!");
 					return false;
 				} else {
-					wearer->container->head = true;
+					if(requirementsMet(owner,wearer)){
+						wearer->container->head = true;
+					}else{
+						switch(requirement->type){
+							case ItemReq::STRENGTH :
+								engine.gui->message(TCODColor::orange,"You need %g strength to equip this item!",requirement->requirement);
+								return false;
+							break;
+							case ItemReq::DEXTERITY :
+								engine.gui->message(TCODColor::orange,"You need %g dexterity to equip this item!",requirement->requirement);
+								return false;
+							break;
+							case ItemReq::INTELLIGENCE :
+								engine.gui->message(TCODColor::orange,"You need %g intelligence to equip this item!",requirement->requirement);
+								return false;
+							break;
+							default: break;
+						}
+						
+					}
+					
 				} break;
 			case CHEST:
 				if (wearer->container->chest) {
 					engine.gui->message(TCODColor::orange,"You already have a chest item equipped!");
 					return false;
 				} else {
-					wearer->container->chest = true;
+					if(requirementsMet(owner,wearer)){
+						wearer->container->chest = true;
+					}else{
+						switch(requirement->type){
+							case ItemReq::STRENGTH :
+								engine.gui->message(TCODColor::orange,"You need %g strength to equip this item!",requirement->requirement);
+								return false;
+							break;
+							case ItemReq::DEXTERITY :
+								engine.gui->message(TCODColor::orange,"You need %g dexterity to equip this item!",requirement->requirement);
+								return false;
+							break;
+							case ItemReq::INTELLIGENCE :
+								engine.gui->message(TCODColor::orange,"You need %g intelligence to equip this item!",requirement->requirement);
+								return false;
+							break;
+							default: break;
+						}
+					}
 				} break;
 			case LEGS:
 				if (wearer->container->legs) {
 					engine.gui->message(TCODColor::orange,"You already have a leg item equipped!");
 					return false;
 				} else {
-					wearer->container->legs = true;
+					if(requirementsMet(owner,wearer)){
+						wearer->container->legs = true;
+					}else{
+						switch(requirement->type){
+							case ItemReq::STRENGTH :
+								engine.gui->message(TCODColor::orange,"You need %g strength to equip this item!",requirement->requirement);
+								return false;
+							break;
+							case ItemReq::DEXTERITY :
+								engine.gui->message(TCODColor::orange,"You need %g dexterity to equip this item!",requirement->requirement);
+								return false;
+							break;
+							case ItemReq::INTELLIGENCE :
+								engine.gui->message(TCODColor::orange,"You need %g intelligence to equip this item!",requirement->requirement);
+								return false;
+							break;
+							default: break;
+						}
+					}
 				} break;
 			case FEET:
 				if (wearer->container->feet) {
 					engine.gui->message(TCODColor::orange,"You already have a foot item equipped!");
 					return false;
 				} else {
-					wearer->container->feet = true;
+					if(requirementsMet(owner,wearer)){
+						wearer->container->feet = true;
+					}else{
+						switch(requirement->type){
+							case ItemReq::STRENGTH :
+								engine.gui->message(TCODColor::orange,"You need %g strength to equip this item!",requirement->requirement);
+								return false;
+							break;
+							case ItemReq::DEXTERITY :
+								engine.gui->message(TCODColor::orange,"You need %g dexterity to equip this item!",requirement->requirement);
+								return false;
+							break;
+							case ItemReq::INTELLIGENCE :
+								engine.gui->message(TCODColor::orange,"You need %g intelligence to equip this item!",requirement->requirement);
+								return false;
+							break;
+							default: break;
+						}
+					}
 				} break;
 			case HAND1:
 				if (wearer->container->hand1) {
 					engine.gui->message(TCODColor::orange,"You already have a melee weapon equipped!");
 					return false;
 				} else {
-					wearer->container->hand1 = true;
+					if(requirementsMet(owner,wearer)){
+						wearer->container->hand1 = true;
+					}else{
+						switch(requirement->type){
+							case ItemReq::STRENGTH :
+								engine.gui->message(TCODColor::orange,"You need %g strength to equip this item!",requirement->requirement);
+								return false;
+							break;
+							case ItemReq::DEXTERITY :
+								engine.gui->message(TCODColor::orange,"You need %g dexterity to equip this item!",requirement->requirement);
+								return false;
+							break;
+							case ItemReq::INTELLIGENCE :
+								engine.gui->message(TCODColor::orange,"You need %g intelligence to equip this item!",requirement->requirement);
+								return false;
+							break;
+							default: break;
+						}
+					}
 				} break;
 			case HAND2:
 				if (wearer->container->hand2) {
 					engine.gui->message(TCODColor::orange,"You already have an off-hand item equipped!");
 					return false;
 				} else {
-					wearer->container->hand2 = true;
+					if(requirementsMet(owner,wearer)){
+						wearer->container->hand2 = true;
+					}else{
+						switch(requirement->type){
+							case ItemReq::STRENGTH :
+								engine.gui->message(TCODColor::orange,"You need %g strength to equip this item!",requirement->requirement);
+								return false;
+							break;
+							case ItemReq::DEXTERITY :
+								engine.gui->message(TCODColor::orange,"You need %g dexterity to equip this item!",requirement->requirement);
+								return false;
+							break;
+							case ItemReq::INTELLIGENCE :
+								engine.gui->message(TCODColor::orange,"You need %g intelligence to equip this item!",requirement->requirement);
+								return false;
+							break;
+							default: break;
+						}
+					}
 				} break;
 			case RANGED:
 				if (wearer->container->ranged) {
 					engine.gui->message(TCODColor::orange,"You already have a ranged weapon equipped!");
 					return false;
 				} else {
-					wearer->container->ranged = true;
+					if(requirementsMet(owner,wearer)){
+						wearer->container->ranged = true;
+					}else{
+						switch(requirement->type){
+							case ItemReq::STRENGTH :
+								engine.gui->message(TCODColor::orange,"You need %g strength to equip this item!",requirement->requirement);
+								return false;
+							break;
+							case ItemReq::DEXTERITY :
+								engine.gui->message(TCODColor::orange,"You need %g dexterity to equip this item!",requirement->requirement);
+								return false;
+							break;
+							case ItemReq::INTELLIGENCE :
+								engine.gui->message(TCODColor::orange,"You need %g intelligence to equip this item!",requirement->requirement);
+								return false;
+							break;
+							default: break;
+						}
+					}
 				} break;
 			case NOSLOT: break;
 			default: break;
@@ -539,6 +684,39 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 		wearer->container->inventory.remove(owner);
 		wearer->container->inventory.push(owner);
 		return true;
+	}
+	return false;
+}
+
+bool Equipment::requirementsMet(Actor *owner, Actor *wearer){
+	//int i = wearer->str;
+	//ItemReq::ReqType req = requirement->type;
+	switch(requirement->type){
+		case ItemReq::NOREQ:
+			return true;
+		break;
+		case ItemReq::STRENGTH:
+			if(wearer->str >= requirement->requirement){
+				return true;
+			}else{
+				return false;
+			}
+		break;
+		case ItemReq::DEXTERITY:
+			if(wearer->dex >= requirement->requirement){
+				return true;
+			}else{
+				return false;
+			}
+		break;
+		case ItemReq::INTELLIGENCE:
+			if(wearer->dex >= requirement->requirement){
+				return true;
+			}else{
+				return false;
+			}
+		break;
+		default: break;
 	}
 	return false;
 }

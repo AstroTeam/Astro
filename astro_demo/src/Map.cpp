@@ -1877,7 +1877,8 @@ Actor *Map::createTitanMail(int x, int y){
 	Actor *chainMail = new Actor(x,y,185,"Titan-mail",TCODColor::white);
 	chainMail->blocks = false;
 	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,3);
-	chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,8);
+	chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus,requirement);
 	chainMail->sort = 3;
 	chainMail->pickable->value = 300;
 	chainMail->pickable->inkValue = 50;
@@ -1887,7 +1888,8 @@ Actor *Map::createMylarBoots(int x, int y){
 	Actor *myBoots = new Actor(x,y,185,"Mylar-Lined Boots",TCODColor::white);
 	myBoots->blocks = false;
 	ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
-	myBoots->pickable = new Equipment(0,Equipment::FEET,bonus);
+	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,4);
+	myBoots->pickable = new Equipment(0,Equipment::FEET,bonus,requirement);
 	myBoots->sort = 3;
 	myBoots->pickable->value = 150;
 	myBoots->pickable->inkValue = 15;
@@ -1897,7 +1899,8 @@ Actor *Map::createMLR(int x, int y){
 	Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	MLR->blocks = false;
 	ItemBonus *bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
-	MLR->pickable = new Equipment(0,Equipment::RANGED,bonus);
+	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,4);
+	MLR->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
 	MLR->sort = 4;
 	MLR->pickable->value = 200;
 	MLR->pickable->inkValue = 30;
@@ -1907,7 +1910,8 @@ Actor *Map::createCombatKnife(int x, int y){
 	Actor *combatKnife = new Actor(x,y,169,"Combat Knife",TCODColor::white);
 	combatKnife->blocks = false;
 	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
-	combatKnife->pickable = new Equipment(0,Equipment::HAND1,bonus);
+	ItemReq *requirment = new ItemReq(ItemReq::STRENGTH,3);
+	combatKnife->pickable = new Equipment(0,Equipment::HAND1,bonus,requirment);
 	combatKnife->pickable->value = 100;
 	combatKnife->pickable->inkValue = 10;
 	combatKnife->sort = 4;
