@@ -1366,9 +1366,9 @@ void GrenadierAi::useFirebomb(Actor *owner, int targetx, int targety)
 			if (!actor->destructible->isDead()) {
 				if(actor == engine.player)
 					engine.damageReceived += damageTaken;
-				engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damageTaken);
+				engine.gui->message(TCODColor::red,"The %s gets burned for %g hit points.",actor->name,damageTaken);
 			} else {
-				engine.gui->message(TCODColor::orange,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",actor->name, damageTaken);
+				engine.gui->message(TCODColor::red,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",actor->name, damageTaken);
 			}
 			//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
 		}
@@ -1405,9 +1405,9 @@ void GrenadierAi::useFrag(Actor *owner, int targetx, int targety)
 			if (!actor->destructible->isDead()) 
 			{	if(actor == engine.player)
 					engine.damageReceived += damageTaken;
-				engine.gui->message(TCODColor::orange,"The %s gets wounded from the blast for %g hit points.",actor->name,damageTaken);
+				engine.gui->message(TCODColor::red,"The %s gets wounded from the blast for %g hit points.",actor->name,damageTaken);
 			} else {
-				engine.gui->message(TCODColor::orange,"The %s's guts explode outward after taking %g damage.",actor->name,damageTaken);
+				engine.gui->message(TCODColor::red,"The %s's guts explode outward after taking %g damage.",actor->name,damageTaken);
 			}
 			//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
 		}
@@ -1448,9 +1448,9 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 				if (!actor->destructible->isDead()) 
 				{	if(actor == engine.player)
 						engine.damageReceived += damageTaken;
-					engine.gui->message(TCODColor::orange,"The %s gets wounded from the %s for %g hit points.",name, owner->name,damageTaken);
+					engine.gui->message(TCODColor::red,"The %s gets wounded from the %s for %g hit points.",name, owner->name,damageTaken);
 				} else {
-					engine.gui->message(TCODColor::orange,"The %s's guts explode outward after taking %g damage.",name,damageTaken);
+					engine.gui->message(TCODColor::red,"The %s's guts explode outward after taking %g damage.",name,damageTaken);
 				}
 				//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
 			}
@@ -1477,9 +1477,9 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 				if (!actor->destructible->isDead()) {
 					if(actor == engine.player)
 						engine.damageReceived += damageTaken;
-					engine.gui->message(TCODColor::orange,"The %s gets burned from the %s for %g hit points.",name,owner->name, damageTaken);
+					engine.gui->message(TCODColor::red,"The %s gets burned from the %s for %g hit points.",name,owner->name, damageTaken);
 				} else {
-					engine.gui->message(TCODColor::orange,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",name, damageTaken);
+					engine.gui->message(TCODColor::red,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",name, damageTaken);
 				}
 				//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
 			}
