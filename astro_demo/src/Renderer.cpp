@@ -1023,6 +1023,13 @@ void Renderer::render(void *sdlSurface){
 		//nothing
 		
 	}
+	else if (engine.menuState == 3)//main menu!
+	{
+		SDL_Surface *highRes = SDL_LoadBMP("titleScreenHiRes.bmp");
+		SDL_BlitSurface(highRes,NULL,screen,NULL);
+		SDL_FreeSurface(highRes);
+	}
+	
 	
 	}
 	//if inventory is open begin animation
