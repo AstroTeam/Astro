@@ -5,10 +5,12 @@
 using namespace Param;
 using namespace std;
 
+
 static const int ROOM_MAX_SIZE = 12;
 static const int ROOM_MIN_SIZE = 6;
 static const int MAX_ROOM_MONSTERS = 3;
 static const int MAX_ROOM_ITEMS = 2;
+static const int MAX_ARTIFACTS = 2;
 
 
 class BspListener : public ITCODBspCallback {
@@ -74,7 +76,7 @@ public:
 	}
 };
 
-Map::Map(int width, int height, short epicenterAmount): width(width),height(height),epicenterAmount(epicenterAmount) {
+Map::Map(int width, int height, int artifacts, short epicenterAmount): width(width),height(height),artifacts(artifacts),epicenterAmount(epicenterAmount) {
 	seed = TCODRandom::getInstance()->getInt(0,0x7FFFFFFF);
 }
 
@@ -373,8 +375,6 @@ void Map::addMonster(int x, int y, bool isHorde) {
 		createInfectedEngineer(x,y);
 		//createTurret(x,y);
 		//create turrets during room creation
-	} else {
-		createArtifact(x,y);
 	}
 	/*
 	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance && !isHorde)
@@ -1359,7 +1359,7 @@ cout << "Server room made";
 				if (chance >= 5 && chance < 10)//could make this number and all flickering number change based on level
 				{
 					rng2 = myRandom->getFloat(0.9000f,0.9900f,0.9500f);
-					light->name = "An flickering hastily erected Emergency Light";
+					light->name = "A flickering hastily erected Emergency Light";
 					//engine.gui->message(TCODColor::red, "flickering %d",chance);
 				}
 				else if (chance >= 10)
@@ -1400,6 +1400,15 @@ cout << "Server room made";
 	
 	
 	
+	if (artifacts < MAX_ARTIFACTS){
+		int artChance = rng->getInt(1,100);
+		if (artChance < 05) {
+			int x = rng->getInt(x1,x2);
+			int y = rng->getInt(y1,y2);
+			createArtifact(x,y);
+			artifacts++;
+		}
+	}
 	
 	int rand = rng->getInt(0,100);
 	//Vending Machines spawn in corners of standard rooms at random
@@ -2036,6 +2045,5 @@ Actor *Map::createArtifact(int x, int y){
 	artifact->blocks = false;
 	engine.actors.push(artifact);
 	engine.sendToBack(artifact);
-	engine.gui->message(TCODColor::orange,"The air hums with power. Perhaps there is an artifact of great power here!");
 	return artifact;
 }
