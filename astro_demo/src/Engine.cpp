@@ -768,7 +768,7 @@ void Engine::load(bool pause) {
 	}
 	engine.gui->menu.addItem(Menu::EXIT,"EXIT");
 	menuState = 3;
-	while(titleState != 2){
+	while(menuState != 2){
 		TCODConsole::flush();
 	}
 	
