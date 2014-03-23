@@ -2010,22 +2010,22 @@ Actor *Map::createArtifact(int x, int y){
 	choices = random->getInt(1,6);
 	switch(choices) {
 		case 1: strcat(nameBuf, "of Great Vitality"); 
-				bonus = new ItemBonus(ItemBonus::HEALTH,60);
+				bonus = new ItemBonus(ItemBonus::HEALTH,10+(2*engine.level));
 				break;
 		case 2: strcat(nameBuf, "of the Spastic Cantaloupe"); 
-				bonus = new ItemBonus(ItemBonus::DODGE,60);
+				bonus = new ItemBonus(ItemBonus::DODGE,3+(2*engine.level));
 				break;
 		case 3: strcat(nameBuf, "of the Indefatigable Defender"); 
-				bonus = new ItemBonus(ItemBonus::DR,60);
+				bonus = new ItemBonus(ItemBonus::DR,(2*engine.level));
 				break;
 		case 4: strcat(nameBuf, "of the Stalwart Fighter");
-				bonus = new ItemBonus(ItemBonus::STRENGTH,60);
+				bonus = new ItemBonus(ItemBonus::STRENGTH,2+(2*engine.level));
 				break;
 		case 5: strcat(nameBuf, "of the Bounding Lynx"); 
-				bonus = new ItemBonus(ItemBonus::DEXTERITY,60);
+				bonus = new ItemBonus(ItemBonus::DEXTERITY,2+(2*engine.level));
 				break;
 		case 6: strcat(nameBuf, "of Vast Intellect");
-				bonus = new ItemBonus(ItemBonus::INTELLIGENCE,60);
+				bonus = new ItemBonus(ItemBonus::INTELLIGENCE,2+(2*engine.level));
 				break;
 		default: break;
 	}
