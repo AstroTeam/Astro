@@ -767,11 +767,12 @@ void Engine::load(bool pause) {
 		}
 	}
 	engine.gui->menu.addItem(Menu::EXIT,"EXIT");
+	
 	if(!pause){
-	menuState = 3;
-	while(menuState != 2){
-		TCODConsole::flush();
-	}
+		menuState = 3;
+		while(menuState != 2){
+			TCODConsole::flush();
+		}
 	}
 	
 	Menu::MenuItemCode menuItem = engine.gui->menu.pick( 
