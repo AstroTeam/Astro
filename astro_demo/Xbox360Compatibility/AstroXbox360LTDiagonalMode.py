@@ -35,6 +35,9 @@ def update():
 
    #LeftDPad      Drop
    keyboard.setKey(Key.D, xbox360[0].left and not xbox360[0].up and not xbox360[0].down)
+   
+   #UpDPad      StanceChange
+   keyboard.setKey(Key.Equals, xbox360[0].up and not xbox360[0].left and not xbox360[0].right)
 
    #Y      Inventory
    keyboard.setKey(Key.I, xbox360[0].y)

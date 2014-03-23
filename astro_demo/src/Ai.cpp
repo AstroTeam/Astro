@@ -534,7 +534,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			engine.map->computeFov();
 			displayCharacterInfo(owner);
 		break;
-		case '`':
+		case '=':
 			if (engine.player->hostile){
 				engine.player->hostile = false;
 				engine.gui->message(TCODColor::lightRed,"You assume a normal stance.");

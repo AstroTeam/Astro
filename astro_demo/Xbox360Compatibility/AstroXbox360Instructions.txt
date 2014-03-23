@@ -18,6 +18,7 @@ B             Grab
 X             Character Menu
 Y             Inventory
 LeftDPad      Drop
+UpDPad		  StanceChange
 
 DPad(Up,Right,Down,Left)           InventorySelection(a-d)
 RightStick(Up,Right,Down,Left)     MoreInventorySelection(e-h)
