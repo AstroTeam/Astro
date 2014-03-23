@@ -1405,8 +1405,10 @@ cout << "Server room made";
 		if (artChance < 05) {
 			int x = rng->getInt(x1,x2);
 			int y = rng->getInt(y1,y2);
-			createArtifact(x,y);
-			artifacts++;
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y)) {
+				createArtifact(x,y);
+				artifacts++;
+			}
 		}
 	}
 	
