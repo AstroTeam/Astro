@@ -138,6 +138,7 @@ void Map::save(TCODZip &zip) {
 		zip.putInt(tiles[i].drty);
 		zip.putInt(tiles[i].envSta);
 		zip.putInt(tiles[i].temperature);
+		zip.putInt(tiles[i].flower);
 	}
 }
 
@@ -154,6 +155,7 @@ void Map::load(TCODZip &zip) {
 		tiles[i].drty = zip.getInt();
 		tiles[i].envSta = zip.getInt();
 		tiles[i].temperature = zip.getInt();
+		tiles[i].flower = zip.getInt();
 	}
 }
 	
