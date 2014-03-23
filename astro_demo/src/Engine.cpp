@@ -738,6 +738,7 @@ void Engine::save() {
 		}
 		//finally the message log
 		gui->save(zip);
+		zip.saveToFile("game.sav");
 	}
 }
 
