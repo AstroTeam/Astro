@@ -166,21 +166,22 @@ void MonsterDestructible::die(Actor *owner) {
 	
 	//Makes Vending UI appear upon monster death (For Testing Purposes Only)
 	//engine.gui->vendingMenu(owner);
-	
-	if(!owner->container->inventory.isEmpty()){
-		Actor **iterator=owner->container->inventory.begin();
-		for(int i = 0; i < owner->container->size; i++){
-			if(owner->container->inventory.isEmpty()){
-				break;
-			}
-			Actor *actor = *iterator;
-			if(actor){
-				actor->pickable->drop(actor,owner,true);
-			}
-			
-			if(iterator != owner->container->inventory.end())
-			{
-				++iterator;
+	if(owner->ch != 225){
+		if(!owner->container->inventory.isEmpty()){
+			Actor **iterator=owner->container->inventory.begin();
+			for(int i = 0; i < owner->container->size; i++){
+				if(owner->container->inventory.isEmpty()){
+					break;
+				}
+				Actor *actor = *iterator;
+				if(actor){
+					actor->pickable->drop(actor,owner,true);
+				}
+				
+				if(iterator != owner->container->inventory.end())
+				{
+					++iterator;
+				}
 			}
 		}
 	}

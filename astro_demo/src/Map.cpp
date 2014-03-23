@@ -124,6 +124,9 @@ void Map::init(bool withActors, LevelType levelType) {
 		boss->totalStr = boss->totalStr*1.25;
 		engine.boss = boss;
 	}
+	if (engine.level > 1 && artifacts > 0) {
+		engine.gui->message(TCODColor::red,"The air hums with unknown energy... Perhaps there is an artifact of great power here!");
+	}
 }
 
 void Map::save(TCODZip &zip) {
@@ -138,6 +141,7 @@ void Map::save(TCODZip &zip) {
 		zip.putInt(tiles[i].drty);
 		zip.putInt(tiles[i].envSta);
 		zip.putInt(tiles[i].temperature);
+		zip.putInt(tiles[i].flower);
 	}
 }
 
@@ -154,6 +158,7 @@ void Map::load(TCODZip &zip) {
 		tiles[i].drty = zip.getInt();
 		tiles[i].envSta = zip.getInt();
 		tiles[i].temperature = zip.getInt();
+		tiles[i].flower = zip.getInt();
 	}
 }
 	
@@ -1402,11 +1407,13 @@ cout << "Server room made";
 	
 	if (artifacts < MAX_ARTIFACTS){
 		int artChance = rng->getInt(1,100);
-		if (artChance < 05) {
+		if (artChance < 2+(engine.level/2)) {
 			int x = rng->getInt(x1,x2);
 			int y = rng->getInt(y1,y2);
-			createArtifact(x,y);
-			artifacts++;
+			if (canWalk(x,y)&& (x != engine.player->x && y!= engine.player->y)) {
+				createArtifact(x,y);
+				artifacts++;
+			}
 		}
 	}
 	
