@@ -1,6 +1,7 @@
 
 #include "main.hpp"
 #include <iostream>
+#include <cstring>
 using namespace Param;
 using namespace std;
 
@@ -312,7 +313,7 @@ void Map::addMonster(int x, int y, bool isHorde) {
 //	float turretChance = 50;
 //	float vendorChance = 100;
 
-	int uB = 1000;
+	int uB = 1100;
 	
 	if(isHorde) //since engineers and cleaners don't spawn in hordes, adjust uppber bounded accordingly
 		uB =- (infectedEngineerChance+cleanerChance);
@@ -372,6 +373,8 @@ void Map::addMonster(int x, int y, bool isHorde) {
 		createInfectedEngineer(x,y);
 		//createTurret(x,y);
 		//create turrets during room creation
+	} else {
+		createArtifact(x,y);
 	}
 	/*
 	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance && !isHorde)
@@ -1958,3 +1961,81 @@ Actor *Map::createBatteryPack(int x,int y){
 	return batteryPack;
 }
 
+Actor *Map::createArtifact(int x, int y){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	Actor *artifact = new Actor(x,y,'A',"Art",TCODColor::lighterGreen);
+	artifact->pickable = new Equipment(0);
+	Equipment::SlotType slot = Equipment::NOSLOT;
+	ItemBonus *bonus = NULL;
+	ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	
+	int choices = random->getInt(1,4);
+	switch(choices) {
+		case 1: strcat(nameBuf,"Rodgort's "); break;
+		case 2: strcat(nameBuf,"Adanimus' "); break;
+		case 3: strcat(nameBuf,"Diogenes' "); break;
+		case 4: strcat(nameBuf,"Umber's "); break;
+		default: break;
+	}
+	choices = random->getInt(1,6);
+	switch(choices) {
+		case 1: strcat(nameBuf, "Helmet ");
+				slot = Equipment::HEAD;
+				artifact->sort = 3;
+				break;
+		case 2: strcat(nameBuf, "Chestplate "); 
+				slot = Equipment::CHEST;
+				artifact->sort = 3;
+				break;
+		case 3: strcat(nameBuf, "Greaves "); 
+				slot = Equipment::LEGS;
+				artifact->sort = 3;
+				break;
+		case 4: strcat(nameBuf, "Boots "); 
+				slot = Equipment::FEET;
+				artifact->sort = 3;
+				break;
+		case 5: strcat(nameBuf, "Dagger "); 
+				slot = Equipment::HAND1;
+				artifact->sort = 4;
+				break;
+		case 6: strcat(nameBuf, "Laser Pointer "); 
+				slot = Equipment::RANGED;
+				artifact->sort = 4;
+				break;
+		default: break;
+	}
+	choices = random->getInt(1,6);
+	switch(choices) {
+		case 1: strcat(nameBuf, "of Great Vitality"); 
+				bonus = new ItemBonus(ItemBonus::HEALTH,60);
+				break;
+		case 2: strcat(nameBuf, "of the Spastic Cantaloupe"); 
+				bonus = new ItemBonus(ItemBonus::DODGE,60);
+				break;
+		case 3: strcat(nameBuf, "of the Indefatigable Defender"); 
+				bonus = new ItemBonus(ItemBonus::DR,60);
+				break;
+		case 4: strcat(nameBuf, "of the Stalwart Fighter");
+				bonus = new ItemBonus(ItemBonus::STRENGTH,60);
+				break;
+		case 5: strcat(nameBuf, "of the Bounding Lynx"); 
+				bonus = new ItemBonus(ItemBonus::DEXTERITY,60);
+				break;
+		case 6: strcat(nameBuf, "of Vast Intellect");
+				bonus = new ItemBonus(ItemBonus::INTELLIGENCE,60);
+				break;
+		default: break;
+	}
+	((Equipment*)(artifact->pickable))->slot = slot;
+	((Equipment*)(artifact->pickable))->bonus = bonus;
+	((Equipment*)(artifact->pickable))->requirement = req;
+	artifact->name = nameBuf;
+	artifact->blocks = false;
+	engine.actors.push(artifact);
+	engine.sendToBack(artifact);
+	engine.gui->message(TCODColor::orange,"The air hums with power. Perhaps there is an artifact of great power here!");
+	return artifact;
+}

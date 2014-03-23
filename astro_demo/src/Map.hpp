@@ -101,6 +101,7 @@ public:
 	Actor *createMLR(int x, int y);
 	Actor *createCombatKnife(int x, int y);
 	Actor *createFrag(int x, int y);
+	Actor *createArtifact(int x, int y);
 	void generateRandom(Actor *owner, int ascii);
 	Tile *tiles;
 

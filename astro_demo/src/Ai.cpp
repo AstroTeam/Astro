@@ -658,9 +658,9 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	//Diplay Character Stats
 	con.print(2,4,"STATS");
 	con.print(1,8,"VIT: %d",owner->vit);
-	con.print(1,10,"DEX: %d",owner->dex);
-	con.print(1,12,"STR: %d",owner->str);
-	con.print(1,14,"INT: %d",owner->intel);
+	con.print(1,10,"DEX: %d",owner->totalDex);
+	con.print(1,12,"STR: %d",owner->totalStr);
+	con.print(1,14,"INT: %d",owner->totalIntel);
 	con.print(1,16,"KILLS: %d",engine.killCount);
 	//con.print(1,18,"DMG DONE: %g",engine.damageDone);
 	//con.print(1,20,"DMG TAKEN: %g",engine.damageReceived);
