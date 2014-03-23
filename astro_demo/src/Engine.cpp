@@ -699,6 +699,9 @@ void Engine::init() {
 	map->init(true, Param::GENERIC);
 	gui->message(TCODColor::red, "Welcome to Astroverius Station! Warning unknown alien life form detected!");
 	gui->message(TCODColor::blue,"You appear to be a %s %s %s. Your experience will be needed to complete this journey.", player->race, player->role, player->job);
+	if (map->artifacts > 0) {
+		engine.gui->message(TCODColor::orange,"The air hums with unknown energy... Perhaps there is an artifact of great power here!");
+	}
 	gameStatus = STARTUP;
 }
 
@@ -999,6 +1002,9 @@ void Engine::nextLevel() {
 	map->init(true, Param::GENERIC);
 	gameStatus = STARTUP;
 	save();
+	if (map->artifacts > 0) {
+		engine.gui->message(TCODColor::red,"The air hums with unknown energy... Perhaps there is an artifact of great power here!");
+	}
 }
 
 void Engine::sendToBack(Actor *actor) {

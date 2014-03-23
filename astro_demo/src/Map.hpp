@@ -58,7 +58,8 @@ using namespace Param;
 class Map : public Persistent {
 public:
 	int width, height;
-	Map(int width, int height, short epicenterAmount=1);
+	Map(int width, int height, int artifacts = 0,short epicenterAmount=1);
+	int artifacts;
 	~Map();
 	bool isWall(int x, int y) const;
 	bool canWalk(int x, int y) const;
