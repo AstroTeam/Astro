@@ -636,7 +636,7 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 					con.print(6,24,"%s",actor->name);
 				break;
 				case Equipment::CHEST:
-					con.print(8,26,"%s",actor->name);
+					con.print(7,26,"%s",actor->name);
 				break;
 				case Equipment::LEGS:
 					con.print(6,28,"%s",actor->name);
