@@ -502,7 +502,9 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		TCODConsole::root->printFrame(menu2x + 10,menu2y + 2,CLASS_SELECT_WIDTH,
 			CLASS_SELECT_HEIGHT,true,TCOD_BKGND_ALPHA(100));
 	
-	}else if(mode == MAIN){
+	}else{
+		static TCODImage img("wesleyPIXEL.png");
+		img.blit2x(TCODConsole::root,0,6);
 		menux = 35;
 		menuy = 20 + TCODConsole::root->getHeight() / 3;
 		
