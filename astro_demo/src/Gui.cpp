@@ -503,8 +503,8 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 			CLASS_SELECT_HEIGHT,true,TCOD_BKGND_ALPHA(100));
 	
 	}else {
-		static TCODImage img("background.png");
-		img.blit2x(TCODConsole::root,0,6);
+		//static TCODImage img("background.png");
+		//img.blit2x(TCODConsole::root,0,6);
 		menux = 35;
 		menuy = 20 + TCODConsole::root->getHeight() / 3;
 		

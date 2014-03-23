@@ -1027,7 +1027,9 @@ void Renderer::render(void *sdlSurface){
 	{
 		SDL_Surface *highRes = SDL_LoadBMP("titleScreenHiRes.bmp");
 		SDL_BlitSurface(highRes,NULL,screen,NULL);
+		engine.menuState = 2;
 		SDL_FreeSurface(highRes);
+		
 	}
 	
 	
