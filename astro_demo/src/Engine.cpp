@@ -185,7 +185,7 @@ void Engine::init() {
 			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
 			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
 			ranged->blocks = false;
-			ranged->pickable = new Equipment(0,Equipment::RANGED,bonusR,requirement);
+			ranged->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
@@ -246,7 +246,7 @@ void Engine::init() {
 			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
 			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
 			ranged->blocks = false;
-			ranged->pickable = new Equipment(0,Equipment::RANGED,bonusR,requirement);
+			ranged->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
@@ -297,7 +297,7 @@ void Engine::init() {
 			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
 			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
 			ranged->blocks = false;
-			ranged->pickable = new Equipment(0,Equipment::RANGED,bonusR,requirement);
+			ranged->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
@@ -636,7 +636,7 @@ void Engine::init() {
 			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
 			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
 			ranged->blocks = false;
-			ranged->pickable = new Equipment(0,Equipment::RANGED,bonusR,requirement);
+			ranged->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);

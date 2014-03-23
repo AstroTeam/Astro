@@ -746,6 +746,40 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 	return false;
 }
 
+Weapon::Weapon(float minDmg, float maxDmg, float critMult, WeaponType wType,
+		bool equipped, SlotType slot, ItemBonus *bonus, ItemReq *requirement):
+	Equipment(equipped, slot, bonus, requirement, false, 1, Pickable::EQUIPMENT), 
+		minDmg(minDmg), maxDmg(maxDmg), critMult(critMult), wType(wType){
+	//need to make sure no funky combos are done
+}
+
+bool Weapon::use(Actor *owner, Actor *wearer){
+	return Equipment::use(owner, wearer);
+}
+
+void Weapon::save(TCODZip &zip) {
+	zip.putInt(type);
+	zip.putInt(equipped);
+	zip.putInt(slot);
+	zip.putInt(stacks);
+	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
+	bonus->save(zip);
+	requirement->save(zip);
+	zip.putFloat(minDmg);
+	zip.putFloat(maxDmg);
+	zip.putFloat(critMult);
+	zip.putInt(wType);
+}
+
+void Weapon::load(TCODZip &zip) {
+	minDmg = zip.getFloat();
+	maxDmg = zip.getFloat();
+	critMult = zip.getFloat();
+	wType = (WeaponType)zip.getInt();
+}
+
 bool Equipment::requirementsMet(Actor *owner, Actor *wearer){
 	//int i = wearer->str;
 	//ItemReq::ReqType req = requirement->type;

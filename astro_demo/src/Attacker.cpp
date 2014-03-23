@@ -70,16 +70,17 @@ void Attacker::shoot(Actor *owner, Actor *target) {
 		int roll = TCODRandom::getInstance()->getInt(1,20);
 		int attackRoll = roll + owner->totalDex;
 		float damageTaken = 0;
+		float damageRoll = (float)TCODRandom::getInstance()->getInt(1,6);
 		if(roll >= 20){
 			engine.gui->message(TCODColor::red,"CRITICAL HIT!");
-			damageTaken = (2 * owner->totalDex); //save for DR and damage roll
+			damageTaken = 2 * (damageRoll + owner->totalDex) - target->destructible->totalDR; //save for damage roll
 		}
 		else if(roll <= 1){
 			engine.gui->message(TCODColor::lightGrey,"critical miss...");
 			damageTaken = 0;
 		}
 		else if(attackRoll >= target->destructible->totalDodge){
-			damageTaken = owner->totalDex; //save for DR and damage roll
+			damageTaken = damageRoll + owner->totalDex - target->destructible->totalDR; //save for damage roll
 		}
 		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
 			if (owner->oozing && target->susceptible) {

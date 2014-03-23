@@ -1943,7 +1943,8 @@ Actor *Map::createMLR(int x, int y){
 	MLR->blocks = false;
 	ItemBonus *bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
 	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,4);
-	MLR->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
+	//MLR->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
+	MLR->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonus,requirement);
 	MLR->sort = 4;
 	MLR->pickable->value = 200;
 	MLR->pickable->inkValue = 30;
@@ -1953,8 +1954,9 @@ Actor *Map::createCombatKnife(int x, int y){
 	Actor *combatKnife = new Actor(x,y,169,"Combat Knife",TCODColor::white);
 	combatKnife->blocks = false;
 	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
-	ItemReq *requirment = new ItemReq(ItemReq::STRENGTH,3);
-	combatKnife->pickable = new Equipment(0,Equipment::HAND1,bonus,requirment);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,3);
+	//combatKnife->pickable = new Equipment(0,Equipment::HAND1,bonus,requirement);
+	combatKnife->pickable = new Weapon(1,4,3,Weapon::LIGHT,0,Equipment::HAND1,bonus,requirement);
 	combatKnife->pickable->value = 100;
 	combatKnife->pickable->inkValue = 10;
 	combatKnife->sort = 4;

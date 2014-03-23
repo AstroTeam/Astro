@@ -143,6 +143,22 @@ public:
 	void save(TCODZip &zip);
 };
 
-
+class Weapon : public Equipment {
+public:
+	enum WeaponType{
+		NOTYPE, LIGHT, HEAVY, RANGED	
+	};
+	
+	float minDmg;
+	float maxDmg;
+	float critMult;
+	WeaponType wType;
+	
+	Weapon(float minDmg = 0, float maxDmg = 0, float critMult = 2, WeaponType wType = NOTYPE,
+		bool equipped = false, SlotType slot = NOSLOT, ItemBonus *bonus = NULL, ItemReq *requirement = NULL);
+	bool use(Actor *owner, Actor *wearer);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+};
 
 
