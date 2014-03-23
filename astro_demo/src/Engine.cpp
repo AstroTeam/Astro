@@ -767,6 +767,10 @@ void Engine::load(bool pause) {
 		}
 	}
 	engine.gui->menu.addItem(Menu::EXIT,"EXIT");
+	menuState = 3;
+	while(titleState != 2){
+		TCODConsole::flush();
+	}
 	
 	Menu::MenuItemCode menuItem = engine.gui->menu.pick( 
 		pause ? Menu::PAUSE : Menu::MAIN);
@@ -778,6 +782,7 @@ void Engine::load(bool pause) {
 	} else if (menuItem == Menu::NEW_GAME) {
 		//new game 
 		engine.classMenu();
+		menuState = 0;
 		//engine.term();
 		//engine.init();
 	} else if (menuItem == Menu::SAVE) {
@@ -838,6 +843,7 @@ void Engine::load(bool pause) {
 		gui->load(zip);
 		gui->message(TCODColor::pink,"loaded");
 		gameStatus = STARTUP;
+		menuState = 0;
 	} 
 }
 	
