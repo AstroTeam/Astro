@@ -636,7 +636,7 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 					con.print(6,24,"%s",actor->name);
 				break;
 				case Equipment::CHEST:
-					con.print(8,26,"%s",actor->name);
+					con.print(7,26,"%s",actor->name);
 				break;
 				case Equipment::LEGS:
 					con.print(6,28,"%s",actor->name);
@@ -857,7 +857,31 @@ void EpicenterAi::infectLevel(Actor *owner) {
 	TCODRandom *rng = TCODRandom::getInstance();
 
 	for (int i = 0; i < width*height; i++) {
+		int before = engine.map->tiles[i].infection;
 		engine.map->tiles[i].infection += 1 / (rng->getDouble(.01,1.0)*owner->getDistance(i%width, i/width));
+		int after = engine.map->tiles[i].infection;
+		//update flowers if level has changed and is less than 6
+		if (before != after && before <= 6)
+		{
+			//0-3 = level 3, 4-7 = level 4,8-11 = level 5,12-15 = level 6
+			if (engine.map->tiles[i].infection >= 3 && engine.map->tiles[i].infection < 4)
+			{
+				engine.map->tiles[i].flower = rng->getInt(0,3);
+			}
+			else if (engine.map->tiles[i].infection >= 4 && engine.map->tiles[i].infection < 5)
+			{
+				engine.map->tiles[i].flower = rng->getInt(4,7);
+			}
+			else if (engine.map->tiles[i].infection >= 5 && engine.map->tiles[i].infection < 6)
+			{
+				engine.map->tiles[i].flower = rng->getInt(8,11);
+			}
+			else if (engine.map->tiles[i].infection >= 6)
+			{
+				engine.map->tiles[i].flower = rng->getInt(12,15);
+			}
+		}
+		
 	}
 	engine.gui->message(TCODColor::green,"You feel uneasy as the infection seems to spread.");
 }

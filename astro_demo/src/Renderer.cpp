@@ -75,7 +75,9 @@ void Renderer::render(void *sdlSurface){
 	SDL_Surface *floorMap = SDL_LoadBMP("starmap2.bmp");
 	SDL_Surface *terminal = SDL_LoadBMP("tile_assets/terminal.bmp");
 	SDL_SetColorKey(terminal,SDL_SRCCOLORKEY,255);
-
+	//flowers
+	SDL_Surface *flowers = SDL_LoadBMP("tile_assets/flowers.bmp");
+	SDL_SetColorKey(flowers,SDL_SRCCOLORKEY,255);
 	
 	
 	
@@ -164,6 +166,12 @@ void Renderer::render(void *sdlSurface){
 					}
 					srcRect.y = 0;
 					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
+					//render flowers
+					if (engine.map->tiles[xM+yM*engine.map->width].flower != -1) {
+						srcRect.x = 16 * engine.map->tiles[xM+yM*engine.map->width].flower;
+							srcRect.y = 0;
+						SDL_BlitSurface(flowers,&srcRect,floorMap,&dstRect);
+					}
 				}
 				else if (engine.mapcon->getChar(xM,yM) == 7)
 				{
@@ -261,6 +269,12 @@ void Renderer::render(void *sdlSurface){
 					}
 					srcRect.y = 16;
 					SDL_BlitSurface(floorTiles,&srcRect,floorMap,&dstRect);
+					//render flowers
+					if (engine.map->tiles[xM+yM*engine.map->width].flower != -1) {
+						srcRect.x = 16 * engine.map->tiles[xM+yM*engine.map->width].flower;
+						srcRect.y = 16;
+						SDL_BlitSurface(flowers,&srcRect,floorMap,&dstRect);
+					}
 				}
 				else if (engine.mapcon->getChar(xM,yM) == 7)
 				{
@@ -991,6 +1005,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(equipment);
 	SDL_FreeSurface(terminal);
 	SDL_FreeSurface(decor);
+	SDL_FreeSurface(flowers);
 	}
 	else if (engine.menuState == 1)
 	{
@@ -1008,6 +1023,13 @@ void Renderer::render(void *sdlSurface){
 		//nothing
 		
 	}
+	else if (engine.menuState == 3)//main menu!
+	{
+		SDL_Surface *highRes = SDL_LoadBMP("titleScreenHiRes.bmp");
+		SDL_BlitSurface(highRes,NULL,screen,NULL);
+		SDL_FreeSurface(highRes);
+	}
+	
 	
 	}
 	//if inventory is open begin animation

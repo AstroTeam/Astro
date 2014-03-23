@@ -700,7 +700,7 @@ void Engine::init() {
 	gui->message(TCODColor::red, "Welcome to Astroverius Station! Warning unknown alien life form detected!");
 	gui->message(TCODColor::blue,"You appear to be a %s %s %s. Your experience will be needed to complete this journey.", player->race, player->role, player->job);
 	if (map->artifacts > 0) {
-		engine.gui->message(TCODColor::orange,"The air hums with unknown energy... Perhaps there is an artifact of great power here!");
+		engine.gui->message(TCODColor::red,"The air hums with unknown energy... Perhaps there is an artifact of great power here!");
 	}
 	gameStatus = STARTUP;
 }
@@ -752,10 +752,9 @@ void Engine::load(bool pause) {
 	}
 	if (!pause) {
 	engine.gui->menu.addItem(Menu::NEW_GAME, "NEW GAME");
+	}else {
+		engine.gui->menu.addItem(Menu::MAIN_MENU, "MAIN MENU");
 	}
-	//  else {
-	// engine.gui->menu.addItem(Menu::MAIN_MENU, "MAIN MENU");
-	// }
 	
 	if (pause) {
 		engine.gui->menu.addItem(Menu::SAVE, "SAVE");
@@ -769,6 +768,13 @@ void Engine::load(bool pause) {
 	}
 	engine.gui->menu.addItem(Menu::EXIT,"EXIT");
 	
+	if(!pause){
+		menuState = 3;
+		while(menuState != 2){
+			TCODConsole::flush();
+		}
+	}
+	
 	Menu::MenuItemCode menuItem = engine.gui->menu.pick( 
 		pause ? Menu::PAUSE : Menu::MAIN);
 	
@@ -779,6 +785,7 @@ void Engine::load(bool pause) {
 	} else if (menuItem == Menu::NEW_GAME) {
 		//new game 
 		engine.classMenu();
+		menuState = 0;
 		//engine.term();
 		//engine.init();
 	} else if (menuItem == Menu::SAVE) {
@@ -839,6 +846,7 @@ void Engine::load(bool pause) {
 		gui->load(zip);
 		gui->message(TCODColor::pink,"loaded");
 		gameStatus = STARTUP;
+		menuState = 0;
 	} 
 }
 	
@@ -1002,9 +1010,6 @@ void Engine::nextLevel() {
 	map->init(true, Param::GENERIC);
 	gameStatus = STARTUP;
 	save();
-	if (map->artifacts > 0) {
-		engine.gui->message(TCODColor::red,"The air hums with unknown energy... Perhaps there is an artifact of great power here!");
-	}
 }
 
 void Engine::sendToBack(Actor *actor) {
