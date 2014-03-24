@@ -292,10 +292,22 @@ bool Fragment::use(Actor *owner, Actor *wearer) {
 			} else {
 				engine.gui->message(TCODColor::orange,"The %s's guts explode outward after taking %g damage.",actor->name, damageTaken);
 			}
-			//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
+			//engine.map->tiles[x+y*engine.map->width].envSta = 2;	
 		}
 	}
 	
+	for (int xxx = x - ((1 + (wearer->totalIntel - 1) /3)) ; xxx <= x+((1 + (wearer->totalIntel - 1) /3));xxx++)
+	{
+		for (int yyy = y - ((1 + (wearer->totalIntel - 1) /3)); yyy <= y+((1 + (wearer->totalIntel - 1) /3));yyy++)
+		{
+			if (engine.distance(x,xxx,y,yyy) <= (1 + (wearer->totalIntel - 1) /3))
+			{
+				engine.map->tiles[xxx+yyy*engine.map->width].envSta = 2;
+				//engine.map->tiles[xxx+yyy*engine.map->width].temperature = 6;//should be a function of int 
+			}
+			
+		}
+	}
 	
 	return Pickable::use(owner,wearer);
 }

@@ -277,7 +277,8 @@ void Gui::renderKeyLook() {
 			if (engine.map->tiles[x+y*engine.map->width].temperature > 0)
 			tileInfoMessage(TCODColor::red, "THE TILE IS ON FIRE!");
 			//tileInfoMessage(TCODColor::yellow, "the environment is %d",e);
-
+			if (engine.map->tiles[x+y*engine.map->width].envSta == 2)
+			tileInfoMessage(TCODColor::grey, "The tile has been scorched.");
 			
 		//}else {
 			//tileInfoMessage(TCODColor::lightGrey, "You remember seeing:");
