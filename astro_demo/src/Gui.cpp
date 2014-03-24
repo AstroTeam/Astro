@@ -211,6 +211,7 @@ void Gui::currentTileInfo(int x, int y) {
 
 		float i = engine.map->tiles[x+y*engine.map->width].infection;
 		
+		int f = engine.map->tiles[x+y*engine.map->width].flower;
 
 		if (i < 1){}
 		else if (i < 2)
@@ -218,13 +219,17 @@ void Gui::currentTileInfo(int x, int y) {
 		else if (i < 3)
 			tileInfoMessage(TCODColor::green, "an area with some odd green moss on its surface");
 		else if (i < 4)
-			tileInfoMessage(TCODColor::green, "an area with has weird moss covering it");
+			tileInfoMessage(TCODColor::green, "an area which has weird moss covering it");
 		else if (i < 5)
 			tileInfoMessage(TCODColor::green, "an area that has a lot of moss on it");
 		else if (i < 6)
 			tileInfoMessage(TCODColor::green, "an area almost covered in odd green moss");
 		else
 			tileInfoMessage(TCODColor::green, "an area completely covered in weird moss");
+		
+		if (f != -1)
+			tileInfoMessage(TCODColor::purple, "and odd purple flowers");
+		
 		
 
 		tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
