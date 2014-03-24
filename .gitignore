@@ -1,9 +1,8 @@
-
 #MakeFile
 *MakeFile
 
 #Screenshots
-
+screenshot*.png
 
 #Object Files
 *.o
