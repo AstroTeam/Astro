@@ -506,7 +506,7 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		static TCODImage img("wesleyPIXEL.png");
 		img.blit2x(TCODConsole::root,0,6);
 		menux = 35;
-		menuy = 20 + TCODConsole::root->getHeight() / 3;
+		menuy = 24 + TCODConsole::root->getHeight() / 3;
 		
 	}
 	if (mode == INVENTORY || mode == VENDING){

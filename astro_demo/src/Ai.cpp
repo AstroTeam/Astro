@@ -661,6 +661,7 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	}
 	//Diplay Character Stats
 	con.print(2,4,"STATS");
+	con.print(1,6,"LVL: %d",xpLevel);
 	con.print(1,8,"VIT: %d",owner->vit);
 	con.print(1,10,"DEX: %d",owner->totalDex);
 	con.print(1,12,"STR: %d",owner->totalStr);
