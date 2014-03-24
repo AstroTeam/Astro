@@ -163,8 +163,7 @@ void Gui::render() {
 	TCODConsole::blit(tileInfoScreen, 0, 0, TILE_INFO_WIDTH, PANEL_HEIGHT, TCODConsole::root, engine.screenWidth - TILE_INFO_WIDTH, engine.screenHeight - PANEL_HEIGHT);	
 	TCODConsole::blit(sidebar, 0, 0, MSG_X, engine.screenHeight-PANEL_HEIGHT, TCODConsole::root, 0, 0);	
 		
-	
-		
+	currentTileInfo(engine.player->x, engine.player->y);	
 }
 
 void Gui::renderBar(int x, int y, int width, const char *name,
@@ -197,6 +196,63 @@ Gui::Message::~Message() {
 	free(text);
 }
 
+
+void Gui::currentTileInfo(int x, int y) {
+
+	while(tileInfoLog.size() > 0) {
+		Message *toRemove = tileInfoLog.get(0);
+		tileInfoLog.remove(toRemove);
+		delete toRemove;
+	}
+	
+	
+		
+		int c = engine.map->tiles[x+y*engine.map->width].num;
+
+		float i = engine.map->tiles[x+y*engine.map->width].infection;
+		
+
+		if (i < 1){}
+		else if (i < 2)
+			tileInfoMessage(TCODColor::green, "an area with some green moss on it");
+		else if (i < 3)
+			tileInfoMessage(TCODColor::green, "an area with some odd green moss on its surface");
+		else if (i < 4)
+			tileInfoMessage(TCODColor::green, "an area with has weird moss covering it");
+		else if (i < 5)
+			tileInfoMessage(TCODColor::green, "an area that has a lot of moss on it");
+		else if (i < 6)
+			tileInfoMessage(TCODColor::green, "an area almost covered in odd green moss");
+		else
+			tileInfoMessage(TCODColor::green, "an area completely covered in weird moss");
+		
+
+		tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
+		if (engine.map->tiles[x+y*engine.map->width].temperature > 0)
+		tileInfoMessage(TCODColor::red, "THE TILE IS ON FIRE!");
+		if (engine.map->tiles[x+y*engine.map->width].envSta == 2)
+		tileInfoMessage(TCODColor::grey, "The tile has been scorched.");
+		
+	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+		Actor *actor = *it;
+		//find actors under the mouse cursor
+		if (actor->x == x && actor->y == y && actor!= engine.player && actor!= engine.playerLight) {
+				tileInfoMessage(actor->col, actor->name);
+		}
+	}
+	
+	
+	if (!engine.map->isExplored(x,y)) {
+		//clear all the messages before this
+		while(tileInfoLog.size() > 0){
+			Message *toRemove = tileInfoLog.get(0);
+			tileInfoLog.remove(toRemove);
+			delete toRemove;
+		}
+		
+		tileInfoMessage(TCODColor::lightGrey, "\nThere is nothing interesting here.");
+	} 
+}
 
 
 //keyboard-based look
