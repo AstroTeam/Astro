@@ -72,4 +72,10 @@ On each floor of the dungeon is a tile with the '>' character. This tile indicat
 Screenshots may be taken using the printscreen key. They will be named "screenshotNNN.png", where NNN indicates the lowest available number. The first screenshot will be named 
 	"screenshot000.png" and the next named "screenshot001.png" and so on. 
 
+The player may find some monsters or machines on the screen which are neutral towards him; as such, he may be less inclined to attack them. To attack any character on the screen,
+	press '=' to enter a "hostile stance," which will allow you to attack any character on the screen that is capable of being destroyed.
 
+Some of these neutral characters (discussed above) are in fact vending machines. Obviously, the player may purchase items from them should he have sufficient PetaBitcoins. In the future,
+	the vending machines will have a limited amount of material from which they can create objects (they are essentially fancy 3d-printers), and the player will have to provide
+	them with spools or cartridges of more material, should he wish to buy something from that particular machine. Alternatively, he could destroy the machine and collect a spool/
+	cartidge of material to feed into a machine encountered later on.
