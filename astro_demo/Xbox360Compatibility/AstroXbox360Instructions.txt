@@ -1,4 +1,4 @@
-Run the python code in FreePIE. I couldn't find a way to change stances. 
+Run the python code in FreePIE. The homepage for the software: http://andersmalmgren.github.io/FreePIE/
 LTDiagonalMode has cleaner movements, but takes a minute to get used to because it is a little less intuitive.
 
 Xbox360 Key Bindings
