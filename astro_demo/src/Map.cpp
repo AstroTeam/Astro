@@ -213,9 +213,9 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 						{
 							engine.map->tiles[a->x+a->y*engine.map->width].decoration = 100;
 							a->name = "blarg!";
-							blarg = true;
+							//blarg = true;
 							////////////////////////////////////////////////////////////////////////////////IS THIS OKAY?
-							engine.actors.remove(a);
+							//engine.actors.remove(a);
 						}
 					}
 					else//just in case error
@@ -1989,12 +1989,23 @@ Actor *Map::createArtifact(int x, int y){
 	ItemBonus *bonus = NULL;
 	ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
 	
-	int choices = random->getInt(1,4);
+	int choices = random->getInt(1,13);
 	switch(choices) {
+		//Garrett's Fantasy
 		case 1: strcat(nameBuf,"Rodgort's "); break;
 		case 2: strcat(nameBuf,"Adanimus' "); break;
 		case 3: strcat(nameBuf,"Diogenes' "); break;
 		case 4: strcat(nameBuf,"Umber's "); break;
+		//shane's custom
+		case 5: strcat(nameBuf,"Computerized "); break;
+		case 6: strcat(nameBuf,"Armored "); break;
+		case 7: strcat(nameBuf,"Battle-Tested "); break;
+		case 8: strcat(nameBuf,"Modern "); break;
+		case 9: strcat(nameBuf,"Cutting Edge "); break;
+		case 10: strcat(nameBuf,"Lucky "); break;
+		case 11: strcat(nameBuf,"Experimental "); break;
+		case 12: strcat(nameBuf,"Grizzled "); break;
+		case 13: strcat(nameBuf,"Augmented "); break;
 		default: break;
 	}
 	choices = random->getInt(1,6);
@@ -2006,7 +2017,6 @@ Actor *Map::createArtifact(int x, int y){
 		case 2: strcat(nameBuf, "Chestplate "); 
 				slot = Equipment::CHEST;
 				artifact->sort = 3;
-				break;
 		case 3: strcat(nameBuf, "Greaves "); 
 				slot = Equipment::LEGS;
 				artifact->sort = 3;
@@ -2027,13 +2037,13 @@ Actor *Map::createArtifact(int x, int y){
 	}
 	choices = random->getInt(1,6);
 	switch(choices) {
-		case 1: strcat(nameBuf, "of Great Vitality"); 
+		case 1: strcat(nameBuf, "of Adamantium"); 
 				bonus = new ItemBonus(ItemBonus::HEALTH,10+(2*engine.level));
 				break;
-		case 2: strcat(nameBuf, "of the Spastic Cantaloupe"); 
+		case 2: strcat(nameBuf, "of Fleet"); 
 				bonus = new ItemBonus(ItemBonus::DODGE,3+(2*engine.level));
 				break;
-		case 3: strcat(nameBuf, "of the Indefatigable Defender"); 
+		case 3: strcat(nameBuf, "of Defense"); 
 				bonus = new ItemBonus(ItemBonus::DR,(2*engine.level));
 				break;
 		case 4: strcat(nameBuf, "of the Stalwart Fighter");
