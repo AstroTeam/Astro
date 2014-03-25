@@ -207,7 +207,7 @@ void Gui::currentTileInfo(int x, int y) {
 	
 	
 		
-		int c = engine.map->tiles[x+y*engine.map->width].num;
+		//int c = engine.map->tiles[x+y*engine.map->width].num;
 
 		float i = engine.map->tiles[x+y*engine.map->width].infection;
 		
@@ -232,7 +232,7 @@ void Gui::currentTileInfo(int x, int y) {
 		
 		
 
-		tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
+		//tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
 		if (engine.map->tiles[x+y*engine.map->width].temperature > 0)
 		tileInfoMessage(TCODColor::red, "THE TILE IS ON FIRE!");
 		if (engine.map->tiles[x+y*engine.map->width].envSta == 2)
@@ -287,7 +287,7 @@ void Gui::renderKeyLook() {
 			
 			//tileInfoMessage(TCODColor::lightGrey, "You see:");
 			
-			int c = engine.map->tiles[x+y*engine.map->width].num;
+			//int c = engine.map->tiles[x+y*engine.map->width].num;
 
 			float i = engine.map->tiles[x+y*engine.map->width].infection;
 			
@@ -334,7 +334,7 @@ void Gui::renderKeyLook() {
 			//engine.gui->message(TCODColor::green, "the infection level is %g",i);
 			*/
 
-			tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
+			//tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
 			if (engine.map->tiles[x+y*engine.map->width].temperature > 0)
 			tileInfoMessage(TCODColor::red, "THE TILE IS ON FIRE!");
 			//tileInfoMessage(TCODColor::yellow, "the environment is %d",e);
