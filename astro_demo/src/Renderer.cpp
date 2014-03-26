@@ -858,6 +858,7 @@ void Renderer::render(void *sdlSurface){
 	
 	
 	//COULD OPTIMIZE --> CONTAINER/INVENTORY/PLAYER CONTAINS A LIST OF JUST EQUIPMENT TO RENDER, instead of scanning all items
+	if(engine.player->destructible->isDead()){
 	SDL_Rect dstRectEquip={plyx*16,plyy*16,16,16};
 	if (engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN){
 		for (Actor **it = engine.player->container->inventory.begin();it != engine.player->container->inventory.end();it++)
@@ -985,7 +986,7 @@ void Renderer::render(void *sdlSurface){
 		}
 	}
 	SDL_UpdateRect(floorMap, plyx*16, plyy*16, 16, 16);
-	
+	}
 	
 	//if the game is idle or new turn, blit onto screen
 	if (engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN){
