@@ -212,7 +212,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 						else if (strcmp(a->name,"A server") == 0)
 						{
 							engine.map->tiles[a->x+a->y*engine.map->width].decoration = 100;
-							a->name = "blarg!";
+							a->name = "Server Room Doorway";
 							//blarg = true;
 							////////////////////////////////////////////////////////////////////////////////IS THIS OKAY?
 							//engine.actors.remove(a);
