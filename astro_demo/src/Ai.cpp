@@ -41,7 +41,7 @@ Actor *Ai::choseFromInventory(Actor *owner,int type, bool isVend) {
 		it != owner->container->inventory.end(); it++) {
 		Actor *actor = *it;
 		if(actor->sort == type){
-			if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
+			if((actor->pickable->type == Pickable::EQUIPMENT || actor->pickable->type == Pickable::WEAPON)&& ((Equipment*)(actor->pickable))->equipped){
 				inventoryScreen->print(1,y,"(%c) %s(E)",shortcut,actor->name);
 			}else{
 				inventoryScreen->print(1,y,"(%c) %s",shortcut,actor->name);
@@ -563,7 +563,7 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type, bool isVend) {
 		it != owner->container->inventory.end(); it++) {
 		Actor *actor = *it;
 		if(actor->sort == type){
-			if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
+			if((actor->pickable->type == Pickable::EQUIPMENT || actor->pickable->type == Pickable::WEAPON)&& ((Equipment*)(actor->pickable))->equipped){
 				inventoryScreen->print(1,y,"(%c) %s(E)",shortcut,actor->name);
 			}else{
 				inventoryScreen->print(1,y,"(%c) %s",shortcut,actor->name);
