@@ -60,7 +60,7 @@ void Actor::save(TCODZip &zip) {
 
 void Actor::load(TCODZip &zip) {
 	x = zip.getInt();
-	std::cout <<"got x" << std::endl;
+	std::cout <<"got x" << x << std::endl;
 	y = zip.getInt();
 	std::cout <<"got y" << std::endl;
 	ch = zip.getInt();

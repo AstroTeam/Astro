@@ -19,6 +19,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 		case EQUIPMENT: pickable = new Equipment(0); break;
 		case FLARE: pickable = new Flare(0,0,0); break;
 		case FRAGMENT: pickable = new Fragment(0,0,0); break;
+		case WEAPON: pickable = new Weapon(0,0,0); break;
 		case NONE: break;
 	}
 	std::cout << "chose a module type " << std::endl;
@@ -763,7 +764,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 
 Weapon::Weapon(float minDmg, float maxDmg, float critMult, WeaponType wType,
 		bool equipped, SlotType slot, ItemBonus *bonus, ItemReq *requirement):
-	Equipment(equipped, slot, bonus, requirement, false, 1, Pickable::EQUIPMENT), 
+	Equipment(equipped, slot, bonus, requirement, false, 1, Pickable::WEAPON), 
 		minDmg(minDmg), maxDmg(maxDmg), critMult(critMult), wType(wType){
 	//need to make sure no funky combos are done
 }
@@ -789,6 +790,18 @@ void Weapon::save(TCODZip &zip) {
 }
 
 void Weapon::load(TCODZip &zip) {
+	equipped = zip.getInt();
+	slot = (SlotType)zip.getInt();
+	stacks = zip.getInt();
+	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
+	ItemBonus *bon = new ItemBonus(ItemBonus::NOBONUS,0);
+	bon->load(zip);
+	bonus = bon;
+	ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	req->load(zip);
+	requirement = req;
 	minDmg = zip.getFloat();
 	maxDmg = zip.getFloat();
 	critMult = zip.getFloat();
