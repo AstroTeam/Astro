@@ -865,7 +865,7 @@ void Renderer::render(void *sdlSurface){
 		{
 		
 			Actor *a = *it;
-			if (a->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(a->pickable))->equipped && !engine.player->destructible->isDead())//add case to not blit if inventory is open
+			if ((a->pickable->type == Pickable::EQUIPMENT || a->pickable->type == Pickable::WEAPON) && ((Equipment*)(a->pickable))->equipped && !engine.player->destructible->isDead())//add case to not blit if inventory is open
 			{
 				//equipment
 				if (strcmp(a->name,"Mylar-Lined Boots") == 0)//legacy first thing!

@@ -630,7 +630,7 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	con.print(1,36,"RANGED: ");
 	for(Actor **it = owner->container->inventory.begin(); it != owner->container->inventory.end(); ++it){
 		Actor *actor = *it;
-		if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
+		if((actor->pickable->type == Pickable::EQUIPMENT || actor->pickable->type == Pickable::WEAPON) && ((Equipment*)(actor->pickable))->equipped){
 			switch(((Equipment*)(actor->pickable))->slot){
 				case Equipment::HEAD:
 					con.print(6,24,"%s",actor->name);
