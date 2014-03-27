@@ -139,7 +139,7 @@ float Actor::getHealValue(){
 		factor *= .5;
 	if(job[0] == 'A')
 		factor *= .6;
-	return (int)(factor * (totalIntel * 3 + 6));
+	return (int)(factor * (this->totalIntel * 3 + 6));
 }
 	
 /* bool Actor::moveOrAttack(int x, int y)
