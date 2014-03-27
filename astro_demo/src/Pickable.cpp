@@ -422,7 +422,7 @@ bool Flare::use(Actor *owner, Actor *wearer) {
 
 void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 	if (wearer->container) {
-		if (owner->pickable->type == EQUIPMENT && ((Equipment*)(owner->pickable))->equipped) {
+		if ((owner->pickable->type == EQUIPMENT || owner->pickable->type == WEAPON ) && ((Equipment*)(owner->pickable))->equipped) {
 			((Equipment*)(owner->pickable))->use(owner,wearer);
 		}
 		int numberDropped = 1;
@@ -457,6 +457,7 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 				case FIREBALL: droppy->pickable = new Fireball(((Fireball*)(owner->pickable))->range,((Fireball*)(owner->pickable))->damage,((Fireball*)(owner->pickable))->maxRange); droppy->sort = 2; break;
 				case FLARE: droppy->pickable = new Flare(((Flare*)(owner->pickable))->nbTurns, ((Flare*)(owner->pickable))->range, ((Flare*)(owner->pickable))->lightRange); droppy->sort = 2; break;
 				case EQUIPMENT: break;
+				case WEAPON: break;
 				case FRAGMENT: droppy->pickable = new Fragment(((Fragment*)(owner->pickable))->range,((Fragment*)(owner->pickable))->damage,((Fragment*)(owner->pickable))->maxRange); droppy->sort = 2; break;
 				case NONE: break;
 			}
