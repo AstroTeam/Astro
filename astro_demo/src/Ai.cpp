@@ -573,7 +573,10 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type, bool isVend) {
 				if(isVend){
 					inventoryScreen->print(17, y, "Pbc: %d Ink: %d",actor->pickable->value,actor->pickable->inkValue);
 				}else{
-					inventoryScreen->print(17, y, "(%d)",actor->pickable->stackSize);
+					if(strcmp(actor->name,"Medkit") == 0){
+						inventoryScreen->print(17, y, "(%dHp)",(int)owner->getHealValue());
+					}
+					inventoryScreen->print(24, y, "(%d)",actor->pickable->stackSize);
 				}
 			}else if(isVend){
 				inventoryScreen->print(17, y, "Pbc: %d Ink: %d",actor->pickable->value,actor->pickable->inkValue);
@@ -667,7 +670,7 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	con.print(1,12,"STR: %d(+%d)",owner->str,owner->attacker->totalPower - owner->attacker->basePower);
 	con.print(1,14,"INT: %d(+%d)",owner->intel,owner->totalIntel-owner->intel);
 	con.print(1,16,"KILLS: %d",engine.killCount);
-	con.print(1,18,"MEDKIT HEAL: %d",(int)owner->getHealValue());
+	//con.print(1,18,"MEDKIT HEAL: %d",(int)owner->getHealValue());
 	//con.print(1,18,"DMG DONE: %g",engine.damageDone);
 	//con.print(1,20,"DMG TAKEN: %g",engine.damageReceived);
 	
