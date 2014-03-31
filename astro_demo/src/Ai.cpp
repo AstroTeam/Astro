@@ -20,6 +20,8 @@ Ai *Ai::create(TCODZip &zip) {
 		case VENDING: ai = new VendingAi(); break;
 		case ENGINEER: ai = new EngineerAi(5,5); break;
 		case SECURITY: ai = new SecurityBotAi(); break;
+		//
+		case CONSOLE: ai = new ConsoleAi(); break;
 	}
 	ai->load(zip);
 	return ai;
@@ -1760,6 +1762,7 @@ ConsoleAi::ConsoleAi() {
 }
 
 void ConsoleAi::save(TCODZip &zip){
+	zip.putInt(CONSOLE);
 	zip.putInt(mapMine);
 	zip.putInt(coins);
 	//zip.putInt(ink);
