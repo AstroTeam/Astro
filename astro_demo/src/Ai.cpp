@@ -17,11 +17,14 @@ Ai *Ai::create(TCODZip &zip) {
 		case TURRET: ai = new TurretAi(); break;
 		case CLEANER: ai = new CleanerAi(); break;
 		case INTERACTIBLE: ai = new InteractibleAi(); break;
+		
+		case CONSOLE: ai = new ConsoleAi(); break;
+		
 		case VENDING: ai = new VendingAi(); break;
 		case ENGINEER: ai = new EngineerAi(5,5); break;
 		case SECURITY: ai = new SecurityBotAi(); break;
 		//
-		case CONSOLE: ai = new ConsoleAi(); break;
+		
 	}
 	ai->load(zip);
 	return ai;
