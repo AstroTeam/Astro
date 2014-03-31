@@ -31,6 +31,7 @@ Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	damageReceived = 0;
 	selX = 0;
 	selY = 0;
+	printMap = false;
 	mapx1 = 0;
 	mapx2 = 0;
 	mapy1 = 0;
@@ -718,6 +719,7 @@ void Engine::save() {
 		zip.putInt(invFrames);
 		zip.putInt(selX);
 		zip.putInt(selY);
+		zip.putInt(printMap);
 		//zip.putFloat(damageDone);
 		//zip.putFloat(damageReceived);
 		zip.putInt(piratesFound);
@@ -818,6 +820,7 @@ void Engine::load(bool pause) {
 		invFrames = zip.getInt();
 		selX = zip.getInt();
 		selY = zip.getInt();
+		printMap = zip.getInt();
 		//load the map
 		int width = zip.getInt();
 		int height = zip.getInt();

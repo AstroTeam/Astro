@@ -549,17 +549,23 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			}
 		break;
 		case 'm': //displays the printed map
-			engine.gameStatus = Engine::NEW_TURN;
-			engine.gui->message(TCODColor::yellow,"You put away the map you printed from the server console.");
-			//engine.menuState = 4;
-			engine.menuState = 5;
-			while(engine.menuState != 2){
-				TCODConsole::flush();
+			if (engine.printMap)
+			{
+				engine.gameStatus = Engine::NEW_TURN;
+				engine.gui->message(TCODColor::yellow,"You put away the map you printed from the server console.");
+				//engine.menuState = 4;
+				engine.menuState = 5;
+				while(engine.menuState != 2){
+					TCODConsole::flush();
+				}
+				TCOD_key_t key;
+				TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
+				engine.menuState = 0;
 			}
-			TCOD_key_t key;
-			TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
-			engine.menuState = 0;
-			
+			else
+			{
+				engine.gui->message(TCODColor::yellow,"You have found no maps yet.");
+			}
 		break;
 	}
 }
@@ -1793,7 +1799,17 @@ void ConsoleAi::load(TCODZip &zip){
 
 void ConsoleAi::interaction(Actor *owner, Actor *target){
 	engine.gameStatus = Engine::NEW_TURN;
-	engine.gui->message(TCODColor::yellow,"The console closes the map allowing you to continue your adventure.");
+	//if no printout yet
+	if (!engine.printMap)
+	{
+		engine.gui->message(TCODColor::yellow,"You close the console and a map prints out showing the outline of the deck's rooms, press 'm' to access it.");
+		engine.printMap = true;
+	}
+	//if already printed
+	else
+	{
+		engine.gui->message(TCODColor::yellow,"The console prints a map out, but you let it fall to the floor, as you already have one.");
+	}
 	//engine.menuState = 4;
 	engine.menuState = 4;
 	while(engine.menuState != 2){

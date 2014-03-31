@@ -26,7 +26,7 @@ public:
 	int menuState;
 	int selX;
 	int selY;
-	
+	bool printMap;
 	
 	int mapx1;
 	int mapx2;
