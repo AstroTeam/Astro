@@ -1040,21 +1040,39 @@ void Renderer::render(void *sdlSurface){
 	{
 		SDL_Surface *map = SDL_LoadBMP("tile_assets/consoleMap.bmp");
 		SDL_Surface *mapPix = SDL_LoadBMP("tile_assets/mapPix.bmp");
+		SDL_Surface *mapPixRed = SDL_LoadBMP("tile_assets/mapPixRed.bmp");
+		SDL_Surface *mapPixDarker = SDL_LoadBMP("tile_assets/mapPixDarker.bmp");
 		for (int x = 0; x < 100; x++)
 		{
 			for (int y = 0; y < 100; y++)
 			{
-				if (engine.map->canWalk(x,y)){
-				SDL_Rect dstRect1={x,y,1,1};
-				SDL_BlitSurface(mapPix,NULL,map,&dstRect1);
+				if (!engine.map->isWall(x,y)){
+					if (engine.player->x == x && engine.player->y == y)
+					{
+						SDL_Rect dstRect1={x*4,y*4,4,4};
+						SDL_BlitSurface(mapPixRed,NULL,map,&dstRect1);
+					}
+					else if (engine.map->tiles[x+y*engine.map->width].decoration != 0)
+					{
+						SDL_Rect dstRect1={x*4,y*4,4,4};
+						SDL_BlitSurface(mapPixDarker,NULL,map,&dstRect1);
+					}
+					else
+					{
+						SDL_Rect dstRect1={x*4,y*4,4,4};
+						SDL_BlitSurface(mapPix,NULL,map,&dstRect1);
+					}
+					
 				}
 			}
 		}
 		
-		SDL_Rect dstRect={(engine.screenWidth*16)/2-50,(engine.screenHeight*16)/2-50,100,100};
+		SDL_Rect dstRect={(engine.screenWidth*16)/2-200,(engine.screenHeight*16)/2-200,400,400};
 		SDL_BlitSurface(map,NULL,screen,&dstRect);
 		SDL_FreeSurface(map);
 		SDL_FreeSurface(mapPix);
+		SDL_FreeSurface(mapPixRed);
+		SDL_FreeSurface(mapPixDarker);
 		engine.menuState = 2;
 	}
 	
