@@ -132,6 +132,15 @@ float Actor::getHpUp(){
 	else
 		return 20;
 }
+
+float Actor::getHealValue(){
+	float factor = 1;
+	if(race[0] == 'R')
+		factor *= .5;
+	if(job[0] == 'A')
+		factor *= .6;
+	return (int)(factor * (this->totalIntel * 3 + 6));
+}
 	
 /* bool Actor::moveOrAttack(int x, int y)
 {

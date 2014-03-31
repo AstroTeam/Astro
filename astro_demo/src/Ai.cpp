@@ -17,9 +17,14 @@ Ai *Ai::create(TCODZip &zip) {
 		case TURRET: ai = new TurretAi(); break;
 		case CLEANER: ai = new CleanerAi(); break;
 		case INTERACTIBLE: ai = new InteractibleAi(); break;
+		
+		case CONSOLE: ai = new ConsoleAi(); break;
+		
 		case VENDING: ai = new VendingAi(); break;
 		case ENGINEER: ai = new EngineerAi(5,5); break;
 		case SECURITY: ai = new SecurityBotAi(); break;
+		//
+		
 	}
 	ai->load(zip);
 	return ai;
@@ -41,7 +46,7 @@ Actor *Ai::choseFromInventory(Actor *owner,int type, bool isVend) {
 		it != owner->container->inventory.end(); it++) {
 		Actor *actor = *it;
 		if(actor->sort == type){
-			if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
+			if((actor->pickable->type == Pickable::EQUIPMENT || actor->pickable->type == Pickable::WEAPON)&& ((Equipment*)(actor->pickable))->equipped){
 				inventoryScreen->print(1,y,"(%c) %s(E)",shortcut,actor->name);
 			}else{
 				inventoryScreen->print(1,y,"(%c) %s",shortcut,actor->name);
@@ -563,7 +568,7 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type, bool isVend) {
 		it != owner->container->inventory.end(); it++) {
 		Actor *actor = *it;
 		if(actor->sort == type){
-			if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
+			if((actor->pickable->type == Pickable::EQUIPMENT || actor->pickable->type == Pickable::WEAPON)&& ((Equipment*)(actor->pickable))->equipped){
 				inventoryScreen->print(1,y,"(%c) %s(E)",shortcut,actor->name);
 			}else{
 				inventoryScreen->print(1,y,"(%c) %s",shortcut,actor->name);
@@ -573,7 +578,10 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type, bool isVend) {
 				if(isVend){
 					inventoryScreen->print(17, y, "Pbc: %d Ink: %d",actor->pickable->value,actor->pickable->inkValue);
 				}else{
-					inventoryScreen->print(17, y, "(%d)",actor->pickable->stackSize);
+					if(strcmp(actor->name,"Medkit") == 0){
+						inventoryScreen->print(17, y, "(%dHp)",(int)owner->getHealValue());
+					}
+					inventoryScreen->print(24, y, "(%d)",actor->pickable->stackSize);
 				}
 			}else if(isVend){
 				inventoryScreen->print(17, y, "Pbc: %d Ink: %d",actor->pickable->value,actor->pickable->inkValue);
@@ -630,7 +638,7 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	con.print(1,36,"RANGED: ");
 	for(Actor **it = owner->container->inventory.begin(); it != owner->container->inventory.end(); ++it){
 		Actor *actor = *it;
-		if(actor->pickable->type == Pickable::EQUIPMENT && ((Equipment*)(actor->pickable))->equipped){
+		if((actor->pickable->type == Pickable::EQUIPMENT || actor->pickable->type == Pickable::WEAPON) && ((Equipment*)(actor->pickable))->equipped){
 			switch(((Equipment*)(actor->pickable))->slot){
 				case Equipment::HEAD:
 					con.print(6,24,"%s",actor->name);
@@ -667,6 +675,7 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	con.print(1,12,"STR: %d(+%d)",owner->str,owner->attacker->totalPower - owner->attacker->basePower);
 	con.print(1,14,"INT: %d(+%d)",owner->intel,owner->totalIntel-owner->intel);
 	con.print(1,16,"KILLS: %d",engine.killCount);
+	//con.print(1,18,"MEDKIT HEAL: %d",(int)owner->getHealValue());
 	//con.print(1,18,"DMG DONE: %g",engine.damageDone);
 	//con.print(1,20,"DMG TAKEN: %g",engine.damageReceived);
 	
@@ -1747,7 +1756,40 @@ void CleanerAi::moveOrClean(Actor *owner)
 	}
 }	
 
+ConsoleAi::ConsoleAi() {
+	//deployedSecurity = false;
+	TCODRandom *rng = TCODRandom::getInstance();
+	coins = rng->getInt(0,10);
+	mapMine = true;
+	//population = 1;
+}
 
+void ConsoleAi::save(TCODZip &zip){
+	zip.putInt(CONSOLE);
+	zip.putInt(mapMine);
+	zip.putInt(coins);
+	//zip.putInt(ink);
+	//zip.putInt(population);
+}
+
+void ConsoleAi::load(TCODZip &zip){
+	mapMine = zip.getInt();
+	coins = zip.getInt();
+	//population = zip.getInt();
+}
+
+void ConsoleAi::interaction(Actor *owner, Actor *target){
+	engine.gameStatus = Engine::NEW_TURN;
+	engine.gui->message(TCODColor::yellow,"The console closes the map allowing you to continue your adventure.");
+	//engine.menuState = 4;
+	engine.menuState = 4;
+	while(engine.menuState != 2){
+		TCODConsole::flush();
+	}
+	TCOD_key_t key;
+	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
+	engine.menuState = 0;
+}
 
 InteractibleAi::InteractibleAi() {
 }
@@ -1958,6 +2000,7 @@ Actor *VendingAi::clone(Actor *owner){
 			case Pickable::FLARE: droppy->pickable = new Flare(((Flare*)(owner->pickable))->nbTurns, ((Flare*)(owner->pickable))->range, ((Flare*)(owner->pickable))->lightRange); droppy->sort = 2; break;
 			case Pickable::EQUIPMENT: droppy->pickable = new Equipment(0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement); droppy->sort = owner->sort; break;
 			case Pickable::FRAGMENT: droppy->pickable = new Fragment(((Fragment*)(owner->pickable))->range,((Fragment*)(owner->pickable))->damage,((Fragment*)(owner->pickable))->maxRange); droppy->sort = 2; break;
+			case Pickable::WEAPON: droppy->pickable = new Weapon(((Weapon*)(owner->pickable))->minDmg,((Weapon*)(owner->pickable))->maxDmg,((Weapon*)(owner->pickable))->critMult,((Weapon*)(owner->pickable))->wType,0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement);break;
 			case Pickable::NONE: break;
 		}
 		return droppy;

@@ -17,6 +17,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 		case EQUIPMENT: pickable = new Equipment(0); break;
 		case FLARE: pickable = new Flare(0,0,0); break;
 		case FRAGMENT: pickable = new Fragment(0,0,0); break;
+		case WEAPON: pickable = new Weapon(0,0,0); break;
 		case NONE: break;
 	}
 	pickable->load(zip);
@@ -85,13 +86,8 @@ void Healer::save(TCODZip &zip) {
 
 bool Healer::use(Actor *owner, Actor *wearer) {
 	if (wearer->destructible) {
-		float amountHealed;
-		float factor = 1;
-		if(wearer->race[0] == 'R')
-			factor *= .5;
-		if(wearer->job[0] == 'A')
-			factor *= .6;
-		amountHealed = wearer->destructible->heal((int)(factor * (wearer->totalIntel * 3 + 6))/1);
+		float amountHealed = wearer->getHealValue();
+		wearer->destructible->heal(amountHealed);
 		if (amountHealed > 0) {
 			return Pickable::use(owner,wearer);
 		}
@@ -418,7 +414,7 @@ bool Flare::use(Actor *owner, Actor *wearer) {
 
 void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 	if (wearer->container) {
-		if (owner->pickable->type == EQUIPMENT && ((Equipment*)(owner->pickable))->equipped) {
+		if ((owner->pickable->type == EQUIPMENT || owner->pickable->type == WEAPON ) && ((Equipment*)(owner->pickable))->equipped) {
 			((Equipment*)(owner->pickable))->use(owner,wearer);
 		}
 		int numberDropped = 1;
@@ -453,6 +449,7 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 				case FIREBALL: droppy->pickable = new Fireball(((Fireball*)(owner->pickable))->range,((Fireball*)(owner->pickable))->damage,((Fireball*)(owner->pickable))->maxRange); droppy->sort = 2; break;
 				case FLARE: droppy->pickable = new Flare(((Flare*)(owner->pickable))->nbTurns, ((Flare*)(owner->pickable))->range, ((Flare*)(owner->pickable))->lightRange); droppy->sort = 2; break;
 				case EQUIPMENT: break;
+				case WEAPON: break;
 				case FRAGMENT: droppy->pickable = new Fragment(((Fragment*)(owner->pickable))->range,((Fragment*)(owner->pickable))->damage,((Fragment*)(owner->pickable))->maxRange); droppy->sort = 2; break;
 				case NONE: break;
 			}
@@ -760,7 +757,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 
 Weapon::Weapon(float minDmg, float maxDmg, float critMult, WeaponType wType,
 		bool equipped, SlotType slot, ItemBonus *bonus, ItemReq *requirement):
-	Equipment(equipped, slot, bonus, requirement, false, 1, Pickable::EQUIPMENT), 
+	Equipment(equipped, slot, bonus, requirement, false, 1, Pickable::WEAPON), 
 		minDmg(minDmg), maxDmg(maxDmg), critMult(critMult), wType(wType){
 	//need to make sure no funky combos are done
 }
@@ -786,6 +783,18 @@ void Weapon::save(TCODZip &zip) {
 }
 
 void Weapon::load(TCODZip &zip) {
+	equipped = zip.getInt();
+	slot = (SlotType)zip.getInt();
+	stacks = zip.getInt();
+	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
+	ItemBonus *bon = new ItemBonus(ItemBonus::NOBONUS,0);
+	bon->load(zip);
+	bonus = bon;
+	ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	req->load(zip);
+	requirement = req;
 	minDmg = zip.getFloat();
 	maxDmg = zip.getFloat();
 	critMult = zip.getFloat();
