@@ -2064,7 +2064,7 @@ Actor *Map::createArtifact(int x, int y){
 		case 1: strcat(nameBuf, "of Adamantium"); 
 				bonus = new ItemBonus(ItemBonus::HEALTH,10+(2*engine.level));
 				break;
-		case 2: strcat(nameBuf, "of Fleet"); 
+		case 2: strcat(nameBuf, "of Swiftness"); 
 				bonus = new ItemBonus(ItemBonus::DODGE,3+(2*engine.level));
 				break;
 		case 3: strcat(nameBuf, "of Defense"); 
