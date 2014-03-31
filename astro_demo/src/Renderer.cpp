@@ -1007,17 +1007,20 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(terminal);
 	SDL_FreeSurface(decor);
 	SDL_FreeSurface(flowers);
+	
+	//engine.menuState = engine.transfer;
+	
 	}
-	else if (engine.menuState == 1)
+	else if (engine.menuState == 1)//character screen
 	{
 		//blitting
 		SDL_Surface *character = SDL_LoadBMP("tile_assets/character_screen_char.bmp");
 		SDL_SetColorKey(character,SDL_SRCCOLORKEY,255);
 		SDL_Rect dstRect={35*16,5*16,400,256};
 		SDL_BlitSurface(character,NULL,screen,&dstRect);
-		
-		engine.menuState = 2;
 		SDL_FreeSurface(character);
+		engine.menuState = 2;
+		
 	}
 	else if (engine.menuState == 2)
 	{
@@ -1028,11 +1031,18 @@ void Renderer::render(void *sdlSurface){
 	{
 		SDL_Surface *highRes = SDL_LoadBMP("titleScreenHiRes.bmp");
 		SDL_BlitSurface(highRes,NULL,screen,NULL);
-		engine.menuState = 2;
 		SDL_FreeSurface(highRes);
+		engine.menuState = 2;
+		
 		
 	}
-	
+	else if (engine.menuState == 4)//map console
+	{
+		SDL_Surface *map = SDL_LoadBMP("tile_assets/consoleMap.bmp");
+		SDL_BlitSurface(map,NULL,screen,NULL);
+		SDL_FreeSurface(map);
+		//engine.menuState = 0;
+	}
 	
 	}
 	//if inventory is open begin animation

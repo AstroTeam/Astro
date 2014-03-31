@@ -1751,7 +1751,33 @@ void CleanerAi::moveOrClean(Actor *owner)
 	}
 }	
 
+ConsoleAi::ConsoleAi() {
+	//deployedSecurity = false;
+	TCODRandom *rng = TCODRandom::getInstance();
+	coins = rng->getInt(0,10);
+	mapMine = true;
+	//population = 1;
+}
 
+void ConsoleAi::save(TCODZip &zip){
+	zip.putInt(mapMine);
+	zip.putInt(coins);
+	//zip.putInt(ink);
+	//zip.putInt(population);
+}
+
+void ConsoleAi::load(TCODZip &zip){
+	mapMine = zip.getInt();
+	coins = zip.getInt();
+	//population = zip.getInt();
+}
+
+void ConsoleAi::interaction(Actor *owner, Actor *target){
+	engine.gui->message(TCODColor::yellow,"The console displays a map of the deck.");
+	engine.gameStatus = Engine::NEW_TURN;
+	//engine.transfer = 4;
+	
+}
 
 InteractibleAi::InteractibleAi() {
 }

@@ -693,6 +693,27 @@ Actor* Map::createVendor(int x, int y)
 	
 	return vendor;
 }
+Actor* Map::createConsole(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float consoleHp = 10*scale;
+	float consoleDodge = 0*scale;
+	float consoleDR = 0*scale;
+	float consoleXp = 25*scale;
+	int consoleAscii = 2; //change to desired ascii
+	
+	Actor *console = new Actor(x,y,consoleAscii,"A humming Console",TCODColor::white);
+	console->hostile = false;
+	console->interact = true;
+	console->destructible = new MonsterDestructible(consoleHp, consoleDodge,consoleDR,consoleXp);
+	console->ai = new ConsoleAi();
+	//console->container = new Container(10);
+	//generateRandom(console, consoleAscii);
+	engine.actors.push(console);
+	
+	return console;
+}
 void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
@@ -1271,8 +1292,11 @@ cout << "Server room made";
 				//place a console
 				//walkways
 				if (i == x2-1 && j == y1+1 && j != ((y1+y2)/2)) {
-					Actor * console = new Actor(i, j, 'c', "A console", TCODColor::white);
-					engine.actors.push(console);
+					//createConsole
+					//createBitcoinMiner
+					//Actor * console = new Actor(i, j, 'c', "A console", TCODColor::white);
+					//engine.actors.push(console);
+					createConsole(i,j);
 				}
 				else if (j != ((y1+y2)/2)){
 					Actor * server1 = new Actor(i, j, 243, "A server", TCODColor::white);

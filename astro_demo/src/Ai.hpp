@@ -221,5 +221,15 @@ public:
 	void populate(Actor *owner); //Populates the vending machine with one of each item that can be purchased
 };
 
-
+class ConsoleAi: public InteractibleAi{
+public:
+	bool mapMine; //true -> map, false -> mining
+	int coins; //how many coins to give to the player from mining
+	
+	ConsoleAi();
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+	void interaction(Actor *owner, Actor *target);
+	
+};
 
