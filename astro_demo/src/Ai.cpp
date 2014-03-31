@@ -552,7 +552,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			engine.gameStatus = Engine::NEW_TURN;
 			engine.gui->message(TCODColor::yellow,"You put away the map you printed from the server console.");
 			//engine.menuState = 4;
-			engine.menuState = 4;
+			engine.menuState = 5;
 			while(engine.menuState != 2){
 				TCODConsole::flush();
 			}

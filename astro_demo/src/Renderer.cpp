@@ -1076,6 +1076,34 @@ void Renderer::render(void *sdlSurface){
 		SDL_FreeSurface(mapPixDarker);
 		engine.menuState = 2;
 	}
+	else if (engine.menuState == 5)//map from 'm' key (printed map)
+	{
+		//engine.gui->message(TCODColor::yellow,"Map Key: light grey = room, dark grey = furnishings, red = player.");
+		SDL_Surface *map = SDL_LoadBMP("tile_assets/consoleMapPrint.bmp");
+		SDL_Surface *mapPix = SDL_LoadBMP("tile_assets/mapPixPrint.bmp");
+		//SDL_Surface *mapPixRed = SDL_LoadBMP("tile_assets/mapPixRed.bmp");
+		//SDL_Surface *mapPixDarker = SDL_LoadBMP("tile_assets/mapPixDarker.bmp");
+		for (int x = 0; x < 100; x++)
+		{
+			for (int y = 0; y < 100; y++)
+			{
+				if (!engine.map->isWall(x,y)){
+					SDL_Rect dstRect1={x*4,y*4,4,4};
+					SDL_BlitSurface(mapPix,NULL,map,&dstRect1);
+				}
+			}
+		}
+		
+		SDL_Rect dstRect={(engine.screenWidth*16)/2-200,(engine.screenHeight*16)/2-200,400,500};
+		SDL_BlitSurface(map,NULL,screen,&dstRect);
+		SDL_FreeSurface(map);
+		SDL_FreeSurface(mapPix);
+		//SDL_FreeSurface(mapPixRed);
+		//SDL_FreeSurface(mapPixDarker);
+		engine.menuState = 2;
+	}
+	
+	
 	
 	}
 	//if inventory is open begin animation
