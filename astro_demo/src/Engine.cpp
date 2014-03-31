@@ -989,6 +989,16 @@ void Engine::render()
 	
 	
 	//blitting of the map onto the screen...maybe blit onto temp root copy, then render and blit back
+	
+	//line test
+	//int x = player->x, y = player->y;
+	//TCOD_line_init(x,y,x+2,y+2);
+	//do {
+		// update cell x,y 
+	//	mapcon->setCharBackground(x,y,TCODColor::red);
+	//} while (!TCOD_line_step(&x,&y));
+	//
+	
 	TCODConsole::blit(mapcon, mapx1, mapy1, mapx2, mapy2a, 
 		TCODConsole::root, 22, 0);
 	

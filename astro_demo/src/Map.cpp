@@ -701,7 +701,7 @@ Actor* Map::createConsole(int x, int y)
 	float consoleDodge = 0*scale;
 	float consoleDR = 0*scale;
 	float consoleXp = 25*scale;
-	int consoleAscii = 2; //change to desired ascii
+	int consoleAscii = 226; //change to desired ascii
 	
 	Actor *console = new Actor(x,y,consoleAscii,"A humming Console",TCODColor::white);
 	console->hostile = false;

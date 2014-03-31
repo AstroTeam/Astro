@@ -1102,6 +1102,47 @@ void Renderer::render(void *sdlSurface){
 		//SDL_FreeSurface(mapPixDarker);
 		engine.menuState = 2;
 	}
+	else if (engine.menuState == 6)//ONBOARD-LOCATOR
+	{
+		//engine.gui->message(TCODColor::yellow,"Map Key: light grey = room, dark grey = furnishings, red = player.");
+		SDL_Surface *map = SDL_LoadBMP("tile_assets/consoleMapLoc.bmp");
+		SDL_Surface *mapPix = SDL_LoadBMP("tile_assets/mapPix.bmp");
+		SDL_Surface *mapPixRed = SDL_LoadBMP("tile_assets/mapPixRed.bmp");
+		SDL_Surface *mapPixDarker = SDL_LoadBMP("tile_assets/mapPixDarker.bmp");
+		for (int x = 0; x < 100; x++)
+		{
+			for (int y = 0; y < 100; y++)
+			{
+				if (!engine.map->isWall(x,y)){
+					if (engine.player->x == x && engine.player->y == y)
+					{
+						SDL_Rect dstRect1={x*4,y*4,4,4};
+						SDL_BlitSurface(mapPixRed,NULL,map,&dstRect1);
+					}
+					else if (engine.map->tiles[x+y*engine.map->width].decoration != 0)
+					{
+						SDL_Rect dstRect1={x*4,y*4,4,4};
+						SDL_BlitSurface(mapPixDarker,NULL,map,&dstRect1);
+					}
+					else
+					{
+						SDL_Rect dstRect1={x*4,y*4,4,4};
+						SDL_BlitSurface(mapPix,NULL,map,&dstRect1);
+					}
+					
+				}
+			}
+		}
+		
+		SDL_Rect dstRect={(engine.screenWidth*16)/2-200,(engine.screenHeight*16)/2-200,400,500};
+		SDL_BlitSurface(map,NULL,screen,&dstRect);
+		SDL_FreeSurface(map);
+		SDL_FreeSurface(mapPix);
+		SDL_FreeSurface(mapPixRed);
+		SDL_FreeSurface(mapPixDarker);
+		engine.menuState = 2;
+	}
+	
 	
 	
 	
@@ -1141,7 +1182,7 @@ void Renderer::render(void *sdlSurface){
 		//dstBack.y = 20;
 		SDL_BlitSurface(backpack,&dstBack1,screen,&dstBack);
 		SDL_FreeSurface(backpack);
-	SDL_FreeSurface(bg);
+	    SDL_FreeSurface(bg);
 	}
 	}
 	else if (engine.invState == 2)
@@ -1233,19 +1274,21 @@ void Renderer::render(void *sdlSurface){
 	{
 		TCODSystem::setFps(60);
 		TCODConsole::root->clear();
-		
+		//SDL_SetColorKey(screen,SDL_SRCCOLORKEY,0);
 		first=true;
 		//static bool Rend = true;
 		//SDL_Rect dstBack={(engine.screenWidth*16)/2-375,(engine.screenHeight*16-48)-(30*16),750,750};
 		//SDL_Rect dstBack1={0,0,750,750};
 		
 		SDL_Surface *tabBig = SDL_LoadBMP("tile_assets/tablet-big.bmp");
+		SDL_Surface *bg = SDL_LoadBMP("tile_assets/invBG.bmp");
 		//SDL_Surface *pointer = SDL_LoadBMP("tile_assets/finger.bmp");
 		SDL_SetColorKey(tabBig,SDL_SRCCOLORKEY,255);
 		//SDL_SetColorKey(pointer,SDL_SRCCOLORKEY,255);
 		//SDL_Surface *bg = SDL_LoadBMP("tile_assets/invBG.bmp");
 		SDL_SetColorKey(screen,SDL_SRCCOLORKEY,0);
 		SDL_Rect screenTab ={(engine.screenWidth*16)/2-(708/2),48,708,650};
+		SDL_Rect screenTab1 ={(engine.screenWidth*16)/2-(708/2),48,708,650};//only the screen itself
 		
 		//SDL_Surface *backpack = SDL_LoadBMP("tile_assets/backpack.bmp");
 		//SDL_SetColorKey(backpack,SDL_SRCCOLORKEY,255);
@@ -1278,8 +1321,17 @@ void Renderer::render(void *sdlSurface){
 		//
 		
 		//
-		//SDL_BlitSurface(tabBig,NULL,bg,&screenTab);
-		SDL_BlitSurface(screen,&screenTab,tabBig,NULL);
+		static bool frst = true;
+		if (frst)
+		{
+			SDL_BlitSurface(screen,&screenTab1,tabBig,NULL);
+		}
+		else
+		{
+			frst = false;
+			//TCODConsole::flush();
+		}
+		SDL_BlitSurface(bg,NULL,screen,NULL);
 		SDL_BlitSurface(tabBig,NULL,screen,&screenTab);
 		//SDL_UpdateRect(screen, 0, 0, 85*16,35*16);
 		//TCODConsole::root->setDefaultBackground(TCODColor::black);
@@ -1293,10 +1345,20 @@ void Renderer::render(void *sdlSurface){
 		
 		
 		//SDL_BlitSurface(bg,NULL,screen,NULL);
-		//SDL_FreeSurface(bg);
+		SDL_FreeSurface(bg);
 		SDL_FreeSurface(tabBig);
 		//SDL_FreeSurface(backpack);
 		//SDL_FreeSurface(pointer);
+	}
+	else if (engine.invState == 5)
+	{
+		static int cnt = 0;
+		cnt++;
+		//TCODConsole::flush();
+		if (cnt == 5)
+		{
+			engine.invState = 4;
+		}
 	}
 	
 }

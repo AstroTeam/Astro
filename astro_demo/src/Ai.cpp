@@ -140,6 +140,7 @@ void PlayerAi::update(Actor *owner) {
 		//engine.gui->menu.addItem(Menu::AGILITY, "Agility (+1 defence)");
 		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::PAUSE);
 	
+		
 		switch (menuItem) {
 			case Menu::CONSTITUTION	:
 				owner->destructible->maxHp += owner->getHpUp();
@@ -282,6 +283,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 
 void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 	//bool first = true;
+	bool invSkip = false;
 	switch(ascii) {
 		case 'g': //pickup the item
 		{
@@ -313,12 +315,22 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			}
 		}
 		break;
+		case 'I':
+			engine.map->computeFov();
+			engine.gui->menu.clear();
+			TCODConsole::flush();
+			engine.invState = 5;
+			invSkip = true;
+			
 		case 'i': //display inventory
 		{ 
 			engine.map->computeFov();
 			engine.gui->menu.clear();
 			//TCODConsole::root->clear();
-			engine.invState = 1;
+			if (!invSkip)
+			{
+				engine.invState = 1;
+			}
 			engine.gui->menu.addItem(Menu::ITEMS, "ITEMS");
 			engine.gui->menu.addItem(Menu::TECH, "TECH");
 			engine.gui->menu.addItem(Menu::ARMOR, "ARMOR");
@@ -552,7 +564,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			if (engine.printMap)
 			{
 				engine.gameStatus = Engine::NEW_TURN;
-				engine.gui->message(TCODColor::yellow,"You put away the map you printed from the server console.");
+				engine.gui->message(TCODColor::yellow,"You put away the map.");
 				//engine.menuState = 4;
 				engine.menuState = 5;
 				while(engine.menuState != 2){
@@ -1802,13 +1814,13 @@ void ConsoleAi::interaction(Actor *owner, Actor *target){
 	//if no printout yet
 	if (!engine.printMap)
 	{
-		engine.gui->message(TCODColor::yellow,"You close the console and a map prints out showing the outline of the deck's rooms, press 'm' to access it.");
+		engine.gui->message(TCODColor::yellow,"You close the console and a map prints out, press 'm' to access it.");
 		engine.printMap = true;
 	}
 	//if already printed
 	else
 	{
-		engine.gui->message(TCODColor::yellow,"The console prints a map out, but you let it fall to the floor, as you already have one.");
+		engine.gui->message(TCODColor::yellow,"The console prints a map out, but you already have one.");
 	}
 	//engine.menuState = 4;
 	engine.menuState = 4;
