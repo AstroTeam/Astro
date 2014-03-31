@@ -548,6 +548,19 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				engine.gui->message(TCODColor::lightRed,"You assume a more hostile stance, ready to destroy all in your path!");
 			}
 		break;
+		case 'm': //displays the printed map
+			engine.gameStatus = Engine::NEW_TURN;
+			engine.gui->message(TCODColor::yellow,"You put away the map you printed from the server console.");
+			//engine.menuState = 4;
+			engine.menuState = 4;
+			while(engine.menuState != 2){
+				TCODConsole::flush();
+			}
+			TCOD_key_t key;
+			TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
+			engine.menuState = 0;
+			
+		break;
 	}
 }
 
