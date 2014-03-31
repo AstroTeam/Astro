@@ -1039,9 +1039,23 @@ void Renderer::render(void *sdlSurface){
 	else if (engine.menuState == 4)//map console
 	{
 		SDL_Surface *map = SDL_LoadBMP("tile_assets/consoleMap.bmp");
-		SDL_BlitSurface(map,NULL,screen,NULL);
+		SDL_Surface *mapPix = SDL_LoadBMP("tile_assets/mapPix.bmp");
+		for (int x = 0; x < 100; x++)
+		{
+			for (int y = 0; y < 100; y++)
+			{
+				if (engine.map->canWalk(x,y)){
+				SDL_Rect dstRect1={x,y,1,1};
+				SDL_BlitSurface(mapPix,NULL,map,&dstRect1);
+				}
+			}
+		}
+		
+		SDL_Rect dstRect={(engine.screenWidth*16)/2-50,(engine.screenHeight*16)/2-50,100,100};
+		SDL_BlitSurface(map,NULL,screen,&dstRect);
 		SDL_FreeSurface(map);
-		//engine.menuState = 0;
+		SDL_FreeSurface(mapPix);
+		engine.menuState = 2;
 	}
 	
 	}

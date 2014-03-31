@@ -1773,10 +1773,16 @@ void ConsoleAi::load(TCODZip &zip){
 }
 
 void ConsoleAi::interaction(Actor *owner, Actor *target){
-	engine.gui->message(TCODColor::yellow,"The console displays a map of the deck.");
 	engine.gameStatus = Engine::NEW_TURN;
-	//engine.transfer = 4;
-	
+	engine.gui->message(TCODColor::yellow,"The console closes the map allowing you to continue your adventure.");
+	//engine.menuState = 4;
+	engine.menuState = 4;
+	while(engine.menuState != 2){
+		TCODConsole::flush();
+	}
+	TCOD_key_t key;
+	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
+	engine.menuState = 0;
 }
 
 InteractibleAi::InteractibleAi() {
