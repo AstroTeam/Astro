@@ -1038,6 +1038,7 @@ void Renderer::render(void *sdlSurface){
 	}
 	else if (engine.menuState == 4)//map console
 	{
+		//engine.gui->message(TCODColor::yellow,"Map Key: light grey = room, dark grey = furnishings, red = player.");
 		SDL_Surface *map = SDL_LoadBMP("tile_assets/consoleMap.bmp");
 		SDL_Surface *mapPix = SDL_LoadBMP("tile_assets/mapPix.bmp");
 		SDL_Surface *mapPixRed = SDL_LoadBMP("tile_assets/mapPixRed.bmp");
@@ -1067,7 +1068,7 @@ void Renderer::render(void *sdlSurface){
 			}
 		}
 		
-		SDL_Rect dstRect={(engine.screenWidth*16)/2-200,(engine.screenHeight*16)/2-200,400,400};
+		SDL_Rect dstRect={(engine.screenWidth*16)/2-200,(engine.screenHeight*16)/2-200,400,500};
 		SDL_BlitSurface(map,NULL,screen,&dstRect);
 		SDL_FreeSurface(map);
 		SDL_FreeSurface(mapPix);
