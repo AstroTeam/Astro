@@ -884,8 +884,8 @@ void Engine::update() {
 	}
 	if (gameStatus == NEW_TURN){
 		engine.turnCount++;
-		if (engine.player->hunger > 0 && engine.turnCount > 0 && (engine.turnCount)%20 == 0){
-			engine.player->hunger -= 10;
+		if (engine.player->hunger > 0 && engine.turnCount > 0 && (engine.turnCount)%2 == 0){
+			engine.player->hunger -= 1;
 		}
 		for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 			Actor *actor = *iterator;
