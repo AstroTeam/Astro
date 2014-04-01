@@ -145,6 +145,14 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 176;
 				}
+				else if (r == 9)//9 is observatory
+				{
+					srcRect.x = 176+16+16;
+				}
+				else if (r == 10)//10 is hydroponics
+				{
+					srcRect.x = 176+16;
+				}
 				else //else is regular floors
 				{
 					srcRect.x = 0;
@@ -248,6 +256,14 @@ void Renderer::render(void *sdlSurface){
 				else if (r == 6)//6 is server
 				{
 					srcRect.x = 176;
+				}
+				else if (r == 9)//9 is observatory
+				{
+					srcRect.x = 176+16+16;
+				}
+				else if (r == 10)//10 is hydroponics
+				{
+					srcRect.x = 176+16;
 				}
 				else
 				{

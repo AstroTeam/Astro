@@ -87,23 +87,23 @@ Map::~Map() {
 
 int Map::tileType(int x, int y) {
 	int i = x+y*width;
-	if (tiles[i].tileType == Param::OFFICE)
+	if (tiles[i].tileType == Param::OFFICE)//
 	{return 2;}
-	else if (tiles[i].tileType == Param::BARRACKS)
+	else if (tiles[i].tileType == Param::BARRACKS)//
 	{return 3;}
-	else if (tiles[i].tileType == Param::GENERATOR)
+	else if (tiles[i].tileType == Param::GENERATOR)//
 	{return 4;}
-	else if (tiles[i].tileType == Param::KITCHEN)
+	else if (tiles[i].tileType == Param::KITCHEN)//
 	{return 5;}
-	else if (tiles[i].tileType == Param::SERVER)
+	else if (tiles[i].tileType == Param::SERVER)//
 	{return 6;}
 	else if (tiles[i].tileType == Param::MESSHALL)
 	{return 7;}
 	else if (tiles[i].tileType == Param::ARMORY)
 	{return 8;}
-	else if (tiles[i].tileType == Param::OBSERVATORY)
+	else if (tiles[i].tileType == Param::OBSERVATORY)//
 	{return 9;}
-	else if (tiles[i].tileType == Param::HYDROPONICS)
+	else if (tiles[i].tileType == Param::HYDROPONICS)//
 	{return 10;}
 	else
 	{return 1;}
@@ -1299,8 +1299,35 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		cout << "Armory made" << endl;
 
 		//placeholder, to be replaced
-		Actor * pcmu = new Actor(x1, y1, 'C', "Weapons Case", TCODColor::white);
-		engine.actors.push(pcmu);
+		//Actor * pcmu = new Actor(x1, y1, 'C', "Weapons Case", TCODColor::white);
+		//engine.actors.push(pcmu);
+		
+		for (int i = x1+1; i <= x2-1; i++) {
+			for (int j = y1+1; j <= y2-1; j++) {
+				if (i == x1+1 && j%2 == 0)
+				{
+					Actor * pcmu = new Actor(i, j, 'W', "Weapon Rack", TCODColor::white);
+					engine.actors.push(pcmu);
+				}
+				if (i == x1+3 && j%2 != 0)
+				{
+					Actor * pcmu = new Actor(i, j, 'W', "Weapon Rack", TCODColor::white);
+					engine.actors.push(pcmu);
+				}
+				
+				if (i == x2-1)
+				{
+					int mid = (y1+y2)/2;
+					if (j == mid+1 || j == mid-1 || j == mid)
+					{
+						Actor * pcmu = new Actor(i, j, 'V', "Weapon Vault", TCODColor::white);
+						engine.actors.push(pcmu);
+					}
+				}
+				
+				
+			}
+		}
 
 
 	}
@@ -1308,8 +1335,17 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		cout << "Observatory made" << endl;
 
 		//placeholder, to be replaced
-		Actor * pcmu = new Actor(x1, y1, 'W', "Space Window", TCODColor::white);
-		engine.actors.push(pcmu);
+		//Actor * pcmu = new Actor(x1, y1, 'W', "Space Window", TCODColor::white);
+		//engine.actors.push(pcmu);
+		for (int i = x1+1; i <= x2-1; i++) {
+			for (int j = y1+1; j <= y2-1; j+=2) {
+
+				//Actor * plant = new Actor(i, j, 'H', "Hydroponic Oranges", TCODColor::white);
+				//engine.actors.push(plant);
+				//the floors for observatories will be blank, and will then adjust the envSta to be "glass" and "broken glass"
+
+			}
+		}
 
 	}
 	if (room->type == HYDROPONICS) {
