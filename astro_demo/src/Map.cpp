@@ -49,7 +49,7 @@ public:
 			
 			
 			//will this room be special?
-			int index = map.rng->getInt(0, 10);
+			int index = map.rng->getInt(0, roomList->size()-1);
 			if (index < roomList->size()) {
 				room->type = roomList->get(index);
 				roomList->remove(room->type);
@@ -97,6 +97,14 @@ int Map::tileType(int x, int y) {
 	{return 5;}
 	else if (tiles[i].tileType == Param::SERVER)
 	{return 6;}
+	else if (tiles[i].tileType == Param::MESSHALL)
+	{return 7;}
+	else if (tiles[i].tileType == Param::ARMORY)
+	{return 8;}
+	else if (tiles[i].tileType == Param::OBSERVATORY)
+	{return 9;}
+	else if (tiles[i].tileType == Param::HYDROPONICS)
+	{return 10;}
 	else
 	{return 1;}
 	//return tiles[x*y].tileType;
@@ -789,9 +797,11 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 				//need to see if end list items are less common
 				roomList->push(SERVER);
 				roomList->push(SERVER);
-				//roomList->push(ARMORY);
-				//roomList->push(MESSHALL);
-				//roomList->push(OBSERVATORY);
+				roomList->push(ARMORY);
+				roomList->push(MESSHALL);
+				roomList->push(MESSHALL);
+				roomList->push(HYDROPONICS);
+				roomList->push(OBSERVATORY);
 				break;
 			case OFFICE_FLOOR:
 				for (int i = 0; i <= rng->getInt(3,9); i++) {
@@ -846,6 +856,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	//custom room feature
 	//OFFICE ROOMS
 	if (room->type == OFFICE) {
+		cout << "Office made" << endl;
 		int files = 0;
 		while (files < 10)
 		{
@@ -1071,7 +1082,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		}
 	}
 	if (room->type == GENERATOR) {
-		cout << "Gen room Made" << endl;
+		cout << "Generator room Made" << endl;
 		Actor * generator = new Actor(x1+1,y1+1,243,"A floor tile that has been jerry rigged to accept a generator.", TCODColor::white);
 		//engine.mapconDec->setChar(x1+1,y1+1, 25);//
 		engine.map->tiles[(x1+1)+(y1+1)*engine.map->width].decoration = 25;
@@ -1223,42 +1234,12 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	}
 
 	if (room->type == SERVER) {
-cout << "Server room made";
+		cout << "Server room made" << endl;
 		//expand the room outwards
 		int tx1 = x1-1;
 		int tx2 = x2+1;
 		int ty1 = y1-1;
 		int ty2 = y2+1;
-		/*//top and bottom wall with servers
-		for (int i = tx1; i <= tx2; i++) {
-			map->setProperties(i,ty1,true,true);
-			map->setProperties(i,ty2,true,true);
-			Actor * server1 = new Actor(i, ty1, 243, "A server", TCODColor::white);
-			engine.map->tiles[i+(ty1)*engine.map->width].decoration = rng->getInt(45,47);
-			engine.map->tiles[i+(ty1)*engine.map->width].tileType = SERVER;
-			server1->smashable = true;
-			engine.actors.push(server1);
-			Actor * server2 = new Actor(i, ty2, 243, "A server", TCODColor::white);
-			engine.map->tiles[i+(ty2)*engine.map->width].decoration = rng->getInt(45,47);
-			engine.map->tiles[i+(ty2)*engine.map->width].tileType = SERVER;
-			server2->smashable = true;
-			engine.actors.push(server2);
-		}
-		//left and right walls with servers
-		for (int i = ty1; i <= ty2; i++) {
-			map->setProperties(tx1,i,true,true);
-			map->setProperties(tx2,i,true,true);
-			Actor * server1 = new Actor(tx1, i, 243, "A server", TCODColor::white);
-			engine.map->tiles[tx1+i*engine.map->width].decoration = rng->getInt(45,47);
-			engine.map->tiles[tx1+i*engine.map->width].tileType = SERVER;
-			server1->smashable = true;
-			engine.actors.push(server1);
-			Actor * server2 = new Actor(tx2, i, 243, "A server", TCODColor::white);
-			engine.map->tiles[tx2+i*engine.map->width].decoration = rng->getInt(45,47);
-			engine.map->tiles[tx2+i*engine.map->width].tileType = SERVER;
-			server2->smashable = true;
-			engine.actors.push(server2);
-		}*/
 		
 		for (int i = tx1; i <= tx2; i++) {
 			for (int j = ty1; j <= ty2; j++) {
@@ -1306,8 +1287,46 @@ cout << "Server room made";
 			}
 		}
 	}
+	if (room->type == MESSHALL) {
+		cout << "Messhall made" << endl;
+
+		//placeholder, to be replaced
+		Actor * pcmu = new Actor(x1, y1, 'T', "Cafeteria Table", TCODColor::white);
+		engine.actors.push(pcmu);
+
+	}
+	if (room->type == ARMORY) {
+		cout << "Armory made" << endl;
+
+		//placeholder, to be replaced
+		Actor * pcmu = new Actor(x1, y1, 'C', "Weapons Case", TCODColor::white);
+		engine.actors.push(pcmu);
 
 
+	}
+	if (room->type == OBSERVATORY) {
+		cout << "Observatory made" << endl;
+
+		//placeholder, to be replaced
+		Actor * pcmu = new Actor(x1, y1, 'W', "Space Window", TCODColor::white);
+		engine.actors.push(pcmu);
+
+	}
+	if (room->type == HYDROPONICS) {
+		cout << "Hydroponics made" << endl;
+
+		//long rows of hydroponic racks
+		for (int i = x1+1; i <= x2-1; i++) {
+			for (int j = y1+1; j <= y2-1; j+=2) {
+
+				Actor * plant = new Actor(i, j, 'H', "Hydroponic Oranges", TCODColor::white);
+				engine.actors.push(plant);
+
+
+			}
+		}
+
+	}
 	/*
 	 *
 	 * SETTINGS FOR OTHER ROOMS CAN BE PLACED HERE
