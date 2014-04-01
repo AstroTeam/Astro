@@ -1,7 +1,7 @@
 class Pickable : public Persistent {
 public:
 	enum PickableType {
-		NONE, HEALER, CHARGER, LIGHTNING_BOLT, CONFUSER, FIREBALL, EQUIPMENT, FLARE, CURRENCY, FRAGMENT, WEAPON
+		NONE, HEALER, CHARGER, LIGHTNING_BOLT, CONFUSER, FIREBALL, EQUIPMENT, FLARE, CURRENCY, FRAGMENT, WEAPON,FOOD
 	};
 	bool stacks;
 	int stackSize;
@@ -161,4 +161,11 @@ public:
 	void save(TCODZip &zip);
 };
 
+class Food : public Pickable {
+public:
+	Food(int stackSize);
+	bool use(Actor *owner, Actor *wearer);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+};
 

@@ -18,6 +18,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 		case FLARE: pickable = new Flare(0,0,0); break;
 		case FRAGMENT: pickable = new Fragment(0,0,0); break;
 		case WEAPON: pickable = new Weapon(0,0,0); break;
+		case FOOD: pickable = new Food(0); break;
 		case NONE: break;
 	}
 	pickable->load(zip);
@@ -451,6 +452,7 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 				case EQUIPMENT: break;
 				case WEAPON: break;
 				case FRAGMENT: droppy->pickable = new Fragment(((Fragment*)(owner->pickable))->range,((Fragment*)(owner->pickable))->damage,((Fragment*)(owner->pickable))->maxRange); droppy->sort = 2; break;
+				case FOOD: droppy->pickable = new Food(numberDropped); droppy->sort = 1; break;
 				case NONE: break;
 			}
 			droppy->pickable->stackSize = numberDropped;
@@ -833,3 +835,30 @@ bool Equipment::requirementsMet(Actor *owner, Actor *wearer){
 	}
 	return false;
 }
+
+Food::Food(int stackSize) : Pickable(1,stackSize,FOOD){}
+
+void Food::load(TCODZip &zip) {
+	stacks = zip.getInt();
+	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
+}
+
+void Food::save(TCODZip &zip) {
+	zip.putInt(type);
+	zip.putInt(stacks);
+	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
+}
+
+bool Food::use(Actor *owner, Actor *wearer) {
+	float amountFed = owner->hunger;
+	wearer->feed(amountFed);
+	if (amountFed > 0) {
+		return Pickable::use(owner,wearer);
+	}
+	return false;
+}
+

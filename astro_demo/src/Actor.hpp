@@ -36,4 +36,5 @@ public:
 	float getDistance(int cx, int cy) const;
 	float getHpUp();
 	float getHealValue();
+	float feed(float amount);
 };

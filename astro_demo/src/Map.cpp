@@ -725,7 +725,7 @@ Actor* Map::createConsole(int x, int y)
 void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,375);
+	int dice = rng->getInt(0,475);
 	if (dice < 40) {
 		//create a health potion
 		Actor *healthPotion = createHealthPotion(x,y);
@@ -771,6 +771,10 @@ void Map::addItem(int x, int y, RoomType roomType) {
 		Actor *scrollOfFragging = createFrag(x,y);
 		engine.actors.push(scrollOfFragging);
 		engine.sendToBack(scrollOfFragging);
+	}else if(dice<40+40+40+15+15+5+40+40+40+100) {
+		Actor *stackOfFood = createFood(x,y);
+		engine.actors.push(stackOfFood);
+		engine.sendToBack(stackOfFood);
 	}else {
 		Actor *stackOfMoney = createCurrencyStack(x,y);
 		engine.actors.push(stackOfMoney);
@@ -2056,6 +2060,16 @@ Actor *Map::createBatteryPack(int x,int y){
 	batteryPack->pickable->value = 50;
 	batteryPack->pickable->inkValue = 10;
 	return batteryPack;
+}
+
+Actor *Map::createFood(int x, int y){
+	Actor *scrollOfFeeding = new Actor(x,y,'F',"Brick of Foodstuffs", TCODColor::lightGreen);
+	scrollOfFeeding->sort = 1;
+	scrollOfFeeding->blocks = false;
+	scrollOfFeeding->pickable = new Food(1);//this is the stack size. Food should feed for a static amount
+	scrollOfFeeding->pickable->value = 25;
+	scrollOfFeeding->pickable->inkValue = 10;
+	return scrollOfFeeding;
 }
 
 Actor *Map::createArtifact(int x, int y){

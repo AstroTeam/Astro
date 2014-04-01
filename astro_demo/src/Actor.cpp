@@ -146,6 +146,16 @@ float Actor::getHealValue(){
 	return (int)(factor * (this->totalIntel * 3 + 6));
 }
 	
+float Actor::feed(float amount) {
+	hunger += amount;
+	if (hunger > maxHunger) { 
+		amount -= hunger-maxHunger;
+		hunger = maxHunger;
+	}
+	return amount;
+}	
+	
+	
 /* bool Actor::moveOrAttack(int x, int y)
 {
 	if (engine.map->isWall(x,y)) return false;
