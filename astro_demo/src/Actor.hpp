@@ -16,6 +16,8 @@ public:
 	bool susceptible; //is this guy susceptible to the infection?
 	bool flashable; //is this actor affected by flash bangs
 	int sort; //Actor type (1 = Item, 2 = Tech, 3 = Armor, 4 = Weapon)
+	int hunger;
+	int maxHunger;
 	//bool fovOnly; //only display when in FOV (maybe add this later)
 	Attacker *attacker; //something that deals damage
 	Destructible *destructible; //something that can take damage

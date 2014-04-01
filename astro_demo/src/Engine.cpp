@@ -91,10 +91,14 @@ void Engine::init() {
 		case 1:
 			player->race="Human";
 			plyrAscii = 143;
+			player->hunger = 200;
+			player->maxHunger = 200;
 			break;
 		case 2:
 			player->race="Robot";
 			plyrAscii = 159;
+			player->hunger = 300;
+			player->maxHunger = 300;
 			
 			player->str += 2;
 			player->totalStr += 2;
@@ -115,6 +119,8 @@ void Engine::init() {
 		case 3:
 			player->race="Alien";
 			plyrAscii = 175;
+			player->hunger = 100;
+			player->maxHunger = 100;
 			
 			player->str -= 2;
 			player->totalStr -= 2;
@@ -135,6 +141,8 @@ void Engine::init() {
 			default:
 				player->race="Human";
 				plyrAscii = 143;
+				player->hunger = 200;
+				player->maxHunger = 200;
 			break;
 	}
 	
@@ -876,6 +884,9 @@ void Engine::update() {
 	}
 	if (gameStatus == NEW_TURN){
 		engine.turnCount++;
+		if (engine.player->hunger > 0 && engine.turnCount > 0 && (engine.turnCount)%20 == 0){
+			engine.player->hunger -= 20;
+		}
 		for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 			Actor *actor = *iterator;
 			if ( actor != player) {

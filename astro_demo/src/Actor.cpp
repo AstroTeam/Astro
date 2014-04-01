@@ -3,12 +3,12 @@
 #include "main.hpp"
 
 Actor::Actor(int x, int y, int ch, const char *name, const TCODColor &col):
-	x(x),y(y),ch(ch),str(5),dex(3),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3),col(col),name(name),race("Human"),role("Marine"),job("Infantry"), blocks(true),hostile(true),interact(false), smashable(false), oozing(false), susceptible(false),flashable(false), sort(0), attacker(NULL),destructible(NULL),ai(NULL),
+	x(x),y(y),ch(ch),str(5),dex(3),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3),col(col),name(name),race("Human"),role("Marine"),job("Infantry"), blocks(true),hostile(true),interact(false), smashable(false), oozing(false), susceptible(false),flashable(false), sort(0), hunger(20), maxHunger(20), attacker(NULL),destructible(NULL),ai(NULL),
 	pickable(NULL), container(NULL) {
 }
 
 Actor::Actor(int x, int y, int ch, const char *name, const char *race, const char *role, const char *job, const TCODColor &col):
-	x(x),y(y),ch(ch),str(5),dex(2),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3),col(col),name(name),race(race),role(role),job(job), blocks(true),hostile(true),interact(false),smashable(false), oozing(false), susceptible(false), sort(0), attacker(NULL),destructible(NULL),ai(NULL),
+	x(x),y(y),ch(ch),str(5),dex(2),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3),col(col),name(name),race(race),role(role),job(job), blocks(true),hostile(true),interact(false),smashable(false), oozing(false), susceptible(false), sort(0), hunger(20), maxHunger(20), attacker(NULL),destructible(NULL),ai(NULL),
 	pickable(NULL), container(NULL) {
 }
 
@@ -43,6 +43,8 @@ void Actor::save(TCODZip &zip) {
 	zip.putInt(oozing);
 	zip.putInt(susceptible);
 	zip.putInt(sort);
+	zip.putInt(hunger);
+	zip.putInt(maxHunger);
 	zip.putInt(attacker != NULL);
 	zip.putInt(destructible != NULL);
 	zip.putInt(ai != NULL);
@@ -80,6 +82,8 @@ void Actor::load(TCODZip &zip) {
 	oozing = zip.getInt();
 	susceptible = zip.getInt();
 	sort = zip.getInt();
+	hunger = zip.getInt();
+	maxHunger = zip.getInt();
 	bool hasAttacker = zip.getInt();
 	bool hasDestructible = zip.getInt();
 	bool hasAi = zip.getInt();
