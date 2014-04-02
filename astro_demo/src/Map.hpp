@@ -1,7 +1,8 @@
 namespace Param {
 	enum LevelType {
 		GENERIC,
-		OFFICE_FLOOR
+		OFFICE_FLOOR,
+		TUTORIAL
 	};
 
 	enum RoomType {

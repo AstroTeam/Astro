@@ -1024,7 +1024,7 @@ void Engine::nextLevel() {
 	
 	gui->message(TCODColor::lightViolet, "Sitting at the top of the stairs, you take a brief moment to rest...");
 	player->destructible->heal(player->destructible->maxHp/2);
-	gui->message(TCODColor::red,"Gathering your courage, you rush down the dungeon stairs, mindful that greater dangers may lurk below...");
+	gui->message(TCODColor::red,"Gathering your courage, you rush into the station's teleporter, mindful that greater dangers may lurk beyond...");
 	
 	delete map;
 	//delete all actors but player and stairs
@@ -1037,6 +1037,11 @@ void Engine::nextLevel() {
 	//engine.mapconDec->clear();
 	//create a new map
 	map = new Map(mapWidth,mapHeight);
+	
+	TCODRandom * levelRng = TCODRandom::getInstance();
+	if (level % 3 == levelRng->getInt(0,3)) {
+		map->init(true, Param::OFFICE_FLOOR);
+	}
 	map->init(true, Param::GENERIC);
 	gameStatus = STARTUP;
 	save();

@@ -120,8 +120,8 @@ void Map::init(bool withActors, LevelType levelType) {
 	bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
 	BspListener listener(*this);
 	listener.bspActors = withActors;
-	listener.roomList = getRoomTypes(levelType);
-	bsp.traverseInvertedLevelOrder(&listener, (void *)withActors);
+	listener.roomList = getRoomTypes(levelType); bsp.traverseInvertedLevelOrder(&listener, (void *)withActors); 
+	
 	//Create boss, for now it is a simple security bot
 	if (withActors) {
 		Actor *boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
@@ -808,9 +808,12 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 				roomList->push(OBSERVATORY);
 				break;
 			case OFFICE_FLOOR:
-				for (int i = 0; i <= rng->getInt(3,9); i++) {
+				for (int i = 0; i <= 40; i++) {
 					roomList->push(OFFICE);
 				}
+				break;
+			case TUTORIAL:
+				//TUTORIALS ONLY HAVE GENERIC ROOMS
 				break;
 		}
 
