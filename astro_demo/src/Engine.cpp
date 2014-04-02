@@ -483,7 +483,7 @@ void Engine::init() {
 			
 			//get a frag grenade
 			for(int i=0; i<1; i++){
-				Actor *equip1 = new Actor(0,0,'g',"Fragmentation Grenade",TCODColor::white);
+				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
 				equip1->sort = 2;
 				equip1->blocks = false;
 				equip1->pickable = new Fragment(3,12,8);
@@ -516,7 +516,7 @@ void Engine::init() {
 			
 			//get frag grenades
 			for(int i=0; i<3; i++){
-				Actor *equip1 = new Actor(0,0,'g',"Fragmentation Grenade",TCODColor::white);
+				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
 				equip1->sort = 2;
 				equip1->blocks = false;
 				equip1->pickable = new Fragment(3,12,8);
@@ -564,7 +564,7 @@ void Engine::init() {
 			
 			//get frag grenades
 			for(int i=0; i<3; i++){
-				Actor *equip1 = new Actor(0,0,'g',"Fragmentation Grenade",TCODColor::white);
+				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
 				equip1->sort = 2;
 				equip1->blocks = false;
 				equip1->pickable = new Fragment(3,12,8);
@@ -605,7 +605,7 @@ void Engine::init() {
 			
 			//get frag grenades
 			for(int i=0; i<3; i++){
-				Actor *equip1 = new Actor(0,0,'g',"Fragmentation Grenade",TCODColor::white);
+				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
 				equip1->sort = 2;
 				equip1->blocks = false;
 				equip1->pickable = new Fragment(3,12,8);
