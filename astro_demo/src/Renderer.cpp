@@ -686,10 +686,12 @@ void Renderer::render(void *sdlSurface){
 					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 100)//server destroyed
 					{
 						
-						srcRect.x = 21*16;
+						srcRect.x = 22*16;
 					}
-					
+					//if(engine.map->tiles[xM+yM*engine.map->width].decoration != 0)
+					//{
 					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					//}
 					TCODRandom *rng =TCODRandom::getInstance();
 					if((engine.map->tiles[xM+yM*engine.map->width].decoration == 45 ||
 					   engine.map->tiles[xM+yM*engine.map->width].decoration == 46 ||
@@ -709,8 +711,8 @@ void Renderer::render(void *sdlSurface){
 					}
 					
 				}
-				////////////////////////////////////////////////////////////////////HYDROPONICS
-				if (engine.map->tileType(xM,yM) == 10)//|| engine.map->tileType(xM,yM) == 1)
+				//////////////////////////////////////////////////////////////////////MESSHALL
+				if (engine.map->tileType(xM,yM) == 7)//|| engine.map->tileType(xM,yM) == 1)
 				{
 					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
 						//light
@@ -719,10 +721,52 @@ void Renderer::render(void *sdlSurface){
 						//dark/*commet*/
 						srcRect.y=16;
 					}
-					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 48)//hydro rack
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 49)//chair
 					{
 						
 						srcRect.x = 18*16;
+						
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 50)//table
+					{
+						
+						srcRect.x = 19*16;
+						
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 51)//table
+					{
+						
+						srcRect.x = 20*16;
+						
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 52)//table
+					{
+						
+						srcRect.x = 21*16;
+						
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 53)//trash can
+					{
+						
+						srcRect.x = 22*16;
+						
+					}
+					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+				}
+				////////////////////////////////////////////////////////////////////HYDROPONICS
+				if (engine.map->tileType(xM,yM) == 10)//|| engine.map->tileType(xM,yM) == 1)
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.y=32;
+					}else{
+						//dark/*commet*/
+						srcRect.y=48;
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 48)//hydro rack
+					{
+						
+						srcRect.x = 21*16;
 						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 					}
 					

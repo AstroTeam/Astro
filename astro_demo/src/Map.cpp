@@ -221,9 +221,9 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 						{
 							engine.map->tiles[a->x+a->y*engine.map->width].decoration = 100;
 							a->name = "Server Room Doorway";
-							//blarg = true;
+							blarg = true;
 							////////////////////////////////////////////////////////////////////////////////IS THIS OKAY?
-							//engine.actors.remove(a);
+							engine.actors.remove(a);
 						}
 					}
 					else//just in case error
@@ -1312,22 +1312,26 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				//	sqY--;
 				//if (sqX > 0 && sqY > 0)
 				//{
-					if (((((i-x1)-2)%4 == 0) && (((j-y1)-1)%4 == 0)) || 
-						((((i-x1)-1)%4 == 0) && (((j-y1)-2)%4 == 0)) ||
-						((((i-x1)-3)%4 == 0) && (((j-y1)-2)%4 == 0)) ||
-						((((i-x1)-2)%4 == 0) && (((j-y1)-3)%4 == 0)) )
+					if (((((i-x1)-2)%4 == 0) && (((j-y1)-1)%4 == 0)) || //top chair
+						((((i-x1)-1)%4 == 0) && (((j-y1)-2)%4 == 0)) || //left chair
+						((((i-x1)-3)%4 == 0) && (((j-y1)-2)%4 == 0)) || //right chair
+						((((i-x1)-2)%4 == 0) && (((j-y1)-3)%4 == 0)) )  //bottom chair
 					{
-						Actor * pcmu = new Actor(i, j, 'c', "chair", TCODColor::white);
+						Actor * pcmu = new Actor(i, j, 243, "A red messhall chair", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 49;//top chair
 						engine.actors.push(pcmu);
 					}
 					if (((((i-x1)-2)%4 == 0) && (((j-y1)-2)%4 == 0)))
 					{
-						Actor * pcmu = new Actor(i, j, 'T', "table", TCODColor::white);
+						Actor * pcmu = new Actor(i, j, 243, "A shining metal table", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = rng->getInt(50,52);
+						
 						engine.actors.push(pcmu);
 					}
 					if (((((i-x1)-4)%4 == 0) && (((j-y1)-4)%4 == 0)))
 					{
-						Actor * pcmu = new Actor(i, j, 't', "trash-can", TCODColor::white);
+						Actor * pcmu = new Actor(i, j, 243, "A green trash-can", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 53;
 						engine.actors.push(pcmu);
 					}
 				//}
@@ -1398,7 +1402,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//long rows of hydroponic racks
 		for (int i = x1+1; i <= x2-1; i++) {
 			for (int j = y1+1; j <= y2-1; j+=2) {
-				int hydroRng = rng->getInt(0,1);
+				int hydroRng = rng->getInt(0,3,1);
 				if (hydroRng == 0)
 				{
 					Actor * plant = new Actor(i, j, 208, "Hydroponic Oranges", TCODColor::white);//low hunger restore

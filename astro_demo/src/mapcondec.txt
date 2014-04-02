@@ -72,4 +72,11 @@ mapcondec:
 
 45,46,47 is server
 
+48 is hydroponic racks
+
+49 is a chair
+
+50,51,52 are tables
+
+53 is a trash can
 
