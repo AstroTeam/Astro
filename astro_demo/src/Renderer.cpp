@@ -708,7 +708,24 @@ void Renderer::render(void *sdlSurface){
 					}
 					
 				}
-				
+				////////////////////////////////////////////////////////////////////HYDROPONICS
+				if (engine.map->tileType(xM,yM) == 10)//|| engine.map->tileType(xM,yM) == 1)
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.y=0;
+					}else{
+						//dark/*commet*/
+						srcRect.y=16;
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 48)//hydro rack
+					{
+						
+						srcRect.x = 18*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					
+				}
 			}
 			
 			

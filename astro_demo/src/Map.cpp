@@ -1386,9 +1386,6 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//engine.actors.push(pcmu);
 		for (int i = x1+1; i <= x2-1; i++) {
 			for (int j = y1+1; j <= y2-1; j+=2) {
-
-				//Actor * plant = new Actor(i, j, 'H', "Hydroponic Oranges", TCODColor::white);
-				//engine.actors.push(plant);
 				//the floors for observatories will be blank, and will then adjust the envSta to be "glass" and "broken glass"
 
 			}
@@ -1401,10 +1398,28 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//long rows of hydroponic racks
 		for (int i = x1+1; i <= x2-1; i++) {
 			for (int j = y1+1; j <= y2-1; j+=2) {
-
-				Actor * plant = new Actor(i, j, 'H', "Hydroponic Oranges", TCODColor::white);
-				engine.actors.push(plant);
-
+				int hydroRng = rng->getInt(0,1);
+				if (hydroRng == 0)
+				{
+					Actor * plant = new Actor(i, j, 208, "Hydroponic Oranges", TCODColor::white);//low hunger restore
+					engine.actors.push(plant);
+				}
+				else if (hydroRng == 1)
+				{
+					Actor * plant = new Actor(i, j, 209, "Hydroponic Apples", TCODColor::white);//low hunger restore
+					engine.actors.push(plant);
+				}
+				else if (hydroRng == 2)
+				{
+					Actor * plant = new Actor(i, j, 210, "Hydroponic Bananas", TCODColor::white);//moderate hunger restore
+					engine.actors.push(plant);
+				}
+				else if (hydroRng == 3)
+				{
+					Actor * plant = new Actor(i, j, 211, "Hydroponic Starfruit", TCODColor::white);//large hunger restore
+					engine.actors.push(plant);
+				}
+				engine.map->tiles[i+j*engine.map->width].decoration = 48;
 
 			}
 		}
