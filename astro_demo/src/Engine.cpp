@@ -872,7 +872,6 @@ void Engine::update() {
 	gameStatus = IDLE;
 	TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS, &lastKey, NULL); //delete the mouse stuff to remove mouse look (change &mouse to NULL)
 	if (lastKey.vk == TCODK_ESCAPE) {
-		//save();  why save automatically every time escape is called?
 		load(true);
 	} 
 	player->update();

@@ -14,3 +14,4 @@ class Actor;
 //#include "EngineRend.hpp"
 //#include "blengine.cpp"
 #include "Engine.hpp"
+#include "Aura.hpp"
