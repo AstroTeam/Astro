@@ -212,7 +212,8 @@ void Renderer::render(void *sdlSurface){
 				//everything bodies to render behind
 				if (engine.mapcon->getChar(xM,yM) == 181 || engine.mapcon->getChar(xM,yM) == 182 || engine.mapcon->getChar(xM,yM) == 183 || 
 				engine.mapcon->getChar(xM,yM) == 184 || engine.mapcon->getChar(xM,yM) == 64 || engine.mapcon->getChar(xM,yM) == 164 || 
-				engine.mapcon->getChar(xM,yM) == 165 || engine.mapcon->getChar(xM,yM) == 148 || engine.mapcon->getChar(xM,yM) == 132) 
+				engine.mapcon->getChar(xM,yM) == 165 || engine.mapcon->getChar(xM,yM) == 148 || engine.mapcon->getChar(xM,yM) == 132 ||
+				engine.mapcon->getChar(xM,yM) == 186 || engine.mapcon->getChar(xM,yM) == 198 ||engine.mapcon->getChar(xM,yM) == 169) 
 				{
 					for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {//is walkable?
 						Actor *actor = *it;
