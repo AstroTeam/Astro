@@ -1295,8 +1295,47 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		cout << "Messhall made" << endl;
 
 		//placeholder, to be replaced
-		Actor * pcmu = new Actor(x1, y1, 'T', "Cafeteria Table", TCODColor::white);
-		engine.actors.push(pcmu);
+		//Actor * pcmu = new Actor(x1, y1, 'T', "Cafeteria Table", TCODColor::white);
+		//engine.actors.push(pcmu);
+		//int sqX = ((x2-1)-(x1+1))%4;
+		//int sqY = ((y2-1)-(y1+1))%4;
+		for (int i = x1+1; i <= x2-1; i++) {
+			//sqY = ((y2-1)-(y1+1))%4;
+			//if ((i-(x1+1))%4 == 0 && (i-(x1+1)) != 0)
+			//		sqX--;
+			for (int j = y1+1; j <= y2-1; j++) {
+			//if there are 4 spaces below and right (SQUARE IS VALID)
+				//if ((j-(y1+1))%4 == 0 && (j-(y1+1)) != 0)
+				//	sqY--;
+				//if (sqX > 0 && sqY > 0)
+				//{
+					if (((((i-x1)-2)%4 == 0) && (((j-y1)-1)%4 == 0)) || 
+						((((i-x1)-1)%4 == 0) && (((j-y1)-2)%4 == 0)) ||
+						((((i-x1)-3)%4 == 0) && (((j-y1)-2)%4 == 0)) ||
+						((((i-x1)-2)%4 == 0) && (((j-y1)-3)%4 == 0)) )
+					{
+						Actor * pcmu = new Actor(i, j, 'c', "chair", TCODColor::white);
+						engine.actors.push(pcmu);
+					}
+					if (((((i-x1)-2)%4 == 0) && (((j-y1)-2)%4 == 0)))
+					{
+						Actor * pcmu = new Actor(i, j, 'T', "table", TCODColor::white);
+						engine.actors.push(pcmu);
+					}
+					if (((((i-x1)-4)%4 == 0) && (((j-y1)-4)%4 == 0)))
+					{
+						Actor * pcmu = new Actor(i, j, 't', "trash-can", TCODColor::white);
+						engine.actors.push(pcmu);
+					}
+				//}
+				//if ((j-(y1+1))%4 == 0 )
+					//sqY--;
+			
+			}
+			//sqY = ((y2-1)-(y1+1))%4;
+			//if ((i-(x1+1))%4 == 0)
+			//		sqX--;
+		}
 
 	}
 	if (room->type == ARMORY) {
@@ -1327,6 +1366,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 						Actor * pcmu = new Actor(i, j, 'V', "Weapon Vault", TCODColor::white);
 						engine.actors.push(pcmu);
 					}
+					
 				}
 				
 				

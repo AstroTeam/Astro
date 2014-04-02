@@ -137,7 +137,7 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 32;
 				}
-				else if (r == 5)//5 is kitchen
+				else if (r == 5 || r == 7)//5 is kitchen and messhall
 				{
 					srcRect.x = 160;
 				}
@@ -249,7 +249,7 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 32;
 				}
-				else if (r == 5)//5 is kitchen
+				else if (r == 5 || r == 7)//5 is kitchen mess hall
 				{
 					srcRect.x = 160;
 				}
@@ -261,7 +261,7 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 176+16+16;
 				}
-				else if (r == 10)//10 is hydroponics
+				else if (r == 10 )//10 is hydroponics
 				{
 					srcRect.x = 176+16;
 				}
