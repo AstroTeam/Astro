@@ -37,7 +37,7 @@ def update():
    keyboard.setKey(Key.D, xbox360[0].left and not xbox360[0].up and not xbox360[0].down)
    
    #UpDPad      StanceChange
-   keyboard.setKey(Key.Equals, xbox360[0].up and not xbox360[0].left and not xbox360[0].right)
+   keyboard.setKey(Key.Equals, xbox360[0].leftTrigger and xbox360[0].up and not xbox360[0].left and not xbox360[0].right)
 
    #Y      Inventory
    keyboard.setKey(Key.I, xbox360[0].y)
