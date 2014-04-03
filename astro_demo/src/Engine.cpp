@@ -884,9 +884,8 @@ void Engine::update() {
 	}
 	if (gameStatus == NEW_TURN){
 		engine.turnCount++;
-		if (engine.player->hunger > 0 && engine.turnCount > 0 && (engine.turnCount)%2 == 0){
-			engine.player->hunger -= 1;
-		}
+		player->getHungry();
+		player->updateAuras();
 		for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 			Actor *actor = *iterator;
 			if ( actor != player) {

@@ -18,6 +18,7 @@ public:
 	int sort; //Actor type (1 = Item, 2 = Tech, 3 = Armor, 4 = Weapon)
 	int hunger;
 	int maxHunger;
+	int hungerCount;
 	//bool fovOnly; //only display when in FOV (maybe add this later)
 	Attacker *attacker; //something that deals damage
 	Destructible *destructible; //something that can take damage
@@ -25,6 +26,7 @@ public:
 	Pickable *pickable; //something that can be picked and used
 	Container *container; //something that can contain items/have an inventory
 	
+	TCODList<Aura *> auras;
 
 	Actor(int x, int y, int ch, const char *name, const TCODColor &col);
 	Actor(int x, int y, int ch, const char *name, const char *race, const char *role, const char *job, const TCODColor &col);
@@ -37,4 +39,6 @@ public:
 	float getHpUp();
 	float getHealValue();
 	float feed(float amount);
+	void getHungry();
+	void updateAuras();
 };
