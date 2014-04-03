@@ -296,7 +296,7 @@ void Map::spawnTutorial() {
 	int x1 = engine.mapWidth/2-6;
 	int x2 = engine.mapWidth/2+6;
 	int y1 = engine.mapHeight-12;
-	int y2 = engine.mapHeight-6;
+	int y2 = engine.mapHeight-7;
 	cout << "creating tutorial room"<< endl;
 	for (int tilex = x1; tilex <=x2; tilex++) {//first room
 		for (int tiley = y1; tiley <= y2; tiley++) {
@@ -318,11 +318,15 @@ void Map::spawnTutorial() {
 	}
 	dig(x1,(y1+y2)/2,x1-5,(y1+y2)/2);//left dogleg hallway
 	dig(x1-5,(y1+y2)/2,x1-5,y2+3);
-	Actor *light = new Actor((x1+x2)/2, (y1+y2)/2, 'L', "A hastily erected Emergency Light", TCODColor::white);
+	Actor *light = new Actor((x1+x2)/2, (y1+y2)/2, 224, "A hastily erected Emergency Light", TCODColor::white);
 	light->ai = new LightAi(4,1);                //224, crashes when using 224
 	engine.actors.push(light);
-	
-	
+	Actor *light2 = new Actor((x1+x2)/2+5, (y1+y2)/2, 224, "A hastily erected Emergency Light", TCODColor::white);
+	light2->ai = new LightAi(4,1);                //224, crashes when using 224
+	engine.actors.push(light2);
+	Actor *light3 = new Actor((x1+x2)/2-5, (y1+y2)/2, 224, "A hastily erected Emergency Light", TCODColor::white);
+	light3->ai = new LightAi(4,1);                //224, crashes when using 224
+	engine.actors.push(light3);
 	
 	engine.stairs->x = (x1+x2)/2;
 	engine.stairs->y = y1;

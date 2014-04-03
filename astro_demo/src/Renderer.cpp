@@ -3,6 +3,8 @@
 #include "SDL/SDL.h"
 //#include "SDL/SDL_image.h"
 #include <string>
+#include <iostream>
+using namespace std;
 //0 ->std, 1->blit, 2->nothing
 
 void Renderer::render(void *sdlSurface){
@@ -937,6 +939,11 @@ void Renderer::render(void *sdlSurface){
 		//if (actor->x ==x && actor->y == y) {
 		//	return actor;
 		//}
+		if (actor->ch == 224){
+		cout << actor->x << endl;
+		cout << actor->y << endl;
+		cout << engine.player->x << endl;
+		cout << engine.player->y << endl;
 		if (actor->ch == 224 && engine.distance(actor->x,engine.player->x,actor->y,engine.player->y) < 11){
 			LightAi *l = (LightAi*)actor->ai;
 			/*if (!l->onOff)
@@ -955,6 +962,7 @@ void Renderer::render(void *sdlSurface){
 				l->update(actor);
 				l->onAgn = !l->onAgn;
 			}
+		}
 		}
 		
 	}
