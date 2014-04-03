@@ -318,6 +318,10 @@ void Map::spawnTutorial() {
 	}
 	dig(x1,(y1+y2)/2,x1-5,(y1+y2)/2);//left dogleg hallway
 	dig(x1-5,(y1+y2)/2,x1-5,y2+3);
+	Actor *light = new Actor((x1+x2)/2, (y1+y2)/2, 'L', "A hastily erected Emergency Light", TCODColor::white);
+	light->ai = new LightAi(4,1);                //224, crashes when using 224
+	engine.actors.push(light);
+	
 	
 	
 	engine.stairs->x = (x1+x2)/2;

@@ -931,6 +931,7 @@ void Renderer::render(void *sdlSurface){
 	}
 	
 	//flicker lights
+	//CAUSES CRASHES IN TUTORIAL LEVEL
 	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
 		Actor *actor = *it;
 		//if (actor->x ==x && actor->y == y) {
