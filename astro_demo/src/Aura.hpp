@@ -4,7 +4,8 @@ public:
 		ALL, TOTALSTR, TOTALDEX, TOTALINTEL, TOTALDODGE, TOTALDR, HEALTH, MAXHEALTH
 	};
 	enum LifeStyle {
-		CONTINUOUS, ITERABLE, HUNGER
+		CONTINUOUS, ITERABLE, HUNGER    
+		//continunous is a one-time buff/debuff, iterable affects the actor every turn, and hunger is a special case that only removes upon eating
 	};
 	
 	int duration;
