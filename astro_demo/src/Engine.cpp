@@ -1041,7 +1041,10 @@ void Engine::nextLevel() {
 	if (level % 3 == levelRng->getInt(0,3)) {
 		map->init(true, Param::OFFICE_FLOOR);
 	}
-	map->init(true, Param::GENERIC);
+	else
+	{
+		map->init(true, Param::GENERIC);
+	}
 	gameStatus = STARTUP;
 	save();
 }
