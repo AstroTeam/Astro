@@ -153,6 +153,10 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 176+16;
 				}
+				else if(r == 8)//8 is armory
+				{
+					srcRect.x = 176+16+16+16;
+				}
 				else //else is regular floors
 				{
 					srcRect.x = 0;
@@ -212,7 +216,8 @@ void Renderer::render(void *sdlSurface){
 				//everything bodies to render behind
 				if (engine.mapcon->getChar(xM,yM) == 181 || engine.mapcon->getChar(xM,yM) == 182 || engine.mapcon->getChar(xM,yM) == 183 || 
 				engine.mapcon->getChar(xM,yM) == 184 || engine.mapcon->getChar(xM,yM) == 64 || engine.mapcon->getChar(xM,yM) == 164 || 
-				engine.mapcon->getChar(xM,yM) == 165 || engine.mapcon->getChar(xM,yM) == 148 || engine.mapcon->getChar(xM,yM) == 132) 
+				engine.mapcon->getChar(xM,yM) == 165 || engine.mapcon->getChar(xM,yM) == 148 || engine.mapcon->getChar(xM,yM) == 132 ||
+				engine.mapcon->getChar(xM,yM) == 186 || engine.mapcon->getChar(xM,yM) == 198 ||engine.mapcon->getChar(xM,yM) == 169) 
 				{
 					for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {//is walkable?
 						Actor *actor = *it;
@@ -264,6 +269,10 @@ void Renderer::render(void *sdlSurface){
 				else if (r == 10 )//10 is hydroponics
 				{
 					srcRect.x = 176+16;
+				}
+				else if(r == 8)//8 is armory
+				{
+					srcRect.x = 176+16+16+16;
 				}
 				else
 				{
@@ -685,10 +694,12 @@ void Renderer::render(void *sdlSurface){
 					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 100)//server destroyed
 					{
 						
-						srcRect.x = 21*16;
+						srcRect.x = 22*16;
 					}
-					
+					//if(engine.map->tiles[xM+yM*engine.map->width].decoration != 0)
+					//{
 					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					//}
 					TCODRandom *rng =TCODRandom::getInstance();
 					if((engine.map->tiles[xM+yM*engine.map->width].decoration == 45 ||
 					   engine.map->tiles[xM+yM*engine.map->width].decoration == 46 ||
@@ -708,7 +719,96 @@ void Renderer::render(void *sdlSurface){
 					}
 					
 				}
-				
+				//////////////////////////////////////////////////////////////////////MESSHALL
+				if (engine.map->tileType(xM,yM) == 7)//|| engine.map->tileType(xM,yM) == 1)
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.y=0;
+					}else{
+						//dark/*commet*/
+						srcRect.y=16;
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 49)//chair
+					{
+						
+						srcRect.x = 18*16;
+						
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 50)//table
+					{
+						
+						srcRect.x = 19*16;
+						
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 51)//table
+					{
+						
+						srcRect.x = 20*16;
+						
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 52)//table
+					{
+						
+						srcRect.x = 21*16;
+						
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 53)//trash can
+					{
+						
+						srcRect.x = 22*16;
+						
+					}
+					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+				}
+				////////////////////////////////////////////////////////////////////ARMORY
+				if (engine.map->tileType(xM,yM) == 8)//|| engine.map->tileType(xM,yM) == 1)
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.x=0;
+					}else{
+						//dark/*commet*/
+						srcRect.x=16;
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 54)//gun rack
+					{
+						
+						srcRect.y = 5*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 55)//battery rack
+					{
+						
+						srcRect.y = 6*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 56)//vault
+					{
+						
+						srcRect.y = 7*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					
+				}
+				////////////////////////////////////////////////////////////////////HYDROPONICS
+				if (engine.map->tileType(xM,yM) == 10)//|| engine.map->tileType(xM,yM) == 1)
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.y=32;
+					}else{
+						//dark/*commet*/
+						srcRect.y=48;
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 48)//hydro rack
+					{
+						
+						srcRect.x = 21*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					
+				}
 			}
 			
 			
