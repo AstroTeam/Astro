@@ -116,24 +116,30 @@ void Map::init(bool withActors, LevelType levelType) {
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
-	TCODBsp bsp(0,0,width,height);
-	bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
-	BspListener listener(*this);
-	listener.bspActors = withActors;
-	listener.roomList = getRoomTypes(levelType); bsp.traverseInvertedLevelOrder(&listener, (void *)withActors); 
 	
-	//Create boss, for now it is a simple security bot
-	if (withActors) {
-		Actor *boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
-		boss->name = "Infected Security Bot";
-		boss->ch = 146;
-		boss->destructible->hp = boss->destructible->hp*2;
-		boss->destructible->maxHp = boss->destructible->hp;
-		boss->totalStr = boss->totalStr*1.25;
-		engine.boss = boss;
+	if (levelType != TUTORIAL) {
+		TCODBsp bsp(0,0,width,height);
+		bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
+		BspListener listener(*this);
+		listener.bspActors = withActors;
+		listener.roomList = getRoomTypes(levelType); bsp.traverseInvertedLevelOrder(&listener, (void *)withActors); 
+
+		//Create boss, for now it is a simple security bot
+		if (withActors) {
+			Actor *boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
+			boss->name = "Infected Security Bot";
+			boss->ch = 146;
+			boss->destructible->hp = boss->destructible->hp*2;
+			boss->destructible->maxHp = boss->destructible->hp;
+			boss->totalStr = boss->totalStr*1.25;
+			engine.boss = boss;
+		}
+		if (engine.level > 1 && artifacts > 0) {
+			engine.gui->message(TCODColor::red,"The air hums with unknown energy... Perhaps there is an artifact of great power here!");
+		}
 	}
-	if (engine.level > 1 && artifacts > 0) {
-		engine.gui->message(TCODColor::red,"The air hums with unknown energy... Perhaps there is an artifact of great power here!");
+	else {
+		spawnTutorial();
 	}
 }
 
@@ -282,6 +288,32 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 			//delete a;
 		}
 	}
+}
+
+void Map::spawnTutorial() {
+	//this resets the level so it'll be 1 for the real level 1
+	engine.level = 0;
+	int x1 = 20;
+	int x2 = 30;
+	int y1 = 20;
+	int y2 = 30;
+	cout << "creating tutorial room"<< endl;
+	for (int tilex = x1; tilex <=x2; tilex++) {
+		for (int tiley = y1; tiley <= y2; tiley++) {
+
+			map->setProperties(tilex,tiley,true,true);
+		}
+	}
+	engine.stairs->x = (x1+x2)/2;
+	engine.stairs->y = y1;
+	engine.player->x = (x1+x2)/2;
+	engine.player->y = (y1+y2)/2;
+	engine.playerLight = new Actor(engine.player->x, engine.player->y, 'l', "Your Flashlight", TCODColor::white);
+	engine.playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
+	engine.actors.push(engine.playerLight);
+	engine.playerLight->blocks = false;
+	//playerLight->ai->moving = true;
+	engine.sendToBack(engine.playerLight);
 }
 
 void Map::addMonster(int x, int y, bool isHorde) {

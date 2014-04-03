@@ -123,4 +123,5 @@ protected:
 	void addMonster(int x, int y, bool isHorde); //is this monster part of a horde?
 	void addItem(int x, int y, RoomType roomType);
 	TCODList<RoomType> * getRoomTypes(LevelType levelType);
+	void spawnTutorial();
 };
