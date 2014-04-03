@@ -153,6 +153,10 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 176+16;
 				}
+				else if(r == 8)//8 is armory
+				{
+					srcRect.x = 176+16+16+16;
+				}
 				else //else is regular floors
 				{
 					srcRect.x = 0;
@@ -265,6 +269,10 @@ void Renderer::render(void *sdlSurface){
 				else if (r == 10 )//10 is hydroponics
 				{
 					srcRect.x = 176+16;
+				}
+				else if(r == 8)//8 is armory
+				{
+					srcRect.x = 176+16+16+16;
 				}
 				else
 				{
@@ -752,6 +760,36 @@ void Renderer::render(void *sdlSurface){
 						
 					}
 					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+				}
+				////////////////////////////////////////////////////////////////////ARMORY
+				if (engine.map->tileType(xM,yM) == 8)//|| engine.map->tileType(xM,yM) == 1)
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.x=0;
+					}else{
+						//dark/*commet*/
+						srcRect.x=16;
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 54)//gun rack
+					{
+						
+						srcRect.y = 5*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 55)//battery rack
+					{
+						
+						srcRect.y = 6*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 56)//vault
+					{
+						
+						srcRect.y = 7*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					
 				}
 				////////////////////////////////////////////////////////////////////HYDROPONICS
 				if (engine.map->tileType(xM,yM) == 10)//|| engine.map->tileType(xM,yM) == 1)

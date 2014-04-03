@@ -97,7 +97,7 @@ int Map::tileType(int x, int y) {
 	{return 5;}
 	else if (tiles[i].tileType == Param::SERVER)//
 	{return 6;}
-	else if (tiles[i].tileType == Param::MESSHALL)
+	else if (tiles[i].tileType == Param::MESSHALL)//
 	{return 7;}
 	else if (tiles[i].tileType == Param::ARMORY)
 	{return 8;}
@@ -1354,15 +1354,36 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		
 		for (int i = x1+1; i <= x2-1; i++) {
 			for (int j = y1+1; j <= y2-1; j++) {
+				int gunBat = rng->getInt(0,1);
 				if (i == x1+1 && j%2 == 0)
 				{
-					Actor * pcmu = new Actor(i, j, 'W', "Weapon Rack", TCODColor::white);
-					engine.actors.push(pcmu);
+					if(gunBat == 0)
+					{
+						Actor * pcmu = new Actor(i, j, 243, "Weapon Rack", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 54;
+						engine.actors.push(pcmu);
+					}
+					else if(gunBat == 1)
+					{
+						Actor * pcmu = new Actor(i, j, 243, "Battery Rack", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 55;
+						engine.actors.push(pcmu);
+					}
 				}
 				if (i == x1+3 && j%2 != 0)
 				{
-					Actor * pcmu = new Actor(i, j, 'W', "Weapon Rack", TCODColor::white);
-					engine.actors.push(pcmu);
+					if(gunBat == 0)
+					{
+						Actor * pcmu = new Actor(i, j, 243, "Weapon Rack", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 54;
+						engine.actors.push(pcmu);
+					}
+					else if(gunBat == 1)
+					{
+						Actor * pcmu = new Actor(i, j, 243, "Battery Rack", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 55;
+						engine.actors.push(pcmu);
+					}
 				}
 				
 				if (i == x2-1)
@@ -1370,7 +1391,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					int mid = (y1+y2)/2;
 					if (j == mid+1 || j == mid-1 || j == mid)
 					{
-						Actor * pcmu = new Actor(i, j, 'V', "Weapon Vault", TCODColor::white);
+						Actor * pcmu = new Actor(i, j, 243, "Weapon Vault", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 56;
 						engine.actors.push(pcmu);
 					}
 					

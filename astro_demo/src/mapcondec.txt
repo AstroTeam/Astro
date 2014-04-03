@@ -80,3 +80,11 @@ mapcondec:
 
 53 is a trash can
 
+54 is a weapon rack
+
+55 is a battery rack
+
+56 is a vault
+
+57 is an open vault
+
