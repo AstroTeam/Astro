@@ -293,21 +293,37 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 void Map::spawnTutorial() {
 	//this resets the level so it'll be 1 for the real level 1
 	engine.level = 0;
-	int x1 = 20;
-	int x2 = 30;
-	int y1 = 20;
-	int y2 = 30;
+	int x1 = engine.mapWidth/2-6;
+	int x2 = engine.mapWidth/2+6;
+	int y1 = engine.mapHeight-12;
+	int y2 = engine.mapHeight-6;
 	cout << "creating tutorial room"<< endl;
-	for (int tilex = x1; tilex <=x2; tilex++) {
+	for (int tilex = x1; tilex <=x2; tilex++) {//first room
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
 			map->setProperties(tilex,tiley,true,true);
 		}
 	}
+	dig((x1+x2)/2,y1,(x1+x2)/2,y1-10);
+	//map.dig(lastx, lasty, x+w/2, lasty);
+	x1 = engine.mapWidth/2-10;
+	x2 = engine.mapWidth/2+10;
+	y1 = engine.mapHeight-29;
+	y2 = engine.mapHeight-23;
+	for (int tilex = x1; tilex <=x2; tilex++) {//light room
+		for (int tiley = y1; tiley <= y2; tiley++) {
+
+			map->setProperties(tilex,tiley,true,true);
+		}
+	}
+	dig(x1,(y1+y2)/2,x1-5,(y1+y2)/2);//left dogleg hallway
+	dig(x1-5,(y1+y2)/2,x1-5,y2+3);
+	
+	
 	engine.stairs->x = (x1+x2)/2;
 	engine.stairs->y = y1;
-	engine.player->x = (x1+x2)/2;
-	engine.player->y = (y1+y2)/2;
+	engine.player->x = (engine.mapWidth/2-6+engine.mapWidth/2+6)/2;
+	engine.player->y = (engine.mapHeight-12+engine.mapHeight-6)/2;
 	engine.playerLight = new Actor(engine.player->x, engine.player->y, 'l', "Your Flashlight", TCODColor::white);
 	engine.playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
 	engine.actors.push(engine.playerLight);
