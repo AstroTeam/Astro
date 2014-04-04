@@ -317,6 +317,7 @@ void Map::spawnTutorial() {
 			map->setProperties(tilex,tiley,true,true);
 		}
 	}
+	dig(x2,(y1+y2)/2,x2+5,(y1+y2)/2);//right hallway
 	dig(x1,(y1+y2)/2,x1-5,(y1+y2)/2);//left dogleg hallway
 	dig(x1-5,(y1+y2)/2,x1-5,y2+3);
 	Actor *flare = createFlare(x1-5,(y1+y2)/2);
@@ -403,6 +404,21 @@ void Map::spawnTutorial() {
 	Actor *lightOf = new Actor(x1+3, y1+2, 224, "A hastily erected Emergency Light", TCODColor::white);
 	lightOf->ai = new LightAi(4,flkr);                //224, crashes when using 224
 	engine.actors.push(lightOf);
+	
+	/////////////////////target range
+	x1 = engine.mapWidth/2-10+26;
+	x2 = engine.mapWidth/2+10+26-5;
+	y1 = engine.mapHeight-29;
+	y2 = engine.mapHeight-23;
+	for (int tilex = x1; tilex <=x2; tilex++) {//side room lower
+		for (int tiley = y1; tiley <= y2; tiley++) {
+
+			map->setProperties(tilex,tiley,true,true);
+			tiles[tilex+tiley*engine.mapWidth].tileType = Param::ARMORY;
+		}
+	}
+	
+	
 	
 	
 	engine.stairs->x = (x1+x2)/2;
