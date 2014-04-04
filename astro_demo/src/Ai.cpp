@@ -870,8 +870,9 @@ void SecurityBotAi::moveOrAttack(Actor *owner, int targetx, int targety){
 		Actor* vending = engine.getAnyActor(vendingX, vendingY);
 		VendingAi* vendingAi = (VendingAi*) vending->ai;
 		
-		if(vendingAi != NULL && vendingAi->deployedSecurity)
+		if(vendingAi != NULL && (vendingAi->deployedSecurity || vending->destructible->isDead()))
 		{
+			owner->ch = 130;
 			owner->hostile = true;
 			engine.gui->message(TCODColor::red, "Vending Machine Vandalism Deteched: %s Activated!", owner->name);
 		}
