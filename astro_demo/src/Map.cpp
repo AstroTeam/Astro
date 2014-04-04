@@ -306,6 +306,7 @@ void Map::spawnTutorial() {
 		}
 	}
 	dig((x1+x2)/2,y1,(x1+x2)/2,y1-10);
+	
 	//map.dig(lastx, lasty, x+w/2, lasty);
 	x1 = engine.mapWidth/2-10;
 	x2 = engine.mapWidth/2+10;
@@ -317,6 +318,7 @@ void Map::spawnTutorial() {
 			map->setProperties(tilex,tiley,true,true);
 		}
 	}
+	dig((x1+x2)/2,y1,(x1+x2)/2,y1-10);//upper hallway
 	dig(x2,(y1+y2)/2,x2+5,(y1+y2)/2);//right hallway
 	dig(x1,(y1+y2)/2,x1-5,(y1+y2)/2);//left dogleg hallway
 	dig(x1-5,(y1+y2)/2,x1-5,y2+3);
@@ -417,9 +419,48 @@ void Map::spawnTutorial() {
 			tiles[tilex+tiley*engine.mapWidth].tileType = Param::ARMORY;
 		}
 	}
+	//gun racks
+	for (int tiley = y1; tiley <= y2; tiley+=2) {
+		Actor * pcmu = new Actor(x1+1, tiley, 243, "Weapon Rack", TCODColor::white);
+		engine.map->tiles[x1+1+tiley*engine.map->width].decoration = 54;
+		engine.actors.push(pcmu);
+		Actor * pcmu2 = new Actor(x1+2, tiley, 243, "Battery Rack", TCODColor::white);
+		engine.map->tiles[x1+2+tiley*engine.map->width].decoration = 55;
+		engine.actors.push(pcmu2);
+		Actor * dummy = new Actor(x2-1, tiley, 'd', "Target Dummy", TCODColor::white);
+		//engine.map->tiles[x1+2+tiley*engine.map->width].decoration = 55;
+		engine.actors.push(dummy);
+	}
+	//fence
+	for (int tiley = y1; tiley <= y2; tiley++) {
+		Actor * pcmu = new Actor(x2-3, tiley, 's', "Sandbag Wall", TCODColor::white);
+		//engine.map->tiles[x2-3+tiley*engine.map->width].decoration = 54;
+		engine.actors.push(pcmu);
+		pcmu->blocks = false;
+	}
+	//light
+	Actor *lightAr = new Actor(x2-5, (y1+y2)/2, 224, "A hastily erected Emergency Light", TCODColor::white);
+	lightAr->ai = new LightAi(6,flkr);                //224, crashes when using 224
+	engine.actors.push(lightAr);
 	
-	
-	
+	//stair room
+	x1 = engine.mapWidth/2-2;
+	x2 = engine.mapWidth/2+2;
+	y1 = engine.mapHeight-26-17;
+	y2 = engine.mapHeight-23-17;
+	for (int tilex = x1; tilex <=x2; tilex++) {//stair room
+		for (int tiley = y1; tiley <= y2; tiley++) {
+
+			map->setProperties(tilex,tiley,true,true);
+		}
+	}
+	//make vending machine
+	createVendor(x1+1, y1);
+	Actor *securityBot = createSecurityBot(x1, y1);
+	securityBot->hostile = false;
+	SecurityBotAi *sbAi = (SecurityBotAi*) securityBot->ai;
+	sbAi->vendingX = x1+1;
+	sbAi->vendingY = y1;
 	
 	engine.stairs->x = (x1+x2)/2;
 	engine.stairs->y = y1;
