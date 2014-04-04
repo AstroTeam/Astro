@@ -885,6 +885,7 @@ void Engine::update() {
 	if (gameStatus == NEW_TURN){
 		engine.turnCount++;
 		player->getHungry();
+		//player->destructible->hp++;
 		player->updateAuras();
 		for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 			Actor *actor = *iterator;

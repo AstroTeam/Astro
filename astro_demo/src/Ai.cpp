@@ -702,9 +702,18 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	con.print(2,4,"STATS");
 	con.print(1,6,"LVL: %d",xpLevel);
 	con.print(1,8,"VIT: %d",owner->vit);
-	con.print(1,10,"DEX: %d(+%d)",owner->dex,owner->totalDex-owner->dex);
-	con.print(1,12,"STR: %d(+%d)",owner->str,owner->attacker->totalPower - owner->attacker->basePower);
-	con.print(1,14,"INT: %d(+%d)",owner->intel,owner->totalIntel-owner->intel);
+	if(owner->totalDex - owner->dex >= 0)
+		con.print(1,10,"DEX: %d(+%d)",owner->dex,owner->totalDex-owner->dex);
+	else
+		con.print(1,10,"DEX: %d(%d)",owner->dex,owner->totalDex-owner->dex);
+	if(owner->totalStr - owner->str >= 0)
+		con.print(1,12,"STR: %d(+%d)",owner->str,owner->totalStr - owner->str);
+	else
+		con.print(1,12,"STR: %d(%d)",owner->str,owner->totalStr - owner->str);
+	if(owner->totalIntel - owner->intel >= 0)
+		con.print(1,14,"INT: %d(+%d)",owner->intel,owner->totalIntel-owner->intel);
+	else
+		con.print(1,14,"INT: %d(%d)",owner->intel,owner->totalIntel-owner->intel);
 	con.print(1,16,"KILLS: %d",engine.killCount);
 	//con.print(1,18,"MEDKIT HEAL: %d",(int)owner->getHealValue());
 	//con.print(1,18,"DMG DONE: %g",engine.damageDone);
