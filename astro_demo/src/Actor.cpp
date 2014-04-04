@@ -182,10 +182,10 @@ float Actor::feed(float amount) {
 					iter = this->auras.remove(iter);
 				}
 			}
-			this->hungerCount = 0;
-			engine.gui->message(TCODColor::red,"You feel reinvigorated after eating!");
 		}
 	}
+	this->hungerCount = 0;
+	engine.gui->message(TCODColor::red,"You feel reinvigorated after eating!");
 	return amount;
 }	
 	

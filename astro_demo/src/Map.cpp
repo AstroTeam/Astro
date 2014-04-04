@@ -306,6 +306,7 @@ void Map::spawnTutorial() {
 		}
 	}
 	dig((x1+x2)/2,y1,(x1+x2)/2,y1-10);
+	
 	//map.dig(lastx, lasty, x+w/2, lasty);
 	x1 = engine.mapWidth/2-10;
 	x2 = engine.mapWidth/2+10;
@@ -317,6 +318,16 @@ void Map::spawnTutorial() {
 			map->setProperties(tilex,tiley,true,true);
 		}
 	}
+	//add server and console
+	tiles[x2+y1*engine.mapWidth].tileType = Param::SERVER;
+	tiles[x2-1+y1*engine.mapWidth].tileType = Param::SERVER;
+	Actor * server1 = new Actor(x2-1, y1, 243, "A server", TCODColor::white);
+	engine.map->tiles[x2-1+y1*engine.map->width].decoration = rng->getInt(45,47);
+	engine.actors.push(server1);
+	createConsole(x2,y1);
+	
+	dig((x1+x2)/2,y1,(x1+x2)/2,y1-10);//upper hallway
+	dig(x2,(y1+y2)/2,x2+5,(y1+y2)/2);//right hallway
 	dig(x1,(y1+y2)/2,x1-5,(y1+y2)/2);//left dogleg hallway
 	dig(x1-5,(y1+y2)/2,x1-5,y2+3);
 	Actor *flare = createFlare(x1-5,(y1+y2)/2);
@@ -403,6 +414,67 @@ void Map::spawnTutorial() {
 	Actor *lightOf = new Actor(x1+3, y1+2, 224, "A hastily erected Emergency Light", TCODColor::white);
 	lightOf->ai = new LightAi(4,flkr);                //224, crashes when using 224
 	engine.actors.push(lightOf);
+	
+	/////////////////////target range
+	x1 = engine.mapWidth/2-10+26;
+	x2 = engine.mapWidth/2+10+26-5;
+	y1 = engine.mapHeight-29;
+	y2 = engine.mapHeight-23;
+	for (int tilex = x1; tilex <=x2; tilex++) {//side room lower
+		for (int tiley = y1; tiley <= y2; tiley++) {
+
+			map->setProperties(tilex,tiley,true,true);
+			tiles[tilex+tiley*engine.mapWidth].tileType = Param::ARMORY;
+		}
+	}
+	//gun racks
+	for (int tiley = y1; tiley <= y2; tiley+=2) {
+		Actor * pcmu = new Actor(x1+1, tiley, 243, "Weapon Rack", TCODColor::white);
+		engine.map->tiles[x1+1+tiley*engine.map->width].decoration = 54;
+		engine.actors.push(pcmu);
+		Actor * pcmu2 = new Actor(x1+2, tiley, 243, "Battery Rack", TCODColor::white);
+		engine.map->tiles[x1+2+tiley*engine.map->width].decoration = 55;
+		engine.actors.push(pcmu2);
+		Actor * dummy = new Actor(x2-1, tiley, 'd', "Target Dummy", TCODColor::white);
+		//engine.map->tiles[x1+2+tiley*engine.map->width].decoration = 55;
+		engine.actors.push(dummy);
+	}
+	//fence
+	for (int tiley = y1; tiley <= y2; tiley++) {
+		Actor * pcmu = new Actor(x2-3, tiley, 's', "Sandbag Wall", TCODColor::white);
+		//engine.map->tiles[x2-3+tiley*engine.map->width].decoration = 54;
+		engine.actors.push(pcmu);
+		pcmu->blocks = false;
+	}
+	//light
+	Actor *lightAr = new Actor(x2-5, (y1+y2)/2, 224, "A hastily erected Emergency Light", TCODColor::white);
+	lightAr->ai = new LightAi(6,flkr);                //224, crashes when using 224
+	engine.actors.push(lightAr);
+	
+	//stair room
+	x1 = engine.mapWidth/2-2;
+	x2 = engine.mapWidth/2+2;
+	y1 = engine.mapHeight-26-17;
+	y2 = engine.mapHeight-23-17;
+	for (int tilex = x1; tilex <=x2; tilex++) {//stair room
+		for (int tiley = y1; tiley <= y2; tiley++) {
+
+			map->setProperties(tilex,tiley,true,true);
+		}
+	}
+	//make vending machine
+	createVendor(x1+1, y1);
+	//make brobot
+	Actor *securityBot = createSecurityBot(x1, y1);
+	securityBot->hostile = false;
+	SecurityBotAi *sbAi = (SecurityBotAi*) securityBot->ai;
+	sbAi->vendingX = x1+1;
+	sbAi->vendingY = y1;
+	//make dat $$$
+	Actor *stackOfMoney = createCurrencyStack(x1+1,y1+1);
+	engine.actors.push(stackOfMoney);
+	engine.sendToBack(stackOfMoney);
+	
 	
 	
 	int startX = (engine.mapWidth/2-6+engine.mapWidth/2+6)/2;
@@ -837,7 +909,7 @@ Actor* Map::createVendor(int x, int y)
 	vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge,vendorDR,vendorXp);
 	vendor->ai = new VendingAi();
 	vendor->container = new Container(10);
-	generateRandom(vendor, vendorAscii);
+	//generateRandom(vendor, vendorAscii); Vending Machines get populated with items when they are interacted with
 	engine.actors.push(vendor);
 	
 	return vendor;
@@ -2068,7 +2140,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 					}
 				}
 			}
-		}else if(ascii == 165 || ascii == 166){
+		}else if(ascii == 165 || ascii == 166){ //Spore Creature and Mini Spore Creature
 			for(int i = 0; i < owner->container->size; i++){
 				int rndA2 = rng->getInt(0,100);
 				if(rndA2 > 45){
@@ -2162,6 +2234,53 @@ void Map::generateRandom(Actor *owner, int ascii){
 						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
 					}
 				}
+			}
+		}else if(ascii == 134){
+			for(int i = 0; i < owner->container->size; i++){
+				int rndA2 = rng->getInt(0,100);
+				if(rndA2 > 30){
+					int rnd = rng->getInt(0,100);
+					if (rnd < 30) {
+						//create a health potion
+						Actor *healthPotion = createHealthPotion(0,0);
+						engine.actors.push(healthPotion);
+						healthPotion->pickable->pick(healthPotion,owner);
+					} else if(rnd < 10+30) {
+						//create a emp
+						Actor *scrollOfLightningBolt = createEMP(0,0);
+						engine.actors.push(scrollOfLightningBolt);
+						scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
+					} else if(rnd < 10+30+20) {
+						//create a flare
+						Actor *flare = createFlare(0,0);
+						engine.actors.push(flare);
+						flare->pickable->pick(flare,owner);
+					}else{
+						//create a Flashbang
+						Actor *scrollOfConfusion = createFlashBang(0,0);
+						engine.actors.push(scrollOfConfusion);
+						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+					}
+				}
+			}
+		}else if(ascii == 129 || ascii == 147){ //Security Bot and Turret
+			int rndA2 = rng->getInt(0,100);
+			if(rndA2 > 50){
+				for(int i = 0; i < owner->container->size; i++){
+					//Fill Inventory with Batteries
+					Actor *battery = createBatteryPack(0,0);
+					engine.actors.push(battery);
+					battery->pickable->pick(battery,owner);
+				}
+			}
+		}else if(ascii == 131){ //Cleaner Bot (aka DJ ROOMBA)
+			int rndA2 = rng->getInt(0,100);
+			if(rndA2 > 60){
+				//Give A Battery
+				Actor *battery = createBatteryPack(0,0);
+				engine.actors.push(battery);
+				battery->pickable->pick(battery,owner);
+			
 			}
 		}
 	}
