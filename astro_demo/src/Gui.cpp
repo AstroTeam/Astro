@@ -83,14 +83,23 @@ void Gui::render() {
 	renderBar(1,5,BAR_WIDTH, "Battery",engine.player->attacker->battery,
 		engine.player->attacker->maxBattery,TCODColor::blue, TCODColor::darkerBlue);
 	//draw the hunger bar
-	renderBar(1,7,BAR_WIDTH, "Hunger", engine.player->hunger, engine.player->maxHunger, TCODColor::orange, TCODColor::darkerOrange);
+	if (engine.player->hungerCount == 0) {
+		renderBar(1,7,BAR_WIDTH, "Hunger", engine.player->hunger, engine.player->maxHunger, TCODColor::orange, TCODColor::darkerOrange);
+	} else if (engine.player->hungerCount < 200) {
+		sidebar->setDefaultForeground(TCODColor::red);
+		sidebar->print(8,7,"HUNGRY");
+	} else {
+		sidebar->setDefaultForeground(TCODColor::red);
+		sidebar->print(6,7,"VERY HUNGRY");
+	}
+	
 	//draw the last target's hp bar
 	if (engine.player->attacker->lastTarget != NULL) {		renderBar(1,11,BAR_WIDTH, "target's HP",engine.player->attacker->lastTarget->destructible->hp,
 			engine.player->attacker->lastTarget->destructible->maxHp,TCODColor::lightRed, TCODColor::darkerRed);
     }
 	
 	//dungeon level
-	//sidebar->setDefaultForeground(TCODColor::white);
+	sidebar->setDefaultForeground(TCODColor::white);
 	sidebar->print(3,27,"Dungeon level %d", engine.level);
 	sidebar->print(3,13,"Turn count: %d",engine.turnCount);
 	//sidebar->print(3,15,"Kill Count: %d",engine.killCount);
