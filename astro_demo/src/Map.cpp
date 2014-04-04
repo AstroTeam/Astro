@@ -432,6 +432,21 @@ void Map::spawnTutorial() {
 	Actor * counter4 = new Actor(x1+4, y1,243,"Kitchen Counter", TCODColor::white);
 	engine.map->tiles[x1+4+y1*engine.map->width].decoration = 35;
 	engine.actors.push(counter4);
+	//make kitchen terminal
+	Actor *triggerTileK = new Actor(x1+2,y1+1, '.', "Intercom Terminal", TCODColor::white);
+	triggerTileK->ai = new TriggerAi(  
+	//"Welcome to the Astroverius.\n\n"
+	"Kitchen's have food machines.\n\n"
+	"Interact to the one to the \n"
+	"right to be dispensed some\n"
+	"food to increase your hunger\n"
+	"bar and avert losing stats\n"
+	"and health from being too\n"
+	"hungry.\n");
+	triggerTileK->blocks = false; 
+	engine.actors.push(triggerTileK);
+	
+	
 	Actor *sink = new Actor(x1+2, y1+2,243,"Industrial Sink", TCODColor::white);
 	engine.map->tiles[x1+2+(y1+2)*engine.map->width].decoration = 38;
 	engine.actors.push(sink);
@@ -473,6 +488,32 @@ void Map::spawnTutorial() {
 	Actor * desk = new Actor(x1+1+1,y1+2,243,"A desk with an angled computer", TCODColor::white);
 	engine.map->tiles[x1+1+1+(y1+2)*engine.map->width].decoration = 3;
 	engine.actors.push(desk);
+	//make shadow terminal
+	Actor *triggerTileSh = new Actor(x1+2,y1, '.', "Intercom Terminal", TCODColor::white);
+	triggerTileSh->ai = new TriggerAi(  
+  //"Welcome to the Astroverius.\n\n"
+	"Notice this room's lighting.\n\n"
+	"The light to the right of  \n"
+	"the desk is shining light\n"
+	"on the desk, but it has cast  \n"
+	"a shadow.  (to the left)\n"
+	"Use this breaking of FOV\n"
+	"to your advantage in Astro.\n");
+	triggerTileSh->blocks = false; 
+	engine.actors.push(triggerTileSh);
+	//make room terminal
+	Actor *triggerTileR = new Actor(x1+2,y2, '.', "Intercom Terminal", TCODColor::white);
+	triggerTileR->ai = new TriggerAi(  
+  //"Welcome to the Astroverius.\n\n"
+	"The Astro has many rooms.\n\n"
+	"Every room is unique, as is\n"
+	"every deck.  So it is a good \n"
+	"idea to explore it all and  \n"
+	"learn what each room has in \n"
+	"it what it all does!\n");
+	triggerTileR->blocks = false; 
+	engine.actors.push(triggerTileR);
+	
 	Actor * desk2 = new Actor(x1+1+1+1+1,y1+3,243,"A desk with a ruined computer", TCODColor::white);
 	engine.map->tiles[x1+1+1+1+1+(y1+3)*engine.map->width].decoration = 1;
 	engine.actors.push(desk2);
@@ -516,6 +557,37 @@ void Map::spawnTutorial() {
 	Actor *lightAr = new Actor(x2-5, (y1+y2)/2, 224, "A hastily erected Emergency Light", TCODColor::white);
 	lightAr->ai = new LightAi(6,flkr);                //224, crashes when using 224
 	engine.actors.push(lightAr);
+	//make range terminal
+	Actor *triggerTileAr = new Actor(x2-6,(y1+y2)/2, '.', "Intercom Terminal", TCODColor::white);
+	triggerTileAr->ai = new TriggerAi(  
+  //"Welcome to the Astroverius.    \n\n"
+	"Welcome to the shooting range!\n\n"
+	"Try to shoot the dummies from\n"
+	"behind the sandbag wall with \n"
+	"\'f\' or aim and shoot with \n"
+	"\'F\' to specify a target.\n"
+	"Or run up and attack the \n"
+	"dummies in hand to hand\n"
+	"combat by moving into them.\n"
+	);
+	triggerTileAr->blocks = false; 
+	engine.actors.push(triggerTileAr);
+	//make MLR terminal
+	Actor *triggerTileMLR = new Actor(x1+3,y1+2, '.', "Intercom Terminal", TCODColor::white);
+	triggerTileMLR->ai = new TriggerAi(  
+  //"Welcome to the Astroverius.    \n\n"
+	"MLR BASICS\n\n"
+	"All weapons, usually a \n"
+	"Modular Laser Rifle or \"MLR\",\n"
+	"cleared for use on the Astro\n"
+	"are laser based to prevent hull\n"
+	"damage.  As such you need to \n"
+	"find batteries to charge them\n"
+	"after 20 uses.\n"
+	);
+	triggerTileMLR->blocks = false; 
+	engine.actors.push(triggerTileMLR);
+	
 	
 	//stair room
 	x1 = engine.mapWidth/2-2;
