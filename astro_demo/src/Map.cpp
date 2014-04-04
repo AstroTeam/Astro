@@ -484,8 +484,16 @@ void Map::spawnTutorial() {
 	engine.player->x = startX;
 	engine.player->y = startY;
 	//make a message tile infront the player
-	Actor *triggerTile = new Actor(startX, startY-4, '.', "Message tile", TCODColor::white);
-	triggerTile->ai = new TriggerAi("<Intercom>: \"Prepare to starve in the tutorial level!\"");
+	Actor *triggerTile = new Actor(startX, startY-1, '.', "Intercom Terminal", TCODColor::white);
+	//we have 30 characters to use until a \n is needed
+	//triggerTile->ai = new TriggerAi("<Intercom>: \"Prepare to starve\n in the tutorial level!\"");
+	triggerTile->ai = new TriggerAi(  
+	"Welcome to the Astroverius.\n\n"
+	"To move press the UP, DOWN, \n"
+	"LEFT, and RIGHT keys, or use\n"
+	"the NUMPAD; 7,9,1 and 3 can\n"
+	"be used to move diagonally.");
+	
 	triggerTile->blocks = false;
 	engine.actors.push(triggerTile);
 
