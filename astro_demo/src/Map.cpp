@@ -332,6 +332,24 @@ void Map::spawnTutorial() {
 			map->setProperties(tilex,tiley,true,true);
 		}
 	}
+	//make light room terminal
+	Actor *triggerTileLR = new Actor((x1+x2)/2, (y1+y2)/2+1, '.', "Intercom Terminal", TCODColor::white);
+	triggerTileLR->ai = new TriggerAi(  
+	//"Welcome to the Astroverius.\n\n"
+	"Explore this deck.\n\n"
+	"To the left are some of the\n"
+	"Astro's more varied room\n"
+	"types to explore.\n\n"
+	"To the right is a range where\n"
+	"you can test your mettle\n"
+	"against some target dummies.\n\n"
+	"To the north is the teleporter\n"
+	"a.k.a the exit to the deck.\n");
+	triggerTileLR->blocks = false;
+	engine.actors.push(triggerTileLR);
+	
+	
+	
 	//add server and console
 	tiles[x2+y1*engine.mapWidth].tileType = Param::SERVER;
 	tiles[x2-1+y1*engine.mapWidth].tileType = Param::SERVER;
