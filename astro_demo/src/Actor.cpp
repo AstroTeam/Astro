@@ -3,12 +3,12 @@
 #include "main.hpp"
 
 Actor::Actor(int x, int y, int ch, const char *name, const TCODColor &col):
-	x(x),y(y),ch(ch),str(5),dex(3),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3),col(col),name(name),race("Human"),role("Marine"),job("Infantry"), blocks(true),hostile(true),interact(false), smashable(false), oozing(false), susceptible(false),flashable(false), sort(0), hunger(20), maxHunger(20), attacker(NULL),destructible(NULL),ai(NULL),
+	x(x),y(y),ch(ch),str(5),dex(3),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3),col(col),name(name),race("Human"),role("Marine"),job("Infantry"), blocks(true),hostile(true),interact(false), smashable(false), oozing(false), susceptible(false),flashable(false), sort(0), hunger(20), maxHunger(20), hungerCount(0), attacker(NULL),destructible(NULL),ai(NULL),
 	pickable(NULL), container(NULL) {
 }
 
 Actor::Actor(int x, int y, int ch, const char *name, const char *race, const char *role, const char *job, const TCODColor &col):
-	x(x),y(y),ch(ch),str(5),dex(2),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3),col(col),name(name),race(race),role(role),job(job), blocks(true),hostile(true),interact(false),smashable(false), oozing(false), susceptible(false), sort(0), hunger(20), maxHunger(20), attacker(NULL),destructible(NULL),ai(NULL),
+	x(x),y(y),ch(ch),str(5),dex(2),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3),col(col),name(name),race(race),role(role),job(job), blocks(true),hostile(true),interact(false),smashable(false), oozing(false), susceptible(false), sort(0), hunger(20), maxHunger(20), hungerCount(0), attacker(NULL),destructible(NULL),ai(NULL),
 	pickable(NULL), container(NULL) {
 }
 
@@ -45,6 +45,13 @@ void Actor::save(TCODZip &zip) {
 	zip.putInt(sort);
 	zip.putInt(hunger);
 	zip.putInt(maxHunger);
+	zip.putInt(hungerCount);
+	
+	zip.putInt(auras.size());
+	for (Aura **it = auras.begin(); it != auras.end(); it++) {
+		(*it)->save(zip);
+	}
+	
 	zip.putInt(attacker != NULL);
 	zip.putInt(destructible != NULL);
 	zip.putInt(ai != NULL);
@@ -57,6 +64,9 @@ void Actor::save(TCODZip &zip) {
 	if (ai) ai->save(zip);
 	if (pickable) pickable->save(zip);
 	if (container) container->save(zip);
+	
+	
+	
 }
 
 void Actor::load(TCODZip &zip) {
@@ -84,6 +94,16 @@ void Actor::load(TCODZip &zip) {
 	sort = zip.getInt();
 	hunger = zip.getInt();
 	maxHunger = zip.getInt();
+	hungerCount = zip.getInt();
+	
+	int nbAuras = zip.getInt();
+	while (nbAuras > 0) {
+		Aura *aura = new Aura(0,(Aura::StatType)0,(Aura::LifeStyle)0,0);
+		aura->load(zip);
+		auras.push(aura);
+		nbAuras--;
+	}
+	
 	bool hasAttacker = zip.getInt();
 	bool hasDestructible = zip.getInt();
 	bool hasAi = zip.getInt();
@@ -152,9 +172,63 @@ float Actor::feed(float amount) {
 		amount -= hunger-maxHunger;
 		hunger = maxHunger;
 	}
+	if (hunger > 0 && amount > 0) {
+		if(!this->auras.isEmpty()){
+			for (Aura **iter = this->auras.begin(); iter!=this->auras.end(); iter++){
+				Aura *aura = *iter;
+				if (aura->life == Aura::HUNGER){
+					aura->unApply(this);
+					delete *iter;
+					iter = this->auras.remove(iter);
+				}
+			}
+		}
+	}
+	this->hungerCount = 0;
+	engine.gui->message(TCODColor::red,"You feel reinvigorated after eating!");
 	return amount;
 }	
 	
+void Actor::getHungry(){
+	if (engine.turnCount > 0 && (engine.turnCount)%2 == 0){
+		if (this->hunger > 0) {
+			this->hunger -= 1;
+		} else {
+			this->hungerCount += 1;
+		}
+		if (this->hungerCount > 0 && this->hungerCount % 50 == 0){
+			Aura *aura = new Aura(0,Aura::ALL,Aura::HUNGER,-1);
+			aura->apply(this);
+			this->auras.push(aura);
+			engine.gui->message(TCODColor::red,"You feel weak from hunger. Perhaps you should eat.");
+		}
+		if (this->hungerCount > 0 && this->hungerCount % 75== 0) {
+			Aura *aura = new Aura(7,Aura::HEALTH,Aura::ITERABLE,-1);
+			//aura->apply(this);   if it is applied here as well, double damage on first turn
+			this->auras.push(aura);
+			engine.gui->message(TCODColor::darkerRed,"You begin to feel great hunger pains!");
+		}
+	}
+}
+
+void Actor::updateAuras(){
+	if(!this->auras.isEmpty()){
+		for (Aura **iter = this->auras.begin(); iter!=this->auras.end(); iter++){
+			Aura *aura = *iter;
+			if (aura->life != Aura::HUNGER){
+				aura->duration--;
+				if (aura->life == Aura::ITERABLE){
+					aura->apply(this);
+				}
+				if (aura->duration == 0){
+					aura->unApply(this);
+					delete *iter;
+					iter = this->auras.remove(iter);
+				}
+			}
+		}
+	}
+}
 	
 /* bool Actor::moveOrAttack(int x, int y)
 {

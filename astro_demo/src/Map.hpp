@@ -1,7 +1,8 @@
 namespace Param {
 	enum LevelType {
 		GENERIC,
-		OFFICE_FLOOR
+		OFFICE_FLOOR,
+		TUTORIAL
 	};
 
 	enum RoomType {
@@ -75,6 +76,7 @@ public:
 	void init(bool withActors, LevelType levelType = GENERIC);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
+	bool isVisible(int x, int y);
 	
 	int tileType(int x, int y);
 	//int tileInf(int x, int y);
@@ -122,4 +124,5 @@ protected:
 	void addMonster(int x, int y, bool isHorde); //is this monster part of a horde?
 	void addItem(int x, int y, RoomType roomType);
 	TCODList<RoomType> * getRoomTypes(LevelType levelType);
+	void spawnTutorial();
 };

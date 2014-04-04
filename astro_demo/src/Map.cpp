@@ -97,7 +97,7 @@ int Map::tileType(int x, int y) {
 	{return 5;}
 	else if (tiles[i].tileType == Param::SERVER)//
 	{return 6;}
-	else if (tiles[i].tileType == Param::MESSHALL)
+	else if (tiles[i].tileType == Param::MESSHALL)//
 	{return 7;}
 	else if (tiles[i].tileType == Param::ARMORY)
 	{return 8;}
@@ -116,24 +116,30 @@ void Map::init(bool withActors, LevelType levelType) {
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
-	TCODBsp bsp(0,0,width,height);
-	bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
-	BspListener listener(*this);
-	listener.bspActors = withActors;
-	listener.roomList = getRoomTypes(levelType);
-	bsp.traverseInvertedLevelOrder(&listener, (void *)withActors);
-	//Create boss, for now it is a simple security bot
-	if (withActors) {
-		Actor *boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
-		boss->name = "Infected Security Bot";
-		boss->ch = 146;
-		boss->destructible->hp = boss->destructible->hp*2;
-		boss->destructible->maxHp = boss->destructible->hp;
-		boss->totalStr = boss->totalStr*1.25;
-		engine.boss = boss;
+	cout << width << " , " << height << endl;
+	if (levelType != TUTORIAL) {
+		TCODBsp bsp(0,0,width,height);
+		bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
+		BspListener listener(*this);
+		listener.bspActors = withActors;
+		listener.roomList = getRoomTypes(levelType); bsp.traverseInvertedLevelOrder(&listener, (void *)withActors); 
+
+		//Create boss, for now it is a simple security bot
+		if (withActors) {
+			Actor *boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
+			boss->name = "Infected Security Bot";
+			boss->ch = 146;
+			boss->destructible->hp = boss->destructible->hp*2;
+			boss->destructible->maxHp = boss->destructible->hp;
+			boss->totalStr = boss->totalStr*1.25;
+			engine.boss = boss;
+		}
+		if (engine.level > 1 && artifacts > 0) {
+			engine.gui->message(TCODColor::red,"The air hums with unknown energy... Perhaps there is an artifact of great power here!");
+		}
 	}
-	if (engine.level > 1 && artifacts > 0) {
-		engine.gui->message(TCODColor::red,"The air hums with unknown energy... Perhaps there is an artifact of great power here!");
+	else {
+		spawnTutorial();
 	}
 }
 
@@ -221,9 +227,9 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 						{
 							engine.map->tiles[a->x+a->y*engine.map->width].decoration = 100;
 							a->name = "Server Room Doorway";
-							//blarg = true;
+							blarg = true;
 							////////////////////////////////////////////////////////////////////////////////IS THIS OKAY?
-							//engine.actors.remove(a);
+							engine.actors.remove(a);
 						}
 					}
 					else//just in case error
@@ -282,6 +288,287 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 			//delete a;
 		}
 	}
+}
+
+void Map::spawnTutorial() {
+	//this resets the level so it'll be 1 for the real level 1
+	engine.level = 0;
+	cout << engine.mapWidth << " , " << engine.mapHeight << endl;
+	int x1 = engine.mapWidth/2-6;
+	int x2 = engine.mapWidth/2+6;
+	int y1 = engine.mapHeight-12;
+	int y2 = engine.mapHeight-7;
+	cout << "creating tutorial room"<< endl;
+	for (int tilex = x1; tilex <=x2; tilex++) {//first room
+		for (int tiley = y1; tiley <= y2; tiley++) {
+
+			map->setProperties(tilex,tiley,true,true);
+		}
+	}
+	dig((x1+x2)/2,y1,(x1+x2)/2,y1-10);
+	//make light terminal
+	Actor *triggerTileL = new Actor((x1+x2)/2, y1-5, '.', "Intercom Terminal", TCODColor::white);
+	triggerTileL->ai = new TriggerAi(  
+	//"Welcome to the Astroverius.\n\n"
+	"Above you is a light.\n\n"
+	"The Astro has gone dark, but\n"
+	"the crew has put up some\n"
+	"emergency lights to help.\n"
+	"The ones on this deck seem\n"
+	"to work, but others may \n"
+	"flicker or even be broken.\n");
+	triggerTileL->blocks = false;
+	engine.actors.push(triggerTileL);
+	
+	
+	//map.dig(lastx, lasty, x+w/2, lasty);
+	x1 = engine.mapWidth/2-10;
+	x2 = engine.mapWidth/2+10;
+	y1 = engine.mapHeight-29;
+	y2 = engine.mapHeight-23;
+	for (int tilex = x1; tilex <=x2; tilex++) {//light room
+		for (int tiley = y1; tiley <= y2; tiley++) {
+
+			map->setProperties(tilex,tiley,true,true);
+		}
+	}
+	//make light room terminal
+	Actor *triggerTileLR = new Actor((x1+x2)/2, (y1+y2)/2+1, '.', "Intercom Terminal", TCODColor::white);
+	triggerTileLR->ai = new TriggerAi(  
+	//"Welcome to the Astroverius.\n\n"
+	"Explore this deck.\n\n"
+	"To the left are some of the\n"
+	"Astro's more varied room\n"
+	"types to explore.\n\n"
+	"To the right is a range where\n"
+	"you can test your mettle\n"
+	"against some target dummies.\n\n"
+	"To the north is the teleporter\n"
+	"a.k.a the exit to the deck.\n");
+	triggerTileLR->blocks = false;
+	engine.actors.push(triggerTileLR);
+	
+	
+	
+	//add server and console
+	tiles[x2+y1*engine.mapWidth].tileType = Param::SERVER;
+	tiles[x2-1+y1*engine.mapWidth].tileType = Param::SERVER;
+	Actor * server1 = new Actor(x2-1, y1, 243, "A server", TCODColor::white);
+	engine.map->tiles[x2-1+y1*engine.map->width].decoration = rng->getInt(45,47);
+	engine.actors.push(server1);
+	createConsole(x2,y1);
+	//make console terminal
+	Actor *triggerTileC = new Actor(x2, y1+1, '.', "Intercom Terminal", TCODColor::white);
+	triggerTileC->ai = new TriggerAi(  
+	//"Welcome to the Astroverius.\n\n"
+	"Above you is a console.\n\n"
+	"Consoles appear in server\n"
+	"rooms.  Upon interacting\n"
+	"with one it will show you\n"
+	"a map of the current deck.\n"
+	"And will print out a copy\n"
+	"for you to take.  Press\n"
+	"\'m\' to take out your\n"
+	"printed map.\n");
+	triggerTileC->blocks = false;
+	engine.actors.push(triggerTileC);
+	
+	
+	
+	dig((x1+x2)/2,y1,(x1+x2)/2,y1-10);//upper hallway
+	dig(x2,(y1+y2)/2,x2+5,(y1+y2)/2);//right hallway
+	dig(x1,(y1+y2)/2,x1-5,(y1+y2)/2);//left dogleg hallway
+	dig(x1-5,(y1+y2)/2,x1-5,y2+3);
+	//make flare
+	Actor *flare = createFlare(x1-5,(y1+y2)/2);
+	engine.actors.push(flare);
+	//make flare terminal
+	Actor *triggerTileF = new Actor(x1-4, (y1+y2)/2, '.', "Intercom Terminal", TCODColor::white);
+	triggerTileF->ai = new TriggerAi(  
+	//"Welcome to the Astroverius.\n\n"
+	"To your left is a flare item.\n\n"
+	"Press \'g\' to pick it up\n"
+	"and then \'i\' to open the\n"
+	"inventory and select the \n"
+	"\'TECH\' tab with \'enter\' to\n"
+	"find the flare and press the\n"
+	"letter next to it to use it\n"
+	"to explore the rooms to the\n"
+	"south. \n");
+	triggerTileF->blocks = false;
+	engine.actors.push(triggerTileF);
+	
+	float flkr = 1.0;
+	Actor *light = new Actor(((x1+x2)/2), ((y1+y2)/2), 224, "A hastily erected Emergency Light", TCODColor::white);
+	light->ai = new LightAi(4,flkr);                //224, crashes when using 224
+	engine.actors.push(light);
+	//Actor *light2 = new Actor(((x1+x2)/2+5), ((y1+y2)/2), 224, "A hastily erected Emergency Light-right", TCODColor::white);
+	//light2->ai = new LightAi(4,flkr);                //224, crashes when using 224
+	//engine.actors.push(light2);
+	//Actor *light3 = new Actor(((x1+x2)/2-5), ((y1+y2)/2), 224, "A hastily erected Emergency Light-left", TCODColor::white);
+	//light3->ai = new LightAi(4,flkr);                //224, crashes when using 224
+	//engine.actors.push(light3);
+	
+	x1 = engine.mapWidth/2-12-5;
+	x2 = engine.mapWidth/2-8-5;
+	y1 = engine.mapHeight-11-8;
+	y2 = engine.mapHeight-7-8;
+	for (int tilex = x1; tilex <=x2; tilex++) {//side room upper
+		for (int tiley = y1; tiley <= y2; tiley++) {
+
+			map->setProperties(tilex,tiley,true,true);
+			tiles[tilex+tiley*engine.mapWidth].tileType = Param::KITCHEN;
+		}
+	}
+	Actor * counter = new Actor(x1, y1,243,"Kitchen Counter", TCODColor::white);
+	engine.map->tiles[x1+y1*engine.map->width].decoration = 35;
+	engine.actors.push(counter);
+	Actor * counter2 = new Actor(x1+1, y1,243,"Kitchen Counter", TCODColor::white);
+	engine.map->tiles[x1+1+y1*engine.map->width].decoration = 35;
+	engine.actors.push(counter2);
+	Actor * counter3 = new Actor(x1+3, y1,243,"Kitchen Counter", TCODColor::white);
+	engine.map->tiles[x1+3+y1*engine.map->width].decoration = 35;
+	engine.actors.push(counter3);
+	Actor * counter4 = new Actor(x1+4, y1,243,"Kitchen Counter", TCODColor::white);
+	engine.map->tiles[x1+4+y1*engine.map->width].decoration = 35;
+	engine.actors.push(counter4);
+	Actor *sink = new Actor(x1+2, y1+2,243,"Industrial Sink", TCODColor::white);
+	engine.map->tiles[x1+2+(y1+2)*engine.map->width].decoration = 38;
+	engine.actors.push(sink);
+	Actor *sink2 = new Actor(x1+2, y1+3,243,"Industrial Sink", TCODColor::white);
+	engine.map->tiles[x1+2+(y1+3)*engine.map->width].decoration = 37;
+	engine.actors.push(sink2);
+	
+	
+	Actor * pcmu4 = new Actor(x2, y1+3, 243, "PCMU Food Processor", TCODColor::white);
+	engine.map->tiles[x2+(y1+3)*engine.map->width].decoration = 44;
+	engine.actors.push(pcmu4);
+	
+	
+	dig((x1+x2)/2,y2,(x1+x2)/2,engine.mapHeight-11);//side room connector
+	
+	x1 = engine.mapWidth/2-12-5;
+	x2 = engine.mapWidth/2-8-5;
+	y1 = engine.mapHeight-11;
+	y2 = engine.mapHeight-7;
+	for (int tilex = x1; tilex <=x2; tilex++) {//side room lower
+		for (int tiley = y1; tiley <= y2; tiley++) {
+
+			map->setProperties(tilex,tiley,true,true);
+			tiles[tilex+tiley*engine.mapWidth].tileType = Param::OFFICE;
+		}
+	}
+	Actor * cabinet = new Actor(x1,y1,243,"a filing cabinet", TCODColor::white);
+	engine.map->tiles[x1+y1*engine.map->width].decoration = -2;
+	engine.actors.push(cabinet);
+	Actor * cabinet1 = new Actor(x1+1,y1,243,"a filing cabinet", TCODColor::white);
+	engine.map->tiles[x1+1+y1*engine.map->width].decoration = -2;
+	engine.actors.push(cabinet1);
+	Actor * cabinet2 = new Actor(x1+3,y1,243,"a filing cabinet", TCODColor::white);
+	engine.map->tiles[x1+3+y1*engine.map->width].decoration = -2;
+	engine.actors.push(cabinet2);
+	Actor * cabinet3 = new Actor(x1+4,y1,243,"a filing cabinet", TCODColor::white);
+	engine.map->tiles[x1+4+y1*engine.map->width].decoration = -2;
+	engine.actors.push(cabinet3);
+	Actor * desk = new Actor(x1+1+1,y1+2,243,"A desk with an angled computer", TCODColor::white);
+	engine.map->tiles[x1+1+1+(y1+2)*engine.map->width].decoration = 3;
+	engine.actors.push(desk);
+	Actor * desk2 = new Actor(x1+1+1+1+1,y1+3,243,"A desk with a ruined computer", TCODColor::white);
+	engine.map->tiles[x1+1+1+1+1+(y1+3)*engine.map->width].decoration = 1;
+	engine.actors.push(desk2);
+	
+	Actor *lightOf = new Actor(x1+3, y1+2, 224, "A hastily erected Emergency Light", TCODColor::white);
+	lightOf->ai = new LightAi(4,flkr);                //224, crashes when using 224
+	engine.actors.push(lightOf);
+	
+	/////////////////////target range
+	x1 = engine.mapWidth/2-10+26;
+	x2 = engine.mapWidth/2+10+26-5;
+	y1 = engine.mapHeight-29;
+	y2 = engine.mapHeight-23;
+	for (int tilex = x1; tilex <=x2; tilex++) {//side room lower
+		for (int tiley = y1; tiley <= y2; tiley++) {
+
+			map->setProperties(tilex,tiley,true,true);
+			tiles[tilex+tiley*engine.mapWidth].tileType = Param::ARMORY;
+		}
+	}
+	//gun racks
+	for (int tiley = y1; tiley <= y2; tiley+=2) {
+		Actor * pcmu = new Actor(x1+1, tiley, 243, "Weapon Rack", TCODColor::white);
+		engine.map->tiles[x1+1+tiley*engine.map->width].decoration = 54;
+		engine.actors.push(pcmu);
+		Actor * pcmu2 = new Actor(x1+2, tiley, 243, "Battery Rack", TCODColor::white);
+		engine.map->tiles[x1+2+tiley*engine.map->width].decoration = 55;
+		engine.actors.push(pcmu2);
+		Actor * dummy = new Actor(x2-1, tiley, 'd', "Target Dummy", TCODColor::white);
+		//engine.map->tiles[x1+2+tiley*engine.map->width].decoration = 55;
+		engine.actors.push(dummy);
+	}
+	//fence
+	for (int tiley = y1; tiley <= y2; tiley++) {
+		Actor * pcmu = new Actor(x2-3, tiley, 's', "Sandbag Wall", TCODColor::white);
+		//engine.map->tiles[x2-3+tiley*engine.map->width].decoration = 54;
+		engine.actors.push(pcmu);
+		pcmu->blocks = false;
+	}
+	//light
+	Actor *lightAr = new Actor(x2-5, (y1+y2)/2, 224, "A hastily erected Emergency Light", TCODColor::white);
+	lightAr->ai = new LightAi(6,flkr);                //224, crashes when using 224
+	engine.actors.push(lightAr);
+	
+	//stair room
+	x1 = engine.mapWidth/2-2;
+	x2 = engine.mapWidth/2+2;
+	y1 = engine.mapHeight-26-17;
+	y2 = engine.mapHeight-23-17;
+	for (int tilex = x1; tilex <=x2; tilex++) {//stair room
+		for (int tiley = y1; tiley <= y2; tiley++) {
+
+			map->setProperties(tilex,tiley,true,true);
+		}
+	}
+	//make vending machine
+	createVendor(x1+1, y1);
+	//make brobot
+	Actor *securityBot = createSecurityBot(x1, y1);
+	securityBot->hostile = false;
+	SecurityBotAi *sbAi = (SecurityBotAi*) securityBot->ai;
+	sbAi->vendingX = x1+1;
+	sbAi->vendingY = y1;
+	//make dat $$$
+	Actor *stackOfMoney = createCurrencyStack(x1+1,y1+1);
+	engine.actors.push(stackOfMoney);
+	engine.sendToBack(stackOfMoney);
+	
+	
+	
+	int startX = (engine.mapWidth/2-6+engine.mapWidth/2+6)/2;
+	int startY = (engine.mapHeight-12+engine.mapHeight-6)/2;
+	engine.stairs->x = (x1+x2)/2;
+	engine.stairs->y = y1;
+	engine.player->x = startX;
+	engine.player->y = startY;
+	//make a message tile infront the player
+	Actor *triggerTile = new Actor(startX, startY-1, '.', "Intercom Terminal", TCODColor::white);
+	//we have 30 characters to use until a \n is needed
+	//triggerTile->ai = new TriggerAi("<Intercom>: \"Prepare to starve\n in the tutorial level!\"");
+	triggerTile->ai = new TriggerAi(  
+	"Welcome to the Astroverius.\n\n"
+	"To move press the UP, DOWN, \n"
+	"LEFT, and RIGHT keys, or use\n"
+	"the NUMPAD; 7,9,1 and 3 can\n"
+	"be used to move diagonally.");
+	
+	triggerTile->blocks = false;
+	engine.actors.push(triggerTile);
+
+	engine.playerLight = new Actor(engine.player->x, engine.player->y, 'l', "Your Flashlight", TCODColor::white);
+	engine.playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
+	engine.actors.push(engine.playerLight);
+	engine.playerLight->blocks = false;
+	//playerLight->ai->moving = true;
+	engine.sendToBack(engine.playerLight);
 }
 
 void Map::addMonster(int x, int y, bool isHorde) {
@@ -696,7 +983,7 @@ Actor* Map::createVendor(int x, int y)
 	vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge,vendorDR,vendorXp);
 	vendor->ai = new VendingAi();
 	vendor->container = new Container(10);
-	generateRandom(vendor, vendorAscii);
+	//generateRandom(vendor, vendorAscii); Vending Machines get populated with items when they are interacted with
 	engine.actors.push(vendor);
 	
 	return vendor;
@@ -808,9 +1095,12 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 				roomList->push(OBSERVATORY);
 				break;
 			case OFFICE_FLOOR:
-				for (int i = 0; i <= rng->getInt(3,9); i++) {
+				for (int i = 0; i <= 40; i++) {
 					roomList->push(OFFICE);
 				}
+				break;
+			case TUTORIAL:
+				//TUTORIALS ONLY HAVE GENERIC ROOMS
 				break;
 		}
 
@@ -1309,22 +1599,26 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				//	sqY--;
 				//if (sqX > 0 && sqY > 0)
 				//{
-					if (((((i-x1)-2)%4 == 0) && (((j-y1)-1)%4 == 0)) || 
-						((((i-x1)-1)%4 == 0) && (((j-y1)-2)%4 == 0)) ||
-						((((i-x1)-3)%4 == 0) && (((j-y1)-2)%4 == 0)) ||
-						((((i-x1)-2)%4 == 0) && (((j-y1)-3)%4 == 0)) )
+					if (((((i-x1)-2)%4 == 0) && (((j-y1)-1)%4 == 0)) || //top chair
+						((((i-x1)-1)%4 == 0) && (((j-y1)-2)%4 == 0)) || //left chair
+						((((i-x1)-3)%4 == 0) && (((j-y1)-2)%4 == 0)) || //right chair
+						((((i-x1)-2)%4 == 0) && (((j-y1)-3)%4 == 0)) )  //bottom chair
 					{
-						Actor * pcmu = new Actor(i, j, 'c', "chair", TCODColor::white);
+						Actor * pcmu = new Actor(i, j, 243, "A red messhall chair", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 49;//top chair
 						engine.actors.push(pcmu);
 					}
 					if (((((i-x1)-2)%4 == 0) && (((j-y1)-2)%4 == 0)))
 					{
-						Actor * pcmu = new Actor(i, j, 'T', "table", TCODColor::white);
+						Actor * pcmu = new Actor(i, j, 243, "A shining metal table", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = rng->getInt(50,52);
+						
 						engine.actors.push(pcmu);
 					}
 					if (((((i-x1)-4)%4 == 0) && (((j-y1)-4)%4 == 0)))
 					{
-						Actor * pcmu = new Actor(i, j, 't', "trash-can", TCODColor::white);
+						Actor * pcmu = new Actor(i, j, 243, "A green trash-can", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 53;
 						engine.actors.push(pcmu);
 					}
 				//}
@@ -1347,15 +1641,36 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		
 		for (int i = x1+1; i <= x2-1; i++) {
 			for (int j = y1+1; j <= y2-1; j++) {
+				int gunBat = rng->getInt(0,1);
 				if (i == x1+1 && j%2 == 0)
 				{
-					Actor * pcmu = new Actor(i, j, 'W', "Weapon Rack", TCODColor::white);
-					engine.actors.push(pcmu);
+					if(gunBat == 0)
+					{
+						Actor * pcmu = new Actor(i, j, 243, "Weapon Rack", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 54;
+						engine.actors.push(pcmu);
+					}
+					else if(gunBat == 1)
+					{
+						Actor * pcmu = new Actor(i, j, 243, "Battery Rack", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 55;
+						engine.actors.push(pcmu);
+					}
 				}
 				if (i == x1+3 && j%2 != 0)
 				{
-					Actor * pcmu = new Actor(i, j, 'W', "Weapon Rack", TCODColor::white);
-					engine.actors.push(pcmu);
+					if(gunBat == 0)
+					{
+						Actor * pcmu = new Actor(i, j, 243, "Weapon Rack", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 54;
+						engine.actors.push(pcmu);
+					}
+					else if(gunBat == 1)
+					{
+						Actor * pcmu = new Actor(i, j, 243, "Battery Rack", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 55;
+						engine.actors.push(pcmu);
+					}
 				}
 				
 				if (i == x2-1)
@@ -1363,7 +1678,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					int mid = (y1+y2)/2;
 					if (j == mid+1 || j == mid-1 || j == mid)
 					{
-						Actor * pcmu = new Actor(i, j, 'V', "Weapon Vault", TCODColor::white);
+						Actor * pcmu = new Actor(i, j, 243, "Weapon Vault", TCODColor::white);
+						engine.map->tiles[i+j*engine.map->width].decoration = 56;
 						engine.actors.push(pcmu);
 					}
 					
@@ -1383,9 +1699,6 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//engine.actors.push(pcmu);
 		for (int i = x1+1; i <= x2-1; i++) {
 			for (int j = y1+1; j <= y2-1; j+=2) {
-
-				//Actor * plant = new Actor(i, j, 'H', "Hydroponic Oranges", TCODColor::white);
-				//engine.actors.push(plant);
 				//the floors for observatories will be blank, and will then adjust the envSta to be "glass" and "broken glass"
 
 			}
@@ -1398,10 +1711,28 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//long rows of hydroponic racks
 		for (int i = x1+1; i <= x2-1; i++) {
 			for (int j = y1+1; j <= y2-1; j+=2) {
-
-				Actor * plant = new Actor(i, j, 'H', "Hydroponic Oranges", TCODColor::white);
-				engine.actors.push(plant);
-
+				int hydroRng = rng->getInt(0,3,1);
+				if (hydroRng == 0)
+				{
+					Actor * plant = new Actor(i, j, 208, "Hydroponic Oranges", TCODColor::white);//low hunger restore
+					engine.actors.push(plant);
+				}
+				else if (hydroRng == 1)
+				{
+					Actor * plant = new Actor(i, j, 209, "Hydroponic Apples", TCODColor::white);//low hunger restore
+					engine.actors.push(plant);
+				}
+				else if (hydroRng == 2)
+				{
+					Actor * plant = new Actor(i, j, 210, "Hydroponic Bananas", TCODColor::white);//moderate hunger restore
+					engine.actors.push(plant);
+				}
+				else if (hydroRng == 3)
+				{
+					Actor * plant = new Actor(i, j, 211, "Hydroponic Starfruit", TCODColor::white);//large hunger restore
+					engine.actors.push(plant);
+				}
+				engine.map->tiles[i+j*engine.map->width].decoration = 48;
 
 			}
 		}
@@ -1883,7 +2214,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 					}
 				}
 			}
-		}else if(ascii == 165 || ascii == 166){
+		}else if(ascii == 165 || ascii == 166){ //Spore Creature and Mini Spore Creature
 			for(int i = 0; i < owner->container->size; i++){
 				int rndA2 = rng->getInt(0,100);
 				if(rndA2 > 45){
@@ -1977,6 +2308,53 @@ void Map::generateRandom(Actor *owner, int ascii){
 						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
 					}
 				}
+			}
+		}else if(ascii == 134){
+			for(int i = 0; i < owner->container->size; i++){
+				int rndA2 = rng->getInt(0,100);
+				if(rndA2 > 30){
+					int rnd = rng->getInt(0,100);
+					if (rnd < 30) {
+						//create a health potion
+						Actor *healthPotion = createHealthPotion(0,0);
+						engine.actors.push(healthPotion);
+						healthPotion->pickable->pick(healthPotion,owner);
+					} else if(rnd < 10+30) {
+						//create a emp
+						Actor *scrollOfLightningBolt = createEMP(0,0);
+						engine.actors.push(scrollOfLightningBolt);
+						scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
+					} else if(rnd < 10+30+20) {
+						//create a flare
+						Actor *flare = createFlare(0,0);
+						engine.actors.push(flare);
+						flare->pickable->pick(flare,owner);
+					}else{
+						//create a Flashbang
+						Actor *scrollOfConfusion = createFlashBang(0,0);
+						engine.actors.push(scrollOfConfusion);
+						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+					}
+				}
+			}
+		}else if(ascii == 129 || ascii == 147){ //Security Bot and Turret
+			int rndA2 = rng->getInt(0,100);
+			if(rndA2 > 50){
+				for(int i = 0; i < owner->container->size; i++){
+					//Fill Inventory with Batteries
+					Actor *battery = createBatteryPack(0,0);
+					engine.actors.push(battery);
+					battery->pickable->pick(battery,owner);
+				}
+			}
+		}else if(ascii == 131){ //Cleaner Bot (aka DJ ROOMBA)
+			int rndA2 = rng->getInt(0,100);
+			if(rndA2 > 60){
+				//Give A Battery
+				Actor *battery = createBatteryPack(0,0);
+				engine.actors.push(battery);
+				battery->pickable->pick(battery,owner);
+			
 			}
 		}
 	}
@@ -2198,4 +2576,8 @@ Actor *Map::createArtifact(int x, int y){
 	engine.actors.push(artifact);
 	engine.sendToBack(artifact);
 	return artifact;
+}
+
+bool Map::isVisible(int x, int y){
+	return (engine.mapcon->getCharForeground(x,y) == TCODColor::white) && (engine.map->isExplored(x,y));
 }

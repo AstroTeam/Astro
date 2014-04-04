@@ -22,6 +22,7 @@ Ai *Ai::create(TCODZip &zip) {
 		
 		case VENDING: ai = new VendingAi(); break;
 		case ENGINEER: ai = new EngineerAi(5,5); break;
+	    case TRIGGER: ai = new TriggerAi(); break;
 		case SECURITY: ai = new SecurityBotAi(); break;
 		//
 		
@@ -487,7 +488,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			if(owner->container->ranged){
 				//engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
 				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,10);
-				if (!closestMonster || !(engine.mapcon->getCharForeground(closestMonster->x,closestMonster->y) == TCODColor::white) || !(engine.map->isExplored(closestMonster->x,closestMonster->y))) {
+				if (!closestMonster || !(engine.map->isVisible(closestMonster->x, closestMonster->y))) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
 					return;
 				}
@@ -521,7 +522,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					return;
 				}
 				Actor *actor = engine.getActor(x,y);
-				if (!actor || !(engine.mapcon->getCharForeground(actor->x,actor->y) == TCODColor::white || !(engine.map->isExplored(actor->x,actor->y)))) {
+				if (!actor || !(engine.map->isVisible(actor->x, actor->y))) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy in sight at that location.");
 					return;
 				}
@@ -702,9 +703,18 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	con.print(2,4,"STATS");
 	con.print(1,6,"LVL: %d",xpLevel);
 	con.print(1,8,"VIT: %d",owner->vit);
-	con.print(1,10,"DEX: %d(+%d)",owner->dex,owner->totalDex-owner->dex);
-	con.print(1,12,"STR: %d(+%d)",owner->str,owner->attacker->totalPower - owner->attacker->basePower);
-	con.print(1,14,"INT: %d(+%d)",owner->intel,owner->totalIntel-owner->intel);
+	if(owner->totalDex - owner->dex >= 0)
+		con.print(1,10,"DEX: %d(+%d)",owner->dex,owner->totalDex-owner->dex);
+	else
+		con.print(1,10,"DEX: %d(%d)",owner->dex,owner->totalDex-owner->dex);
+	if(owner->totalStr - owner->str >= 0)
+		con.print(1,12,"STR: %d(+%d)",owner->str,owner->totalStr - owner->str);
+	else
+		con.print(1,12,"STR: %d(%d)",owner->str,owner->totalStr - owner->str);
+	if(owner->totalIntel - owner->intel >= 0)
+		con.print(1,14,"INT: %d(+%d)",owner->intel,owner->totalIntel-owner->intel);
+	else
+		con.print(1,14,"INT: %d(%d)",owner->intel,owner->totalIntel-owner->intel);
 	con.print(1,16,"KILLS: %d",engine.killCount);
 	//con.print(1,18,"MEDKIT HEAL: %d",(int)owner->getHealValue());
 	//con.print(1,18,"DMG DONE: %g",engine.damageDone);
@@ -874,7 +884,7 @@ void SecurityBotAi::moveOrAttack(Actor *owner, int targetx, int targety){
 		{
 			owner->ch = 130;
 			owner->hostile = true;
-			engine.gui->message(TCODColor::red, "Vending Machine Vandalism Deteched: %s Activated!", owner->name);
+			engine.gui->message(TCODColor::red, "Vending Machine Vandalism Detected: %s Activated!", owner->name);
 		}
 		
 	}
@@ -932,6 +942,46 @@ void EpicenterAi::save(TCODZip &zip) {
 	zip.putInt(EPICENTER);
 }
 
+TriggerAi::TriggerAi(const char *text) {
+	this->text = text;
+	pressed = false;
+}
+TriggerAi::TriggerAi() {
+	pressed = false;
+}
+
+void TriggerAi::load(TCODZip &zip) {
+	text = zip.getString();
+	pressed = zip.getInt();
+}
+
+void TriggerAi::save(TCODZip &zip) {
+	zip.putInt(TRIGGER);
+	zip.putString(text);
+	zip.putInt(pressed);
+}
+
+void TriggerAi::update(Actor *owner) {
+	if (!pressed && engine.player->x == owner->x && engine.player->y == owner->y) {
+		//engine.gui->message(TCODColor::yellow, text);
+		pressed = true;
+		//TCODConsole::flush();
+		int PAUSE_MENU_WIDTH = 32;
+		int PAUSE_MENU_HEIGHT = 15;
+		
+		int menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
+		int menuy = engine.screenHeight / 2 - PAUSE_MENU_HEIGHT / 2;
+		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
+		//TCODConsole::root->setDefaultBackground(TCODColor(0,0,0));
+		TCODConsole::root->printFrame(menux-1,menuy-1,PAUSE_MENU_WIDTH,
+		PAUSE_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"\{ AUTOMATED INTERCOM \{");
+		TCODConsole::root->print(menux,menuy,text);
+		TCODConsole::flush();
+		TCOD_key_t key;
+		TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
+	}
+	
+}
 
 LightAi::LightAi(int rad, float f)
 {
@@ -2122,8 +2172,6 @@ void EngineerAi::load(TCODZip &zip){
 	turretX = zip.getInt();
 	turretY = zip.getInt();
 	deployRange = zip.getInt();
-	
-	
 }
 
 void EngineerAi::update(Actor *owner)
@@ -2256,3 +2304,4 @@ void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
 	}
 
 }
+

@@ -705,7 +705,8 @@ void Engine::init() {
 	stairs->blocks = false;
 	actors.push(stairs);
 	map = new Map(mapWidth, mapHeight);
-	map->init(true, Param::GENERIC);
+	map->init(true, Param::TUTORIAL);
+	//map->init(true, Param::GENERIC);
 	gui->message(TCODColor::red, "Welcome to Astroverius Station! Warning unknown alien life form detected!");
 	gui->message(TCODColor::blue,"You appear to be a %s %s %s. Your experience will be needed to complete this journey.", player->race, player->role, player->job);
 	if (map->artifacts > 0) {
@@ -872,7 +873,6 @@ void Engine::update() {
 	gameStatus = IDLE;
 	TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS, &lastKey, NULL); //delete the mouse stuff to remove mouse look (change &mouse to NULL)
 	if (lastKey.vk == TCODK_ESCAPE) {
-		//save();  why save automatically every time escape is called?
 		load(true);
 	} 
 	player->update();
@@ -884,9 +884,10 @@ void Engine::update() {
 	}
 	if (gameStatus == NEW_TURN){
 		engine.turnCount++;
-		if (engine.player->hunger > 0 && engine.turnCount > 0 && (engine.turnCount)%2 == 0){
-			engine.player->hunger -= 1;
-		}
+		player->getHungry();
+		if(player->destructible->maxHp > player->destructible->hp && player->hunger > 0 && engine.turnCount%10 == 1)
+			player->destructible->hp++;
+		player->updateAuras();
 		for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 			Actor *actor = *iterator;
 			if ( actor != player) {
@@ -1024,8 +1025,25 @@ void Engine::nextLevel() {
 	
 	gui->message(TCODColor::lightViolet, "Sitting at the top of the stairs, you take a brief moment to rest...");
 	player->destructible->heal(player->destructible->maxHp/2);
-	gui->message(TCODColor::red,"Gathering your courage, you rush down the dungeon stairs, mindful that greater dangers may lurk below...");
-	
+	gui->message(TCODColor::red,"Gathering your courage, you rush into the station's teleporter, mindful that greater dangers may lurk beyond...");
+	TCODRandom * updateRng = TCODRandom::getInstance();
+	int temp = updateRng->getInt(0,2);
+	if(player->role[0] == 'E'){
+		if (temp == 0) 
+			gui->message(TCODColor::white,"As an explorer, you discover more flares hidden in your bag that your buggy tablet app didn't tell you about!");
+		else if (temp == 1)
+			gui->message(TCODColor::white,"As an explorer, you suddenly discover more flares hidden in your back pocket!");
+		else
+			gui->message(TCODColor::white,"Flares fall from the ceiling and land on your head! You add them to your inventory.");
+		for(int i=0; i<20; i++){
+				Actor *equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Flare(10,5,5);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+		}
+	}
 	delete map;
 	//delete all actors but player and stairs
 	for(Actor **it = actors.begin(); it != actors.end(); it++) {
@@ -1037,7 +1055,15 @@ void Engine::nextLevel() {
 	//engine.mapconDec->clear();
 	//create a new map
 	map = new Map(mapWidth,mapHeight);
-	map->init(true, Param::GENERIC);
+	
+	TCODRandom * levelRng = TCODRandom::getInstance();
+	if (0 == levelRng->getInt(0,8)) {
+		map->init(true, Param::OFFICE_FLOOR);
+	}
+	else
+	{
+		map->init(true, Param::GENERIC);
+	}
 	gameStatus = STARTUP;
 	save();
 }
