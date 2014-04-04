@@ -1038,7 +1038,7 @@ void Engine::nextLevel() {
 	map = new Map(mapWidth,mapHeight);
 	
 	TCODRandom * levelRng = TCODRandom::getInstance();
-	if (level % 3 == levelRng->getInt(0,3)) {
+	if (0 == levelRng->getInt(0,8)) {
 		map->init(true, Param::OFFICE_FLOOR);
 	}
 	else
