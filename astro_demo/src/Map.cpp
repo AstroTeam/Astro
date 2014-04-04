@@ -306,6 +306,20 @@ void Map::spawnTutorial() {
 		}
 	}
 	dig((x1+x2)/2,y1,(x1+x2)/2,y1-10);
+	//make light terminal
+	Actor *triggerTileL = new Actor((x1+x2)/2, y1-5, '.', "Intercom Terminal", TCODColor::white);
+	triggerTileL->ai = new TriggerAi(  
+	//"Welcome to the Astroverius.\n\n"
+	"Above you is a light.\n\n"
+	"The Astro has gone dark, but\n"
+	"the crew has put up some\n"
+	"emergency lights to help.\n"
+	"The ones on this deck seem\n"
+	"to work, but others may \n"
+	"flicker or even be broken.\n");
+	triggerTileL->blocks = false;
+	engine.actors.push(triggerTileL);
+	
 	
 	//map.dig(lastx, lasty, x+w/2, lasty);
 	x1 = engine.mapWidth/2-10;
@@ -325,13 +339,47 @@ void Map::spawnTutorial() {
 	engine.map->tiles[x2-1+y1*engine.map->width].decoration = rng->getInt(45,47);
 	engine.actors.push(server1);
 	createConsole(x2,y1);
+	//make console terminal
+	Actor *triggerTileC = new Actor(x2, y1+1, '.', "Intercom Terminal", TCODColor::white);
+	triggerTileC->ai = new TriggerAi(  
+	//"Welcome to the Astroverius.\n\n"
+	"Above you is a console.\n\n"
+	"Consoles appear in server\n"
+	"rooms.  Upon interacting\n"
+	"with one it will show you\n"
+	"a map of the current deck.\n"
+	"And will print out a copy\n"
+	"for you to take.  Press\n"
+	"\'m\' to take out your\n"
+	"printed map.\n");
+	triggerTileC->blocks = false;
+	engine.actors.push(triggerTileC);
+	
+	
 	
 	dig((x1+x2)/2,y1,(x1+x2)/2,y1-10);//upper hallway
 	dig(x2,(y1+y2)/2,x2+5,(y1+y2)/2);//right hallway
 	dig(x1,(y1+y2)/2,x1-5,(y1+y2)/2);//left dogleg hallway
 	dig(x1-5,(y1+y2)/2,x1-5,y2+3);
+	//make flare
 	Actor *flare = createFlare(x1-5,(y1+y2)/2);
 	engine.actors.push(flare);
+	//make flare terminal
+	Actor *triggerTileF = new Actor(x1-4, (y1+y2)/2, '.', "Intercom Terminal", TCODColor::white);
+	triggerTileF->ai = new TriggerAi(  
+	//"Welcome to the Astroverius.\n\n"
+	"To your left is a flare item.\n\n"
+	"Press \'g\' to pick it up\n"
+	"and then \'i\' to open the\n"
+	"inventory and select the \n"
+	"\'TECH\' tab with \'enter\' to\n"
+	"find the flare and press the\n"
+	"letter next to it to use it\n"
+	"to explore the rooms to the\n"
+	"south. \n");
+	triggerTileF->blocks = false;
+	engine.actors.push(triggerTileF);
+	
 	float flkr = 1.0;
 	Actor *light = new Actor(((x1+x2)/2), ((y1+y2)/2), 224, "A hastily erected Emergency Light", TCODColor::white);
 	light->ai = new LightAi(4,flkr);                //224, crashes when using 224
