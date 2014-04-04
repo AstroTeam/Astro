@@ -22,6 +22,7 @@ Ai *Ai::create(TCODZip &zip) {
 		
 		case VENDING: ai = new VendingAi(); break;
 		case ENGINEER: ai = new EngineerAi(5,5); break;
+	    case TRIGGER: ai = new TriggerAi(); break;
 		case SECURITY: ai = new SecurityBotAi(); break;
 		//
 		
@@ -931,6 +932,31 @@ void EpicenterAi::save(TCODZip &zip) {
 	zip.putInt(EPICENTER);
 }
 
+TriggerAi::TriggerAi(const char *text) {
+	this->text = text;
+	pressed = false;
+}
+TriggerAi::TriggerAi() {
+	pressed = false;
+}
+
+void TriggerAi::load(TCODZip &zip) {
+	text = zip.getString();
+	pressed = zip.getInt();
+}
+
+void TriggerAi::save(TCODZip &zip) {
+	zip.putInt(TRIGGER);
+	zip.putString(text);
+	zip.putInt(pressed);
+}
+
+void TriggerAi::update(Actor *owner) {
+	if (!pressed && engine.player->x == owner->x && engine.player->y == owner->y) {
+		engine.gui->message(TCODColor::yellow, text);
+		pressed = true;
+	}
+}
 
 LightAi::LightAi(int rad, float f)
 {
@@ -2121,8 +2147,6 @@ void EngineerAi::load(TCODZip &zip){
 	turretX = zip.getInt();
 	turretY = zip.getInt();
 	deployRange = zip.getInt();
-	
-	
 }
 
 void EngineerAi::update(Actor *owner)

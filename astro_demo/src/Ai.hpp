@@ -1,4 +1,5 @@
-
+#include <string>
+using namespace std;
 class Ai : public Persistent {
 public:
 	TCODConsole *inventoryScreen;
@@ -8,8 +9,8 @@ public:
 	Actor *choseFromInventory(Actor *owner, int type, bool isVend);
 protected:
 	enum AiType {
-		MONSTER, SECURITY, CONFUSED_ACTOR, PLAYER, EPICENTER, RANGED, LIGHT, 
-		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, CONSOLE, VENDING, ENGINEER
+		MONSTER, SECURITY, CONFUSED_ACTOR, PLAYER, TRIGGER, RANGED, LIGHT, 
+		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, CONSOLE, VENDING, ENGINEER, EPICENTER, 
 
 	};
 };
@@ -84,6 +85,17 @@ protected:
 	void infectLevel(Actor * owner);
 };
 
+class TriggerAi : public Ai {
+public:
+	const char * text;
+	bool pressed;
+	void save(TCODZip &zip);
+	TriggerAi(const char *text);
+	TriggerAi ();
+	void update(Actor * owner);
+	void load(TCODZip &zip);
+
+};
 class LightAi : public Ai {
 public:
 	LightAi(int rad, float f);
