@@ -318,6 +318,14 @@ void Map::spawnTutorial() {
 			map->setProperties(tilex,tiley,true,true);
 		}
 	}
+	//add server and console
+	tiles[x2+y1*engine.mapWidth].tileType = Param::SERVER;
+	tiles[x2-1+y1*engine.mapWidth].tileType = Param::SERVER;
+	Actor * server1 = new Actor(x2-1, y1, 243, "A server", TCODColor::white);
+	engine.map->tiles[x2-1+y1*engine.map->width].decoration = rng->getInt(45,47);
+	engine.actors.push(server1);
+	createConsole(x2,y1);
+	
 	dig((x1+x2)/2,y1,(x1+x2)/2,y1-10);//upper hallway
 	dig(x2,(y1+y2)/2,x2+5,(y1+y2)/2);//right hallway
 	dig(x1,(y1+y2)/2,x1-5,(y1+y2)/2);//left dogleg hallway
@@ -456,11 +464,18 @@ void Map::spawnTutorial() {
 	}
 	//make vending machine
 	createVendor(x1+1, y1);
+	//make brobot
 	Actor *securityBot = createSecurityBot(x1, y1);
 	securityBot->hostile = false;
 	SecurityBotAi *sbAi = (SecurityBotAi*) securityBot->ai;
 	sbAi->vendingX = x1+1;
 	sbAi->vendingY = y1;
+	//make dat $$$
+	Actor *stackOfMoney = createCurrencyStack(x1+1,y1+1);
+	engine.actors.push(stackOfMoney);
+	engine.sendToBack(stackOfMoney);
+	
+	
 	
 	engine.stairs->x = (x1+x2)/2;
 	engine.stairs->y = y1;

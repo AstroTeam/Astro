@@ -882,7 +882,7 @@ void SecurityBotAi::moveOrAttack(Actor *owner, int targetx, int targety){
 		if(vendingAi != NULL && vendingAi->deployedSecurity)
 		{
 			owner->hostile = true;
-			engine.gui->message(TCODColor::red, "Vending Machine Vandalism Deteched: %s Activated!", owner->name);
+			engine.gui->message(TCODColor::red, "Vending Machine Vandalism Detected: %s Activated!", owner->name);
 		}
 		
 	}
