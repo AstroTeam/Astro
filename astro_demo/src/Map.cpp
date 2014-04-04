@@ -829,7 +829,7 @@ Actor* Map::createVendor(int x, int y)
 	vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge,vendorDR,vendorXp);
 	vendor->ai = new VendingAi();
 	vendor->container = new Container(10);
-	generateRandom(vendor, vendorAscii);
+	//generateRandom(vendor, vendorAscii); Vending Machines get populated with items when they are interacted with
 	engine.actors.push(vendor);
 	
 	return vendor;
@@ -2060,7 +2060,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 					}
 				}
 			}
-		}else if(ascii == 165 || ascii == 166){
+		}else if(ascii == 165 || ascii == 166){ //Spore Creature and Mini Spore Creature
 			for(int i = 0; i < owner->container->size; i++){
 				int rndA2 = rng->getInt(0,100);
 				if(rndA2 > 45){
@@ -2154,6 +2154,53 @@ void Map::generateRandom(Actor *owner, int ascii){
 						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
 					}
 				}
+			}
+		}else if(ascii == 134){
+			for(int i = 0; i < owner->container->size; i++){
+				int rndA2 = rng->getInt(0,100);
+				if(rndA2 > 30){
+					int rnd = rng->getInt(0,100);
+					if (rnd < 30) {
+						//create a health potion
+						Actor *healthPotion = createHealthPotion(0,0);
+						engine.actors.push(healthPotion);
+						healthPotion->pickable->pick(healthPotion,owner);
+					} else if(rnd < 10+30) {
+						//create a emp
+						Actor *scrollOfLightningBolt = createEMP(0,0);
+						engine.actors.push(scrollOfLightningBolt);
+						scrollOfLightningBolt->pickable->pick(scrollOfLightningBolt,owner);
+					} else if(rnd < 10+30+20) {
+						//create a flare
+						Actor *flare = createFlare(0,0);
+						engine.actors.push(flare);
+						flare->pickable->pick(flare,owner);
+					}else{
+						//create a Flashbang
+						Actor *scrollOfConfusion = createFlashBang(0,0);
+						engine.actors.push(scrollOfConfusion);
+						scrollOfConfusion->pickable->pick(scrollOfConfusion,owner);
+					}
+				}
+			}
+		}else if(ascii == 129 || ascii == 147){ //Security Bot and Turret
+			int rndA2 = rng->getInt(0,100);
+			if(rndA2 > 50){
+				for(int i = 0; i < owner->container->size; i++){
+					//Fill Inventory with Batteries
+					Actor *battery = createBatteryPack(0,0);
+					engine.actors.push(battery);
+					battery->pickable->pick(battery,owner);
+				}
+			}
+		}else if(ascii == 131){ //Cleaner Bot (aka DJ ROOMBA)
+			int rndA2 = rng->getInt(0,100);
+			if(rndA2 > 60){
+				//Give A Battery
+				Actor *battery = createBatteryPack(0,0);
+				engine.actors.push(battery);
+				battery->pickable->pick(battery,owner);
+			
 			}
 		}
 	}
