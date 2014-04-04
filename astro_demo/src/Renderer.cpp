@@ -972,7 +972,7 @@ void Renderer::render(void *sdlSurface){
 		//cout << "t/f " << (engine.distance(actor->x,engine.player->x,actor->y,engine.player->y) < dist) << endl;
 		//if (engine.map->levelType != Param:TUTORIAL)
 		//{
-		if (engine.distance(actor->x,engine.player->x,actor->y,engine.player->y) < dist){
+		if (engine.level > 0 && engine.distance(actor->x,engine.player->x,actor->y,engine.player->y) < dist){
 			//cout << "initializing light" << endl;
 			
 			LightAi *l = (LightAi*)actor->ai;
