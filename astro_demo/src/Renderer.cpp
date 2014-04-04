@@ -3,6 +3,8 @@
 #include "SDL/SDL.h"
 //#include "SDL/SDL_image.h"
 #include <string>
+#include <iostream>
+using namespace std;
 //0 ->std, 1->blit, 2->nothing
 
 void Renderer::render(void *sdlSurface){
@@ -21,6 +23,7 @@ void Renderer::render(void *sdlSurface){
 	
 	if (engine.menuState == 0)
 	{
+	//cout << "start new frame" << endl;
 	//set fps
 	TCODSystem::setFps(60);
 	//floors
@@ -97,16 +100,21 @@ void Renderer::render(void *sdlSurface){
 	SDL_Rect dstRect1={22*16,0,(engine.mapx2-engine.mapx1)*16+16,(engine.mapy2-engine.mapy1)*16+16};
 	int x = 0, y = 0;
 	int plyx = 0, plyy = 0;
+	//cout << "start main loop" << endl;
 	for (int xM = engine.mapx1; xM < engine.mapx2+16; xM++) {
+		//cout << "xM loop" << endl;
 		for (int yM = engine.mapy1; yM < engine.mapy2+16; yM++) {
-			
+			//cout << xM << " , " << yM << endl;
+			//cout << "yM loop" << endl;
 			//refresh if looking
 			SDL_Rect dstRect={x*16,y*16,16,16};
+			//cout << "looking refresh" << endl;
 			if (TCODConsole::root->getCharBackground(22*16+xM,yM) == TCODColor::darkerPink || //refresh if looking
 				TCODConsole::root->getCharBackground(22*16+xM,yM) == TCODColor::pink)
 			{
 				TCODConsole::root->clear();
 			}
+			//cout << "player refresh/looking over" << endl;
 			//detects where the player is, if it is @, human, alien or robot base
 			if(engine.mapcon->getChar(xM,yM) == 64 || engine.mapcon->getChar(xM,yM) == 143 ||
      		  engine.mapcon->getChar(xM,yM) == 159 || engine.mapcon->getChar(xM,yM) == 175)
@@ -119,10 +127,11 @@ void Renderer::render(void *sdlSurface){
 				}
 				
 			}
+			//cout << "refreshing over, begin floor scans" << endl;
 			//if the tile is a floor
 			if(engine.mapconCpy->getChar(xM,yM) == 31) 
 			{ //replace 'down arrow thing' (31 ascii) with basic floor tiles
-				
+				//cout << "refreshing over, begin floor scans2" << endl;
 				//office floors, can test for any floors
 				int r = engine.map->tileType(xM,yM);
 				if (r == 2)//2 is office
@@ -152,6 +161,10 @@ void Renderer::render(void *sdlSurface){
 				else if (r == 10)//10 is hydroponics
 				{
 					srcRect.x = 176+16;
+				}
+				else if(r == 8)//8 is armory
+				{
+					srcRect.x = 176+16+16+16;
 				}
 				else //else is regular floors
 				{
@@ -212,7 +225,8 @@ void Renderer::render(void *sdlSurface){
 				//everything bodies to render behind
 				if (engine.mapcon->getChar(xM,yM) == 181 || engine.mapcon->getChar(xM,yM) == 182 || engine.mapcon->getChar(xM,yM) == 183 || 
 				engine.mapcon->getChar(xM,yM) == 184 || engine.mapcon->getChar(xM,yM) == 64 || engine.mapcon->getChar(xM,yM) == 164 || 
-				engine.mapcon->getChar(xM,yM) == 165 || engine.mapcon->getChar(xM,yM) == 148 || engine.mapcon->getChar(xM,yM) == 132) 
+				engine.mapcon->getChar(xM,yM) == 165 || engine.mapcon->getChar(xM,yM) == 148 || engine.mapcon->getChar(xM,yM) == 132 ||
+				engine.mapcon->getChar(xM,yM) == 186 || engine.mapcon->getChar(xM,yM) == 198 ||engine.mapcon->getChar(xM,yM) == 169) 
 				{
 					for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {//is walkable?
 						Actor *actor = *it;
@@ -233,6 +247,7 @@ void Renderer::render(void *sdlSurface){
 				
 			}
 			//replace 'up arrow thing' with darker floor tiles
+			
 			else if(engine.mapconCpy->getChar(xM,yM) == 30)
 			{
 				//render office floors, same as lit tiles, just different y value
@@ -264,6 +279,10 @@ void Renderer::render(void *sdlSurface){
 				else if (r == 10 )//10 is hydroponics
 				{
 					srcRect.x = 176+16;
+				}
+				else if(r == 8)//8 is armory
+				{
+					srcRect.x = 176+16+16+16;
 				}
 				else
 				{
@@ -315,9 +334,9 @@ void Renderer::render(void *sdlSurface){
 				}*/
 			}
 			
+			//cout << "refreshing over, begin floor scans3" << endl;
 			
-			
-			
+			//cout << "done with floors" << endl;
 			//OPTIMIZE ME -->  COMMON CASE IS SLOW
 			
 			//shadows, always after tiles
@@ -371,10 +390,17 @@ void Renderer::render(void *sdlSurface){
 				SDL_BlitSurface(shadows,&srcRect,floorMap,&dstRect);
 			}
 			//render all decorations
+			//cout << "decor start" << endl;
+			//PROBLEM IN HERE BRO!
+			//cout << (engine.map->tiles[19+110*engine.map->width].decoration != 0) << endl;
+			//cout << "decor NOT rendering at ( "<< xM << "," << yM << ")" << endl;
 			if((engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN) && 
-			engine.map->tiles[xM+yM*engine.map->width].decoration != 0 && engine.map->tiles[xM+yM*engine.map->width].explored)
+			(engine.map->tiles[xM+yM*engine.map->width].decoration != 0) && (engine.map->tiles[xM+yM*engine.map->width].explored))
 			{
-			
+				//cout << "decor rendering at ( "<< xM << "," << yM << ")" << endl;
+				//if (xM <= 100 && yM <= 100)
+				//{
+					//cout << "decor rendering at ( "<< xM << "," << yM << ") which is less than 100" << endl;
 				///////////////////////////////////////////////////////////////////////////////////OFFICE
 				if (engine.map->tileType(xM,yM) == 2)
 				{
@@ -685,10 +711,12 @@ void Renderer::render(void *sdlSurface){
 					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 100)//server destroyed
 					{
 						
-						srcRect.x = 21*16;
+						srcRect.x = 22*16;
 					}
-					
+					//if(engine.map->tiles[xM+yM*engine.map->width].decoration != 0)
+					//{
 					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					//}
 					TCODRandom *rng =TCODRandom::getInstance();
 					if((engine.map->tiles[xM+yM*engine.map->width].decoration == 45 ||
 					   engine.map->tiles[xM+yM*engine.map->width].decoration == 46 ||
@@ -708,13 +736,104 @@ void Renderer::render(void *sdlSurface){
 					}
 					
 				}
-				
+				//////////////////////////////////////////////////////////////////////MESSHALL
+				if (engine.map->tileType(xM,yM) == 7)//|| engine.map->tileType(xM,yM) == 1)
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.y=0;
+					}else{
+						//dark/*commet*/
+						srcRect.y=16;
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 49)//chair
+					{
+						
+						srcRect.x = 18*16;
+						
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 50)//table
+					{
+						
+						srcRect.x = 19*16;
+						
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 51)//table
+					{
+						
+						srcRect.x = 20*16;
+						
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 52)//table
+					{
+						
+						srcRect.x = 21*16;
+						
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 53)//trash can
+					{
+						
+						srcRect.x = 22*16;
+						
+					}
+					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+				}
+				////////////////////////////////////////////////////////////////////ARMORY
+				if (engine.map->tileType(xM,yM) == 8)//|| engine.map->tileType(xM,yM) == 1)
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.x=0;
+					}else{
+						//dark/*commet*/
+						srcRect.x=16;
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 54)//gun rack
+					{
+						
+						srcRect.y = 5*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 55)//battery rack
+					{
+						
+						srcRect.y = 6*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 56)//vault
+					{
+						
+						srcRect.y = 7*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					
+				}
+				////////////////////////////////////////////////////////////////////HYDROPONICS
+				if (engine.map->tileType(xM,yM) == 10)//|| engine.map->tileType(xM,yM) == 1)
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.y=32;
+					}else{
+						//dark/*commet*/
+						srcRect.y=48;
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 48)//hydro rack
+					{
+						
+						srcRect.x = 21*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					
+				//}
+				}
 			}
 			
-			
+			//cout << "decor end" << endl;
 			//TCODRandom *rng = TCODRandom::getInstance();
 			//fireInt = rng->getInt(0,3);
 			//add environment stuffs-> over things here (fire)
+			//cout << "fire start" << endl;
 			if ((engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN) && engine.map->tiles[xM+yM*engine.map->width].envSta != 0)
 			{
 				//fire
@@ -747,6 +866,7 @@ void Renderer::render(void *sdlSurface){
 				
 				
 			}
+			//cout << "fire end" << endl;
 			
 			
 			
@@ -757,12 +877,13 @@ void Renderer::render(void *sdlSurface){
 		y=0;
 		x++;
 	}
+	//cout << "ending main loop" << endl;
 	//fire animating
 	slowing++;
 	if (slowing%5 == 0)
 	fireInt++;
 	
-	
+	//cout << "beginning shadows" << endl;
 	//OPTIMIZE ME?  INCLUDE IN PREVIOUS LOOP?, CAN'T, MUST BE AFTER ALL TILES :(
 	int x1 = 0, y1 = 0;
 	for (int xM = engine.mapx1; xM < engine.mapx2+16; xM++) {
@@ -829,23 +950,41 @@ void Renderer::render(void *sdlSurface){
 		y1=0;
 		x1++;
 	}
-	
+	//cout << "beginning lights" << endl;
 	//flicker lights
+	//CAUSES CRASHES IN TUTORIAL LEVEL
+	//cout << "running through actors list" << endl;
 	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+		//cout << "initializing actor" << endl;
 		Actor *actor = *it;
 		//if (actor->x ==x && actor->y == y) {
 		//	return actor;
 		//}
-		if (actor->ch == 224 && engine.distance(actor->x,engine.player->x,actor->y,engine.player->y) < 11){
+		//cout << "processing new light" << endl;
+		if (actor->ch == 224){
+		//cout << actor->name << endl;
+		//cout << "light x  " << actor->x << endl;
+		//cout << "player x " << actor->y << endl;
+		//cout << "light y  " << engine.player->x << endl;
+		//cout << "player y " << engine.player->y << endl;
+		//cout << "distance: " << engine.distance(actor->x,engine.player->x,actor->y,engine.player->y) << endl;
+		float dist = 11.0;
+		//cout << "t/f " << (engine.distance(actor->x,engine.player->x,actor->y,engine.player->y) < dist) << endl;
+		//if (engine.map->levelType != Param:TUTORIAL)
+		//{
+		if (engine.level > 0 && engine.distance(actor->x,engine.player->x,actor->y,engine.player->y) < dist){
+			//cout << "initializing light" << endl;
+			
 			LightAi *l = (LightAi*)actor->ai;
-			/*if (!l->onOff)
-			{
-				l->onOff = true;
-				l->update(actor);
-			}
-			TCODRandom *myRandom = new TCODRandom();
-			float rng = myRandom->getFloat(0.0000f,1.0000f);
-			l->flicker(actor,rng);*/
+			//cout << "initialized ai" << endl;
+			//if (!l->onOff)
+			//{
+			//	l->onOff = true;
+			//	l->update(actor);
+			//}
+			//TCODRandom *myRandom = new TCODRandom();
+			//float rng = myRandom->getFloat(0.0000f,1.0000f);
+			//l->flicker(actor,rng);
 			TCODRandom *myRandom = new TCODRandom();
 			float rng = myRandom->getFloat(0.0000f,1.0000f,0.65000f);
 			if(l->flkr < rng || l->onAgn)
@@ -855,6 +994,9 @@ void Renderer::render(void *sdlSurface){
 				l->onAgn = !l->onAgn;
 			}
 		}
+		}
+		//}
+		//cout << "done with light" << endl;
 		
 	}
 	

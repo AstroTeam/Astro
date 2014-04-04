@@ -705,6 +705,7 @@ void Engine::init() {
 	stairs->blocks = false;
 	actors.push(stairs);
 	map = new Map(mapWidth, mapHeight);
+	//map->init(true, Param::TUTORIAL);
 	map->init(true, Param::GENERIC);
 	gui->message(TCODColor::red, "Welcome to Astroverius Station! Warning unknown alien life form detected!");
 	gui->message(TCODColor::blue,"You appear to be a %s %s %s. Your experience will be needed to complete this journey.", player->race, player->role, player->job);
@@ -872,7 +873,6 @@ void Engine::update() {
 	gameStatus = IDLE;
 	TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS, &lastKey, NULL); //delete the mouse stuff to remove mouse look (change &mouse to NULL)
 	if (lastKey.vk == TCODK_ESCAPE) {
-		//save();  why save automatically every time escape is called?
 		load(true);
 	} 
 	player->update();
@@ -884,9 +884,8 @@ void Engine::update() {
 	}
 	if (gameStatus == NEW_TURN){
 		engine.turnCount++;
-		if (engine.player->hunger > 0 && engine.turnCount > 0 && (engine.turnCount)%2 == 0){
-			engine.player->hunger -= 1;
-		}
+		player->getHungry();
+		player->updateAuras();
 		for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 			Actor *actor = *iterator;
 			if ( actor != player) {
@@ -1024,7 +1023,7 @@ void Engine::nextLevel() {
 	
 	gui->message(TCODColor::lightViolet, "Sitting at the top of the stairs, you take a brief moment to rest...");
 	player->destructible->heal(player->destructible->maxHp/2);
-	gui->message(TCODColor::red,"Gathering your courage, you rush down the dungeon stairs, mindful that greater dangers may lurk below...");
+	gui->message(TCODColor::red,"Gathering your courage, you rush into the station's teleporter, mindful that greater dangers may lurk beyond...");
 	
 	delete map;
 	//delete all actors but player and stairs
@@ -1037,7 +1036,15 @@ void Engine::nextLevel() {
 	//engine.mapconDec->clear();
 	//create a new map
 	map = new Map(mapWidth,mapHeight);
-	map->init(true, Param::GENERIC);
+	
+	TCODRandom * levelRng = TCODRandom::getInstance();
+	if (0 == levelRng->getInt(0,8)) {
+		map->init(true, Param::OFFICE_FLOOR);
+	}
+	else
+	{
+		map->init(true, Param::GENERIC);
+	}
 	gameStatus = STARTUP;
 	save();
 }

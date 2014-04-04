@@ -2,6 +2,7 @@
 #include "SDL/SDL.h"
 class Actor;
 #include "Persistent.hpp"
+#include "Aura.hpp"
 #include "Destructible.hpp"
 #include "Attacker.hpp"
 #include "Ai.hpp"
