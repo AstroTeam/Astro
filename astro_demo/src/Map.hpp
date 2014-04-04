@@ -75,6 +75,7 @@ public:
 	void init(bool withActors, LevelType levelType = GENERIC);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
+	bool isVisible(int x, int y);
 	
 	int tileType(int x, int y);
 	//int tileInf(int x, int y);

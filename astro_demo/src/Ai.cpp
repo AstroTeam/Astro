@@ -487,7 +487,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			if(owner->container->ranged){
 				//engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
 				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,10);
-				if (!closestMonster || !(engine.mapcon->getCharForeground(closestMonster->x,closestMonster->y) == TCODColor::white) || !(engine.map->isExplored(closestMonster->x,closestMonster->y))) {
+				if (!closestMonster || !(engine.map->isVisible(closestMonster->x, closestMonster->y))) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
 					return;
 				}
@@ -521,7 +521,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					return;
 				}
 				Actor *actor = engine.getActor(x,y);
-				if (!actor || !(engine.mapcon->getCharForeground(actor->x,actor->y) == TCODColor::white || !(engine.map->isExplored(actor->x,actor->y)))) {
+				if (!actor || !(engine.map->isVisible(actor->x, actor->y))) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy in sight at that location.");
 					return;
 				}
@@ -2255,3 +2255,4 @@ void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
 	}
 
 }
+

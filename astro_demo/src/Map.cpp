@@ -2199,3 +2199,7 @@ Actor *Map::createArtifact(int x, int y){
 	engine.sendToBack(artifact);
 	return artifact;
 }
+
+bool Map::isVisible(int x, int y){
+	return (engine.mapcon->getCharForeground(x,y) == TCODColor::white) && (engine.map->isExplored(x,y));
+}
