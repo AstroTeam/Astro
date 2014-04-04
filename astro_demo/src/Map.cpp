@@ -116,7 +116,7 @@ void Map::init(bool withActors, LevelType levelType) {
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
-	
+	cout << width << " , " << height << endl;
 	if (levelType != TUTORIAL) {
 		TCODBsp bsp(0,0,width,height);
 		bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
@@ -293,6 +293,7 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 void Map::spawnTutorial() {
 	//this resets the level so it'll be 1 for the real level 1
 	engine.level = 0;
+	cout << engine.mapWidth << " , " << engine.mapHeight << endl;
 	int x1 = engine.mapWidth/2-6;
 	int x2 = engine.mapWidth/2+6;
 	int y1 = engine.mapHeight-12;
@@ -318,15 +319,91 @@ void Map::spawnTutorial() {
 	}
 	dig(x1,(y1+y2)/2,x1-5,(y1+y2)/2);//left dogleg hallway
 	dig(x1-5,(y1+y2)/2,x1-5,y2+3);
-	Actor *light = new Actor((x1+x2)/2, (y1+y2)/2, 224, "A hastily erected Emergency Light", TCODColor::white);
-	light->ai = new LightAi(4,1);                //224, crashes when using 224
+	Actor *flare = createFlare(x1-5,(y1+y2)/2);
+	engine.actors.push(flare);
+	float flkr = 1.0;
+	Actor *light = new Actor(((x1+x2)/2), ((y1+y2)/2), 224, "A hastily erected Emergency Light", TCODColor::white);
+	light->ai = new LightAi(4,flkr);                //224, crashes when using 224
 	engine.actors.push(light);
-	Actor *light2 = new Actor((x1+x2)/2+5, (y1+y2)/2, 224, "A hastily erected Emergency Light", TCODColor::white);
-	light2->ai = new LightAi(4,1);                //224, crashes when using 224
-	engine.actors.push(light2);
-	Actor *light3 = new Actor((x1+x2)/2-5, (y1+y2)/2, 224, "A hastily erected Emergency Light", TCODColor::white);
-	light3->ai = new LightAi(4,1);                //224, crashes when using 224
-	engine.actors.push(light3);
+	//Actor *light2 = new Actor(((x1+x2)/2+5), ((y1+y2)/2), 224, "A hastily erected Emergency Light-right", TCODColor::white);
+	//light2->ai = new LightAi(4,flkr);                //224, crashes when using 224
+	//engine.actors.push(light2);
+	//Actor *light3 = new Actor(((x1+x2)/2-5), ((y1+y2)/2), 224, "A hastily erected Emergency Light-left", TCODColor::white);
+	//light3->ai = new LightAi(4,flkr);                //224, crashes when using 224
+	//engine.actors.push(light3);
+	
+	x1 = engine.mapWidth/2-12-5;
+	x2 = engine.mapWidth/2-8-5;
+	y1 = engine.mapHeight-11-8;
+	y2 = engine.mapHeight-7-8;
+	for (int tilex = x1; tilex <=x2; tilex++) {//side room upper
+		for (int tiley = y1; tiley <= y2; tiley++) {
+
+			map->setProperties(tilex,tiley,true,true);
+			tiles[tilex+tiley*engine.mapWidth].tileType = Param::KITCHEN;
+		}
+	}
+	Actor * counter = new Actor(x1, y1,243,"Kitchen Counter", TCODColor::white);
+	engine.map->tiles[x1+y1*engine.map->width].decoration = 35;
+	engine.actors.push(counter);
+	Actor * counter2 = new Actor(x1+1, y1,243,"Kitchen Counter", TCODColor::white);
+	engine.map->tiles[x1+1+y1*engine.map->width].decoration = 35;
+	engine.actors.push(counter2);
+	Actor * counter3 = new Actor(x1+3, y1,243,"Kitchen Counter", TCODColor::white);
+	engine.map->tiles[x1+3+y1*engine.map->width].decoration = 35;
+	engine.actors.push(counter3);
+	Actor * counter4 = new Actor(x1+4, y1,243,"Kitchen Counter", TCODColor::white);
+	engine.map->tiles[x1+4+y1*engine.map->width].decoration = 35;
+	engine.actors.push(counter4);
+	Actor *sink = new Actor(x1+2, y1+2,243,"Industrial Sink", TCODColor::white);
+	engine.map->tiles[x1+2+(y1+2)*engine.map->width].decoration = 38;
+	engine.actors.push(sink);
+	Actor *sink2 = new Actor(x1+2, y1+3,243,"Industrial Sink", TCODColor::white);
+	engine.map->tiles[x1+2+(y1+3)*engine.map->width].decoration = 37;
+	engine.actors.push(sink2);
+	
+	
+	Actor * pcmu4 = new Actor(x2, y1+3, 243, "PCMU Food Processor", TCODColor::white);
+	engine.map->tiles[x2+(y1+3)*engine.map->width].decoration = 44;
+	engine.actors.push(pcmu4);
+	
+	
+	dig((x1+x2)/2,y2,(x1+x2)/2,engine.mapHeight-11);//side room connector
+	
+	x1 = engine.mapWidth/2-12-5;
+	x2 = engine.mapWidth/2-8-5;
+	y1 = engine.mapHeight-11;
+	y2 = engine.mapHeight-7;
+	for (int tilex = x1; tilex <=x2; tilex++) {//side room lower
+		for (int tiley = y1; tiley <= y2; tiley++) {
+
+			map->setProperties(tilex,tiley,true,true);
+			tiles[tilex+tiley*engine.mapWidth].tileType = Param::OFFICE;
+		}
+	}
+	Actor * cabinet = new Actor(x1,y1,243,"a filing cabinet", TCODColor::white);
+	engine.map->tiles[x1+y1*engine.map->width].decoration = -2;
+	engine.actors.push(cabinet);
+	Actor * cabinet1 = new Actor(x1+1,y1,243,"a filing cabinet", TCODColor::white);
+	engine.map->tiles[x1+1+y1*engine.map->width].decoration = -2;
+	engine.actors.push(cabinet1);
+	Actor * cabinet2 = new Actor(x1+3,y1,243,"a filing cabinet", TCODColor::white);
+	engine.map->tiles[x1+3+y1*engine.map->width].decoration = -2;
+	engine.actors.push(cabinet2);
+	Actor * cabinet3 = new Actor(x1+4,y1,243,"a filing cabinet", TCODColor::white);
+	engine.map->tiles[x1+4+y1*engine.map->width].decoration = -2;
+	engine.actors.push(cabinet3);
+	Actor * desk = new Actor(x1+1+1,y1+2,243,"A desk with an angled computer", TCODColor::white);
+	engine.map->tiles[x1+1+1+(y1+2)*engine.map->width].decoration = 3;
+	engine.actors.push(desk);
+	Actor * desk2 = new Actor(x1+1+1+1+1,y1+3,243,"A desk with a ruined computer", TCODColor::white);
+	engine.map->tiles[x1+1+1+1+1+(y1+3)*engine.map->width].decoration = 1;
+	engine.actors.push(desk2);
+	
+	Actor *lightOf = new Actor(x1+3, y1+2, 224, "A hastily erected Emergency Light", TCODColor::white);
+	lightOf->ai = new LightAi(4,flkr);                //224, crashes when using 224
+	engine.actors.push(lightOf);
+	
 	
 	engine.stairs->x = (x1+x2)/2;
 	engine.stairs->y = y1;
