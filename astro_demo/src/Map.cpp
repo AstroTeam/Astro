@@ -316,7 +316,7 @@ void Map::spawnTutorial() {
 	"them by pressing the\n"
 	"corresponding movement key\n"
 	"whilst being adjacent to it.\n"
-	"Like the automated terminals.\n"
+	"(Like these automated terminals)\n"
 	);
 	triggerTileI->blocks = false; 
 	engine.actors.push(triggerTileI);
@@ -338,10 +338,10 @@ void Map::spawnTutorial() {
   //"Welcome to the Astroverius.    \n\n"
 	"HEALTH/XP BASICS\n\n"
 	"In the top left is your health\n"
-	"and XP bar (as well as others)\n"
-	"keep an eye out, because if\n"
-	"your health reaches 0 you die\n"
-	"and cannot continue, and all\n"
+	"and XP bar (as well as others)\n\n"
+	"Keep an eye out: if\n"
+	"your health reaches 0, you die\n"
+	"and cannot continue. All\n"
 	"saves are deleted.  Your XP\n"
 	"goes up when fighting enemies\n"
 	"and when reaches it's max\n"
@@ -368,10 +368,10 @@ void Map::spawnTutorial() {
   //"Welcome to the Astroverius.    \n\n"
 	"LOOKING BASICS\n\n"
 	"Pressing the \'l\' key will\n"
-	"allow you to look around and\n"
-	"all info about the tile you\n"
+	"allow you to look around.\n"
+	"All info about the tile you\n"
 	"are looking at will display in\n"
-	"the \"tile info screen\" to \n"
+	"the \"tile info\" screen in \n"
 	"the bottom right.  Press\n"
 	"\'ENTER\' to escape the look\n"
 	"command.\n"
@@ -418,8 +418,9 @@ void Map::spawnTutorial() {
 	"To the right is a range where\n"
 	"you can test your mettle\n"
 	"against some target dummies.\n\n"
-	"To the north is the teleporter\n"
-	"a.k.a the exit to the deck.\n");
+	"To the north is the \n"
+	"teleporter: the exit to the\n"
+	"deck.");
 	triggerTileLR->blocks = false;
 	engine.actors.push(triggerTileLR);
 	
@@ -440,7 +441,7 @@ void Map::spawnTutorial() {
 	"Above you is a console.\n"
 	"Consoles appear in server\n"
 	"rooms.  Upon interacting\n"
-	"with one it will show you\n"
+	"with one, it will show you\n"
 	"a map of the current deck.\n"
 	"And will print out a copy\n"
 	"for you to take.  Press\n"
@@ -494,12 +495,12 @@ void Map::spawnTutorial() {
 	triggerTileF->ai = new TriggerAi(  
 	//"Welcome to the Astroverius.\n\n"
 	"FLARE/ITEM BASICS.\n\n"
-	"To your left is a flare item.\n"
+	"To your left is a flare.\n"
 	"Press \'g\' to pick it up\n"
 	"and then \'i\' to open the\n"
-	"inventory and select the \n"
+	"inventory. Select the \n"
 	"\'TECH\' tab with \'enter\' to\n"
-	"find the flare and press the\n"
+	"find the flare. Press the\n"
 	"letter next to it to use it\n"
 	"to explore the rooms to the\n"
 	"south. \n");
@@ -545,11 +546,11 @@ void Map::spawnTutorial() {
 	triggerTileK->ai = new TriggerAi(  
 	//"Welcome to the Astroverius.\n\n"
 	"FOOD BASICS.\n\n"
-	"Kitchen's have food machines.\n"
-	"Interact to the one to the \n"
-	"right to be dispensed some\n"
+	"Kitchens have food machines.\n\n"
+	"Interact with the one on the \n"
+	"right to dispense some\n"
 	"food to increase your hunger\n"
-	"bar and avert losing stats\n"
+	"bar. This averts losing stats\n"
 	"and health from being too\n"
 	"hungry.\n");
 	triggerTileK->blocks = false; 
@@ -605,8 +606,8 @@ void Map::spawnTutorial() {
 	"Notice this room's lighting.\n"
 	"The light to the right of  \n"
 	"the desk is shining light\n"
-	"on the desk, but it has cast  \n"
-	"a shadow.  (to the left)\n"
+	"on the desk, but the desk has \n"
+	"cast a shadow to the left.\n"
 	"Use this breaking of FOV\n"
 	"to your advantage in Astro.\n");
 	triggerTileSh->blocks = false; 
@@ -690,7 +691,7 @@ void Map::spawnTutorial() {
   //"Welcome to the Astroverius.    \n\n"
 	"MLR BASICS\n\n"
 	"All weapons, usually a \n"
-	"Modular Laser Rifle or \"MLR\",\n"
+	"Modular Laser Rifle, or \"MLR\",\n"
 	"cleared for use on the Astro\n"
 	"are laser based to prevent hull\n"
 	"damage.  As such you need to \n"
@@ -797,7 +798,7 @@ void Map::spawnTutorial() {
 	"this room to get the hang of\n"
 	"it.  Good Luck.\n\n"
 	"Press \'g\' when standing over\n"
-	"a terminal to replay it's\n"
+	"a terminal to replay its\n"
 	"message.\n"
 	);
 	
