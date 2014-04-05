@@ -967,7 +967,7 @@ void TriggerAi::update(Actor *owner) {
 		pressed = true;
 		//TCODConsole::flush();
 		int PAUSE_MENU_WIDTH = 32;
-		int PAUSE_MENU_HEIGHT = 15;
+		int PAUSE_MENU_HEIGHT = 16;
 		
 		int menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
 		int menuy = engine.screenHeight / 2 - PAUSE_MENU_HEIGHT / 2;
