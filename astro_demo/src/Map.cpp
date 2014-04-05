@@ -316,7 +316,8 @@ void Map::spawnTutorial() {
 	"them by pressing the\n"
 	"corresponding movement key\n"
 	"whilst being adjacent to it.\n"
-	"(Like these automated terminals)\n"
+	"(Like these automated\n"
+	"terminals)\n"
 	);
 	triggerTileI->blocks = false; 
 	engine.actors.push(triggerTileI);
@@ -656,6 +657,9 @@ void Map::spawnTutorial() {
 		engine.actors.push(pcmu2);
 		Actor * dummy = new Actor(x2-1, tiley, 'd', "Target Dummy", TCODColor::white);
 		//engine.map->tiles[x1+2+tiley*engine.map->width].decoration = 55;
+		//engine.actors.push(dummy);
+		engine.map->tiles[x2-1+tiley*engine.map->width].decoration = 23;
+		dummy->destructible = new MonsterDestructible(10,0,0,1);
 		engine.actors.push(dummy);
 	}
 	//fence
