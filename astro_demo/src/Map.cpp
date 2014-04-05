@@ -724,6 +724,8 @@ void Map::spawnTutorial() {
 	"in the middle  of anything.\n"
 	"Find the teleporter pad in\n"
 	"each deck to advance.\n"
+	"Press \'SHIFT+>\' to use\n"
+	"the stairs.\n"
 	);
 	triggerTileSta->blocks = false; 
 	engine.actors.push(triggerTileSta);
@@ -808,6 +810,7 @@ void Map::spawnTutorial() {
 	engine.playerLight->blocks = false;
 	//playerLight->ai->moving = true;
 	engine.sendToBack(engine.playerLight);
+	
 }
 
 void Map::addMonster(int x, int y, bool isHorde) {
