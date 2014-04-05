@@ -307,9 +307,18 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 						engine.gui->message(TCODColor::red, "Your inventory is full.");
 					}
 				}
+				//exception for terminal's to replay their message
+				if ((actor->ch == 227 || actor->ch == 228) && actor->x == owner->x && actor->y == owner->y)
+				{
+					found = true;
+					TriggerAi* t = (TriggerAi*)actor->ai;
+					t->pressed = false;
+					engine.gui->message(TCODColor::lightGrey,"The terminal replayed it's message.");
+					actor->ai->update(actor);
+				}
 			}
 			if (!found) {
-				engine.gui->message(TCODColor::lightGrey,"There's nothing interesting here.");
+					engine.gui->message(TCODColor::lightGrey,"There's nothing interesting here.");
 			}
 			if (engine.gameStatus != Engine::VICTORY) {
 				engine.gameStatus = Engine::NEW_TURN;
