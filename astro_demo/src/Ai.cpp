@@ -498,7 +498,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			if(owner->container->ranged){
 				//engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
 				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,10);
-				if (!closestMonster || !(engine.map->isVisible(closestMonster->x, closestMonster->y))) {
+				if ( !(owner->hostile||closestMonster->hostile) || !closestMonster || !(engine.map->isVisible(closestMonster->x, closestMonster->y))) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
 					return;
 				}
