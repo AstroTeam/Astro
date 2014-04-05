@@ -764,11 +764,13 @@ void Engine::load(bool pause) {
 	if (!pause) {
 	engine.gui->menu.addItem(Menu::NEW_GAME, "NEW GAME");
 	}
-	else if (level > 0){
+	//else if (level > 0){
+	else {	
 		engine.gui->menu.addItem(Menu::MAIN_MENU, "MAIN MENU");
 	}
 	
-	if (pause && level>0) {
+	//if (pause && level>0) {
+	if (pause){		
 		engine.gui->menu.addItem(Menu::SAVE, "SAVE");
 	}
 	if(TCODSystem::fileExists("game.sav")) {
