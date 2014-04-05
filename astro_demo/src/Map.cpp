@@ -1591,6 +1591,9 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					//engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
 					engine.map->tiles[(x1+x2)/2+i*engine.map->width].decoration = 23;
 					locker->destructible = new MonsterDestructible(1,0,0,0);
+					locker->ai = new LockerAi();
+					locker->hostile = false;
+					locker->interact = true;
 					locker->container = new Container(3);
 					generateRandom(locker,243);
 					engine.actors.push(locker);
@@ -1598,6 +1601,9 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					//engine.mapconDec->setChar(((x1+x2)/2)+1,i, 23);//Locker
 					engine.map->tiles[(((x1+x2)/2)+1)+i*engine.map->width].decoration = 23;
 					locker2->destructible = new MonsterDestructible(1,0,0,0);
+					locker2->ai = new LockerAi();
+					locker2->hostile = false;
+					locker2->interact = true;
 					locker2->container = new Container(3);
 					generateRandom(locker2,243);
 					engine.actors.push(locker2);
@@ -1608,6 +1614,9 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					//engine.mapconDec->setChar((x1+x2)/2,i, 23);//Locker
 					engine.map->tiles[(x1+x2)/2+i*engine.map->width].decoration = 23;
 					locker->destructible = new MonsterDestructible(1,0,0,0);
+					locker->ai = new LockerAi();
+					locker->hostile = false;
+					locker->interact = true;
 					locker->container = new Container(3);
 					generateRandom(locker,243);
 					engine.actors.push(locker);

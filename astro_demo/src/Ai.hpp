@@ -10,7 +10,7 @@ public:
 protected:
 	enum AiType {
 		MONSTER, SECURITY, CONFUSED_ACTOR, PLAYER, TRIGGER, RANGED, LIGHT, 
-		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, CONSOLE, VENDING, ENGINEER, EPICENTER, 
+		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, CONSOLE, VENDING, ENGINEER, EPICENTER, LOCKER
 
 	};
 };
@@ -243,5 +243,14 @@ public:
 	void save(TCODZip &zip);
 	void interaction(Actor *owner, Actor *target);
 	
+};
+
+class LockerAi: public InteractibleAi{
+public:
+	LockerAi();
+	void update();
+	void save(TCODZip &zip);
+	void load(TCODZip &zip);
+	void interaction(Actor *owner, Actor *target);
 };
 
