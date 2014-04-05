@@ -24,6 +24,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case ENGINEER: ai = new EngineerAi(5,5); break;
 	    case TRIGGER: ai = new TriggerAi(); break;
 		case SECURITY: ai = new SecurityBotAi(); break;
+		case TURRETCONTROL: ai = new TurretControlAi(); break;
 		//
 		
 	}
@@ -1691,17 +1692,23 @@ void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 TurretAi::TurretAi()
 {
 	range = 5;
+	controlX = -1;
+	controlY = -1;
 }
 
 void TurretAi::load(TCODZip &zip) {
 
 	range = zip.getInt();
+	controlX = zip.getInt();
+	controlY = zip.getInt();
 	
 }
 
 void TurretAi::save(TCODZip &zip) {
 	zip.putInt(TURRET);
 	zip.putInt(range);
+	zip.putInt(controlX);
+	zip.putInt(controlY);
 }
 void TurretAi::update(Actor *owner)
 {
@@ -1713,21 +1720,83 @@ void TurretAi::update(Actor *owner)
 	
 	if (engine.map->isInFov(owner->x,owner->y)) 
 	{
-		//can see the palyer, move towards him
-		attack(owner, engine.player->x, engine.player->y);
+		if(controlX != -1 && controlY != -1)
+		{
+			Actor *tc = engine.getAnyActor(controlX, controlY);
+			TurretControlAi *ai = NULL;
+			if(tc)
+				ai = (TurretControlAi*)tc->ai;
+			if(tc && ai && ai->attackMode == 0)
+			{
+			}
+			else if (tc && ai && ai->attackMode == 1) //attack only the player mode
+			{
+				attack(owner, engine.player);
+			}
+			else if(tc && ai && ai->attackMode == 2) //frenzy mode, turrets attack any nearby NPC, including the player
+			{
+				Actor *closest = NULL;
+				float bestDistance = 1E6f;
+				for (Actor **iterator = engine.actors.begin(); iterator != engine.actors.end(); iterator++) 
+				{
+					Actor *actor = *iterator;
+					const char* name = actor->name;
+					if (actor->destructible && actor != tc && !actor->destructible->isDead() && strcmp(name, "infected corpse") != 0 && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24 && actor->ch != 225 && actor->ch != 226) //243 = locker
+					{
+						float distance = actor->getDistance(owner->x,owner->y);
+						if (distance < bestDistance && (distance <= range || range ==0.0f)) 
+						{
+							bestDistance = distance;
+							closest = actor;
+						}
+					}
+				}
+				
+				if(closest)
+					attack(owner, closest);
+				
+			}
+			else if(tc && ai && ai->attackMode == 3) //turrets only attack the non-enemy players
+			{
+				Actor *closest = NULL;
+				float bestDistance = 1E6f;
+				for (Actor **iterator = engine.actors.begin(); iterator != engine.actors.end(); iterator++) 
+				{
+					Actor *actor = *iterator;
+					const char* name = actor->name;
+					if (actor->destructible && actor != engine.player && actor != tc && !actor->destructible->isDead() && strcmp(name, "infected corpse") != 0 && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24 && actor->ch != 225 && actor->ch != 226) //243 = locker
+					{
+						float distance = actor->getDistance(owner->x,owner->y);
+						if (distance < bestDistance && (distance <= range || range ==0.0f)) 
+						{
+							bestDistance = distance;
+							closest = actor;
+						}
+					}
+				}
+				
+				if(closest)
+					attack(owner, closest);
+			}		
+		}
+		else
+			attack(owner, engine.player);
 	}
 }
 
-void TurretAi::attack(Actor *owner, int targetx, int targety)
+void TurretAi::attack(Actor *owner, Actor *target)
 {
+	int targetx = target->x;
+	int targety = target->y;
 	int dx = targetx - owner->x;
 	int dy = targety - owner->y;
 	float distance = sqrtf(dx*dx+dy*dy);
 	
 	if(distance <= range && owner->attacker) //turrets can only attack the player if they are in the range
 	{
-		owner->attacker->shoot(owner,engine.player);
-		engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDodge);
+		owner->attacker->shoot(owner,target);
+		if(target == engine.player)
+			engine.damageReceived += (owner->totalDex - target->destructible->totalDodge);
 	}
 }
 
@@ -1897,6 +1966,91 @@ void InteractibleAi::update(Actor *owner){
 }
 
 void InteractibleAi::interaction(Actor *owner, Actor *target){
+}
+
+TurretControlAi::TurretControlAi()
+{
+	attackMode = 1;
+}
+
+void TurretControlAi::save(TCODZip &zip)
+{
+	zip.putInt(TURRETCONTROL);
+	zip.putInt(attackMode);
+}
+
+void TurretControlAi::load(TCODZip &zip)
+{
+	attackMode = zip.getInt();
+}
+
+void TurretControlAi::update(Actor *owner)
+{
+}
+
+void TurretControlAi::interaction(Actor *owner, Actor *target)
+{
+	int intelReqToFrenzy = 1;
+	int intelReqToDis = 2;
+	int intelReqToFriendly = 5;
+	bool choice_made = false, first = true;
+	while (!choice_made) 
+	{
+		if (first) {
+			TCODConsole::flush();
+		}
+		engine.gui->menu.clear();
+		engine.gui->menu.addItem(Menu::DISABLE_TURRETS, "Disable all turrets in this room.");
+		engine.gui->menu.addItem(Menu::DISABLE_IFF, "Disable IFF for all turrets in this room.");
+		engine.gui->menu.addItem(Menu::IDENTIFY_FRIENDLY, "Disable IFF except identify yourself \n as friendly for all turrets in this room");
+		engine.gui->menu.addItem(Menu::EXIT, "Exit");
+		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::TURRET_CONTROL);
+		switch (menuItem) {
+			case Menu::DISABLE_TURRETS:
+				if(engine.player->intel >= intelReqToDis)
+				{
+					attackMode = 0;
+					engine.gui->message(TCODColor::orange, "Turrets in this room have been disabled.");
+				}
+				else
+				{
+					engine.gui->message(TCODColor::orange, "You don't quite understand what you're doing, nothing has changed.");
+				}
+				choice_made = true;
+				break;
+			case Menu::DISABLE_IFF :
+				if(engine.player->intel >= intelReqToFrenzy)
+				{
+					attackMode = 2;
+					engine.gui->message(TCODColor::orange, "Turrets in this room have become hostile to all.");
+				}
+				else
+				{
+					engine.gui->message(TCODColor::orange, "You don't quite understand what you're doing, nothing has changed.");
+				}
+				choice_made = true;
+				break;
+			case Menu::IDENTIFY_FRIENDLY :
+				if(engine.player->intel >= intelReqToFriendly)
+				{
+					attackMode = 3;
+					engine.gui->message(TCODColor::orange, "Turrets in this room have become hostile to all except you.");
+				}
+				else
+				{
+					engine.gui->message(TCODColor::orange, "You don't quite understand what you're doing, nothing has changed");
+				}
+				choice_made = true;
+				break;
+			case Menu::EXIT :
+				choice_made = true;
+				break;
+			case Menu::NO_CHOICE:
+				first = false;
+				break;
+			default: break;
+		}
+	}
 }
 
 

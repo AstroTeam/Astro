@@ -967,6 +967,30 @@ Actor* Map::createTurret(int x, int y)
 	return turret;
 	
 }
+
+Actor* Map::createTurretControl(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float controlHp = 15*scale;
+	float controlDodge = 0;
+	float controlDR = 0;
+	float controlXp = 0;
+	int controlAscii = 'C';
+	
+	Actor *control = new Actor(x,y,controlAscii,"Turret Room Control",TCODColor::white);
+	control->destructible = new MonsterDestructible(controlHp,controlDodge,controlDR,controlXp);
+	control->ai = new TurretControlAi();
+	control->interact = true;
+	control->hostile = false;
+	control->container = new Container(2);
+	generateRandom(control, controlAscii);
+	engine.actors.push(control);
+	
+	return control;
+	
+	
+}
 Actor* Map::createVendor(int x, int y)
 {
 	int level = engine.level;
@@ -1932,24 +1956,60 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 
 	}
 	//15% chance of spawning turrets in the corners of standard rooms
-	if(rand >= 15 && rand <= 30 && room->type == STANDARD)
+	if((rand >= 15 && rand <= 30) && room->type == STANDARD)
 	{
+		int cx = (x1 + x2)/2.0;
+		int cy = (y1 + y2)/2.0;
 		int c = rng->getInt(0,3);
+		bool console = canWalk(cx,cy) && engine.getAnyActor(cx,cy)==NULL;
 		bool x1y1 = canWalk(x1,y1) && engine.getAnyActor(x1,y1)==NULL;
 		bool x1y2 = canWalk(x1,y2) && engine.getAnyActor(x1,y2)==NULL;
 		bool x2y2 = canWalk(x2,y2) && engine.getAnyActor(x2,y2)==NULL;
 		bool x2y1 = canWalk(x2,y1) && engine.getAnyActor(x2,y1)==NULL;
-		for(int i = 0; i < 4; i++)
+		if(console)
 		{
-			c = rng->getInt(0,3);
-			if(c == 0 && x1y1)
-				createTurret(x1,y1);
-			if(c == 1 && x1y2)
-				createTurret(x1,y2);
-			if(c == 2 && x2y2)
-				createTurret(x2,y2);
-			if(c == 3 && x2y1)
-				createTurret(x2, y1);
+			Actor * turret;
+			createTurretControl(cx,cy);
+			for(int i = 0; i < 4; i++)
+			{
+				c = rng->getInt(0,3);
+				if(c == 0 && x1y1)
+				{
+					turret = createTurret(x1,y1);
+					TurretAi *ai = (TurretAi*)turret->ai;
+					ai->controlX = cx;
+					ai->controlY = cy;
+					x1y1 = false;
+				}
+				if(c == 1 && x1y2)
+				{
+					turret = createTurret(x1,y2);
+					TurretAi *ai = (TurretAi*)turret->ai;
+					ai->controlX = cx;
+					ai->controlY = cy;
+					x1y2 = false;
+				}
+					
+				if(c == 2 && x2y2)
+				{
+					turret = createTurret(x2,y2);
+					TurretAi *ai = (TurretAi*)turret->ai;
+					ai->controlX = cx;
+					ai->controlY = cy;
+					x2y2 = false;
+				}
+				if(c == 3 && x2y1)
+				{
+					turret = createTurret(x2, y1);
+					TurretAi *ai = (TurretAi*)turret->ai;
+					ai->controlX = cx;
+					ai->controlY = cy;
+					x2y1 = false;
+				}
+			}
+			
+				
+
 		}
 			
 	}

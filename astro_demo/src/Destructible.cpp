@@ -108,8 +108,17 @@ void Destructible::die(Actor *owner) {
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
 		owner->ch = 243;
 	}
-	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 225 || owner->ch == 130 || owner->ch == 129 || owner->ch == 146) //roomba, vendors, and turrets, and sec bots
+	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 225 || owner->ch == 130 || owner->ch == 129 || owner->ch == 146 || owner->ch == 'C') //roomba, vendors, and turrets, and sec bots
 	{
+		if(owner->ch == 'C')
+		{
+			TurretControlAi *tc = (TurretControlAi*) owner->ai;
+			if(tc && tc->attackMode == 1) //only make turrets go into frenzy mode if they were originally in default state
+			{
+				tc->attackMode = 2;
+				engine.gui->message(TCODColor::orange, "Warning: The turrets in this room have been disconnected from their machine intelligence and will attack anything!");
+			}
+		}
 		owner->ch = 161;
 		owner->blocks = false;
 	}//else generic blood whale
@@ -148,7 +157,7 @@ void MonsterDestructible::die(Actor *owner) {
 		engine.killCount++;
 		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
 	}
-	else if(owner->ch == 147) //Ascii for Sentry Turret
+	else if(owner->ch == 147 || owner->ch == 'C') //Ascii for Sentry Turret
 	{
 		engine.killCount++;
 		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);

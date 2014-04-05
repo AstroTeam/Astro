@@ -10,7 +10,7 @@ public:
 protected:
 	enum AiType {
 		MONSTER, SECURITY, CONFUSED_ACTOR, PLAYER, TRIGGER, RANGED, LIGHT, 
-		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, CONSOLE, VENDING, ENGINEER, EPICENTER, 
+		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, CONSOLE, VENDING, ENGINEER, EPICENTER, TURRETCONTROL
 
 	};
 };
@@ -167,12 +167,13 @@ class TurretAi : public Ai
 {
 	public:
 		TurretAi();
+		int controlX, controlY;
 		void update(Actor *owner);
 		void load(TCODZip &zip);
 		void save(TCODZip &zip);
 	protected:
 		int range;
-		void attack(Actor *owner, int targetx, int target);
+		void attack(Actor *owner, Actor *target);
 
 };
 
@@ -243,5 +244,16 @@ public:
 	void save(TCODZip &zip);
 	void interaction(Actor *owner, Actor *target);
 	
+};
+
+class TurretControlAi: public InteractibleAi
+{
+	public:
+		int attackMode; //0 = off, 1 = hostile only to players,  2 = hostile to all nps , 3 = hostile to all npcs not the player
+		TurretControlAi();
+		void load(TCODZip &zip);
+		void save(TCODZip &zip);
+		void update(Actor *owner);
+		void interaction(Actor *owner, Actor *target);
 };
 

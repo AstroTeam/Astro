@@ -38,7 +38,10 @@ public:
 	ASSASSIN,
 	BRUTE,
 	HACKER,
-	RESET
+	RESET,
+	DISABLE_TURRETS,
+	DISABLE_IFF,
+	IDENTIFY_FRIENDLY
 	};
 	enum DisplayMode {
 		MAIN,
@@ -46,7 +49,8 @@ public:
 		INVENTORY,
 		VENDING,
 		CLASS_MENU,
-		CLASS_SELECT
+		CLASS_SELECT,
+		TURRET_CONTROL
 	};
 	~Menu();
 	void clear();

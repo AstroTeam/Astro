@@ -18,6 +18,9 @@ const int INVENTORY_MENU_HEIGHT = 4;
 const int CLASS_MENU_WIDTH = 65;
 const int CLASS_MENU_HEIGHT = 4;
 
+const int TURRET_CONTROL_WIDTH = 45;
+const int TURRET_CONTROL_HEIGHT = 23;
+
 const int RACE_MENU_HEIGHT = 52;
 
 const int CLASS_SELECT_WIDTH = 65;
@@ -572,6 +575,13 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
 		TCODConsole::root->printFrame(menu2x + 10,menu2y + 2,CLASS_SELECT_WIDTH,
 			CLASS_SELECT_HEIGHT,true,TCOD_BKGND_ALPHA(100));
+	}else if(mode == TURRET_CONTROL)
+	{
+		menux = engine.screenWidth / 2 - TURRET_CONTROL_WIDTH / 2;
+		menuy = engine.screenHeight / 2 - TURRET_CONTROL_HEIGHT / 2;
+		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
+		TCODConsole::root->printFrame(menux+4,menuy - 4,TURRET_CONTROL_WIDTH,
+			TURRET_CONTROL_HEIGHT,true,TCOD_BKGND_ALPHA(0),"TURRET ROOM CONTROL");
 	
 	}else{
 		static TCODImage img("wesleyPIXEL.png");
@@ -711,7 +721,47 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 				default: break;
 			}
 		}
-	}else{
+	}else if(mode == TURRET_CONTROL)
+	{
+		while (!TCODConsole::isWindowClosed()) {
+		
+			int currentItem = 0;
+			for (MenuItem **it = items.begin(); it != items.end(); it++) {
+				if (currentItem == selectedItem) {
+					TCODConsole::root->setDefaultForeground(TCODColor::orange);
+				} else {
+					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
+				}
+				if(currentItem == 3)
+					TCODConsole::root->print(menux+5+1,menuy+4+1+currentItem*3-4,(*it)->label);
+				else
+					TCODConsole::root->print(menux+5+1,menuy+4+currentItem*3-4,(*it)->label);
+				currentItem++;
+			}
+			TCODConsole::flush();
+			
+			//check key presses
+			TCOD_key_t key;
+			TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
+			switch(key.vk) {
+				case TCODK_UP:
+					selectedItem--;
+					if(selectedItem < 0) {
+						selectedItem = items.size()-1;
+					}
+				break;
+				case TCODK_DOWN:
+					selectedItem = (selectedItem +1) % items.size();
+				break;
+				case TCODK_ENTER: return items.get(selectedItem)->code;
+				case TCODK_ESCAPE: if (mode == PAUSE){
+							return NO_CHOICE;
+						    }
+				default: break;
+			}
+		}
+	}
+	{
 		while (!TCODConsole::isWindowClosed()) {
 		
 			int currentItem = 0;
