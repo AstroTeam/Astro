@@ -94,7 +94,7 @@ void Gui::render() {
 	}
 	
 	//draw the last target's hp bar
-	if ((engine.player->attacker->lastTarget != NULL)&&(!engine.player->attacker->lastTarget->destructible->isDead())) {		renderBar(1,11,BAR_WIDTH, "target's HP",engine.player->attacker->lastTarget->destructible->hp,
+	if ((engine.player->attacker->lastTarget != NULL)&&(engine.player->attacker->lastTarget!=engine.player)&&(!engine.player->attacker->lastTarget->destructible->isDead())) {		renderBar(1,11,BAR_WIDTH, "target's HP",engine.player->attacker->lastTarget->destructible->hp,
 			engine.player->attacker->lastTarget->destructible->maxHp,TCODColor::lightRed, TCODColor::darkerRed);
     }
 	
