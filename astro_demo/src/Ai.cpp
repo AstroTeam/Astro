@@ -25,6 +25,7 @@ Ai *Ai::create(TCODZip &zip) {
 	    case TRIGGER: ai = new TriggerAi(); break;
 		case SECURITY: ai = new SecurityBotAi(); break;
 		case TURRETCONTROL: ai = new TurretControlAi(); break;
+		case LOCKER: ai = new LockerAi(); break;
 		//
 		
 	}
@@ -308,9 +309,18 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 						engine.gui->message(TCODColor::red, "Your inventory is full.");
 					}
 				}
+				//exception for terminal's to replay their message
+				if ((actor->ch == 227 || actor->ch == 228) && actor->x == owner->x && actor->y == owner->y)
+				{
+					found = true;
+					TriggerAi* t = (TriggerAi*)actor->ai;
+					t->pressed = false;
+					engine.gui->message(TCODColor::lightGrey,"The terminal replayed its message.");
+					actor->ai->update(actor);
+				}
 			}
 			if (!found) {
-				engine.gui->message(TCODColor::lightGrey,"There's nothing interesting here.");
+					engine.gui->message(TCODColor::lightGrey,"There's nothing interesting here.");
 			}
 			if (engine.gameStatus != Engine::VICTORY) {
 				engine.gameStatus = Engine::NEW_TURN;
@@ -489,7 +499,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			if(owner->container->ranged){
 				//engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
 				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,10);
-				if (!closestMonster || !(engine.map->isVisible(closestMonster->x, closestMonster->y))) {
+				if ( !(owner->hostile||(closestMonster && closestMonster->hostile)) || !closestMonster || !(engine.map->isVisible(closestMonster->x, closestMonster->y))) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
 					return;
 				}
@@ -968,7 +978,7 @@ void TriggerAi::update(Actor *owner) {
 		pressed = true;
 		//TCODConsole::flush();
 		int PAUSE_MENU_WIDTH = 32;
-		int PAUSE_MENU_HEIGHT = 15;
+		int PAUSE_MENU_HEIGHT = 16;
 		
 		int menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
 		int menuy = engine.screenHeight / 2 - PAUSE_MENU_HEIGHT / 2;
@@ -2459,3 +2469,31 @@ void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
 
 }
 
+
+LockerAi::LockerAi(){
+}
+void LockerAi::save(TCODZip &zip){
+zip.putInt(LOCKER);
+}
+void LockerAi::load(TCODZip &zip){
+}
+void LockerAi::interaction(Actor *owner, Actor *target){
+	engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
+	owner->ch = 243;
+	if(!owner->container->inventory.isEmpty()){
+		engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
+		Actor **iterator=owner->container->inventory.begin();
+		for(int i = 0; i < owner->container->size; i++){
+			if(owner->container->inventory.isEmpty()){
+				break;
+			}
+		Actor *actor = *iterator;
+		if(actor){
+			actor->pickable->drop(actor,owner,true);
+		}				
+		if(iterator != owner->container->inventory.end()){
+			++iterator;
+			}
+		}
+	}
+}

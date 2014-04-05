@@ -239,6 +239,9 @@ void Renderer::render(void *sdlSurface){
 							if (actor->ch == 162){
 								srcRect2.y = 2*16;
 							}
+							else if (actor->ch == 161){
+								srcRect2.y = 1*16;
+							}
 							
 							SDL_BlitSurface(terminal,&srcRect2,floorMap,&dstRect);
 						}
