@@ -655,7 +655,7 @@ void Map::spawnTutorial() {
 		Actor * pcmu2 = new Actor(x1+2, tiley, 243, "Battery Rack", TCODColor::white);
 		engine.map->tiles[x1+2+tiley*engine.map->width].decoration = 55;
 		engine.actors.push(pcmu2);
-		Actor * dummy = new Actor(x2-1, tiley, 'd', "Target Dummy", TCODColor::white);
+		Actor * dummy = new Actor(x2-1, tiley, 145, "Target Dummy", TCODColor::white);
 		//engine.map->tiles[x1+2+tiley*engine.map->width].decoration = 55;
 		//engine.actors.push(dummy);
 		engine.map->tiles[x2-1+tiley*engine.map->width].decoration = 23;

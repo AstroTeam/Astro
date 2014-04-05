@@ -99,7 +99,7 @@ void Destructible::die(Actor *owner) {
 	//transform the actor into a corpse
 	//check who owner was to decide what corpse they get
 	//if spore creature they get spore body
-	int dummyAscii = 100;
+	int dummyAscii = 145;
 	
 	
 	if (owner->ch == 165 || owner->ch == 166){ 
@@ -145,7 +145,7 @@ void MonsterDestructible::die(Actor *owner) {
 	//cout << "Destrutible::Die beginning" << endl;
 	//cout << owner->ch << endl;
 	//cout << "the char to test" << endl;
-	int dummyAscii = 100;
+	int dummyAscii = 145;
 	if(owner->ch != 243 && owner->ch != 131 && owner->ch != 147 && owner->ch != 225 && owner->ch != 130 && owner->ch != 129 && owner->ch != 146 && owner->ch != dummyAscii){
 		engine.killCount++;
 		engine.gui->message(TCODColor::lightGrey,"The %s is dead! You feel a rush as it sputters its last breath.", owner->name);
