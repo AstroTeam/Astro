@@ -664,8 +664,13 @@ void Map::spawnTutorial() {
 	}
 	//fence
 	for (int tiley = y1; tiley <= y2; tiley++) {
-		Actor * pcmu = new Actor(x2-3, tiley, 's', "Sandbag Wall", TCODColor::white);
-		//engine.map->tiles[x2-3+tiley*engine.map->width].decoration = 54;
+		int dec = 58;//standard sandbag wall
+		if (tiley == y1)
+			dec = 59;//upper wall
+		else if(tiley == y2)
+			dec = 60;//lower wall
+		Actor * pcmu = new Actor(x2-3, tiley, 243, "Sandbag Wall", TCODColor::white);
+		engine.map->tiles[x2-3+tiley*engine.map->width].decoration = dec;
 		engine.actors.push(pcmu);
 		pcmu->blocks = false;
 	}

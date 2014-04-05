@@ -88,3 +88,8 @@ mapcondec:
 
 57 is an open vault
 
+58 is sandbag wall
+
+59 is a top sandbag wall
+
+60 is a bottom sandbag wall

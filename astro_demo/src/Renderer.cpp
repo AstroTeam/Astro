@@ -809,6 +809,31 @@ void Renderer::render(void *sdlSurface){
 						srcRect.y = 7*16;
 						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 					}
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.x=32;
+					}else{
+						//dark/*commet*/
+						srcRect.x=48;
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 58)//sandbag wall
+					{
+						
+						srcRect.y = 6*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 59)//sandbag wall upper
+					{
+						
+						srcRect.y = 5*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 60)//sandbag wall lower
+					{
+						
+						srcRect.y = 7*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
 					
 				}
 				////////////////////////////////////////////////////////////////////HYDROPONICS
