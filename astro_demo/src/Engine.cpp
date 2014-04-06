@@ -53,7 +53,36 @@ void Engine::term() {
 
 void Engine::init() {
 	engine.killCount = 0;
-	engine.level = 1;
+	
+	bool choice_made = false;
+	bool first = true;
+	bool startTutorial = false;
+	while (!choice_made) 
+	{
+		if (first) {
+			TCODConsole::flush();
+		}
+		engine.gui->menu.clear();
+		engine.gui->menu.addItem(Menu::TUTORIAL_NO, "Skip the tutorial.");
+		engine.gui->menu.addItem(Menu::TUTORIAL_YES, "Begin game with tutorial.");
+		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::TUTORIAL_SELECT);
+		switch (menuItem) {
+			case Menu::TUTORIAL_NO:
+				choice_made = true;
+				break;
+			case Menu::TUTORIAL_YES:
+				startTutorial = true;	
+				choice_made = true;
+				break;
+			case Menu::EXIT :
+				choice_made = true;
+				break;
+			case Menu::NO_CHOICE:
+				first = false;
+				break;
+			default: break;
+		}
+	}
 	player = new Actor(40,25,'@', "player","Human","Marine","Infantry",TCODColor::white);
 	//playerLight = new Actor(40, 25, 'l', "Your Flashlight", TCODColor::white);
 	//playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
@@ -618,8 +647,12 @@ void Engine::init() {
 	stairs->blocks = false;
 	actors.push(stairs);
 	map = new Map(mapWidth, mapHeight);
-	map->init(true, Param::TUTORIAL);
-	//map->init(true, Param::GENERIC);
+	if (startTutorial) {
+		map->init(true, Param::TUTORIAL);
+	}
+	else {
+		map->init(true, Param::GENERIC);
+	}
 	gui->message(TCODColor::red, "Welcome to Astroverius Station! Warning unknown alien life form detected!");
 	gui->message(TCODColor::blue,"You appear to be a %s %s %s. Your experience will be needed to complete this journey.", player->race, player->role, player->job);
 	if (map->artifacts > 0) {
