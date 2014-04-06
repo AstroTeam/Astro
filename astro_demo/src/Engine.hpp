@@ -67,6 +67,10 @@ public:
 	void win();
 	void classMenu();
 	void classSelectMenu(int cat);
+	int getInitVit(int race, int job);
+	int getInitStr(int race, int job);
+	int getInitDex(int race, int job);
+	int getInitIntel(int race, int job);
 };
 
 extern Engine engine;
