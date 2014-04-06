@@ -1568,7 +1568,8 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 		int y = owner->y;
 		
 		engine.gui->message(TCODColor::red, "The %s kamikazes with a fragmentation grenade and it explodes, eviscerating everything within %d tiles!",owner->name, 1 + (owner->totalIntel - 1) /3);
-		for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+		for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) 
+		{
 			Actor *actor = *it;
 			if (actor->destructible && !actor->destructible->isDead()
 				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
@@ -1580,7 +1581,8 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 				{	if(actor == engine.player)
 						engine.damageReceived += damageTaken;
 					engine.gui->message(TCODColor::red,"The %s gets wounded from the %s for %g hit points.",name, owner->name,damageTaken);
-				} else {
+				} else 
+				{
 					engine.gui->message(TCODColor::red,"The %s's guts explode outward after taking %g damage.",name,damageTaken);
 				}
 				//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
@@ -1603,7 +1605,7 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
 				//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 				float damageTaken = 1;
-				actor->destructible->takeDamage(actor, 1);
+				actor->destructible->takeDamage(actor, damageTaken);
 				//engine.damageDone +=  2 * wearer->totalIntel;
 				if (!actor->destructible->isDead()) {
 					if(actor == engine.player)

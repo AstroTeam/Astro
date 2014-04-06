@@ -1134,6 +1134,31 @@ Actor* Map::createTurretControl(int x, int y)
 	
 	
 }
+
+Actor* Map::createGardner(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float gardnerHp = 10*scale;
+	float gardnerDodge = 0*scale;
+	float gardnerDR = 0*scale;
+	float gardnerStr = 3*scale;
+	float gardnerDex = 0*scale;
+	float gardnerXp = 25*scale;
+	int gardnerAscii = 'G';
+	
+	Actor *gardner = new Actor(x,y,gardnerAscii,"Crazed Gardner",TCODColor::white);
+	gardner->totalDex = gardnerDex;
+	gardner->destructible = new MonsterDestructible(gardnerHp,gardnerDodge,gardnerDR,gardnerXp);
+	gardner->totalStr = gardnerStr;
+	gardner->attacker = new Attacker(gardnerStr);
+	gardner->ai = new MonsterAi();
+	gardner->container = new Container(2);
+	generateRandom(gardner, gardnerAscii);
+	engine.actors.push(gardner);
+	
+	return gardner;
+}
 Actor* Map::createVendor(int x, int y)
 {
 	int level = engine.level;
@@ -1885,6 +1910,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		cout << "Hydroponics made" << endl;
 
 		//long rows of hydroponic racks
+		bool gardnerCreated = false;
 		for (int i = x1+1; i <= x2-1; i++) {
 			for (int j = y1+1; j <= y2-1; j+=2) {
 				int hydroRng = rng->getInt(0,3,1);
@@ -1907,6 +1933,11 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				{
 					Actor * plant = new Actor(i, j, 211, "Hydroponic Starfruit", TCODColor::white);//large hunger restore
 					engine.actors.push(plant);
+				}
+				if(!gardnerCreated && canWalk(i,j+1) && engine.getAnyActor(i,j+1)==NULL)
+				{
+						createGardner(i, j+1);
+						gardnerCreated = true;
 				}
 				engine.map->tiles[i+j*engine.map->width].decoration = 48;
 
