@@ -663,6 +663,7 @@ void Map::spawnTutorial() {
 		engine.actors.push(dummy);
 	}
 	//fence
+	int batteries = 0;
 	for (int tiley = y1; tiley <= y2; tiley++) {
 		int dec = 58;//standard sandbag wall
 		if (tiley == y1)
@@ -673,6 +674,13 @@ void Map::spawnTutorial() {
 		engine.map->tiles[x2-3+tiley*engine.map->width].decoration = dec;
 		engine.actors.push(pcmu);
 		pcmu->blocks = false;
+		if (batteries%2 == 0 && tiley != y1 && tiley != y2)
+		{
+			Actor *batt = createBatteryPack(x2-4,tiley);
+			engine.actors.push(batt);
+			//batt->pickable->pick(batt,owner);
+		}
+		batteries++;
 	}
 	//light
 	Actor *lightAr = new Actor(x2-5, (y1+y2)/2, 224, "A hastily erected Emergency Light", TCODColor::white);
@@ -740,7 +748,7 @@ void Map::spawnTutorial() {
 	triggerTileSta->blocks = false; 
 	engine.actors.push(triggerTileSta);
 	//make vending terminal
-	Actor *triggerTileV = new Actor((x1+x2)/2-1,y1+1, 227, "Intercom Terminal", TCODColor::white);
+	Actor *triggerTileV = new Actor((x1+x2)/2-1,y1+2, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileV->ai = new TriggerAi(  
   //"Welcome to the Astroverius.    \n\n"
 	"3D PRINTER BASICS\n\n"
