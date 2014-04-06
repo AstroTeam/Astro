@@ -1046,7 +1046,7 @@ void Renderer::render(void *sdlSurface){
 	//COULD OPTIMIZE --> CONTAINER/INVENTORY/PLAYER CONTAINS A LIST OF JUST EQUIPMENT TO RENDER, instead of scanning all items
 	
 	SDL_Rect dstRectEquip={plyx*16,plyy*16,16,16};
-	if (engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN){
+	if ((engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN) && engine.armorState == 0){
 		for (Actor **it = engine.player->container->inventory.begin();it != engine.player->container->inventory.end();it++)
 		{
 		
