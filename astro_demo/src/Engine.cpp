@@ -1,6 +1,7 @@
 #include "main.hpp"
 #include "SDL/SDL.h"
 #include <math.h>
+#include <iostream>
 
 /* Engine::Engine() : gameStatus(STARTUP), fovRadius(3)
 {
@@ -27,6 +28,7 @@ Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	gui = new Gui();
 	invState = 0;
 	menuState = 0;
+	armorState = 0;
 	damageDone = 0;
 	damageReceived = 0;
 	selX = 0;
@@ -53,7 +55,36 @@ void Engine::term() {
 
 void Engine::init() {
 	engine.killCount = 0;
-	engine.level = 1;
+	
+	bool choice_made = false;
+	bool first = true;
+	bool startTutorial = false;
+	while (!choice_made) 
+	{
+		if (first) {
+			TCODConsole::flush();
+		}
+		engine.gui->menu.clear();
+		engine.gui->menu.addItem(Menu::TUTORIAL_NO, "Skip the tutorial.");
+		engine.gui->menu.addItem(Menu::TUTORIAL_YES, "Begin game with tutorial.");
+		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::TUTORIAL_SELECT);
+		switch (menuItem) {
+			case Menu::TUTORIAL_NO:
+				choice_made = true;
+				break;
+			case Menu::TUTORIAL_YES:
+				startTutorial = true;	
+				choice_made = true;
+				break;
+			case Menu::EXIT :
+				choice_made = true;
+				break;
+			case Menu::NO_CHOICE:
+				first = false;
+				break;
+			default: break;
+		}
+	}
 	player = new Actor(40,25,'@', "player","Human","Marine","Infantry",TCODColor::white);
 	//playerLight = new Actor(40, 25, 'l', "Your Flashlight", TCODColor::white);
 	//playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
@@ -145,65 +176,6 @@ void Engine::init() {
 	
 	switch(engine.gui->jobSelection){
 		
-
-		case 1:
-			player->role="Marine";
-			player->job="Infantry";
-			
-			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
-			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
-			ranged->blocks = false;
-			ranged->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
-			ranged->sort = 4;
-			engine.actors.push(ranged);
-			ranged->pickable->pick(ranged,player);
-			((Equipment*)(ranged->pickable))->use(ranged,player);
-			
-			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
-			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
-			legs->blocks = false;
-			legs->pickable = new Equipment(0,Equipment::LEGS,bonusL,requirement);
-			legs->sort = 3;
-			engine.actors.push(legs);
-			legs->pickable->pick(legs,player);
-			((Equipment*)(legs->pickable))->use(legs,player);
-			
-			feet = new Actor(0,0,185,"Combat Boots",TCODColor::white);
-			bonusF = new ItemBonus(ItemBonus::HEALTH,0);
-			feet->blocks = false;
-			feet->pickable = new Equipment(0,Equipment::FEET,bonusF,requirement);
-			feet->sort = 3;
-			engine.actors.push(feet);
-			feet->pickable->pick(feet,player);
-			((Equipment*)(feet->pickable))->use(feet,player);
-			
-			chest = new Actor(0,0,185,"Marine Fatigue Jacket",TCODColor::white);
-			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
-			chest->blocks = false;
-			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC,requirement);
-			chest->sort = 3;
-			engine.actors.push(chest);
-			chest->pickable->pick(chest,player);
-			((Equipment*)(chest->pickable))->use(chest,player);
-			
-			helmet = new Actor(0,0,185,"Marine Ballistic Helmet",TCODColor::white);
-			bonusHe = new ItemBonus(ItemBonus::HEALTH,0);
-			helmet->blocks = false;
-			helmet->pickable = new Equipment(0,Equipment::HEAD,bonusHe,requirement);
-			helmet->sort = 3;
-			engine.actors.push(helmet);
-			helmet->pickable->pick(helmet,player);
-			((Equipment*)(helmet->pickable))->use(helmet,player);
-			
-			equip1 = new Actor(0,0,182,"FireBomb", TCODColor::white);
-			equip1->sort = 2;
-			equip1->blocks = false;
-			equip1->pickable = new Fireball(3,12,8);
-			engine.actors.push(equip1);
-			equip1->pickable->pick(equip1,player);
-			
-			
-		break;
 		case 2:
 			player->role="Marine";
 			player->job="Medic";
@@ -550,10 +522,6 @@ void Engine::init() {
 		default:
 			player->role="Marine";
 			player->job="Infantry";
-			
-			player->dex+=3; //job selection bonus
-			player->totalDex+=3; //job selection bonus
-			
 
 			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
 			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
@@ -606,7 +574,19 @@ void Engine::init() {
 			equip1->pickable = new Fireball(3,12,8);
 			engine.actors.push(equip1);
 			equip1->pickable->pick(equip1,player);
-		break;
+			
+			//get frag grenades
+			for(int i=0; i<2; i++){
+				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Fragment(3,12,8);
+				equip1->pickable->value = 55;
+				equip1->pickable->inkValue = 10;
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			break;
 	}
 	//set race and job back to 0
 	engine.gui->raceSelection = 0;
@@ -618,8 +598,12 @@ void Engine::init() {
 	stairs->blocks = false;
 	actors.push(stairs);
 	map = new Map(mapWidth, mapHeight);
-	map->init(true, Param::TUTORIAL);
-	//map->init(true, Param::GENERIC);
+	if (startTutorial) {
+		map->init(true, Param::TUTORIAL);
+	}
+	else {
+		map->init(true, Param::GENERIC);
+	}
 	gui->message(TCODColor::red, "Welcome to Astroverius Station! Warning unknown alien life form detected!");
 	gui->message(TCODColor::blue,"You appear to be a %s %s %s. Your experience will be needed to complete this journey.", player->race, player->role, player->job);
 	if (map->artifacts > 0) {
@@ -638,6 +622,7 @@ void Engine::save() {
 		zip.putInt(killCount);
 		zip.putInt(invState);
 		zip.putInt(menuState);
+		zip.putInt(armorState);
 		zip.putInt(invFrames);
 		zip.putInt(selX);
 		zip.putInt(selY);
@@ -655,15 +640,20 @@ void Engine::save() {
 		stairs->save(zip);
 		playerLight->save(zip);
 		//save the boss
+		std::cout << "got to boss " << std::endl;
 		boss->save(zip);
 		//then all the other actors
 		zip.putInt(actors.size() - 4); //minus another one for boss actor?
+		std::cout << "saving other actors " << std::endl;
+		std::cout << "number of actors " << actors.size() - 4 << std::endl;
 		for (Actor **it = actors.begin(); it!=actors.end(); it++) {
 			if (*it != player && *it != stairs && *it != playerLight && *it != boss) { //!= boss like stairs etc.?
+				std::cout << "saving " << (*it)->name << std::endl;
 				(*it)->save(zip);
 			}
 		}
 		//finally the message log
+		std::cout << "saving gui " <<std::endl;
 		gui->save(zip);
 		zip.saveToFile("game.sav");
 	}
@@ -737,15 +727,18 @@ void Engine::load(bool pause) {
 		level = zip.getInt();
 		turnCount = zip.getInt();
 		killCount = zip.getInt();
-		piratesFound = zip.getInt();
+		
 		//damageDone = zip.getFloat();
 		//damageReceived = zip.getFloat();
-		menuState = zip.getInt();
 		invState = zip.getInt();
+		menuState = zip.getInt();
+		armorState = zip.getInt();
+		
 		invFrames = zip.getInt();
 		selX = zip.getInt();
 		selY = zip.getInt();
 		printMap = zip.getInt();
+		piratesFound = zip.getInt();
 		//load the map
 		int width = zip.getInt();
 		int height = zip.getInt();
@@ -770,14 +763,19 @@ void Engine::load(bool pause) {
 		//actors.push(boss); //I push the boss to actorsList on line in Map.cpp so I don't need to push it here?
 		//then all other actors
 		int nbActors = zip.getInt();
+		std::cout << "loading other actors" << std::endl;
+		std::cout << "number of actors " << nbActors << std::endl;
 		while (nbActors > 0) {
 			Actor *actor = new Actor(0,0,0,NULL, TCODColor::white);
 			actor->load(zip);
 			actors.push(actor);
+			std::cout << "loaded " << actor->name << std::endl;
 			nbActors--;
 		}
 		//finally, the message log
+		std::cout << "got to gui " << std::endl;
 		gui->load(zip);
+		std::cout << "got past gui " <<std::endl;
 		gui->message(TCODColor::pink,"loaded");
 		gameStatus = STARTUP;
 	}
@@ -804,9 +802,12 @@ void Engine::update() {
 		if(player->destructible->maxHp > player->destructible->hp && player->hunger > 0 && engine.turnCount%10 == 1)
 			player->destructible->hp++;
 		player->updateAuras();
+		std::cout << "updating actors " <<std::endl;
+		std::cout << "number of actors " << actors.size() - 1 << std::endl;
 		for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 			Actor *actor = *iterator;
 			if ( actor != player) {
+				std::cout << "updating " << actor->name << std::endl;
 				actor->update();
 			}
 		}
@@ -939,11 +940,12 @@ void Engine::render()
 void Engine::nextLevel() {
 	level++;
 	
-	gui->message(TCODColor::lightViolet, "Sitting at the top of the stairs, you take a brief moment to rest...");
 	player->destructible->heal(player->destructible->maxHp/2);
 	gui->message(TCODColor::red,"Gathering your courage, you rush into the station's teleporter, mindful that greater dangers may lurk beyond...");
 	TCODRandom * updateRng = TCODRandom::getInstance();
 	int temp = updateRng->getInt(0,2);
+	
+	//explorers find flares
 	if(player->role[0] == 'E'){
 		if (temp == 0) 
 			gui->message(TCODColor::white,"As an explorer, you discover more flares hidden in your bag that your buggy tablet app didn't tell you about!");
@@ -960,6 +962,26 @@ void Engine::nextLevel() {
 				equip1->pickable->pick(equip1,player);
 		}
 	}
+	
+	else if(player->job[0] == 'I'){ //infantry find grenades
+		if (temp == 0) 
+			gui->message(TCODColor::white,"As an infantry, you discover more grenades hidden in your bag that your buggy tablet app didn't tell you about!");
+		else if (temp == 1)
+			gui->message(TCODColor::white,"As an infantry, you discover more grenades hidden in your back pocket!");
+		else
+			gui->message(TCODColor::white,"You trip on the teleporter pad and find some grenades! You add them to your inventory.");
+		for(int i=0; i<2; i++){
+				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Fragment(3,12,8);
+				equip1->pickable->value = 55;
+				equip1->pickable->inkValue = 10;
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+	}
+	
 	delete map;
 	//delete all actors but player and stairs
 	for(Actor **it = actors.begin(); it != actors.end(); it++) {

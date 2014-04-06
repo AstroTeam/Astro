@@ -1,4 +1,5 @@
 #include "main.hpp"
+#include <iostream>
 
 Pickable::Pickable(bool stacks, int stackSize, PickableType type) : 
 	stacks(stacks),stackSize(stackSize), type(type) {
@@ -6,6 +7,7 @@ Pickable::Pickable(bool stacks, int stackSize, PickableType type) :
 
 Pickable *Pickable::create(TCODZip &zip) {
 	PickableType type = (PickableType)zip.getInt();
+	std::cout << "pickabletype " << std::endl;
 	Pickable *pickable = NULL;
 	switch(type) {
 		case CURRENCY: pickable = new Coinage(0); break;
@@ -22,6 +24,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 		case KEY: pickable = new Key(0); break;
 		case NONE: break;
 	}
+	std::cout << "chose a module type " << std::endl;
 	pickable->load(zip);
 	return pickable;
 }
@@ -537,7 +540,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 					return false;
 				} else {
 					if(requirementsMet(owner,wearer)){
-						wearer->container->head = true;
+						wearer->container->head = owner;
 					}else{
 						switch(requirement->type){
 							case ItemReq::STRENGTH :
@@ -564,7 +567,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 					return false;
 				} else {
 					if(requirementsMet(owner,wearer)){
-						wearer->container->chest = true;
+						wearer->container->chest = owner;
 					}else{
 						switch(requirement->type){
 							case ItemReq::STRENGTH :
@@ -589,7 +592,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 					return false;
 				} else {
 					if(requirementsMet(owner,wearer)){
-						wearer->container->legs = true;
+						wearer->container->legs = owner;
 					}else{
 						switch(requirement->type){
 							case ItemReq::STRENGTH :
@@ -614,7 +617,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 					return false;
 				} else {
 					if(requirementsMet(owner,wearer)){
-						wearer->container->feet = true;
+						wearer->container->feet = owner;
 					}else{
 						switch(requirement->type){
 							case ItemReq::STRENGTH :
@@ -639,7 +642,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 					return false;
 				} else {
 					if(requirementsMet(owner,wearer)){
-						wearer->container->hand1 = true;
+						wearer->container->hand1 = owner;
 					}else{
 						switch(requirement->type){
 							case ItemReq::STRENGTH :
@@ -664,7 +667,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 					return false;
 				} else {
 					if(requirementsMet(owner,wearer)){
-						wearer->container->hand2 = true;
+						wearer->container->hand2 = owner;
 					}else{
 						switch(requirement->type){
 							case ItemReq::STRENGTH :
@@ -689,7 +692,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 					return false;
 				} else {
 					if(requirementsMet(owner,wearer)){
-						wearer->container->ranged = true;
+						wearer->container->ranged = owner;
 					}else{
 						switch(requirement->type){
 							case ItemReq::STRENGTH :
@@ -727,13 +730,13 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 	} else {
 		equipped = false;
 		switch(slot) {
-			case HEAD: wearer->container->head = false; break;
-			case CHEST: wearer->container->chest = false; break;
-			case LEGS: wearer->container->legs = false; break;
-			case FEET: wearer->container->feet = false; break;
-			case HAND1: wearer->container->hand1 = false; break;
-			case HAND2: wearer->container->hand2 = false; break;
-			case RANGED: wearer->container->ranged = false; break;
+			case HEAD: wearer->container->head = NULL; break;
+			case CHEST: wearer->container->chest = NULL; break;
+			case LEGS: wearer->container->legs = NULL; break;
+			case FEET: wearer->container->feet = NULL; break;
+			case HAND1: wearer->container->hand1 = NULL; break;
+			case HAND2: wearer->container->hand2 = NULL; break;
+			case RANGED: wearer->container->ranged = NULL; break;
 			case NOSLOT: break;
 			default: break;
 		}
