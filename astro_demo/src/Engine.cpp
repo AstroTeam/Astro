@@ -72,18 +72,18 @@ void Engine::init() {
 	player->totalStr=engine.gui->strValue;
 	player->attacker->basePower=engine.gui->strValue;  //old
 	player->attacker->totalPower=engine.gui->strValue; //old
-	player->dex=engine.gui->agValue;
-	player->totalDex=engine.gui->agValue;
+	player->dex=engine.gui->dexValue;
+	player->totalDex=engine.gui->dexValue;
 	player->intel=engine.gui->intelValue;
 	player->totalIntel=engine.gui->intelValue;
-	player->vit=engine.gui->conValue;
-	player->destructible->hp=engine.gui->conValue;
-	player->destructible->maxHp=engine.gui->conValue;
+	player->vit=engine.gui->vitValue;
+	player->destructible->hp=engine.gui->vitValue;
+	player->destructible->maxHp=engine.gui->vitValue;
 	
 	engine.gui->statPoints = 2;
-	engine.gui->conValue = 100;
+	engine.gui->vitValue = 100;
 	engine.gui->strValue = 5;
-	engine.gui->agValue = 3;
+	engine.gui->dexValue = 3;
 	engine.gui->intelValue = 3;
 	
 	int plyrAscii = 64;
@@ -1341,9 +1341,9 @@ void Engine::win() {
 }
 void Engine::classMenu(){
 	engine.gui->statPoints = 2;
-	engine.gui->conValue = 100;
+	engine.gui->vitValue = 100;
 	engine.gui->strValue = 5;
-	engine.gui->agValue = 3;
+	engine.gui->dexValue = 3;
 	engine.gui->intelValue = 3;
 	engine.gui->menu.clear();
 	engine.gui->menu.addItem(Menu::RACE, "RACE");
@@ -1526,7 +1526,7 @@ if(cat == 1){
 								choice = false;
 							else{
 								engine.gui->statPoints = engine.gui->statPoints - 1;
-								engine.gui->conValue += 20;
+								engine.gui->vitValue += 20;
 								engine.gui->classSidebar();
 							}
 							break;
@@ -1544,7 +1544,7 @@ if(cat == 1){
 								choice = false;
 							else{
 								engine.gui->statPoints = engine.gui->statPoints - 1;
-								engine.gui->agValue += 1;
+								engine.gui->dexValue += 1;
 								engine.gui->classSidebar();
 							}
 							break;
@@ -1562,9 +1562,9 @@ if(cat == 1){
 							break;
 						case Menu::RESET:
 							engine.gui->statPoints = 2;
-							engine.gui->conValue = 100;
+							engine.gui->vitValue = 100;
 							engine.gui->strValue = 5;
-							engine.gui->agValue = 3;
+							engine.gui->dexValue = 3;
 							engine.gui->intelValue = 3;
 							engine.gui->classSidebar();
 							break;

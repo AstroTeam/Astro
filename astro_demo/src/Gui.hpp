@@ -98,9 +98,9 @@ public:
 	int roleSelection;
 	int raceSelection;
 	int statPoints;
-	int conValue;
+	int vitValue;
 	int strValue;
-	int agValue;
+	int dexValue;
 	int intelValue;
 	//Values that save the last selection made in Race/Class Menus
 	/*int raceChosen;
