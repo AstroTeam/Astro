@@ -24,6 +24,7 @@ public:
 	int invState;
 	int invFrames;
 	int menuState;
+	int armorState;
 	int selX;
 	int selY;
 	bool printMap;
