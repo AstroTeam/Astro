@@ -985,7 +985,8 @@ void TriggerAi::update(Actor *owner) {
 		
 		int menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
 		int menuy = engine.screenHeight / 2 - PAUSE_MENU_HEIGHT / 2;
-		termwindow.setDefaultForeground(TCODColor(200,180,50));
+		//make me red
+		termwindow.setDefaultForeground(TCODColor(67,199,50));
 		termwindow.setDefaultBackground(TCODColor(0,0,0));
 		termwindow.printFrame(0,0,32,16,true,TCOD_BKGND_ALPHA(50),"\{ AUTOMATED INTERCOM \{");
 		termwindow.printRect(1,1,30,16,text);
