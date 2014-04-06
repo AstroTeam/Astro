@@ -141,7 +141,7 @@ void PlayerAi::update(Actor *owner) {
 		engine.gui->menu.addItem(Menu::DEXTERITY, "Dexterity (ranged damage)");
 		engine.gui->menu.addItem(Menu::INTELLIGENCE, "Intelligence (tech damage)");
 		//engine.gui->menu.addItem(Menu::AGILITY, "Agility (+1 defence)");
-		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::PAUSE);
+		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::LEVELUP);
 	
 		
 		switch (menuItem) {
