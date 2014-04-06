@@ -27,6 +27,7 @@ Engine::Engine(int screenWidth, int screenHeight) : gameStatus(STARTUP),
 	gui = new Gui();
 	invState = 0;
 	menuState = 0;
+	armorState = 0;
 	damageDone = 0;
 	damageReceived = 0;
 	selX = 0;
@@ -638,6 +639,7 @@ void Engine::save() {
 		zip.putInt(killCount);
 		zip.putInt(invState);
 		zip.putInt(menuState);
+		zip.putInt(armorState);
 		zip.putInt(invFrames);
 		zip.putInt(selX);
 		zip.putInt(selY);
@@ -737,15 +739,18 @@ void Engine::load(bool pause) {
 		level = zip.getInt();
 		turnCount = zip.getInt();
 		killCount = zip.getInt();
-		piratesFound = zip.getInt();
+		
 		//damageDone = zip.getFloat();
 		//damageReceived = zip.getFloat();
-		menuState = zip.getInt();
 		invState = zip.getInt();
+		menuState = zip.getInt();
+		armorState = zip.getInt();
+		
 		invFrames = zip.getInt();
 		selX = zip.getInt();
 		selY = zip.getInt();
 		printMap = zip.getInt();
+		piratesFound = zip.getInt();
 		//load the map
 		int width = zip.getInt();
 		int height = zip.getInt();

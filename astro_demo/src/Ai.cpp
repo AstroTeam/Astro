@@ -976,6 +976,7 @@ void TriggerAi::update(Actor *owner) {
 	if (!pressed && engine.player->x == owner->x && engine.player->y == owner->y) {
 		//engine.gui->message(TCODColor::yellow, text);
 		pressed = true;
+		engine.armorState = 1;
 		//TCODConsole::flush();
 		int PAUSE_MENU_WIDTH = 32;
 		int PAUSE_MENU_HEIGHT = 16;
@@ -983,13 +984,14 @@ void TriggerAi::update(Actor *owner) {
 		int menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
 		int menuy = engine.screenHeight / 2 - PAUSE_MENU_HEIGHT / 2;
 		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
-		//TCODConsole::root->setDefaultBackground(TCODColor(0,0,0));
+		//TCODConsole::root->setDefaultBackground(TCODColor::black);
 		TCODConsole::root->printFrame(menux-1,menuy-1,PAUSE_MENU_WIDTH,
 		PAUSE_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"\{ AUTOMATED INTERCOM \{");
 		TCODConsole::root->printRect(menux,menuy,30,16,text);
 		TCODConsole::flush();
 		TCOD_key_t key;
 		TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
+		engine.armorState = 0;
 	}
 	
 }
