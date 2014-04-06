@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "main.hpp"
+#include <iostream>
 
 Actor::Actor(int x, int y, int ch, const char *name, const TCODColor &col):
 	x(x),y(y),ch(ch),str(5),dex(3),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3),col(col),name(name),race("Human"),role("Marine"),job("Infantry"), blocks(true),hostile(true),interact(false), smashable(false), oozing(false), susceptible(false),flashable(false), sort(0), hunger(20), maxHunger(20), hungerCount(0), attacker(NULL),destructible(NULL),ai(NULL),
@@ -71,26 +72,47 @@ void Actor::save(TCODZip &zip) {
 
 void Actor::load(TCODZip &zip) {
 	x = zip.getInt();
+	std::cout <<"got x" << x << std::endl;
 	y = zip.getInt();
+	std::cout <<"got y" << std::endl;
 	ch = zip.getInt();
+	std::cout <<"got ch" << std::endl;
 	str = zip.getInt();
+	std::cout <<"got str" << std::endl;
 	dex = zip.getInt();
+	std::cout <<"got dex" << std::endl;
 	intel = zip.getInt();
+	std::cout <<"got intel" << std::endl;
 	totalStr = zip.getInt();
+	std::cout <<"got totalstr" << std::endl;
 	totalDex = zip.getInt();
+	std::cout <<"got totaldex" << std::endl;
 	totalIntel = zip.getInt();
+	std::cout <<"got totalintel" << std::endl;
 	col= zip.getColor();
+	std::cout <<"got col" << std::endl;
 	name = strdup(zip.getString());
+	std::cout <<"got name" << name << std::endl;
 	race = strdup(zip.getString());
+	std::cout <<"got race" << std::endl;
 	role = strdup(zip.getString());
+	std::cout <<"got role" << std::endl;
 	job = strdup(zip.getString());
+	std::cout <<"got job" << std::endl;
 	blocks = zip.getInt();
+	std::cout <<"got blocks" << std::endl;
 	hostile = zip.getInt();
+	std::cout <<"got hostile" << std::endl;
 	interact = zip.getInt();
+	std::cout <<"got interact" << std::endl;
 	smashable = zip.getInt();
+	std::cout <<"got smashable" << std::endl;
 	flashable = zip.getInt();
+	std::cout <<"got flashable" << std::endl;
 	oozing = zip.getInt();
+	std::cout <<"got oozing" << std::endl;
 	susceptible = zip.getInt();
+	std::cout <<"got susceptible" << std::endl;
 	sort = zip.getInt();
 	hunger = zip.getInt();
 	maxHunger = zip.getInt();
@@ -104,29 +126,42 @@ void Actor::load(TCODZip &zip) {
 		nbAuras--;
 	}
 	
+	std::cout <<"got sort" << std::endl;
 	bool hasAttacker = zip.getInt();
+	std::cout <<"got hasAttacker " << hasAttacker << std::endl;
 	bool hasDestructible = zip.getInt();
+	std::cout <<"got hasDestructible "<< hasDestructible << std::endl;
 	bool hasAi = zip.getInt();
+	std::cout <<"got hasAi "<< hasAi << std::endl;
 	bool hasPickable = zip.getInt();
+	std::cout <<"got hasPickable " << hasPickable << std::endl;
 	bool hasContainer = zip.getInt();
+	std::cout <<"got hasContainer " << hasContainer << std::endl;
 	
 	if (hasAttacker) {
 		attacker = new Attacker(0.0f);
 		attacker->load(zip);
 	}
+	std::cout <<"got attacker module" << std::endl;
 	if (hasDestructible) {
 		destructible = Destructible::create(zip);
 	}
+	std::cout <<"got destructible module" << std::endl;
 	if (hasAi) {
 		ai = Ai::create(zip);
 	}
+	std::cout <<"got ai module" << std::endl;
 	if (hasPickable) {
+		std::cout << "trying pickable module" <<std::endl;
 		pickable = Pickable::create(zip);
 	}
+	std::cout <<"got pickable module" << std::endl;
 	if (hasContainer) {
+		std::cout << "trying container module " << std::endl;
 		container = new Container(0);
 		container->load(zip);
 	}
+	std::cout <<"got container module" << std::endl;
 }
 	
 void Actor::render() const

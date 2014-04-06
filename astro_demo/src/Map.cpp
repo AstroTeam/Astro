@@ -47,6 +47,7 @@ public:
 			room->x2 = x+w-1;
 			room->y2 = y+h-1;
 			
+			std::cout << "room " << room->x1 << " " << room->y1 << " " << room->x2 << " " << room->y2 << std::endl;
 			
 			//will this room be special?
 			int index = map.rng->getInt(0, roomList->size()-1);
@@ -78,6 +79,7 @@ public:
 
 Map::Map(int width, int height, int artifacts, short epicenterAmount): width(width),height(height),artifacts(artifacts),epicenterAmount(epicenterAmount) {
 	seed = TCODRandom::getInstance()->getInt(0,0x7FFFFFFF);
+	cout<< "seed " << seed << endl;
 }
 
 Map::~Map() {
@@ -113,6 +115,7 @@ int Map::tileType(int x, int y) {
 void Map::init(bool withActors, LevelType levelType) {
 	cout << levelType << endl << endl;
 
+	cout << "used seed " << seed << endl;
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
@@ -146,6 +149,7 @@ void Map::init(bool withActors, LevelType levelType) {
 
 void Map::save(TCODZip &zip) {
 	zip.putInt(seed);
+	cout << "saved seed " << seed << endl;
 	for (int i = 0; i < width*height; i++) {
 		zip.putInt(tiles[i].explored);
 		zip.putFloat(tiles[i].infection);
@@ -162,6 +166,7 @@ void Map::save(TCODZip &zip) {
 
 void Map::load(TCODZip &zip) {
 	seed = zip.getInt();
+	cout << "loaded seed " << seed << endl;
 	init(false);
 	for (int i = 0; i <width*height; i++) {
 		tiles[i].explored = zip.getInt();
