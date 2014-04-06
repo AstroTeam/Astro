@@ -508,6 +508,13 @@ void Map::spawnTutorial() {
 	
 	Actor * pcmu4 = new Actor(x2, y1+3, 243, "PCMU Food Processor", TCODColor::white);
 	engine.map->tiles[x2+(y1+3)*engine.map->width].decoration = 44;
+	pcmu4->destructible = new MonsterDestructible(1,0,0,0);
+	pcmu4->ai = new LockerAi();
+	pcmu4->hostile = false;
+	pcmu4->interact = true;
+	pcmu4->container = new Container(3);
+	Actor *food = createFood(0,0);
+	food->pickable->pick(food, pcmu4);
 	engine.actors.push(pcmu4);
 	
 	
@@ -1738,6 +1745,13 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				for (int j = y1+6; j < y2-1; j+=2) {
 					if (0 == rng->getInt(0, 4)) {
 						Actor * pcmu = new Actor(i, j, 243, "PCMU Food Processor", TCODColor::white);
+						pcmu->destructible = new MonsterDestructible(1,0,0,0);
+						pcmu->ai = new LockerAi();
+						pcmu->hostile = false;
+						pcmu->interact = true;
+						pcmu->container = new Container(3);
+						Actor *food = createFood(0,0);
+						food->pickable->pick(food, pcmu);
 						engine.map->tiles[i+j*engine.map->width].decoration = 44;
 						engine.actors.push(pcmu);
 					}
