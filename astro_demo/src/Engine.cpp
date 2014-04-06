@@ -146,65 +146,6 @@ void Engine::init() {
 	
 	switch(engine.gui->jobSelection){
 		
-
-		case 1:
-			player->role="Marine";
-			player->job="Infantry";
-			
-			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
-			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
-			ranged->blocks = false;
-			ranged->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
-			ranged->sort = 4;
-			engine.actors.push(ranged);
-			ranged->pickable->pick(ranged,player);
-			((Equipment*)(ranged->pickable))->use(ranged,player);
-			
-			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
-			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
-			legs->blocks = false;
-			legs->pickable = new Equipment(0,Equipment::LEGS,bonusL,requirement);
-			legs->sort = 3;
-			engine.actors.push(legs);
-			legs->pickable->pick(legs,player);
-			((Equipment*)(legs->pickable))->use(legs,player);
-			
-			feet = new Actor(0,0,185,"Combat Boots",TCODColor::white);
-			bonusF = new ItemBonus(ItemBonus::HEALTH,0);
-			feet->blocks = false;
-			feet->pickable = new Equipment(0,Equipment::FEET,bonusF,requirement);
-			feet->sort = 3;
-			engine.actors.push(feet);
-			feet->pickable->pick(feet,player);
-			((Equipment*)(feet->pickable))->use(feet,player);
-			
-			chest = new Actor(0,0,185,"Marine Fatigue Jacket",TCODColor::white);
-			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
-			chest->blocks = false;
-			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC,requirement);
-			chest->sort = 3;
-			engine.actors.push(chest);
-			chest->pickable->pick(chest,player);
-			((Equipment*)(chest->pickable))->use(chest,player);
-			
-			helmet = new Actor(0,0,185,"Marine Ballistic Helmet",TCODColor::white);
-			bonusHe = new ItemBonus(ItemBonus::HEALTH,0);
-			helmet->blocks = false;
-			helmet->pickable = new Equipment(0,Equipment::HEAD,bonusHe,requirement);
-			helmet->sort = 3;
-			engine.actors.push(helmet);
-			helmet->pickable->pick(helmet,player);
-			((Equipment*)(helmet->pickable))->use(helmet,player);
-			
-			equip1 = new Actor(0,0,182,"FireBomb", TCODColor::white);
-			equip1->sort = 2;
-			equip1->blocks = false;
-			equip1->pickable = new Fireball(3,12,8);
-			engine.actors.push(equip1);
-			equip1->pickable->pick(equip1,player);
-			
-			
-		break;
 		case 2:
 			player->role="Marine";
 			player->job="Medic";
@@ -551,10 +492,6 @@ void Engine::init() {
 		default:
 			player->role="Marine";
 			player->job="Infantry";
-			
-			player->dex+=3; //job selection bonus
-			player->totalDex+=3; //job selection bonus
-			
 
 			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
 			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
@@ -607,7 +544,19 @@ void Engine::init() {
 			equip1->pickable = new Fireball(3,12,8);
 			engine.actors.push(equip1);
 			equip1->pickable->pick(equip1,player);
-		break;
+			
+			//get frag grenades
+			for(int i=0; i<2; i++){
+				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Fragment(3,12,8);
+				equip1->pickable->value = 55;
+				equip1->pickable->inkValue = 10;
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			break;
 	}
 	//set race and job back to 0
 	engine.gui->raceSelection = 0;
@@ -944,11 +893,12 @@ void Engine::render()
 void Engine::nextLevel() {
 	level++;
 	
-	gui->message(TCODColor::lightViolet, "Sitting at the top of the stairs, you take a brief moment to rest...");
 	player->destructible->heal(player->destructible->maxHp/2);
 	gui->message(TCODColor::red,"Gathering your courage, you rush into the station's teleporter, mindful that greater dangers may lurk beyond...");
 	TCODRandom * updateRng = TCODRandom::getInstance();
 	int temp = updateRng->getInt(0,2);
+	
+	//explorers find flares
 	if(player->role[0] == 'E'){
 		if (temp == 0) 
 			gui->message(TCODColor::white,"As an explorer, you discover more flares hidden in your bag that your buggy tablet app didn't tell you about!");
@@ -965,6 +915,26 @@ void Engine::nextLevel() {
 				equip1->pickable->pick(equip1,player);
 		}
 	}
+	
+	else if(player->job[0] == 'I'){ //infantry find grenades
+		if (temp == 0) 
+			gui->message(TCODColor::white,"As an infantry, you discover more grenades hidden in your bag that your buggy tablet app didn't tell you about!");
+		else if (temp == 1)
+			gui->message(TCODColor::white,"As an infantry, you discover more grenades hidden in your back pocket!");
+		else
+			gui->message(TCODColor::white,"You trip on the teleporter pad and find some grenades! You add them to your inventory.");
+		for(int i=0; i<2; i++){
+				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Fragment(3,12,8);
+				equip1->pickable->value = 55;
+				equip1->pickable->inkValue = 10;
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+	}
+	
 	delete map;
 	//delete all actors but player and stairs
 	for(Actor **it = actors.begin(); it != actors.end(); it++) {
