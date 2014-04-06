@@ -30,14 +30,16 @@ void Attacker::attack(Actor *owner, Actor *target) {
 		int attackRoll = roll + owner->totalStr;
 		float damageTaken = 0;
 		float damageRoll1 = (float)TCODRandom::getInstance()->getInt(1,4);
+		float critMult = 2;
 		if(owner->container->hand1){
-			//int minDmg = 
-			//int maxDmg = 
-			//damageRoll1 = (float)TCODRandom::getInstance()->getInt(minDmg,maxDmg);
+			int minDmg = ((Weapon*)owner->container->hand1->pickable)->minDmg;
+			int maxDmg = ((Weapon*)owner->container->hand1->pickable)->maxDmg;
+			critMult = ((Weapon*)owner->container->hand1->pickable)->critMult;
+			damageRoll1 = (float)TCODRandom::getInstance()->getInt(minDmg,maxDmg);
 		}
 		if(roll >= 20){
 			engine.gui->message(TCODColor::red,"CRITICAL HIT!");
-			damageTaken += 2 * (damageRoll1 + owner->totalStr) - target->destructible->totalDR; //save for damage roll
+			damageTaken += critMult * (damageRoll1 + owner->totalStr) - target->destructible->totalDR; //save for damage roll
 		}
 		else if(roll <= 1){
 			engine.gui->message(TCODColor::lightGrey,"critical miss...");
@@ -77,15 +79,17 @@ void Attacker::shoot(Actor *owner, Actor *target) {
 		int attackRoll = roll + owner->totalDex;
 		float damageTaken = 0;
 		float damageRoll = 0;
+		float critMult = 2;
 		if(owner->container->ranged){
-			//int minDmg = 
-			//int maxDmg = 
-			//damageRoll = (float)TCODRandom::getInstance()->getInt(minDmg,maxDmg);
+			int minDmg = ((Weapon*)owner->container->ranged->pickable)->minDmg;
+			int maxDmg = ((Weapon*)owner->container->ranged->pickable)->maxDmg;
+			critMult = ((Weapon*)owner->container->ranged->pickable)->critMult;
+			damageRoll = (float)TCODRandom::getInstance()->getInt(minDmg,maxDmg);
 		}
 		
 		if(roll >= 20){
 			engine.gui->message(TCODColor::red,"CRITICAL HIT!");
-			damageTaken += 2 * (damageRoll + owner->totalDex) - target->destructible->totalDR; //save for damage roll
+			damageTaken += critMult * (damageRoll + owner->totalDex) - target->destructible->totalDR; //save for damage roll
 		}
 		else if(roll <= 1){
 			engine.gui->message(TCODColor::lightGrey,"critical miss...");
