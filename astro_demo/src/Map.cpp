@@ -139,6 +139,7 @@ void Map::init(bool withActors, LevelType levelType) {
 		}
 	}
 	else {
+		engine.boss = NULL;
 		spawnTutorial();
 	}
 }

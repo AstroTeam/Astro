@@ -471,7 +471,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		}break;
 		case '>':
 		if (engine.stairs->x == owner->x && engine.stairs->y == owner->y) {
-			if(engine.boss == NULL || (engine.boss->destructible && engine.boss->destructible->isDead()))
+			if(engine.boss == NULL || engine.boss->x == 0 || (engine.boss->destructible && engine.boss->destructible->isDead()))
 			{
 				engine.player->attacker->lastTarget = NULL;
 				engine.nextLevel();
