@@ -126,8 +126,8 @@ void Gui::render() {
 		
 		
 	//display an ability cooldown bar
-	sidebar->print(1,19,"Ability Cooldown: ");
-	renderBar(1,21, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
+	//sidebar->print(1,19,"Ability Cooldown: ");
+	//renderBar(1,21, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
 
 	
 	//display FPS
@@ -531,7 +531,15 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 	int menux = 0, menuy = 0;
 	int menu2x = 0, menu2y = 0;
 	//TCODConsole::root->clear();
-	if (mode == PAUSE) {
+	if (mode == LEVELUP) {
+		menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
+		menuy = engine.screenHeight / 2 - PAUSE_MENU_HEIGHT / 2;
+		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
+		TCODConsole::root->printFrame(menux,menuy - 4,PAUSE_MENU_WIDTH,
+			PAUSE_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"LEVEL UP!!!");
+		menux+=2;
+		menuy+=3;
+	}else if (mode == PAUSE) {
 		menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - PAUSE_MENU_HEIGHT / 2;
 		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
