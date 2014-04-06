@@ -78,15 +78,9 @@ void Engine::init() {
 	player->totalIntel=engine.gui->intelValue;
 	player->vit=engine.gui->vitValue;
 	player->destructible->hp=engine.gui->vitValue;
-	player->destructible->maxHp=engine.gui->vitValue;
-	
-	engine.gui->statPoints = 2;
-	engine.gui->vitValue = 100;
-	engine.gui->strValue = 5;
-	engine.gui->dexValue = 3;
-	engine.gui->intelValue = 3;
-	
+	player->destructible->maxHp=engine.gui->vitValue;	
 	int plyrAscii = 64;
+	
 	switch(engine.gui->raceSelection){
 		case 1:
 			player->race="Human";
@@ -98,51 +92,19 @@ void Engine::init() {
 			player->race="Robot";
 			plyrAscii = 159;
 			player->hunger = 300;
-			player->maxHunger = 300;
-			
-			player->str += 2;
-			player->totalStr += 2;
-			player->attacker->basePower += 2;   //old
-			player->attacker->totalPower += 2;  //old
-			
-			player->vit += 20;
-			player->destructible->maxHp += 20;
-			player->destructible->hp += 20;
-			
-			player->dex -= 2;
-			player->totalDex -= 2;
-			
-			player->intel += 2;
-			player->totalIntel += 2;
-			
+			player->maxHunger = 300;			
 			break;
 		case 3:
 			player->race="Alien";
 			plyrAscii = 175;
 			player->hunger = 100;
-			player->maxHunger = 100;
-			
-			player->str -= 2;
-			player->totalStr -= 2;
-			player->attacker->basePower -= 2;   //old
-			player->attacker->totalPower -= 2;  //old
-			
-			player->vit -= 40;
-			player->destructible->maxHp -= 40;
-			player->destructible->hp -= 40;
-			
-			player->dex += 2;
-			player->totalDex += 2;
-			
-			player->intel += 2;
-			player->totalIntel += 2;
-			
+			player->maxHunger = 100;			
 			break;
-			default:
-				player->race="Human";
-				plyrAscii = 143;
-				player->hunger = 200;
-				player->maxHunger = 200;
+		default:
+			player->race="Human";
+			plyrAscii = 143;
+			player->hunger = 200;
+			player->maxHunger = 200;
 			break;
 	}
 	
@@ -187,9 +149,6 @@ void Engine::init() {
 		case 1:
 			player->role="Marine";
 			player->job="Infantry";
-			
-			player->dex+=3; //job selection bonus
-			player->totalDex+=3; //job selection bonus
 			
 			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
 			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
@@ -248,9 +207,6 @@ void Engine::init() {
 		case 2:
 			player->role="Marine";
 			player->job="Medic";
-			
-			player->intel += 1;		//job selection bonus
-			player->totalIntel += 1;//job selection bonus
 			
 			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
 			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
@@ -354,10 +310,6 @@ void Engine::init() {
 			player->role="Explorer";
 			player->job="Survivalist";
 			
-			player->vit += 20;
-			player->destructible->maxHp += 20;
-			player->destructible->hp += 20;
-			
 			chest = new Actor(0,0,185,"T-Shirt (red)",TCODColor::white);
 			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
 			chest->blocks = false;
@@ -427,10 +379,6 @@ void Engine::init() {
 			player->role="Explorer";
 			player->job="Merchant";
 			
-			player->vit -= 40;
-			player->destructible->maxHp -= 40;
-			player->destructible->hp -= 40;
-			
 			//add flare, for now is generic flare
 			for(int i=0; i<20; i++){
 				equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
@@ -498,22 +446,6 @@ void Engine::init() {
 			player->role="Mercenary";
 			player->job="Assassin";
 			
-			player->str += 8;
-			player->totalStr += 8;
-			player->attacker->basePower += 8;   //old
-			player->attacker->totalPower += 8;  //old
-			
-			//cut HP by 2/3
-			player->vit /= 3;
-			player->destructible->maxHp = player->vit;
-			player->destructible->hp = player->vit;
-			
-			player->dex += 6;
-			player->totalDex += 6;
-			
-			player->intel += 4;
-			player->totalIntel += 4;
-			
 			//get frag grenades
 			for(int i=0; i<3; i++){
 				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
@@ -558,10 +490,6 @@ void Engine::init() {
 			player->role="Mercenary";
 			player->job="Brute";
 			
-			player->vit += 60;
-			player->destructible->maxHp = player->vit;
-			player->destructible->hp = player->vit;
-			
 			//get frag grenades
 			for(int i=0; i<3; i++){
 				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
@@ -587,21 +515,6 @@ void Engine::init() {
 		case 9:
 			player->role="Mercenary";
 			player->job="Hacker";
-			
-			player->vit -= 40;
-			player->destructible->maxHp = player->vit;
-			player->destructible->hp = player->vit;
-			
-			player->str -= 2;
-			player->totalStr = player->str;
-			player->attacker->basePower = player->str;   //old
-			player->attacker->totalPower = player->str;  //old
-			
-			player->dex += 1;
-			player->totalDex += 1;
-			
-			player->intel += 6;
-			player->totalIntel += 6;
 			
 			//get frag grenades
 			for(int i=0; i<3; i++){
@@ -1474,53 +1387,58 @@ if(cat == 1){
 	}
 	bool choice = true;
 	while(choice){
-				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
+		Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
 				
-					switch (menuItem) {
-						case Menu::INFANTRY :
-							engine.gui->jobSelection = 1;
-							choice = false;
-							break;
-						case Menu::MEDIC :
-							engine.gui->jobSelection = 2;
-							choice = false;
-							break;
-						case Menu::QUARTERMASTER :
-							engine.gui->jobSelection = 3;
-							choice = false;
-							break;
-						case Menu::SURVIVALIST :
-							engine.gui->jobSelection = 4;
-							choice = false;
-							break;
-						case Menu::PIRATE :
-							engine.gui->jobSelection = 5;
-							choice = false;
-							break;
-						case Menu::MERCHANT :
-							engine.gui->jobSelection = 6;
-							choice = false;
-							break;
-						case Menu::ASSASSIN :
-							engine.gui->jobSelection = 7;
-							choice = false;
-							break;
-						case Menu::BRUTE :
-							engine.gui->jobSelection = 8;
-							choice = false;
-							break;
-						case Menu::HACKER :
-							engine.gui->jobSelection = 9;
-							choice = false;
-							break;
-						case Menu::EXIT :
-							choice = false;
-							break;
-						case Menu::NO_CHOICE:
-							choice = false;
-							break;
-						default: break;
-					}
+			switch (menuItem) {
+				case Menu::INFANTRY :
+					engine.gui->jobSelection = 1;
+					choice = false;
+					break;
+				case Menu::MEDIC :
+					engine.gui->jobSelection = 2;
+					choice = false;
+					break;
+				case Menu::QUARTERMASTER :
+					engine.gui->jobSelection = 3;
+					choice = false;
+					break;
+				case Menu::SURVIVALIST :
+					engine.gui->jobSelection = 4;
+					choice = false;
+					break;
+				case Menu::PIRATE :
+					engine.gui->jobSelection = 5;
+					choice = false;
+					break;
+				case Menu::MERCHANT :
+					engine.gui->jobSelection = 6;
+					choice = false;
+					break;
+				case Menu::ASSASSIN :
+					engine.gui->jobSelection = 7;
+					choice = false;
+					break;
+				case Menu::BRUTE :
+					engine.gui->jobSelection = 8;
+					choice = false;
+					break;
+				case Menu::HACKER :
+					engine.gui->jobSelection = 9;
+					choice = false;
+					break;
+				case Menu::EXIT :
+					choice = false;
+					break;
+				case Menu::NO_CHOICE:
+					choice = false;
+					break;
+				default: break;
+			}
+		engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
+		engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
+		engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
+		engine.gui->intelValue = getInitIntel(engine.gui->raceSelection, engine.gui->jobSelection);
+		engine.gui->classSidebar();
 	}
 }else{
 	engine.gui->classMenu.clear();
@@ -1532,61 +1450,61 @@ if(cat == 1){
 	engine.gui->classMenu.addItem(Menu::EXIT, "DONE");
 	bool choice = true;
 	while(choice){
-				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
-				
-					switch (menuItem) {
-						case Menu::VITALITY :
-							if(engine.gui->statPoints == 0)
-								choice = false;
-							else{
-								engine.gui->statPoints = engine.gui->statPoints - 1;
-								engine.gui->vitValue += 20;
-								engine.gui->classSidebar();
-							}
-							break;
-						case Menu::STRENGTH :
-							if(engine.gui->statPoints == 0)
-								choice = false;
-							else{
-								engine.gui->statPoints = engine.gui->statPoints - 1;
-								engine.gui->strValue += 1;
-								engine.gui->classSidebar();
-							}
-							break;
-						case Menu::DEXTERITY :
-							if(engine.gui->statPoints == 0)
-								choice = false;
-							else{
-								engine.gui->statPoints = engine.gui->statPoints - 1;
-								engine.gui->dexValue += 1;
-								engine.gui->classSidebar();
-							}
-							break;
-						case Menu::INTELLIGENCE :
-							if(engine.gui->statPoints == 0)
-								choice = false;
-							else{
-								engine.gui->statPoints = engine.gui->statPoints - 1;
-								engine.gui->intelValue += 1;
-								engine.gui->classSidebar();
-							}
-							break;
-						case Menu::EXIT :
-							choice = false;
-							break;
-						case Menu::RESET:
-							engine.gui->statPoints = 2;
-							engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
-							engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
-							engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
-							engine.gui->intelValue = getInitIntel(engine.gui->raceSelection, engine.gui->jobSelection);
-							engine.gui->classSidebar();
-							break;
-						case Menu::NO_CHOICE:
-							choice = false;
-							break;
-						default: break;
+		Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
+		
+			switch (menuItem) {
+				case Menu::VITALITY :
+					if(engine.gui->statPoints == 0)
+						choice = false;
+					else{
+						engine.gui->statPoints = engine.gui->statPoints - 1;
+						engine.gui->vitValue += 20;
+						engine.gui->classSidebar();
 					}
+					break;
+				case Menu::STRENGTH :
+					if(engine.gui->statPoints == 0)
+						choice = false;
+					else{
+						engine.gui->statPoints = engine.gui->statPoints - 1;
+						engine.gui->strValue += 1;
+						engine.gui->classSidebar();
+					}
+					break;
+				case Menu::DEXTERITY :
+					if(engine.gui->statPoints == 0)
+						choice = false;
+					else{
+						engine.gui->statPoints = engine.gui->statPoints - 1;
+						engine.gui->dexValue += 1;
+						engine.gui->classSidebar();
+					}
+					break;
+				case Menu::INTELLIGENCE :
+					if(engine.gui->statPoints == 0)
+						choice = false;
+					else{
+						engine.gui->statPoints = engine.gui->statPoints - 1;
+						engine.gui->intelValue += 1;
+						engine.gui->classSidebar();
+					}
+					break;
+				case Menu::EXIT :
+					choice = false;
+					break;
+				case Menu::RESET:
+					engine.gui->statPoints = 2;
+					engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
+					engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
+					engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
+					engine.gui->intelValue = getInitIntel(engine.gui->raceSelection, engine.gui->jobSelection);
+					engine.gui->classSidebar();
+					break;
+				case Menu::NO_CHOICE:
+					choice = false;
+					break;
+				default: break;
+			}
 	}
 }
 }
@@ -1595,13 +1513,12 @@ int Engine::getInitVit(int race, int job){
 	int vitality = 100;
 	switch (race){
 		case 1: //Human
-			vitality +=1;
 			break;
 		case 2: //Robot
-			vitality +=2;
+			vitality +=20;
 			break; 
 		case 3: //Alien
-			vitality +=3;
+			vitality -= 40;
 			break;
 	}
 	
@@ -1613,16 +1530,21 @@ int Engine::getInitVit(int race, int job){
 		case 3: //Quartermaster
 			break;
 		case 4: //Survivalist
+			vitality += 20;
 			break;
 		case 5: //Pirate
 			break; 
 		case 6: //Merchant
+			vitality -= 40;
 			break;
 		case 7: //Assassin
+			vitality /= 3;
 			break;
 		case 8: //Brute
+			vitality += 60;
 			break; 
 		case 9: //Hacker
+			vitality -= 40;
 			break;
 	}
 	return vitality;
@@ -1634,8 +1556,10 @@ int Engine::getInitStr(int race, int job){
 		case 1: //Human
 			break;
 		case 2: //Robot
+			strength += 2;
 			break; 
 		case 3: //Alien
+			strength -= 2;
 			break;
 			
 	switch (job){
@@ -1652,10 +1576,12 @@ int Engine::getInitStr(int race, int job){
 		case 6: //Merchant
 			break;
 		case 7: //Assassin
+			strength += 8;
 			break;
 		case 8: //Brute
 			break; 
 		case 9: //Hacker
+			strength -= 2;
 			break;
 	}
 	}
@@ -1668,13 +1594,16 @@ int Engine::getInitDex(int race, int job){
 		case 1: //Human
 			break;
 		case 2: //Robot
+			dexterity -= 2;
 			break; 
 		case 3: //Alien
+			dexterity += 2;
 			break;
 	}
 	
 	switch (job){
 		case 1: //Infantry
+			dexterity += 3;
 			break;
 		case 2: //Medic
 			break; 
@@ -1687,10 +1616,12 @@ int Engine::getInitDex(int race, int job){
 		case 6: //Merchant
 			break;
 		case 7: //Assassin
+			dexterity += 6;
 			break;
 		case 8: //Brute
 			break; 
 		case 9: //Hacker
+			dexterity += 1;
 			break;
 	}
 	return dexterity;
@@ -1702,8 +1633,10 @@ int Engine::getInitIntel(int race, int job){
 		case 1: //Human
 			break;
 		case 2: //Robot
+			intelligence += 2;
 			break; 
 		case 3: //Alien
+			intelligence += 2; 
 			break;
 	}
 	
@@ -1711,6 +1644,7 @@ int Engine::getInitIntel(int race, int job){
 		case 1: //Infantry
 			break;
 		case 2: //Medic
+			intelligence += 1;
 			break; 
 		case 3: //Quartermaster
 			break;
@@ -1721,10 +1655,12 @@ int Engine::getInitIntel(int race, int job){
 		case 6: //Merchant
 			break;
 		case 7: //Assassin
+			intelligence += 4;
 			break;
 		case 8: //Brute
 			break; 
 		case 9: //Hacker
+			intelligence += 6;
 			break;
 	}
 	return intelligence;
