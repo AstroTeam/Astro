@@ -1388,26 +1388,34 @@ if(cat == 1){
 	engine.gui->classMenu.addItem(Menu::ALIEN, "ALIEN");
 	bool choice = true;
 	while(choice){
-				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
+		Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
 				
-					switch (menuItem) {
-						case Menu::HUMAN :
-							engine.gui->raceSelection = 1;
-							choice = false;
-							break;
-						case Menu::ROBOT :
-							engine.gui->raceSelection = 2;
-							choice = false;
-							break;
-						case Menu::ALIEN :
-							engine.gui->raceSelection = 3;
-							choice = false;
-							break;
-						case Menu::NO_CHOICE:
-							choice = false;
-							break;
-						default: break;
-					}
+			switch (menuItem) {
+				case Menu::HUMAN :
+					engine.gui->raceSelection = 1;
+					choice = false;
+					break;
+				case Menu::ROBOT :
+					engine.gui->raceSelection = 2;
+					choice = false;
+					break;
+				case Menu::ALIEN :
+					engine.gui->raceSelection = 3;
+					choice = false;
+					break;
+				case Menu::NO_CHOICE:
+					choice = false;
+					break;
+				default: break;
+			}
+			engine.gui->roleSelection = 1;
+			engine.gui->jobSelection = 1;
+			engine.gui->statPoints = 2;
+			engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
+			engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
+			engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
+			engine.gui->intelValue = getInitIntel(engine.gui->raceSelection, engine.gui->jobSelection);
+			engine.gui->classSidebar();
 	}
 
 }else if(cat == 2){
@@ -1417,29 +1425,35 @@ if(cat == 1){
 	engine.gui->classMenu.addItem(Menu::MERCENARY, "MERCENARY");
 	bool choice = true;
 	while(choice){
-				Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
+		Menu::MenuItemCode menuItem = engine.gui->classMenu.pick(Menu::CLASS_SELECT);
 				
-					switch (menuItem) {
-						case Menu::MARINE :
-							engine.gui->roleSelection = 1;
-							engine.gui->jobSelection = 1;
-							choice = false;
-							break;
-						case Menu::EXPLORER :
-							engine.gui->roleSelection = 2;
-							engine.gui->jobSelection = 4;
-							choice = false;
-							break;
-						case Menu::MERCENARY :
-							engine.gui->roleSelection = 3;
-							engine.gui->jobSelection = 7;
-							choice = false;
-							break;
-						case Menu::NO_CHOICE:
-							choice = false;
-							break;
-						default: break;
-					}
+			switch (menuItem) {
+				case Menu::MARINE :
+					engine.gui->roleSelection = 1;
+					engine.gui->jobSelection = 1;
+					choice = false;
+					break;
+				case Menu::EXPLORER :
+					engine.gui->roleSelection = 2;
+					engine.gui->jobSelection = 4;
+					choice = false;
+					break;
+				case Menu::MERCENARY :
+					engine.gui->roleSelection = 3;
+					engine.gui->jobSelection = 7;
+					choice = false;
+					break;
+				case Menu::NO_CHOICE:
+					choice = false;
+					break;
+				default: break;
+			}
+			engine.gui->statPoints = 2;
+			engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
+			engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
+			engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
+			engine.gui->intelValue = getInitIntel(engine.gui->raceSelection, engine.gui->jobSelection);
+			engine.gui->classSidebar();
 	}
 }else if(cat == 3){
 	engine.gui->classMenu.clear();
@@ -1562,10 +1576,10 @@ if(cat == 1){
 							break;
 						case Menu::RESET:
 							engine.gui->statPoints = 2;
-							engine.gui->vitValue = 100;
-							engine.gui->strValue = 5;
-							engine.gui->dexValue = 3;
-							engine.gui->intelValue = 3;
+							engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
+							engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
+							engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
+							engine.gui->intelValue = getInitIntel(engine.gui->raceSelection, engine.gui->jobSelection);
 							engine.gui->classSidebar();
 							break;
 						case Menu::NO_CHOICE:
@@ -1575,4 +1589,143 @@ if(cat == 1){
 					}
 	}
 }
+}
+
+int Engine::getInitVit(int race, int job){
+	int vitality = 100;
+	switch (race){
+		case 1: //Human
+			vitality +=1;
+			break;
+		case 2: //Robot
+			vitality +=2;
+			break; 
+		case 3: //Alien
+			vitality +=3;
+			break;
+	}
+	
+	switch (job){
+		case 1: //Infantry
+			break;
+		case 2: //Medic
+			break; 
+		case 3: //Quartermaster
+			break;
+		case 4: //Survivalist
+			break;
+		case 5: //Pirate
+			break; 
+		case 6: //Merchant
+			break;
+		case 7: //Assassin
+			break;
+		case 8: //Brute
+			break; 
+		case 9: //Hacker
+			break;
+	}
+	return vitality;
+}
+
+int Engine::getInitStr(int race, int job){
+	int strength = 5;
+	switch (race){
+		case 1: //Human
+			break;
+		case 2: //Robot
+			break; 
+		case 3: //Alien
+			break;
+			
+	switch (job){
+		case 1: //Infantry
+			break;
+		case 2: //Medic
+			break; 
+		case 3: //Quartermaster
+			break;
+		case 4: //Survivalist
+			break;
+		case 5: //Pirate
+			break; 
+		case 6: //Merchant
+			break;
+		case 7: //Assassin
+			break;
+		case 8: //Brute
+			break; 
+		case 9: //Hacker
+			break;
+	}
+	}
+	return strength;
+}
+
+int Engine::getInitDex(int race, int job){
+	int dexterity = 3;
+	switch (race){
+		case 1: //Human
+			break;
+		case 2: //Robot
+			break; 
+		case 3: //Alien
+			break;
+	}
+	
+	switch (job){
+		case 1: //Infantry
+			break;
+		case 2: //Medic
+			break; 
+		case 3: //Quartermaster
+			break;
+		case 4: //Survivalist
+			break;
+		case 5: //Pirate
+			break; 
+		case 6: //Merchant
+			break;
+		case 7: //Assassin
+			break;
+		case 8: //Brute
+			break; 
+		case 9: //Hacker
+			break;
+	}
+	return dexterity;
+}
+
+int Engine::getInitIntel(int race, int job){
+	int intelligence = 3;
+	switch (race){
+		case 1: //Human
+			break;
+		case 2: //Robot
+			break; 
+		case 3: //Alien
+			break;
+	}
+	
+	switch (job){
+		case 1: //Infantry
+			break;
+		case 2: //Medic
+			break; 
+		case 3: //Quartermaster
+			break;
+		case 4: //Survivalist
+			break;
+		case 5: //Pirate
+			break; 
+		case 6: //Merchant
+			break;
+		case 7: //Assassin
+			break;
+		case 8: //Brute
+			break; 
+		case 9: //Hacker
+			break;
+	}
+	return intelligence;
 }
