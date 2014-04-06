@@ -980,13 +980,15 @@ void TriggerAi::update(Actor *owner) {
 		int PAUSE_MENU_WIDTH = 32;
 		int PAUSE_MENU_HEIGHT = 16;
 		
+		TCODConsole termwindow(PAUSE_MENU_WIDTH,PAUSE_MENU_HEIGHT);
+		
 		int menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
 		int menuy = engine.screenHeight / 2 - PAUSE_MENU_HEIGHT / 2;
-		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
-		//TCODConsole::root->setDefaultBackground(TCODColor(0,0,0));
-		TCODConsole::root->printFrame(menux-1,menuy-1,PAUSE_MENU_WIDTH,
-		PAUSE_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"\{ AUTOMATED INTERCOM \{");
-		TCODConsole::root->printRect(menux,menuy,30,16,text);
+		termwindow.setDefaultForeground(TCODColor(200,180,50));
+		termwindow.setDefaultBackground(TCODColor(0,0,0));
+		termwindow.printFrame(0,0,32,16,true,TCOD_BKGND_ALPHA(50),"\{ AUTOMATED INTERCOM \{");
+		termwindow.printRect(1,1,30,16,text);
+		TCODConsole::blit(&termwindow,0,0,32,16,TCODConsole::root,menux,menuy);
 		TCODConsole::flush();
 		TCOD_key_t key;
 		TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
