@@ -1983,17 +1983,20 @@ void InteractibleAi::interaction(Actor *owner, Actor *target){
 TurretControlAi::TurretControlAi()
 {
 	attackMode = 1;
+	locked = false;
 }
 
 void TurretControlAi::save(TCODZip &zip)
 {
 	zip.putInt(TURRETCONTROL);
 	zip.putInt(attackMode);
+	zip.putInt(locked);
 }
 
 void TurretControlAi::load(TCODZip &zip)
 {
 	attackMode = zip.getInt();
+	locked = zip.getInt();
 }
 
 void TurretControlAi::update(Actor *owner)
@@ -2006,6 +2009,11 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 	int intelReqToDis = 2;
 	int intelReqToFriendly = 5;
 	bool choice_made = false, first = true;
+	if(locked)
+	{
+		engine.gui->message(TCODColor::orange, "The turret console is locked, and you may no longer access it.");
+		return;
+	}
 	while (!choice_made) 
 	{
 		if (first) {
@@ -2026,8 +2034,10 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				}
 				else
 				{
-					engine.gui->message(TCODColor::orange, "You don't quite understand what you're doing, nothing has changed.");
+					attackMode = 1;
+					engine.gui->message(TCODColor::orange, "Unauthorized access deteched, the turret console is now locked.");
 				}
+				locked = true;
 				choice_made = true;
 				break;
 			case Menu::DISABLE_IFF :
@@ -2038,8 +2048,10 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				}
 				else
 				{
-					engine.gui->message(TCODColor::orange, "You don't quite understand what you're doing, nothing has changed.");
+					attackMode = 1;
+					engine.gui->message(TCODColor::orange, "Unauthorized access deteched, the turret console is now locked.");
 				}
+				locked = true;
 				choice_made = true;
 				break;
 			case Menu::IDENTIFY_FRIENDLY :
@@ -2050,8 +2062,10 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				}
 				else
 				{
-					engine.gui->message(TCODColor::orange, "You don't quite understand what you're doing, nothing has changed");
+					attackMode = 1;
+					engine.gui->message(TCODColor::orange, "Unauthorized access deteched, the turret console is now locked.");
 				}
+				locked = true;
 				choice_made = true;
 				break;
 			case Menu::EXIT :
