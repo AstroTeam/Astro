@@ -6,15 +6,16 @@ public:
 	TCODList<Actor *> inventory;
 	std::map <char,const char*> select;
 	//the following bools could be actor pointers instead, really
+	//working on it
 	int wallet;
 	
-	bool head;
-	bool chest;
-	bool legs;
-	bool feet;
-	bool hand1;
-	bool hand2;
-	bool ranged;
+	Actor *head;
+	Actor *chest;
+	Actor *legs;
+	Actor *feet;
+	Actor *hand1;
+	Actor *hand2;
+	Actor *ranged;///////////////////////
 	
 	Container(int size);
 	~Container();

@@ -8,7 +8,7 @@ Actor::Actor(int x, int y, int ch, const char *name, const TCODColor &col):
 }
 
 Actor::Actor(int x, int y, int ch, const char *name, const char *race, const char *role, const char *job, const TCODColor &col):
-	x(x),y(y),ch(ch),str(5),dex(2),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3),col(col),name(name),race(race),role(role),job(job), blocks(true),hostile(true),interact(false),smashable(false), oozing(false), susceptible(false), sort(0), hunger(20), maxHunger(20), hungerCount(0), attacker(NULL),destructible(NULL),ai(NULL),
+	x(x),y(y),ch(ch),str(5),dex(2),intel(3),vit(5),totalStr(5),totalDex(3), totalIntel(3),col(col),name(name),race(race),role(role),job(job), blocks(true),hostile(true),interact(false),smashable(false), oozing(false), susceptible(false), flashable(false), sort(0), hunger(20), maxHunger(20), hungerCount(0), attacker(NULL),destructible(NULL),ai(NULL),
 	pickable(NULL), container(NULL) {
 }
 
