@@ -306,77 +306,44 @@ void Map::spawnTutorial() {
 		}
 	}
 	dig((x1+x2)/2,y1,(x1+x2)/2,y1-10);
+
 	//make interaction terminal
 	Actor *triggerTileI = new Actor(x1+1,y1+1, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileI->ai = new TriggerAi(  
-  //"Welcome to the Astroverius.    \n\n"
 	"INTERACTION BASICS\n\n"
-	"Most items can be interacted\n"
-	"with by simply moving into \n"
-	"them by pressing the\n"
-	"corresponding movement key\n"
-	"whilst being adjacent to it.\n"
-	"(Like these automated\n"
-	"terminals)\n"
-	);
+	"Most items can be interacted with by simply moving into them by pressing the corresponding movement key whilst being adjacent to it. (Like these automated terminals)");
 	triggerTileI->blocks = false; 
 	engine.actors.push(triggerTileI);
+
 	//make FOV terminal
 	Actor *triggerTileFov = new Actor(x2-1,y2-1, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileFov->ai = new TriggerAi(  
-  //"Welcome to the Astroverius.    \n\n"
 	"FOV BASICS\n\n"
-	"The small area you can see\n"
-	"is called your \"FOV\"\n"
-	"and is visible due to \n"
-	"your flashlight.\n"
-	);
+	"The small area you can see is called your \"FOV\" and is visible due to your flashlight.");
 	triggerTileFov->blocks = false; 
 	engine.actors.push(triggerTileFov);
+	
 	//make health xp terminal
 	Actor *triggerTileX = new Actor(x1+1,y2-1, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileX->ai = new TriggerAi(  
-  //"Welcome to the Astroverius.    \n\n"
 	"HEALTH/XP BASICS\n\n"
-	"In the top left is your health\n"
-	"and XP bar (as well as others)\n\n"
-	"Keep an eye out: if\n"
-	"your health reaches 0, you die\n"
-	"and cannot continue. All\n"
-	"saves are deleted.  Your XP\n"
-	"goes up when fighting enemies\n"
-	"and when reaches it's max\n"
-	"you level up!\n"
-	);
+	"In the top left is your health and XP bar (as well as others). Keep an eye out: if your health reaches 0, you die and cannot continue. All saves are deleted.  Your XP goes up when fighting enemies and when reaches it's max you level up!");
 	triggerTileX->blocks = false; 
 	engine.actors.push(triggerTileX);
+	
 	//make character info terminal
 	Actor *triggerTileCh = new Actor(x2-1,y1+1, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileCh->ai = new TriggerAi(  
-  //"Welcome to the Astroverius.    \n\n"
 	"CHARACTER INFO BASICS\n\n"
-	"Pressing the \'c\' key will\n"
-	"bring up the character info\n"
-	"screen where you can view\n"
-	"any and all pertinent stats\n"
-	"about your character.\n"
-	);
+	"Pressing the \'c\' key will bring up the character info screen where you can view any and all pertinent stats about your character.");
 	triggerTileCh->blocks = false; 
 	engine.actors.push(triggerTileCh);
+
 	//make looking terminal
 	Actor *triggerTileLo = new Actor((x1+x2)/2,(y1+y2)/2+2, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileLo->ai = new TriggerAi(  
-  //"Welcome to the Astroverius.    \n\n"
 	"LOOKING BASICS\n\n"
-	"Pressing the \'l\' key will\n"
-	"allow you to look around.\n"
-	"All info about the tile you\n"
-	"are looking at will display in\n"
-	"the \"tile info\" screen in \n"
-	"the bottom right.  Press\n"
-	"\'ENTER\' to escape the look\n"
-	"command.\n"
-	);
+	"Pressing the \'l\' key will allow you to look around. All info about the tile you are looking at will display in the \"tile info\" screen in the bottom right.  Press \'ENTER\' to escape the look command.");
 	triggerTileLo->blocks = false; 
 	engine.actors.push(triggerTileLo);
 	
@@ -384,15 +351,9 @@ void Map::spawnTutorial() {
 	//make light terminal
 	Actor *triggerTileL = new Actor((x1+x2)/2, y1-5, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileL->ai = new TriggerAi(  
-	//"Welcome to the Astroverius.\n\n"
 	"LIGHTING BASICS.\n\n"
 	"Above you is a light.\n"
-	"The Astro has gone dark, but\n"
-	"the crew has put up some\n"
-	"emergency lights to help.\n"
-	"The ones on this deck seem\n"
-	"to work, but others may \n"
-	"flicker or even be broken.\n");
+	"The Astro has gone dark, but the crew has put up some emergency lights to help. The ones on this deck seem to work, but others may flicker or even be broken.");
 	triggerTileL->blocks = false;
 	engine.actors.push(triggerTileL);
 	
@@ -408,20 +369,14 @@ void Map::spawnTutorial() {
 			map->setProperties(tilex,tiley,true,true);
 		}
 	}
+
 	//make light room terminal
 	Actor *triggerTileLR = new Actor((x1+x2)/2, (y1+y2)/2+1, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileLR->ai = new TriggerAi(  
-	//"Welcome to the Astroverius.\n\n"
 	"EXPLORE TO SURVIVE\n\n"
-	"To the left are some of the\n"
-	"Astro's more varied room\n"
-	"types to explore.\n\n"
-	"To the right is a range where\n"
-	"you can test your mettle\n"
-	"against some target dummies.\n\n"
-	"To the north is the \n"
-	"teleporter: the exit to the\n"
-	"deck.");
+	"To the left are some of the Astro's more varied room types to explore.\n\n"
+	"To the right is a range where you can test your mettle against some target dummies.\n\n"
+	"To the north is the teleporter: the exit to the deck.");
 	triggerTileLR->blocks = false;
 	engine.actors.push(triggerTileLR);
 	
@@ -434,20 +389,12 @@ void Map::spawnTutorial() {
 	engine.map->tiles[x2-1+y1*engine.map->width].decoration = rng->getInt(45,47);
 	engine.actors.push(server1);
 	createConsole(x2,y1);
+
 	//make console terminal
 	Actor *triggerTileC = new Actor(x2, y1+1, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileC->ai = new TriggerAi(  
-	//"Welcome to the Astroverius.\n\n"
 	"CONSOLE BASICS.\n\n"
-	"Above you is a console.\n"
-	"Consoles appear in server\n"
-	"rooms.  Upon interacting\n"
-	"with one, it will show you\n"
-	"a map of the current deck.\n"
-	"And will print out a copy\n"
-	"for you to take.  Press\n"
-	"\'m\' to take out your\n"
-	"printed map.\n");
+	"Above you is a console. Consoles appear in server rooms.  Upon interacting with one, it will show you a map of the current deck. And will print out a copy for you to take.  Press \'m\' to take out your printed map.");
 	triggerTileC->blocks = false;
 	engine.actors.push(triggerTileC);
 	
@@ -462,10 +409,10 @@ void Map::spawnTutorial() {
 	tiles[x1+3+(y1)*engine.mapWidth].infection = 2.1;
 	tiles[x1+y1*engine.mapWidth].flower = 9;
 	tiles[x1+1+y1*engine.mapWidth].flower = 2;
+
 	//make INFECTION terminal
 	Actor *triggerTileInf = new Actor(x1+1, y1+1, 228, "Odd Intercom Terminal", TCODColor::white);
 	triggerTileInf->ai = new TriggerAi(  
-  //"Welcome to the Astroverius.  \n\n"
 	"FHB#KKWIinfect%#IONOWKKKDALLLS\n\n"
 	"JFWEBLBFWOEIFHEIUFHJKFNXSAKJDS\n"
 	"FUEBFJBFDVIEHUFE*##EHUWBBFDWW2\n"
@@ -491,20 +438,12 @@ void Map::spawnTutorial() {
 	//make flare
 	Actor *flare = createFlare(x1-5,(y1+y2)/2);
 	engine.actors.push(flare);
+
 	//make flare terminal
 	Actor *triggerTileF = new Actor(x1-4, (y1+y2)/2, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileF->ai = new TriggerAi(  
-	//"Welcome to the Astroverius.\n\n"
 	"FLARE/ITEM BASICS.\n\n"
-	"To your left is a flare.\n"
-	"Press \'g\' to pick it up\n"
-	"and then \'i\' to open the\n"
-	"inventory. Select the \n"
-	"\'TECH\' tab with \'enter\' to\n"
-	"find the flare. Press the\n"
-	"letter next to it to use it\n"
-	"to explore the rooms to the\n"
-	"south. \n");
+	"To your left is a flare. Press \'g\' to pick it up and then \'i\' to open the inventory. Select the \'TECH\' tab with \'enter\' to find the flare. Press the letter next to it to use it to explore the rooms to the south.");
 	triggerTileF->blocks = false;
 	engine.actors.push(triggerTileF);
 	
@@ -542,18 +481,13 @@ void Map::spawnTutorial() {
 	Actor * counter4 = new Actor(x1+4, y1,243,"Kitchen Counter", TCODColor::white);
 	engine.map->tiles[x1+4+y1*engine.map->width].decoration = 35;
 	engine.actors.push(counter4);
+
 	//make kitchen terminal
 	Actor *triggerTileK = new Actor(x1+2,y1+1, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileK->ai = new TriggerAi(  
-	//"Welcome to the Astroverius.\n\n"
 	"FOOD BASICS.\n\n"
 	"Kitchens have food machines.\n\n"
-	"Interact with the one on the \n"
-	"right to dispense some\n"
-	"food to increase your hunger\n"
-	"bar. This averts losing stats\n"
-	"and health from being too\n"
-	"hungry.\n");
+	"Interact with the one on the right to dispense some food to increase your hunger bar. This averts losing stats and health from being too hungry.");
 	triggerTileK->blocks = false; 
 	engine.actors.push(triggerTileK);
 	
@@ -599,31 +533,22 @@ void Map::spawnTutorial() {
 	Actor * desk = new Actor(x1+1+1,y1+2,243,"A desk with an angled computer", TCODColor::white);
 	engine.map->tiles[x1+1+1+(y1+2)*engine.map->width].decoration = 3;
 	engine.actors.push(desk);
+
 	//make shadow terminal
 	Actor *triggerTileSh = new Actor(x1+2,y1, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileSh->ai = new TriggerAi(  
-  //"Welcome to the Astroverius.\n\n"
 	"ADVANCED LIGHTING.\n\n"
-	"Notice this room's lighting.\n"
-	"The light to the right of  \n"
-	"the desk is shining light\n"
-	"on the desk, but the desk has \n"
-	"cast a shadow to the left.\n"
-	"Use this breaking of FOV\n"
-	"to your advantage in Astro.\n");
+	"Notice this room's lighting.\n\n"
+	"The light to the right of the desk is shining light on the desk, but the desk has cast a shadow to the left.\n\n"
+	"Use this breaking of FOV to your advantage in Astro.");
 	triggerTileSh->blocks = false; 
 	engine.actors.push(triggerTileSh);
+
 	//make room terminal
 	Actor *triggerTileR = new Actor(x1+2,y2, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileR->ai = new TriggerAi(  
-  //"Welcome to the Astroverius.\n\n"
 	"ROOM BASICS.\n\n"
-	"The Astro has many rooms.\n"
-	"Every room is unique, as is\n"
-	"every deck.  So it is a good \n"
-	"idea to explore it all and  \n"
-	"learn what each room has in \n"
-	"it what it all does!\n");
+	"The Astro has many rooms. Every room is unique, as is every deck.  So it is a good idea to explore it all and learn what each room has in it and what it all does!\n");
 	triggerTileR->blocks = false; 
 	engine.actors.push(triggerTileR);
 	
@@ -686,35 +611,22 @@ void Map::spawnTutorial() {
 	Actor *lightAr = new Actor(x2-5, (y1+y2)/2, 224, "A hastily erected Emergency Light", TCODColor::white);
 	lightAr->ai = new LightAi(6,flkr);                //224, crashes when using 224
 	engine.actors.push(lightAr);
+
 	//make range terminal
 	Actor *triggerTileAr = new Actor(x2-6,(y1+y2)/2, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileAr->ai = new TriggerAi(  
-  //"Welcome to the Astroverius.    \n\n"
 	"COMBAT BASICS.\n\n"
-	"Welcome to the shooting range!\n"
-	"Try to shoot the dummies from\n"
-	"behind the sandbag wall with \n"
-	"\'f\' or aim and shoot with \n"
-	"\'F\' to specify a target.\n"
-	"Or run up and attack the \n"
-	"dummies in hand to hand\n"
-	"combat by moving into them.\n"
-	);
+	"Welcome to the shooting range!\n\n"
+	"Try to shoot the dummies from behind the sandbag wall with \'f\' or aim and shoot with \'F\' to specify a target.\n\n"
+	"Or run up and attack the dummies in hand to hand combat by moving into them.");
 	triggerTileAr->blocks = false; 
 	engine.actors.push(triggerTileAr);
+
 	//make MLR terminal
 	Actor *triggerTileMLR = new Actor(x1+3,y1+2, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileMLR->ai = new TriggerAi(  
-  //"Welcome to the Astroverius.    \n\n"
 	"MLR BASICS\n\n"
-	"All weapons, usually a \n"
-	"Modular Laser Rifle, or \"MLR\",\n"
-	"cleared for use on the Astro\n"
-	"are laser based to prevent hull\n"
-	"damage.  As such you need to \n"
-	"find batteries to charge them\n"
-	"after 20 uses.\n"
-	);
+	"All weapons, usually a Modular Laser Rifle, or \"MLR\", cleared for use on the Astro are laser based to prevent hull damage.  As such you need to find batteries to charge them after 20 uses.");
 	triggerTileMLR->blocks = false; 
 	engine.actors.push(triggerTileMLR);
 	
@@ -730,54 +642,33 @@ void Map::spawnTutorial() {
 			map->setProperties(tilex,tiley,true,true);
 		}
 	}
+
 	//make stair terminal
 	Actor *triggerTileSta = new Actor((x1+x2)/2,y1+1, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileSta->ai = new TriggerAi(  
-  //"Welcome to the Astroverius.    \n\n"
 	"TELEPORTER BASICS\n\n"
-	"Every deck has a teleporter to\n"
-	"the next deck.  They haven't\n"
-	"been calibrated since the ship\n"
-	"went dark so they may land you\n"
-	"in the middle  of anything.\n"
-	"Find the teleporter pad in\n"
-	"each deck to advance.\n"
-	"Press \'SHIFT+>\' to use\n"
-	"the stairs.\n"
-	);
+	"Every deck has a teleporter to the next deck.  They haven't been calibrated since the ship went dark so they may land you in the middle  of anything.\n"
+	"Find the teleporter pad in each deck to advance.\n"
+	"Press \'SHIFT+.\' to use the stairs.");
 	triggerTileSta->blocks = false; 
 	engine.actors.push(triggerTileSta);
+
 	//make vending terminal
 	Actor *triggerTileV = new Actor((x1+x2)/2-1,y1+2, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileV->ai = new TriggerAi(  
-  //"Welcome to the Astroverius.    \n\n"
 	"3D PRINTER BASICS\n\n"
-	"The 3D printer above you is\n"
-	" like every other on the Astro.\n"
-	"It can print any number of \n"
-	"things you may need.  All you\n"
-	"need to use it are some \n"
-	"PetaBitcoins and the printer \n"
-	"to not be out of ink.\n"
-	);
+	"The 3D printer above you is like every other on the Astro. It can print any number of things you may need. \n"
+	"All you need to use it are some PetaBitcoins and the printer to not be out of ink.");
 	triggerTileV->blocks = false; 
 	engine.actors.push(triggerTileV);
+
 	//make stance terminal
 	Actor *triggerTileStance = new Actor((x1+x2)/2-2,y1+1, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileStance->ai = new TriggerAi(  
-  //"Welcome to the Astroverius.    \n\n"
 	"STANCE BASICS\n\n"
-	"You may assume two different \n"
-	"stances with the \'=\' key, \n"
-	"hostile, and neutral(default)\n"
-	"The security bot above is not\n"
-	"hostile to you until you \n"
-	"switch to hostile mode and \n"
-	"attack it, or the vending \n"
-	"machine it protects.\n"
-	"Sometimes it may be necessary\n"
-	"to attack neutral NPCs.\n"
-	);
+	"You may assume two different stances with the \'=\' key, hostile, and neutral(default).\n"
+	"The security bot above is not hostile to you until you switch to hostile mode and attack it, or the vending machine it protects.\n"
+	"Sometimes it may be necessary to attack neutral NPCs.");
 	triggerTileStance->blocks = false; 
 	engine.actors.push(triggerTileStance);
 	//make vending machine
@@ -802,23 +693,15 @@ void Map::spawnTutorial() {
 	engine.player->x = startX;
 	engine.player->y = startY;
 	//make a message tile infront the player
+
 	Actor *triggerTile = new Actor(startX, startY-1, 227, "Intercom Terminal", TCODColor::white);
 	//we have 30 characters to use until a \n is needed
 	//triggerTile->ai = new TriggerAi("<Intercom>: \"Prepare to starve\n in the tutorial level!\"");
 	triggerTile->ai = new TriggerAi(  
 	"Welcome to the Astroverius.\n\n"
-	"To move press the UP, DOWN, \n"
-	"LEFT, and RIGHT keys, or use\n"
-	"the NUMPAD; 7,9,1 and 3 can\n"
-	"be used to move diagonally.\n\n"
-	"Try exploring the entirety of\n"
-	"this room to get the hang of\n"
-	"it.  Good Luck.\n\n"
-	"Press \'g\' when standing over\n"
-	"a terminal to replay its\n"
-	"message.\n"
-	);
-	
+	"To move press the UP, DOWN, LEFT, and RIGHT keys, or use the NUMPAD; 7,9,1 and 3 can be used to move diagonally.\n\n"
+	"Try exploring the entirety of this room to get the hang of it.  Good Luck.\n\n"
+	"Press \'g\' when standing over a terminal to replay its message");
 	triggerTile->blocks = false;
 	engine.actors.push(triggerTile);
 

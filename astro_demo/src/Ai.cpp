@@ -986,7 +986,7 @@ void TriggerAi::update(Actor *owner) {
 		//TCODConsole::root->setDefaultBackground(TCODColor(0,0,0));
 		TCODConsole::root->printFrame(menux-1,menuy-1,PAUSE_MENU_WIDTH,
 		PAUSE_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(0),"\{ AUTOMATED INTERCOM \{");
-		TCODConsole::root->print(menux,menuy,text);
+		TCODConsole::root->printRect(menux,menuy,30,16,text);
 		TCODConsole::flush();
 		TCOD_key_t key;
 		TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
