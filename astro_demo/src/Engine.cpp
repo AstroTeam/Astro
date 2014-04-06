@@ -1,6 +1,7 @@
 #include "main.hpp"
 #include "SDL/SDL.h"
 #include <math.h>
+#include <iostream>
 
 /* Engine::Engine() : gameStatus(STARTUP), fovRadius(3)
 {
@@ -690,15 +691,20 @@ void Engine::save() {
 		stairs->save(zip);
 		playerLight->save(zip);
 		//save the boss
+		std::cout << "got to boss " << std::endl;
 		boss->save(zip);
 		//then all the other actors
 		zip.putInt(actors.size() - 4); //minus another one for boss actor?
+		std::cout << "saving other actors " << std::endl;
+		std::cout << "number of actors " << actors.size() - 4 << std::endl;
 		for (Actor **it = actors.begin(); it!=actors.end(); it++) {
 			if (*it != player && *it != stairs && *it != playerLight && *it != boss) { //!= boss like stairs etc.?
+				std::cout << "saving " << (*it)->name << std::endl;
 				(*it)->save(zip);
 			}
 		}
 		//finally the message log
+		std::cout << "saving gui " <<std::endl;
 		gui->save(zip);
 		zip.saveToFile("game.sav");
 	}
@@ -808,14 +814,19 @@ void Engine::load(bool pause) {
 		//actors.push(boss); //I push the boss to actorsList on line in Map.cpp so I don't need to push it here?
 		//then all other actors
 		int nbActors = zip.getInt();
+		std::cout << "loading other actors" << std::endl;
+		std::cout << "number of actors " << nbActors << std::endl;
 		while (nbActors > 0) {
 			Actor *actor = new Actor(0,0,0,NULL, TCODColor::white);
 			actor->load(zip);
 			actors.push(actor);
+			std::cout << "loaded " << actor->name << std::endl;
 			nbActors--;
 		}
 		//finally, the message log
+		std::cout << "got to gui " << std::endl;
 		gui->load(zip);
+		std::cout << "got past gui " <<std::endl;
 		gui->message(TCODColor::pink,"loaded");
 		gameStatus = STARTUP;
 	}
@@ -842,9 +853,12 @@ void Engine::update() {
 		if(player->destructible->maxHp > player->destructible->hp && player->hunger > 0 && engine.turnCount%10 == 1)
 			player->destructible->hp++;
 		player->updateAuras();
+		std::cout << "updating actors " <<std::endl;
+		std::cout << "number of actors " << actors.size() - 1 << std::endl;
 		for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 			Actor *actor = *iterator;
 			if ( actor != player) {
+				std::cout << "updating " << actor->name << std::endl;
 				actor->update();
 			}
 		}

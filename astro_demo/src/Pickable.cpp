@@ -1,4 +1,5 @@
 #include "main.hpp"
+#include <iostream>
 
 Pickable::Pickable(bool stacks, int stackSize, PickableType type) : 
 	stacks(stacks),stackSize(stackSize), type(type) {
@@ -6,6 +7,7 @@ Pickable::Pickable(bool stacks, int stackSize, PickableType type) :
 
 Pickable *Pickable::create(TCODZip &zip) {
 	PickableType type = (PickableType)zip.getInt();
+	std::cout << "pickabletype " << std::endl;
 	Pickable *pickable = NULL;
 	switch(type) {
 		case CURRENCY: pickable = new Coinage(0); break;
@@ -21,6 +23,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 		case FOOD: pickable = new Food(0); break;
 		case NONE: break;
 	}
+	std::cout << "chose a module type " << std::endl;
 	pickable->load(zip);
 	return pickable;
 }
