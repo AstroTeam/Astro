@@ -19,6 +19,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 		case FRAGMENT: pickable = new Fragment(0,0,0); break;
 		case WEAPON: pickable = new Weapon(0,0,0); break;
 		case FOOD: pickable = new Food(0); break;
+		case KEY: pickable = new Key(0); break;
 		case NONE: break;
 	}
 	pickable->load(zip);
@@ -453,6 +454,7 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 				case WEAPON: break;
 				case FRAGMENT: droppy->pickable = new Fragment(((Fragment*)(owner->pickable))->range,((Fragment*)(owner->pickable))->damage,((Fragment*)(owner->pickable))->maxRange); droppy->sort = 2; break;
 				case FOOD: droppy->pickable = new Food(numberDropped); droppy->sort = 1; break;
+				case KEY: droppy->pickable = new Key(((Key*)(owner->pickable))->keyType); droppy->sort = 1; break;
 				case NONE: break;
 			}
 			droppy->pickable->stackSize = numberDropped;
@@ -859,6 +861,35 @@ bool Food::use(Actor *owner, Actor *wearer) {
 	if (amountFed > 0) {
 		return Pickable::use(owner,wearer);
 	}
+	return false;
+}
+
+Key::Key(int keyType, bool stacks, int stackSize, PickableType type) 
+: Pickable(stacks, stackSize,type), keyType(keyType) {
+
+}
+
+void Key::load(TCODZip &zip) {
+	stacks = zip.getInt();
+	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
+	keyType = zip.getInt();
+}
+
+void Key::save(TCODZip &zip) {
+	zip.putInt(type);
+	zip.putInt(stacks);
+	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
+	zip.putInt(keyType);
+}
+
+bool Key::use(Actor *owner, Actor *wearer)
+{
+	if(wearer == engine.player && keyType == 0)
+		engine.gui->message(TCODColor::blue, "This key seems to go to some sort of vault, possibly found in an armory");
 	return false;
 }
 

@@ -98,6 +98,7 @@ public:
 	
 	Actor *createCurrencyStack(int x, int y);
 	Actor *createHealthPotion(int x, int y);
+	Actor *createKey(int x, int y, int keyType); //0 keytype = vaultkey
 	Actor *createBatteryPack(int x, int y);
 	Actor *createFlashBang(int x, int y);
 	Actor *createFlare(int x, int y);

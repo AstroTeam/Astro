@@ -2370,7 +2370,7 @@ void Map::render() const {
 void Map::generateRandom(Actor *owner, int ascii){
 	TCODRandom *rng = TCODRandom::getInstance();
 	int dice = rng->getInt(0,100);
-	if(dice <= 40){
+	if(dice <= 40 && !(ascii == 129 || ascii == 130 || ascii == 146)){ //security bots should always drop keys
 			return;
 	}else{
 		if(ascii == 243){//locker, this might be a problem if we want multiple decors to drop different things
@@ -2581,7 +2581,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 					}
 				}
 			}
-		}else if(ascii == 129 || ascii == 147){ //Security Bot and Turret
+		}else if(ascii == 147){ //Turret
 			int rndA2 = rng->getInt(0,100);
 			if(rndA2 > 50){
 				for(int i = 0; i < owner->container->size; i++){
@@ -2591,7 +2591,27 @@ void Map::generateRandom(Actor *owner, int ascii){
 					battery->pickable->pick(battery,owner);
 				}
 			}
-		}else if(ascii == 131){ //Cleaner Bot (aka DJ ROOMBA)
+		}
+		else if(ascii == 129 || ascii == 130 || ascii == 146) //Security Bot gets keys
+		{
+			for(int i = 0; i < owner->container->size; i++)
+			{
+					//Fill Inventory with Batteries and 1 key
+					if(i >= 1)
+					{
+						Actor *battery = createBatteryPack(0,0);
+						engine.actors.push(battery);
+						battery->pickable->pick(battery,owner);
+					}
+					else
+					{
+						Actor *key = createKey(0,0,0);
+						engine.actors.push(key);
+						key->pickable->pick(key,owner);
+					}
+				}
+		}
+		else if(ascii == 131){ //Cleaner Bot (aka DJ ROOMBA)
 			int rndA2 = rng->getInt(0,100);
 			if(rndA2 > 60){
 				//Give A Battery
@@ -2722,6 +2742,21 @@ Actor *Map::createBatteryPack(int x,int y){
 	batteryPack->pickable->value = 50;
 	batteryPack->pickable->inkValue = 10;
 	return batteryPack;
+}
+
+Actor* Map::createKey(int x, int y, int keyType)
+{
+	Actor *key;
+	if(keyType == 0)
+		key = new Actor(x,y, 'K', "Vault Key", TCODColor::white);
+	else
+		key = new Actor(x,y, 'K', "Key", TCODColor::white);
+	key->sort = 1;
+	key->blocks = false;
+	key->pickable = new Key(keyType);
+	key->pickable->value = 0;
+	key->pickable->inkValue = 0;
+	return key;
 }
 
 Actor *Map::createFood(int x, int y){
