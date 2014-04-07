@@ -64,3 +64,4 @@ Classes & Subclasses
 
     ○ Hacker -  Has significant starting bonus intelligence. 
         Has increased dexterity, but has low strenth and vitality. Starts with taser. 
+        Has 100% chance of hacking terminals.
