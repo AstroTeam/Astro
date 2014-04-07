@@ -2735,7 +2735,7 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 	memset(nameBuf,0,80);
 	TCODRandom *random = TCODRandom::getInstance();
 	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
-	Actor *myBoots = new Actor(x,y,169,"Art",TCODColor::white);
+	Actor *myBoots = new Actor(x,y,185,"Art",TCODColor::white);
 	TCODColor col = TCODColor::white;
 	//artifact->pickable = new Equipment(0);
 	//Equipment::SlotType slot = Equipment::NOSLOT;
