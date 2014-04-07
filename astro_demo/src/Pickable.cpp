@@ -918,14 +918,15 @@ void Alcohol::save(TCODZip &zip) {
 	zip.putInt(inkValue);
 }
 
-bool Alcohol::use(Actor *owner) {
-	Aura *alcoholINT = new Aura(10, Aura::TOTALSTR, Aura::CONTINUOUS, 5);
+bool Alcohol::use(Actor *owner, Actor *wearer) {
+	Aura *alcoholINT = new Aura(10, Aura::TOTALSTR, Aura::CONTINUOUS, -5);
 	engine.player->auras.push(alcoholINT); // the list contains 1 element at position 0, value = 5
+	engine.gui->message(TCODColor::white, "You drink the %s and you begin to feel stronger, but more confused.",owner->name);
 	//float amountFed = owner->hunger;
 	//wearer->feed(amountFed);
 	//if (amountFed > 0) {
 	//	return Pickable::use(owner,wearer);
 	//}
-	return false;
+	return Pickable::use(owner,wearer);
 }
 
