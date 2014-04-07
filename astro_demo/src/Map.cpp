@@ -2712,8 +2712,9 @@ Actor *Map::createAlcohol(int x, int y){
 	char* nameBuf = new char[80]; 
 	memset(nameBuf,0,80);
 	TCODRandom *random = TCODRandom::getInstance();
-	Actor *scrollOfDrunk = new Actor(x,y,'a',"Bottle 'o' Alcohol", TCODColor::white);
-	TCODColor col = TCODColor::white; 
+	Actor *scrollOfDrunk = new Actor(x,y,15,"Bottle 'o' Alcohol", TCODColor::white);
+	//TCODColor col = TCODColor::white; 
+	//int ascii = random->getInt(11,15);
 	int type = random->getInt(1,15);
 	int schnapp = random->getInt(1,5);
 	int origin = random->getInt(1,10);
@@ -2749,47 +2750,58 @@ Actor *Map::createAlcohol(int x, int y){
 			strcat(nameBuf,"Stolen ");
 			break;
 	}
+	int dec = 60;
 	switch(type) 
 	{
 		case 1:
 			strcat(nameBuf,"Beer");
-			col = TCODColor::desaturatedOrange;
+			//col = TCODColor::desaturatedOrange;
+			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
 			break;
 		case 2:
 			strcat(nameBuf,"Whiskey");
-			col = TCODColor::lightOrange;
+			//col = TCODColor::lightOrange;
+			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
 			break;
 		case 3:
 			strcat(nameBuf,"Brandy");
-			col = TCODColor::darkOrange;
+			//col = TCODColor::darkOrange;
+			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
 			break;
 		case 4:
 			strcat(nameBuf,"Vodka");
-			col = TCODColor::lighterGrey;
+			//col = TCODColor::lighterGrey;
+			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
 			break;
 		case 5:
 			strcat(nameBuf,"Absinthe");
-			col = TCODColor::lighterGreen;
+			//col = TCODColor::lighterGreen;
+			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
 			break;
 		case 6:
 			strcat(nameBuf,"Moonshine");
 			//col = TCODColor::lighterBrown;
+			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
 			break;
 		case 7:
 			strcat(nameBuf,"Wine");
-			col = TCODColor::lighterPurple;
+			//col = TCODColor::lighterPurple;
+			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
 			break;
 		case 8:
 			strcat(nameBuf,"Merlot");
-			col = TCODColor::purple;
+			//col = TCODColor::purple;
+			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
 			break;
 		case 9:
 			strcat(nameBuf,"Bourbon");
-			col = TCODColor::darkOrange;
+			//col = TCODColor::darkOrange;
+			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
 			break;
 		case 10:
 			strcat(nameBuf,"Rum");
-			col = TCODColor::darkerOrange;
+			//col = TCODColor::darkerOrange;
+			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
 			break;
 		case 11:
 			
@@ -2797,19 +2809,19 @@ Actor *Map::createAlcohol(int x, int y){
 			{
 				case 1:
 					strcat(nameBuf,"Mint ");
-					col = TCODColor::lighterRed;
+					//col = TCODColor::lighterRed;
 					break;
 				case 2:
 					strcat(nameBuf,"Peach ");
-					col = TCODColor::pink;
+					//col = TCODColor::pink;
 					break;	
 				case 3:
 					strcat(nameBuf,"Berry ");
-					col = TCODColor::red;
+					//col = TCODColor::red;
 					break;	
 				case 4:
 					strcat(nameBuf,"Orange ");
-					col = TCODColor::lighterOrange;
+					//col = TCODColor::lighterOrange;
 					break;
 				case 5:
 					strcat(nameBuf,"Bland ");
@@ -2818,22 +2830,27 @@ Actor *Map::createAlcohol(int x, int y){
 				default:break;
 			}
 			strcat(nameBuf,"Schnapps");
+			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
 			break;
 		case 12:
 			strcat(nameBuf,"Fermented Starfruit");
-			col = TCODColor::lighterYellow;
+			//col = TCODColor::lighterYellow;
+			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
 			break;
 		case 13:
 			strcat(nameBuf,"\"Engineer\'s special\"");
-			col = TCODColor::darkerGrey;
+			//col = TCODColor::darkerGrey;
+			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
 			break;	
 		case 14:
 			strcat(nameBuf,"Lager");
-			col = TCODColor::lighterOrange;
+			//col = TCODColor::lighterOrange;
+			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
 			break;	
 		case 15:
 			strcat(nameBuf,"Tequila");
-			col = TCODColor::lightGreen;
+			//col = TCODColor::lightGreen;
+			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
 			break;	
 		default:break;
 	}
@@ -2841,12 +2858,13 @@ Actor *Map::createAlcohol(int x, int y){
 	
 	
 	scrollOfDrunk->name = nameBuf;
+	//scrollOfDrunk->ch = ascii;
 	scrollOfDrunk->sort = 1;
 	scrollOfDrunk->blocks = false;
 	scrollOfDrunk->pickable = new Alcohol();//10 is turns, can be random, 5 is range of throwability (constant), 5 is range of flare
 	scrollOfDrunk->pickable->value = 30;
 	scrollOfDrunk->pickable->inkValue = 5;
-	scrollOfDrunk->col = col;
+	//scrollOfDrunk->col = col;
 	return scrollOfDrunk;
 }
 Actor *Map::createRecord(int x, int y){

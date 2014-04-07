@@ -93,3 +93,34 @@ mapcondec:
 59 is a top sandbag wall
 
 60 is a bottom sandbag wall
+
+61 is beer
+
+62 is whiskey
+
+63 is brandy
+
+64 is vodka
+
+65 is absinthe
+
+66 is moonshine
+
+67 is wine
+
+68 is merlot
+
+69 is bourbon
+
+70 is rum
+
+71 is schnapps
+
+72 is fermented starfruit
+
+73 is engineer's special
+
+74 is lager
+
+75 is tequila
+

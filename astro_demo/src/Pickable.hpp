@@ -181,7 +181,7 @@ public:
 class Alcohol: public Pickable {
 public:
 	Alcohol();
-	bool use(Actor *owner);
+	bool use(Actor *owner, Actor *wearer);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
 };
