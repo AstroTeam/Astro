@@ -611,6 +611,9 @@ void Map::spawnTutorial() {
 		Actor *MLR3 = createMLR(x1+6,tiley);
 		engine.actors.push(MLR3);
 		engine.sendToBack(MLR3);
+		Actor *booze = createAlcohol(x1+7,tiley);
+		engine.actors.push(booze);
+
 	}
 	//fence
 	int batteries = 0;
@@ -2695,6 +2698,15 @@ Actor *Map::createFlare(int x, int y){
 	scrollOfFlaring->pickable = new Flare(10,5,5);//10 is turns, can be random, 5 is range of throwability (constant), 5 is range of flare
 	scrollOfFlaring->pickable->value = 25;
 	scrollOfFlaring->pickable->inkValue = 10;
+	return scrollOfFlaring;
+}
+Actor *Map::createAlcohol(int x, int y){
+	Actor *scrollOfFlaring = new Actor(x,y,'a',"Bottle 'o' Alcohol", TCODColor::white);
+	scrollOfFlaring->sort = 1;
+	scrollOfFlaring->blocks = false;
+	scrollOfFlaring->pickable = new Alcohol();//10 is turns, can be random, 5 is range of throwability (constant), 5 is range of flare
+	scrollOfFlaring->pickable->value = 30;
+	scrollOfFlaring->pickable->inkValue = 5;
 	return scrollOfFlaring;
 }
 Actor *Map::createFireBomb(int x, int y){

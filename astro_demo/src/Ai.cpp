@@ -2280,6 +2280,7 @@ Actor *VendingAi::clone(Actor *owner){
 			case Pickable::WEAPON: droppy->pickable = new Weapon(((Weapon*)(owner->pickable))->minDmg,((Weapon*)(owner->pickable))->maxDmg,((Weapon*)(owner->pickable))->critMult,((Weapon*)(owner->pickable))->wType,0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement);break;
 			case Pickable::FOOD: break; //I don't think FOOD should be in vending machines, interestingly enough. There are PCMUs for that
 			case Pickable::KEY: break; //Keys probably shouldn't be in vending machines
+			case Pickable::ALCOHOL: break; //NO ALCOHOL IN 3D PRINTERS!
 			case Pickable::NONE: break;
 		}
 		return droppy;
