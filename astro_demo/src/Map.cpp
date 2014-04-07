@@ -611,10 +611,13 @@ void Map::spawnTutorial() {
 		Actor *MLR3 = createMLR(x1+6,tiley);
 		engine.actors.push(MLR3);
 		engine.sendToBack(MLR3);
-		Actor *booze = createAlcohol(x1+7,tiley);
-		engine.actors.push(booze);
-
+		
+		
 	}
+	Actor *booze = createAlcohol(x1+7,y1);
+	engine.actors.push(booze);
+	Actor *record = createRecord(x1+8,y1);
+	engine.actors.push(record);
 	//fence
 	int batteries = 0;
 	for (int tiley = y1; tiley <= y2; tiley++) {
@@ -2701,13 +2704,26 @@ Actor *Map::createFlare(int x, int y){
 	return scrollOfFlaring;
 }
 Actor *Map::createAlcohol(int x, int y){
-	Actor *scrollOfFlaring = new Actor(x,y,'a',"Bottle 'o' Alcohol", TCODColor::white);
-	scrollOfFlaring->sort = 1;
-	scrollOfFlaring->blocks = false;
-	scrollOfFlaring->pickable = new Alcohol();//10 is turns, can be random, 5 is range of throwability (constant), 5 is range of flare
-	scrollOfFlaring->pickable->value = 30;
-	scrollOfFlaring->pickable->inkValue = 5;
-	return scrollOfFlaring;
+	Actor *scrollOfDrunk = new Actor(x,y,'a',"Bottle 'o' Alcohol", TCODColor::white);
+	scrollOfDrunk->sort = 1;
+	scrollOfDrunk->blocks = false;
+	scrollOfDrunk->pickable = new Alcohol();//10 is turns, can be random, 5 is range of throwability (constant), 5 is range of flare
+	scrollOfDrunk->pickable->value = 30;
+	scrollOfDrunk->pickable->inkValue = 5;
+	return scrollOfDrunk;
+}
+Actor *Map::createRecord(int x, int y){
+	Actor *scrollOfRecords = new Actor(x,y,227,"Personal Recorder", TCODColor::white);
+	scrollOfRecords->ai = new TriggerAi( ">>102:329:32<< This is an example recording, the ship has become madness, I have had headaches every day for a week, the crew have begun attacking each other without cause");
+	scrollOfRecords->blocks = false;
+	return scrollOfRecords;
+		//make interaction terminal
+	//Actor *triggerTileI = new Actor(x1+1,y1+1, 227, "Intercom Terminal", TCODColor::white);
+	 
+	//"INTERACTION BASICS\n\n"
+	//"Most items can be interacted with by simply moving into them by pressing the corresponding movement key whilst being adjacent to it. (Like these automated terminals)"
+	//triggerTileI->blocks = false; 
+	//engine.actors.push(triggerTileI);
 }
 Actor *Map::createFireBomb(int x, int y){
 	Actor *scrollOfFireball = new Actor(x,y,182,"Firebomb",TCODColor::white);
