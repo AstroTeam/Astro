@@ -99,10 +99,13 @@ void Engine::init() {
 	player->container = new Container(50);
 	actors.push(player);
 	player->flashable = true;
+	
+	engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
+	engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
+	engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
+	engine.gui->intelValue = getInitIntel(engine.gui->raceSelection, engine.gui->jobSelection);
 	player->str=engine.gui->strValue;
 	player->totalStr=engine.gui->strValue;
-	player->attacker->basePower=engine.gui->strValue;  //old
-	player->attacker->totalPower=engine.gui->strValue; //old
 	player->dex=engine.gui->dexValue;
 	player->totalDex=engine.gui->dexValue;
 	player->intel=engine.gui->intelValue;
@@ -1624,9 +1627,6 @@ int Engine::getInitDex(int race, int job){
 	}
 	
 	switch (job){
-		case 1: //Infantry
-			dexterity += 3;
-			break;
 		case 2: //Medic
 			break; 
 		case 3: //Quartermaster
@@ -1644,6 +1644,9 @@ int Engine::getInitDex(int race, int job){
 			break; 
 		case 9: //Hacker
 			dexterity += 1;
+			break;
+		default: //Infantry
+			dexterity += 3;
 			break;
 	}
 	return dexterity;
