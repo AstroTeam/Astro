@@ -56,35 +56,6 @@ void Engine::term() {
 void Engine::init() {
 	engine.killCount = 0;
 	
-	bool choice_made = false;
-	bool first = true;
-	bool startTutorial = false;
-	while (!choice_made) 
-	{
-		if (first) {
-			TCODConsole::flush();
-		}
-		engine.gui->menu.clear();
-		engine.gui->menu.addItem(Menu::TUTORIAL_NO, "Skip the tutorial.");
-		engine.gui->menu.addItem(Menu::TUTORIAL_YES, "Begin game with tutorial.");
-		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::TUTORIAL_SELECT);
-		switch (menuItem) {
-			case Menu::TUTORIAL_NO:
-				choice_made = true;
-				break;
-			case Menu::TUTORIAL_YES:
-				startTutorial = true;	
-				choice_made = true;
-				break;
-			case Menu::EXIT :
-				choice_made = true;
-				break;
-			case Menu::NO_CHOICE:
-				first = false;
-				break;
-			default: break;
-		}
-	}
 	player = new Actor(40,25,'@', "player","Human","Marine","Infantry",TCODColor::white);
 	//playerLight = new Actor(40, 25, 'l', "Your Flashlight", TCODColor::white);
 	//playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
@@ -668,6 +639,7 @@ void Engine::load(bool pause) {
 	engine.gui->menu.addItem(Menu::NO_CHOICE, "RESUME GAME");
 	}
 	if (!pause) {
+	engine.gui->menu.addItem(Menu::TUTORIAL, "TUTORIAL");
 	engine.gui->menu.addItem(Menu::NEW_GAME, "NEW GAME");
 	}
 	//else if (level > 0){
@@ -705,9 +677,14 @@ void Engine::load(bool pause) {
 		save();
 		exit(0);
 		//menuState = 0;
+	} else if (menuItem == Menu::TUTORIAL) {
+		startTutorial = true;
+		engine.term();
+		engine.init();
 	} else if (menuItem == Menu::NEW_GAME) {
 		//new game 
 		engine.classMenu();
+		startTutorial = false;
 		//menuState = 0;
 		//engine.term();
 		//engine.init();
