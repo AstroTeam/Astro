@@ -605,17 +605,21 @@ void Map::spawnTutorial() {
 		Actor *MLR = createMLR(x1+4,tiley);
 		engine.actors.push(MLR);
 		engine.sendToBack(MLR);
-		Actor *MLR2 = createMLR(x1+5,tiley);
+		/*Actor *MLR2 = createMLR(x1+5,tiley);
 		engine.actors.push(MLR2);
 		engine.sendToBack(MLR2);
 		Actor *MLR3 = createMLR(x1+6,tiley);
 		engine.actors.push(MLR3);
-		engine.sendToBack(MLR3);
-		
+		engine.sendToBack(MLR3);*/
+		Actor *booze = createAlcohol(x1+5,tiley);
+		engine.actors.push(booze);
+		Actor *booze2 = createAlcohol(x1+6,tiley);
+		engine.actors.push(booze2);		
+		Actor *booze3 = createAlcohol(x1+7,tiley);
+		engine.actors.push(booze3);
 		
 	}
-	Actor *booze = createAlcohol(x1+7,y1);
-	engine.actors.push(booze);
+	
 	Actor *record = createRecord(x1+8,y1);
 	engine.actors.push(record);
 	//fence
@@ -2704,7 +2708,118 @@ Actor *Map::createFlare(int x, int y){
 	return scrollOfFlaring;
 }
 Actor *Map::createAlcohol(int x, int y){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
 	Actor *scrollOfDrunk = new Actor(x,y,'a',"Bottle 'o' Alcohol", TCODColor::white);
+	int type = random->getInt(1,15);
+	int schnapp = random->getInt(1,5);
+	int origin = random->getInt(1,10,4);
+	switch(type) 
+	{
+		case 1:
+			strcat(nameBuf,"Beer");
+			break;
+		case 2:
+			strcat(nameBuf,"Whiskey");
+			break;
+		case 3:
+			strcat(nameBuf,"Brandy");
+			break;
+		case 4:
+			strcat(nameBuf,"Vodka");
+			break;
+		case 5:
+			strcat(nameBuf,"Absinthe");
+			break;
+		case 6:
+			strcat(nameBuf,"Moonshine");
+			break;
+		case 7:
+			strcat(nameBuf,"Wine");
+			break;
+		case 8:
+			strcat(nameBuf,"Merlot");
+			break;
+		case 9:
+			strcat(nameBuf,"Bourbon");
+			break;
+		case 10:
+			strcat(nameBuf,"Rum");
+			break;
+		case 11:
+			
+			switch(schnapp)
+			{
+				case 1:
+					strcat(nameBuf,"Peppermint ");
+					break;
+				case 2:
+					strcat(nameBuf,"Peach ");
+					break;	
+				case 3:
+					strcat(nameBuf,"Raspberry ");
+					break;	
+				case 4:
+					strcat(nameBuf,"Orange ");
+					break;
+				case 5:
+					strcat(nameBuf,"Watermelon ");
+					break;	
+				default:break;
+			}
+			strcat(nameBuf,"Schnapps");
+			break;
+		case 12:
+			strcat(nameBuf,"Fermented Starfruit");
+			break;
+		case 13:
+			strcat(nameBuf,"\"Engineer\'s special\"");
+			break;	
+		case 14:
+			strcat(nameBuf,"Lauger");
+			break;	
+		case 15:
+			strcat(nameBuf,"Tequila");
+			break;	
+		default:break;
+	}
+	switch(origin)
+	{
+		case 1:
+			strcat(nameBuf,"");
+			break;
+		case 2:
+			strcat(nameBuf,"");
+			break;
+		case 3:
+			strcat(nameBuf," from Mars");
+			break;
+		case 4:
+			strcat(nameBuf," from smugglers");
+			break;
+		case 5:
+			strcat(nameBuf," from Jupiter");
+			break;
+		case 6:
+			strcat(nameBuf," from Alpha-Centauri");
+			break;
+		case 7:
+			strcat(nameBuf," distilled on Earth");
+			break;
+		case 8:
+			strcat(nameBuf," from Lab 7-W");
+			break;
+		case 9:
+			strcat(nameBuf," from \"Nowhere\"");
+			break;
+		case 10:
+			strcat(nameBuf," from Asteroid#10293");
+			break;
+	}
+	
+	
+	scrollOfDrunk->name = nameBuf;
 	scrollOfDrunk->sort = 1;
 	scrollOfDrunk->blocks = false;
 	scrollOfDrunk->pickable = new Alcohol();//10 is turns, can be random, 5 is range of throwability (constant), 5 is range of flare
