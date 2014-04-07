@@ -1137,7 +1137,7 @@ void LightAi::update(Actor * owner)
 				//if (engine.distance(owner->x,x,owner->y,y) <= radius)
 				//{
 					if (lmap->isInFov(x-minx,y-miny)){ //&& !(engine.player->x == x && engine.player->y == y)) {
-					
+						
 						engine.map->tiles[x+y*engine.map->width].lit = true;
 						if (moving)
 								engine.map->tiles[x+y*engine.map->width].drty = true;

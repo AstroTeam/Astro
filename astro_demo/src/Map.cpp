@@ -302,8 +302,8 @@ void Map::spawnTutorial() {
 	cout << engine.mapWidth << " , " << engine.mapHeight << endl;
 	int x1 = engine.mapWidth/2-6;
 	int x2 = engine.mapWidth/2+6;
-	int y1 = engine.mapHeight-12;
-	int y2 = engine.mapHeight-7;
+	int y1 = -20 +engine.mapHeight-12;
+	int y2 = -20 +engine.mapHeight-7;
 	cout << "creating tutorial room"<< endl;
 	for (int tilex = x1; tilex <=x2; tilex++) {//first room
 		for (int tiley = y1; tiley <= y2; tiley++) {
@@ -367,8 +367,8 @@ void Map::spawnTutorial() {
 	//map.dig(lastx, lasty, x+w/2, lasty);
 	x1 = engine.mapWidth/2-10;
 	x2 = engine.mapWidth/2+10;
-	y1 = engine.mapHeight-29;
-	y2 = engine.mapHeight-23;
+	y1 = -20 +engine.mapHeight-29;
+	y2 = -20 +engine.mapHeight-23;
 	for (int tilex = x1; tilex <=x2; tilex++) {//light room
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
@@ -466,8 +466,8 @@ void Map::spawnTutorial() {
 	
 	x1 = engine.mapWidth/2-12-5;
 	x2 = engine.mapWidth/2-8-5;
-	y1 = engine.mapHeight-11-8;
-	y2 = engine.mapHeight-7-8;
+	y1 = -20 +engine.mapHeight-11-8;
+	y2 = -20 +engine.mapHeight-7-8;
 	for (int tilex = x1; tilex <=x2; tilex++) {//side room upper
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
@@ -518,12 +518,12 @@ void Map::spawnTutorial() {
 	engine.actors.push(pcmu4);
 	
 	
-	dig((x1+x2)/2,y2,(x1+x2)/2,engine.mapHeight-11);//side room connector
+	dig((x1+x2)/2,y2,(x1+x2)/2,engine.mapHeight-11-20);//side room connector
 	
 	x1 = engine.mapWidth/2-12-5;
 	x2 = engine.mapWidth/2-8-5;
-	y1 = engine.mapHeight-11;
-	y2 = engine.mapHeight-7;
+	y1 = -20 +engine.mapHeight-11;
+	y2 = -20 +engine.mapHeight-7;
 	for (int tilex = x1; tilex <=x2; tilex++) {//side room lower
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
@@ -576,8 +576,8 @@ void Map::spawnTutorial() {
 	/////////////////////target range
 	x1 = engine.mapWidth/2-10+26;
 	x2 = engine.mapWidth/2+10+26-5;
-	y1 = engine.mapHeight-29;
-	y2 = engine.mapHeight-23;
+	y1 = -20 +engine.mapHeight-29;
+	y2 = -20 +engine.mapHeight-23;
 	for (int tilex = x1; tilex <=x2; tilex++) {//side room lower
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
@@ -659,8 +659,8 @@ void Map::spawnTutorial() {
 	//stair room
 	x1 = engine.mapWidth/2-2;
 	x2 = engine.mapWidth/2+2;
-	y1 = engine.mapHeight-26-17;
-	y2 = engine.mapHeight-23-17;
+	y1 = -20 +engine.mapHeight-26-17;
+	y2 = -20 +engine.mapHeight-23-17;
 	for (int tilex = x1; tilex <=x2; tilex++) {//stair room
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
@@ -710,9 +710,14 @@ void Map::spawnTutorial() {
 	//engine.sendToBack(stackOfMoney);
 	
 	
-	
+	//int x1 = engine.mapWidth/2-6;
+	//int x2 = engine.mapWidth/2+6;
+	//int y1 = -20 +engine.mapHeight-12;
+	//int y2 = -20 +engine.mapHeight-7;
+	//int startX = (engine.mapWidth/2-6+engine.mapWidth/2+6)/2;
 	int startX = (engine.mapWidth/2-6+engine.mapWidth/2+6)/2;
-	int startY = (engine.mapHeight-12+engine.mapHeight-6)/2;
+	//int startY = (engine.mapHeight-12+engine.mapHeight-6)/2;
+	int startY = (engine.mapHeight-12+engine.mapHeight-6)/2-20;
 	engine.stairs->x = (x1+x2)/2;
 	engine.stairs->y = y1;
 	engine.player->x = startX;
