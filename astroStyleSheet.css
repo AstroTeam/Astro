@@ -1,0 +1,17 @@
+body
+{
+background-color:#000000;
+}
+h1
+{
+color:green;
+text-align:center;
+font-family:"Lucida Console";
+font-size:40px;
+}
+p
+{
+color:white;
+font-family:"Lucida Console";
+font-size:20px;
+}
