@@ -148,7 +148,7 @@ void PlayerAi::update(Actor *owner) {
 			case Menu::CONSTITUTION	:
 				owner->destructible->maxHp += owner->getHpUp();
 				owner->destructible->hp += owner->getHpUp();
-				owner->vit += 1;
+				owner->vit += owner->getHpUp();;
 				choice_made = true;
 				break;
 			case Menu::STRENGTH :
@@ -988,7 +988,7 @@ void TriggerAi::update(Actor *owner) {
 		//make me red
 		termwindow.setDefaultForeground(TCODColor(67,199,50));
 		termwindow.setDefaultBackground(TCODColor(0,0,0));
-		termwindow.printFrame(0,0,32,16,true,TCOD_BKGND_ALPHA(50),"\{ AUTOMATED INTERCOM \{");
+		termwindow.printFrame(0,0,32,16,true,TCOD_BKGND_ALPHA(50),"\{ AUTOMATED TERMINAL \{");
 		termwindow.printRect(1,1,30,16,text);
 		TCODConsole::blit(&termwindow,0,0,32,16,TCODConsole::root,menux,menuy);
 		TCODConsole::flush();
@@ -1137,7 +1137,7 @@ void LightAi::update(Actor * owner)
 				//if (engine.distance(owner->x,x,owner->y,y) <= radius)
 				//{
 					if (lmap->isInFov(x-minx,y-miny)){ //&& !(engine.player->x == x && engine.player->y == y)) {
-					
+						
 						engine.map->tiles[x+y*engine.map->width].lit = true;
 						if (moving)
 								engine.map->tiles[x+y*engine.map->width].drty = true;
@@ -2280,6 +2280,7 @@ Actor *VendingAi::clone(Actor *owner){
 			case Pickable::WEAPON: droppy->pickable = new Weapon(((Weapon*)(owner->pickable))->minDmg,((Weapon*)(owner->pickable))->maxDmg,((Weapon*)(owner->pickable))->critMult,((Weapon*)(owner->pickable))->wType,0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement); droppy->sort = 4; break;
 			case Pickable::FOOD: break; //I don't think FOOD should be in vending machines, interestingly enough. There are PCMUs for that
 			case Pickable::KEY: break; //Keys probably shouldn't be in vending machines
+			case Pickable::ALCOHOL: break; //NO ALCOHOL IN 3D PRINTERS!
 			case Pickable::NONE: break;
 		}
 		return droppy;

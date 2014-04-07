@@ -1,7 +1,7 @@
 class Pickable : public Persistent {
 public:
 	enum PickableType {
-		NONE, HEALER, CHARGER, LIGHTNING_BOLT, CONFUSER, FIREBALL, EQUIPMENT, FLARE, CURRENCY, FRAGMENT, WEAPON,FOOD, KEY
+		NONE, HEALER, CHARGER, LIGHTNING_BOLT, CONFUSER, FIREBALL, EQUIPMENT, FLARE, CURRENCY, FRAGMENT, WEAPON,FOOD, KEY, ALCOHOL
 	};
 	bool stacks;
 	int stackSize;
@@ -174,6 +174,14 @@ public:
 	int keyType; //vaultKey = 0
 	Key(int keyType, bool stacks = true, int stackSize = 1, PickableType type = KEY);
 	bool use(Actor *owner, Actor *wearer);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+};
+
+class Alcohol: public Pickable {
+public:
+	Alcohol();
+	bool use(Actor *owner);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
 };

@@ -302,8 +302,8 @@ void Map::spawnTutorial() {
 	cout << engine.mapWidth << " , " << engine.mapHeight << endl;
 	int x1 = engine.mapWidth/2-6;
 	int x2 = engine.mapWidth/2+6;
-	int y1 = engine.mapHeight-12;
-	int y2 = engine.mapHeight-7;
+	int y1 = -20 +engine.mapHeight-12;
+	int y2 = -20 +engine.mapHeight-7;
 	cout << "creating tutorial room"<< endl;
 	for (int tilex = x1; tilex <=x2; tilex++) {//first room
 		for (int tiley = y1; tiley <= y2; tiley++) {
@@ -367,8 +367,8 @@ void Map::spawnTutorial() {
 	//map.dig(lastx, lasty, x+w/2, lasty);
 	x1 = engine.mapWidth/2-10;
 	x2 = engine.mapWidth/2+10;
-	y1 = engine.mapHeight-29;
-	y2 = engine.mapHeight-23;
+	y1 = -20 +engine.mapHeight-29;
+	y2 = -20 +engine.mapHeight-23;
 	for (int tilex = x1; tilex <=x2; tilex++) {//light room
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
@@ -466,8 +466,8 @@ void Map::spawnTutorial() {
 	
 	x1 = engine.mapWidth/2-12-5;
 	x2 = engine.mapWidth/2-8-5;
-	y1 = engine.mapHeight-11-8;
-	y2 = engine.mapHeight-7-8;
+	y1 = -20 +engine.mapHeight-11-8;
+	y2 = -20 +engine.mapHeight-7-8;
 	for (int tilex = x1; tilex <=x2; tilex++) {//side room upper
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
@@ -518,12 +518,12 @@ void Map::spawnTutorial() {
 	engine.actors.push(pcmu4);
 	
 	
-	dig((x1+x2)/2,y2,(x1+x2)/2,engine.mapHeight-11);//side room connector
+	dig((x1+x2)/2,y2,(x1+x2)/2,engine.mapHeight-11-20);//side room connector
 	
 	x1 = engine.mapWidth/2-12-5;
 	x2 = engine.mapWidth/2-8-5;
-	y1 = engine.mapHeight-11;
-	y2 = engine.mapHeight-7;
+	y1 = -20 +engine.mapHeight-11;
+	y2 = -20 +engine.mapHeight-7;
 	for (int tilex = x1; tilex <=x2; tilex++) {//side room lower
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
@@ -576,8 +576,8 @@ void Map::spawnTutorial() {
 	/////////////////////target range
 	x1 = engine.mapWidth/2-10+26;
 	x2 = engine.mapWidth/2+10+26-5;
-	y1 = engine.mapHeight-29;
-	y2 = engine.mapHeight-23;
+	y1 = -20 +engine.mapHeight-29;
+	y2 = -20 +engine.mapHeight-23;
 	for (int tilex = x1; tilex <=x2; tilex++) {//side room lower
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
@@ -605,13 +605,24 @@ void Map::spawnTutorial() {
 		Actor *MLR = createMLR(x1+4,tiley,false);
 		engine.actors.push(MLR);
 		engine.sendToBack(MLR);
-		Actor *MLR2 = createMLR(x1+5,tiley,false);
+
+		/*Actor *MLR2 = createMLR(x1+5,tiley,false);
 		engine.actors.push(MLR2);
 		engine.sendToBack(MLR2);
 		Actor *MLR3 = createMLR(x1+6,tiley,false);
 		engine.actors.push(MLR3);
-		engine.sendToBack(MLR3);
+		engine.sendToBack(MLR3);*/
+		Actor *booze = createAlcohol(x1+5,tiley);
+		engine.actors.push(booze);
+		Actor *booze2 = createAlcohol(x1+6,tiley);
+		engine.actors.push(booze2);		
+		Actor *booze3 = createAlcohol(x1+7,tiley);
+		engine.actors.push(booze3);
+		
 	}
+	
+	Actor *record = createRecord(x1+8,y1);
+	engine.actors.push(record);
 	//fence
 	int batteries = 0;
 	for (int tiley = y1; tiley <= y2; tiley++) {
@@ -659,8 +670,8 @@ void Map::spawnTutorial() {
 	//stair room
 	x1 = engine.mapWidth/2-2;
 	x2 = engine.mapWidth/2+2;
-	y1 = engine.mapHeight-26-17;
-	y2 = engine.mapHeight-23-17;
+	y1 = -20 +engine.mapHeight-26-17;
+	y2 = -20 +engine.mapHeight-23-17;
 	for (int tilex = x1; tilex <=x2; tilex++) {//stair room
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
@@ -710,9 +721,14 @@ void Map::spawnTutorial() {
 	//engine.sendToBack(stackOfMoney);
 	
 	
-	
+	//int x1 = engine.mapWidth/2-6;
+	//int x2 = engine.mapWidth/2+6;
+	//int y1 = -20 +engine.mapHeight-12;
+	//int y2 = -20 +engine.mapHeight-7;
+	//int startX = (engine.mapWidth/2-6+engine.mapWidth/2+6)/2;
 	int startX = (engine.mapWidth/2-6+engine.mapWidth/2+6)/2;
-	int startY = (engine.mapHeight-12+engine.mapHeight-6)/2;
+	//int startY = (engine.mapHeight-12+engine.mapHeight-6)/2;
+	int startY = (engine.mapHeight-12+engine.mapHeight-6)/2-20;
 	engine.stairs->x = (x1+x2)/2;
 	engine.stairs->y = y1;
 	engine.player->x = startX;
@@ -2691,6 +2707,160 @@ Actor *Map::createFlare(int x, int y){
 	scrollOfFlaring->pickable->value = 25;
 	scrollOfFlaring->pickable->inkValue = 10;
 	return scrollOfFlaring;
+}
+Actor *Map::createAlcohol(int x, int y){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	Actor *scrollOfDrunk = new Actor(x,y,'a',"Bottle 'o' Alcohol", TCODColor::white);
+	TCODColor col = TCODColor::white; 
+	int type = random->getInt(1,15);
+	int schnapp = random->getInt(1,5);
+	int origin = random->getInt(1,10);
+	switch(origin)
+	{
+		case 1:
+			break;
+		case 2:
+			strcat(nameBuf,"Legal ");
+			break;
+		case 3:
+			strcat(nameBuf,"Smuggled ");
+			break;
+		case 4:
+			strcat(nameBuf,"Sanctioned ");
+			break;
+		case 5:
+			strcat(nameBuf,"Illegal ");
+			break;
+		case 6:
+			strcat(nameBuf,"Approved ");
+			break;
+		case 7:
+			strcat(nameBuf,"Banned ");
+			break;
+		case 8:
+			strcat(nameBuf,"Lawful ");
+			break;
+		case 9:
+			strcat(nameBuf,"Illicit ");
+			break;
+		case 10:
+			strcat(nameBuf,"Stolen ");
+			break;
+	}
+	switch(type) 
+	{
+		case 1:
+			strcat(nameBuf,"Beer");
+			col = TCODColor::desaturatedOrange;
+			break;
+		case 2:
+			strcat(nameBuf,"Whiskey");
+			col = TCODColor::lightOrange;
+			break;
+		case 3:
+			strcat(nameBuf,"Brandy");
+			col = TCODColor::darkOrange;
+			break;
+		case 4:
+			strcat(nameBuf,"Vodka");
+			col = TCODColor::lighterGrey;
+			break;
+		case 5:
+			strcat(nameBuf,"Absinthe");
+			col = TCODColor::lighterGreen;
+			break;
+		case 6:
+			strcat(nameBuf,"Moonshine");
+			//col = TCODColor::lighterBrown;
+			break;
+		case 7:
+			strcat(nameBuf,"Wine");
+			col = TCODColor::lighterPurple;
+			break;
+		case 8:
+			strcat(nameBuf,"Merlot");
+			col = TCODColor::purple;
+			break;
+		case 9:
+			strcat(nameBuf,"Bourbon");
+			col = TCODColor::darkOrange;
+			break;
+		case 10:
+			strcat(nameBuf,"Rum");
+			col = TCODColor::darkerOrange;
+			break;
+		case 11:
+			
+			switch(schnapp)
+			{
+				case 1:
+					strcat(nameBuf,"Mint ");
+					col = TCODColor::lighterRed;
+					break;
+				case 2:
+					strcat(nameBuf,"Peach ");
+					col = TCODColor::pink;
+					break;	
+				case 3:
+					strcat(nameBuf,"Berry ");
+					col = TCODColor::red;
+					break;	
+				case 4:
+					strcat(nameBuf,"Orange ");
+					col = TCODColor::lighterOrange;
+					break;
+				case 5:
+					strcat(nameBuf,"Bland ");
+					//col = TCODColor::lighterBrown;
+					break;	
+				default:break;
+			}
+			strcat(nameBuf,"Schnapps");
+			break;
+		case 12:
+			strcat(nameBuf,"Fermented Starfruit");
+			col = TCODColor::lighterYellow;
+			break;
+		case 13:
+			strcat(nameBuf,"\"Engineer\'s special\"");
+			col = TCODColor::darkerGrey;
+			break;	
+		case 14:
+			strcat(nameBuf,"Lager");
+			col = TCODColor::lighterOrange;
+			break;	
+		case 15:
+			strcat(nameBuf,"Tequila");
+			col = TCODColor::lightGreen;
+			break;	
+		default:break;
+	}
+	
+	
+	
+	scrollOfDrunk->name = nameBuf;
+	scrollOfDrunk->sort = 1;
+	scrollOfDrunk->blocks = false;
+	scrollOfDrunk->pickable = new Alcohol();//10 is turns, can be random, 5 is range of throwability (constant), 5 is range of flare
+	scrollOfDrunk->pickable->value = 30;
+	scrollOfDrunk->pickable->inkValue = 5;
+	scrollOfDrunk->col = col;
+	return scrollOfDrunk;
+}
+Actor *Map::createRecord(int x, int y){
+	Actor *scrollOfRecords = new Actor(x,y,227,"Personal Recorder", TCODColor::white);
+	scrollOfRecords->ai = new TriggerAi( ">>102:329:32<< This is an example recording, the ship has become madness, I have had headaches every day for a week, the crew have begun attacking each other without cause");
+	scrollOfRecords->blocks = false;
+	return scrollOfRecords;
+		//make interaction terminal
+	//Actor *triggerTileI = new Actor(x1+1,y1+1, 227, "Intercom Terminal", TCODColor::white);
+	 
+	//"INTERACTION BASICS\n\n"
+	//"Most items can be interacted with by simply moving into them by pressing the corresponding movement key whilst being adjacent to it. (Like these automated terminals)"
+	//triggerTileI->blocks = false; 
+	//engine.actors.push(triggerTileI);
 }
 Actor *Map::createFireBomb(int x, int y){
 	Actor *scrollOfFireball = new Actor(x,y,182,"Firebomb",TCODColor::white);

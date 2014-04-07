@@ -102,6 +102,8 @@ public:
 	Actor *createBatteryPack(int x, int y);
 	Actor *createFlashBang(int x, int y);
 	Actor *createFlare(int x, int y);
+	Actor *createAlcohol(int x, int y);
+	Actor *createRecord(int x, int y);
 	Actor *createFireBomb(int x, int y);
 	Actor *createEMP(int x,int y);
 	Actor *createTitanMail(int x, int y);

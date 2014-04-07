@@ -28,6 +28,7 @@ public:
 	int selX;
 	int selY;
 	bool printMap;
+	bool startTutorial;
 	
 	int mapx1;
 	int mapx2;
