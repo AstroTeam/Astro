@@ -985,7 +985,8 @@ void TriggerAi::update(Actor *owner) {
 		
 		int menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
 		int menuy = engine.screenHeight / 2 - PAUSE_MENU_HEIGHT / 2;
-		termwindow.setDefaultForeground(TCODColor(200,180,50));
+		//make me red
+		termwindow.setDefaultForeground(TCODColor(67,199,50));
 		termwindow.setDefaultBackground(TCODColor(0,0,0));
 		termwindow.printFrame(0,0,32,16,true,TCOD_BKGND_ALPHA(50),"\{ AUTOMATED INTERCOM \{");
 		termwindow.printRect(1,1,30,16,text);
@@ -1987,17 +1988,20 @@ void InteractibleAi::interaction(Actor *owner, Actor *target){
 TurretControlAi::TurretControlAi()
 {
 	attackMode = 1;
+	locked = false;
 }
 
 void TurretControlAi::save(TCODZip &zip)
 {
 	zip.putInt(TURRETCONTROL);
 	zip.putInt(attackMode);
+	zip.putInt(locked);
 }
 
 void TurretControlAi::load(TCODZip &zip)
 {
 	attackMode = zip.getInt();
+	locked = zip.getInt();
 }
 
 void TurretControlAi::update(Actor *owner)
@@ -2005,11 +2009,16 @@ void TurretControlAi::update(Actor *owner)
 }
 
 void TurretControlAi::interaction(Actor *owner, Actor *target)
-{
-	int intelReqToFrenzy = 1;
-	int intelReqToDis = 2;
-	int intelReqToFriendly = 5;
+{	
+	TCODRandom *rang = TCODRandom::getInstance();
+	int dice = rang->getInt(0,100);
+	
 	bool choice_made = false, first = true;
+	if(locked)
+	{
+		engine.gui->message(TCODColor::orange, "The turret console is locked, and you may no longer access it.");
+		return;
+	}
 	while (!choice_made) 
 	{
 		if (first) {
@@ -2023,39 +2032,45 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::TURRET_CONTROL);
 		switch (menuItem) {
 			case Menu::DISABLE_TURRETS:
-				if(engine.player->intel >= intelReqToDis)
+				if(dice <= 40 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 0;
 					engine.gui->message(TCODColor::orange, "Turrets in this room have been disabled.");
 				}
 				else
 				{
-					engine.gui->message(TCODColor::orange, "You don't quite understand what you're doing, nothing has changed.");
+					attackMode = 1;
+					engine.gui->message(TCODColor::orange, "Unauthorized access deteched, the turret console is now locked.");
 				}
+				locked = true;
 				choice_made = true;
 				break;
 			case Menu::DISABLE_IFF :
-				if(engine.player->intel >= intelReqToFrenzy)
+				if(dice <= 70 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 2;
 					engine.gui->message(TCODColor::orange, "Turrets in this room have become hostile to all.");
 				}
 				else
 				{
-					engine.gui->message(TCODColor::orange, "You don't quite understand what you're doing, nothing has changed.");
+					attackMode = 1;
+					engine.gui->message(TCODColor::orange, "Unauthorized access deteched, the turret console is now locked.");
 				}
+				locked = true;
 				choice_made = true;
 				break;
 			case Menu::IDENTIFY_FRIENDLY :
-				if(engine.player->intel >= intelReqToFriendly)
+				if(dice <= 30 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 3;
 					engine.gui->message(TCODColor::orange, "Turrets in this room have become hostile to all except you.");
 				}
 				else
 				{
-					engine.gui->message(TCODColor::orange, "You don't quite understand what you're doing, nothing has changed");
+					attackMode = 1;
+					engine.gui->message(TCODColor::orange, "Unauthorized access deteched, the turret console is now locked.");
 				}
+				locked = true;
 				choice_made = true;
 				break;
 			case Menu::EXIT :
@@ -2264,6 +2279,7 @@ Actor *VendingAi::clone(Actor *owner){
 			case Pickable::FRAGMENT: droppy->pickable = new Fragment(((Fragment*)(owner->pickable))->range,((Fragment*)(owner->pickable))->damage,((Fragment*)(owner->pickable))->maxRange); droppy->sort = 2; break;
 			case Pickable::WEAPON: droppy->pickable = new Weapon(((Weapon*)(owner->pickable))->minDmg,((Weapon*)(owner->pickable))->maxDmg,((Weapon*)(owner->pickable))->critMult,((Weapon*)(owner->pickable))->wType,0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement);break;
 			case Pickable::FOOD: break; //I don't think FOOD should be in vending machines, interestingly enough. There are PCMUs for that
+			case Pickable::KEY: break; //Keys probably shouldn't be in vending machines
 			case Pickable::NONE: break;
 		}
 		return droppy;
@@ -2484,10 +2500,17 @@ zip.putInt(LOCKER);
 void LockerAi::load(TCODZip &zip){
 }
 void LockerAi::interaction(Actor *owner, Actor *target){
-	engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
-	owner->ch = 243;
+
+	if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
+		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
+	}
+	//owner->ch = 243;
 	if(!owner->container->inventory.isEmpty()){
-		engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
+		if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
+			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
+		} else if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 44){
+			engine.gui->message(TCODColor::lightGrey,"The PCMU beeps and spits out a brick of foodstuffs");
+		}
 		Actor **iterator=owner->container->inventory.begin();
 		for(int i = 0; i < owner->container->size; i++){
 			if(owner->container->inventory.isEmpty()){

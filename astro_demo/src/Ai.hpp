@@ -250,6 +250,7 @@ class TurretControlAi: public InteractibleAi
 {
 	public:
 		int attackMode; //0 = off, 1 = hostile only to players,  2 = hostile to all nps , 3 = hostile to all npcs not the player
+		bool locked;
 		TurretControlAi();
 		void load(TCODZip &zip);
 		void save(TCODZip &zip);

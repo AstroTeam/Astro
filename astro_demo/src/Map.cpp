@@ -47,6 +47,7 @@ public:
 			room->x2 = x+w-1;
 			room->y2 = y+h-1;
 			
+			std::cout << "room " << room->x1 << " " << room->y1 << " " << room->x2 << " " << room->y2 << std::endl;
 			
 			//will this room be special?
 			int index = map.rng->getInt(0, roomList->size()-1);
@@ -78,6 +79,7 @@ public:
 
 Map::Map(int width, int height, int artifacts, short epicenterAmount): width(width),height(height),artifacts(artifacts),epicenterAmount(epicenterAmount) {
 	seed = TCODRandom::getInstance()->getInt(0,0x7FFFFFFF);
+	cout<< "seed " << seed << endl;
 }
 
 Map::~Map() {
@@ -113,6 +115,7 @@ int Map::tileType(int x, int y) {
 void Map::init(bool withActors, LevelType levelType) {
 	cout << levelType << endl << endl;
 
+	cout << "used seed " << seed << endl;
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
@@ -146,6 +149,7 @@ void Map::init(bool withActors, LevelType levelType) {
 
 void Map::save(TCODZip &zip) {
 	zip.putInt(seed);
+	cout << "saved seed " << seed << endl;
 	for (int i = 0; i < width*height; i++) {
 		zip.putInt(tiles[i].explored);
 		zip.putFloat(tiles[i].infection);
@@ -162,6 +166,7 @@ void Map::save(TCODZip &zip) {
 
 void Map::load(TCODZip &zip) {
 	seed = zip.getInt();
+	cout << "loaded seed " << seed << endl;
 	init(false);
 	for (int i = 0; i <width*height; i++) {
 		tiles[i].explored = zip.getInt();
@@ -503,6 +508,13 @@ void Map::spawnTutorial() {
 	
 	Actor * pcmu4 = new Actor(x2, y1+3, 243, "PCMU Food Processor", TCODColor::white);
 	engine.map->tiles[x2+(y1+3)*engine.map->width].decoration = 44;
+	pcmu4->destructible = new MonsterDestructible(1,0,0,0);
+	pcmu4->ai = new LockerAi();
+	pcmu4->hostile = false;
+	pcmu4->interact = true;
+	pcmu4->container = new Container(3);
+	Actor *food = createFood(0,0);
+	food->pickable->pick(food, pcmu4);
 	engine.actors.push(pcmu4);
 	
 	
@@ -587,6 +599,18 @@ void Map::spawnTutorial() {
 		engine.map->tiles[x2-1+tiley*engine.map->width].decoration = 23;
 		dummy->destructible = new MonsterDestructible(10,0,0,1);
 		engine.actors.push(dummy);
+	}
+	
+	for (int tiley = y1; tiley <= y2; tiley+=1) {
+		Actor *MLR = createMLR(x1+4,tiley);
+		engine.actors.push(MLR);
+		engine.sendToBack(MLR);
+		Actor *MLR2 = createMLR(x1+5,tiley);
+		engine.actors.push(MLR2);
+		engine.sendToBack(MLR2);
+		Actor *MLR3 = createMLR(x1+6,tiley);
+		engine.actors.push(MLR3);
+		engine.sendToBack(MLR3);
 	}
 	//fence
 	int batteries = 0;
@@ -1721,6 +1745,13 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				for (int j = y1+6; j < y2-1; j+=2) {
 					if (0 == rng->getInt(0, 4)) {
 						Actor * pcmu = new Actor(i, j, 243, "PCMU Food Processor", TCODColor::white);
+						pcmu->destructible = new MonsterDestructible(1,0,0,0);
+						pcmu->ai = new LockerAi();
+						pcmu->hostile = false;
+						pcmu->interact = true;
+						pcmu->container = new Container(3);
+						Actor *food = createFood(0,0);
+						food->pickable->pick(food, pcmu);
 						engine.map->tiles[i+j*engine.map->width].decoration = 44;
 						engine.actors.push(pcmu);
 					}
@@ -2370,7 +2401,7 @@ void Map::render() const {
 void Map::generateRandom(Actor *owner, int ascii){
 	TCODRandom *rng = TCODRandom::getInstance();
 	int dice = rng->getInt(0,100);
-	if(dice <= 40){
+	if(dice <= 40 && !(ascii == 129 || ascii == 130 || ascii == 146)){ //security bots should always drop keys
 			return;
 	}else{
 		if(ascii == 243){//locker, this might be a problem if we want multiple decors to drop different things
@@ -2581,7 +2612,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 					}
 				}
 			}
-		}else if(ascii == 129 || ascii == 147){ //Security Bot and Turret
+		}else if(ascii == 147){ //Turret
 			int rndA2 = rng->getInt(0,100);
 			if(rndA2 > 50){
 				for(int i = 0; i < owner->container->size; i++){
@@ -2591,7 +2622,27 @@ void Map::generateRandom(Actor *owner, int ascii){
 					battery->pickable->pick(battery,owner);
 				}
 			}
-		}else if(ascii == 131){ //Cleaner Bot (aka DJ ROOMBA)
+		}
+		else if(ascii == 129 || ascii == 130 || ascii == 146) //Security Bot gets keys
+		{
+			for(int i = 0; i < owner->container->size; i++)
+			{
+					//Fill Inventory with Batteries and 1 key
+					if(i >= 1)
+					{
+						Actor *battery = createBatteryPack(0,0);
+						engine.actors.push(battery);
+						battery->pickable->pick(battery,owner);
+					}
+					else
+					{
+						Actor *key = createKey(0,0,0);
+						engine.actors.push(key);
+						key->pickable->pick(key,owner);
+					}
+				}
+		}
+		else if(ascii == 131){ //Cleaner Bot (aka DJ ROOMBA)
 			int rndA2 = rng->getInt(0,100);
 			if(rndA2 > 60){
 				//Give A Battery
@@ -2691,15 +2742,184 @@ Actor *Map::createMylarBoots(int x, int y){
 	return myBoots;
 }
 Actor *Map::createMLR(int x, int y){
-	Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
-	MLR->blocks = false;
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *MLR = new Actor(x,y,169,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
 	ItemBonus *bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	int minDmg = 1;
+	int maxDmg = 6;
+	int critMult = 2;
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int names = random->getInt(1,5);
+	int flaw = random->getInt(1,5);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,5);
+	switch(choices) 
+	{
+		case 1:
+			//random flaws
+			
+			switch(flaw)
+			{
+				case 1:
+					strcat(nameBuf,"Heavy ");
+					bonus = new ItemBonus(ItemBonus::STRENGTH,-1);
+					break;
+				case 2:
+					strcat(nameBuf,"Overly Complex ");
+					bonus = new ItemBonus(ItemBonus::INTELLIGENCE,-1);
+					break;
+				case 3:
+					strcat(nameBuf,"Low Damage ");
+					maxDmg -= 2;
+					break;
+				case 4:
+					strcat(nameBuf,"Critically Flawed ");
+					critMult = 1;
+					break;
+				case 5:
+					strcat(nameBuf,"Burning ");
+					bonus = new ItemBonus(ItemBonus::HEALTH,-5);
+					break;
+				default:break;
+			}
+			//bad MLR'S
+			col = TCODColor::lighterRed;
+			switch(names)
+			{
+				case 1:
+					strcat(nameBuf,"Chinese MLR");
+					break;
+				case 2:
+					strcat(nameBuf,"Cheap Plastic MLR");
+					break;
+				case 3:
+					strcat(nameBuf,"Barely functional MLR");
+					break;
+				case 4:
+					strcat(nameBuf,"Low Capacity MLR");
+					break;
+				case 5:
+					strcat(nameBuf,"Training MLR");
+					break;
+				default:break;
+			}
+			
+			break;
+		case 2:
+			//random damage slightly
+			
+			//int min = random->getInt(1,2);
+			switch(max)
+			{
+				case 0:
+					strcat(nameBuf,"Lower Damage  ");
+					maxDmg -= 1;
+					break;
+				case 1:
+					break;
+				case 2:
+					strcat(nameBuf,"Higher Damage ");
+					maxDmg += 1;
+					break;
+				default:break;
+			}
+			//avergae MLR'S
+			switch(names)
+			{
+				case 1:
+					strcat(nameBuf,"MLR");
+					break;
+				case 2:
+					strcat(nameBuf,"Military Issue MLR");
+					break;
+				case 3:
+					strcat(nameBuf,"Standard MLR");
+					break;
+				case 4:
+					strcat(nameBuf,"Jet Black MLR");
+					break;
+				case 5:
+					strcat(nameBuf,"Trusty MLR");
+					break;
+				default:break;
+			}
+			break;
+		case 3:
+			//random gains
+			
+			switch(gain)
+			{
+				case 1:
+					strcat(nameBuf,"Light ");
+					bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+					break;
+				case 2:
+					strcat(nameBuf,"User Friendly ");
+					bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+					break;
+				case 3:
+					strcat(nameBuf,"High Power ");
+					maxDmg += 3;
+					minDmg += 1;
+					break;
+				case 4:
+					strcat(nameBuf,"Critically Good ");
+					critMult = 3;
+					break;
+				case 5:
+					strcat(nameBuf,"Reliable ");
+					minDmg += 4;
+					break;
+				default:break;
+			}
+			col = TCODColor::lighterGreen;
+			//good MLR's
+			switch(names)
+			{
+				case 1:
+					strcat(nameBuf,"Overclocked MLR");
+					break;
+				case 2:
+					strcat(nameBuf,"Battle-Tested MLR");
+					break;
+				case 3:
+					strcat(nameBuf,"High-Voltage MLR");
+					break;
+				case 4:
+					strcat(nameBuf,"Spec-Op's MLR");
+					break;
+				case 5:
+					strcat(nameBuf,"Swiss Made MLR");
+					break;
+				default:break;
+			}
+			break;
+		default:break;
+	}
+	
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	MLR->blocks = false;
+	MLR->name = nameBuf;
 	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,4);
 	//MLR->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
-	MLR->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonus,requirement);
+	//1 = min damage, 6 = max damage, 2 is crit mult, RANGED, 0 = not equipped,RANGED, bonus, req
+	MLR->pickable = new Weapon(minDmg,maxDmg,critMult,Weapon::RANGED,0,Equipment::RANGED,bonus,requirement);
 	MLR->sort = 4;
 	MLR->pickable->value = 200;
 	MLR->pickable->inkValue = 30;
+	//col = TCODColor::white;
+	MLR->col = col;
 	return MLR;
 }
 Actor *Map::createCombatKnife(int x, int y){
@@ -2722,6 +2942,21 @@ Actor *Map::createBatteryPack(int x,int y){
 	batteryPack->pickable->value = 50;
 	batteryPack->pickable->inkValue = 10;
 	return batteryPack;
+}
+
+Actor* Map::createKey(int x, int y, int keyType)
+{
+	Actor *key;
+	if(keyType == 0)
+		key = new Actor(x,y, 'K', "Vault Key", TCODColor::white);
+	else
+		key = new Actor(x,y, 'K', "Key", TCODColor::white);
+	key->sort = 1;
+	key->blocks = false;
+	key->pickable = new Key(keyType);
+	key->pickable->value = 0;
+	key->pickable->inkValue = 0;
+	return key;
 }
 
 Actor *Map::createFood(int x, int y){

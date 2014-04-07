@@ -26,6 +26,9 @@ const int RACE_MENU_HEIGHT = 52;
 const int CLASS_SELECT_WIDTH = 65;
 const int CLASS_SELECT_HEIGHT = 40;
 
+const int TUTORIAL_SELECT_WIDTH = 65;
+const int TUTORIAL_SELECT_HEIGHT = 40;
+
 Gui::Gui() {
 	//added the tile info screen, which takes up a part of the bottom panel next to the console
 	con = new TCODConsole(CON_WIDTH, PANEL_HEIGHT);
@@ -591,13 +594,25 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		TCODConsole::root->printFrame(menux+4,menuy - 4,TURRET_CONTROL_WIDTH,
 			TURRET_CONTROL_HEIGHT,true,TCOD_BKGND_ALPHA(0),"TURRET ROOM CONTROL");
 	
-	}else{
+	}
+	else if(mode == TUTORIAL_SELECT)
+	{
+		menux = engine.screenWidth / 2 - TUTORIAL_SELECT_WIDTH / 2;
+		menuy = engine.screenHeight / 2 - TUTORIAL_SELECT_HEIGHT / 2;
+		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
+		TCODConsole::root->printFrame(menux+10, menuy+2,TURRET_CONTROL_WIDTH,
+			TURRET_CONTROL_HEIGHT, true, TCOD_BKGND_ALPHA(0),"TUTORIAL SELECTION");
+	
+	}
+	
+	else{
 		static TCODImage img("wesleyPIXEL.png");
 		img.blit2x(TCODConsole::root,0,6);
 		menux = 35;
 		menuy = 24 + TCODConsole::root->getHeight() / 3;
 		
 	}
+	
 	if (mode == INVENTORY || mode == VENDING){
 		//clears console when inventory is open and when you select a new dingus, mey need to adjust later if we want to move up/down
 		//
@@ -729,7 +744,8 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 				default: break;
 			}
 		}
-	}else if(mode == TURRET_CONTROL)
+	}
+	else if(mode == TURRET_CONTROL)
 	{
 		while (!TCODConsole::isWindowClosed()) {
 		
@@ -769,6 +785,84 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 			}
 		}
 	}
+	
+	else if(mode == TUTORIAL_SELECT)
+	{
+		while (!TCODConsole::isWindowClosed()) {
+		
+			int currentItem = 0;
+			for (MenuItem **it = items.begin(); it != items.end(); it++) {
+				if (currentItem == selectedItem) {
+					TCODConsole::root->setDefaultForeground(TCODColor::orange);
+				} else {
+					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
+				}
+				TCODConsole::root->print(menux+16,menuy+11+currentItem*3-4,(*it)->label);
+				currentItem++;
+			}
+			TCODConsole::flush();
+			
+			//check key presses
+			TCOD_key_t key;
+			TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
+			switch(key.vk) {
+				case TCODK_UP:
+					selectedItem--;
+					if(selectedItem < 0) {
+						selectedItem = items.size()-1;
+					}
+				break;
+				case TCODK_DOWN:
+					selectedItem = (selectedItem +1) % items.size();
+				break;
+				case TCODK_ENTER: return items.get(selectedItem)->code;
+				case TCODK_ESCAPE: if (mode == PAUSE){
+							return NO_CHOICE;
+						    }
+				default: break;
+			}
+		}
+	}
+	{
+		while (!TCODConsole::isWindowClosed()) {
+		
+			int currentItem = 0;
+			for (MenuItem **it = items.begin(); it != items.end(); it++) {
+				if (currentItem == selectedItem) {
+					TCODConsole::root->setDefaultForeground(TCODColor::orange);
+				} else {
+					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
+				}
+				TCODConsole::root->print(menux,menuy+currentItem*3-4,(*it)->label);
+				currentItem++;
+			}
+			TCODConsole::flush();
+			
+			//check key presses
+			TCOD_key_t key;
+			TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
+			switch(key.vk) {
+				case TCODK_UP:
+					selectedItem--;
+					if(selectedItem < 0) {
+						selectedItem = items.size()-1;
+					}
+				break;
+				case TCODK_DOWN:
+					selectedItem = (selectedItem +1) % items.size();
+				break;
+				case TCODK_ENTER: return items.get(selectedItem)->code;
+				case TCODK_ESCAPE: if (mode == PAUSE){
+							return NO_CHOICE;
+						    }
+				default: break;
+			}
+		}
+	}
+	
+	
+	
+	
 	{
 		while (!TCODConsole::isWindowClosed()) {
 		

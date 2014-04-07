@@ -1,5 +1,6 @@
 #include "main.hpp"
 #include <string>
+#include <iostream>
 
 Container::Container(int size) : size(size),wallet(0),head(NULL),chest(NULL),
 	legs(NULL),feet(NULL),hand1(NULL),hand2(NULL),ranged(NULL){
@@ -13,6 +14,7 @@ void Container::load(TCODZip &zip) {
 	size = zip.getInt();
 	wallet = zip.getInt();
 	int nbActors = zip.getInt();
+	std::cout << "got size " << nbActors << std::endl;
 	while (nbActors > 0) {
 		Actor *actor = new Actor(0,0,0,NULL,TCODColor::white);
 		actor->load(zip);
@@ -61,8 +63,10 @@ void Container::save(TCODZip &zip) {
 	zip.putInt(size);
 	zip.putInt(wallet);
 	zip.putInt(inventory.size());
+	std::cout << "put size " << inventory.size() << std::endl;
 	for (Actor **it = inventory.begin(); it != inventory.end(); it++) {
 		(*it)->save(zip);
+		std::cout << "saved " << (*it)->name << std::endl;
 	}
 	zip.putInt(head != NULL);
 	zip.putInt(chest != NULL);
