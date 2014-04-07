@@ -602,13 +602,13 @@ void Map::spawnTutorial() {
 	}
 	
 	for (int tiley = y1; tiley <= y2; tiley+=1) {
-		Actor *MLR = createMLR(x1+4,tiley);
+		Actor *MLR = createMLR(x1+4,tiley,false);
 		engine.actors.push(MLR);
 		engine.sendToBack(MLR);
-		Actor *MLR2 = createMLR(x1+5,tiley);
+		Actor *MLR2 = createMLR(x1+5,tiley,false);
 		engine.actors.push(MLR2);
 		engine.sendToBack(MLR2);
-		Actor *MLR3 = createMLR(x1+6,tiley);
+		Actor *MLR3 = createMLR(x1+6,tiley,false);
 		engine.actors.push(MLR3);
 		engine.sendToBack(MLR3);
 	}
@@ -1247,12 +1247,12 @@ void Map::addItem(int x, int y, RoomType roomType) {
 		engine.sendToBack(scrollOfFireball);
 	} else if(dice < 40+40+40+15) {
 		//create a pair of mylar boots
-		Actor *myBoots = createMylarBoots(x,y);
+		Actor *myBoots = createMylarBoots(x,y,false);
 		engine.actors.push(myBoots);
 		engine.sendToBack(myBoots);
 	} else if(dice < 40+40+40+15+15) {
 		//create a Modular Laser Rifle (MLR)
-		Actor *MLR = createMLR(x,y);
+		Actor *MLR = createMLR(x,y,false);
 		engine.actors.push(MLR);
 		engine.sendToBack(MLR);
 	}else if(dice < 40+40+40+15+15+5){
@@ -2415,7 +2415,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 				engine.actors.push(chainMail);
 				chainMail->pickable->pick(chainMail,owner);
 			}else if(random < 30+10+20){
-				Actor *myBoots = createMylarBoots(0,0);
+				Actor *myBoots = createMylarBoots(0,0,false);
 				engine.actors.push(myBoots);
 				myBoots->pickable->pick(myBoots,owner);
 			}else{
@@ -2449,7 +2449,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 		{
 			if(dice <= 70)
 			{
-				Actor *MLR = createMLR(0,0);
+				Actor *MLR = createMLR(0,0,false);
 				engine.actors.push(MLR);
 				MLR->pickable->pick(MLR,owner);
 			}
@@ -2539,7 +2539,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 						scrollOfFireball->pickable->pick(scrollOfFireball,owner);
 					}else if(rnd < 10+30+20+20){
 						//create a pair of mylar boots
-						Actor *myBoots = createMylarBoots(0,0);
+						Actor *myBoots = createMylarBoots(0,0,false);
 						engine.actors.push(myBoots);
 						myBoots->pickable->pick(myBoots,owner);
 					}else{
@@ -2730,18 +2730,113 @@ Actor *Map::createTitanMail(int x, int y){
 	chainMail->pickable->inkValue = 50;
 	return chainMail;
 }
-Actor *Map::createMylarBoots(int x, int y){
-	Actor *myBoots = new Actor(x,y,185,"Mylar-Lined Boots",TCODColor::white);
-	myBoots->blocks = false;
+Actor *Map::createMylarBoots(int x, int y, bool isVend){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *myBoots = new Actor(x,y,169,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
 	ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
-	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,4);
-	myBoots->pickable = new Equipment(0,Equipment::FEET,bonus,requirement);
-	myBoots->sort = 3;
-	myBoots->pickable->value = 150;
-	myBoots->pickable->inkValue = 15;
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Tattered ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,5);
+						break;
+					case 2:
+						strcat(nameBuf,"Worn ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,10);
+						break;
+					case 3:
+						strcat(nameBuf,"Destroyed ");
+						break;
+					default:break;
+				}
+				//bad MLR'S
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Durable  ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,25);
+						break;
+					case 1:
+						break;
+					case 2:
+						strcat(nameBuf,"Cheap ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,15);
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+						break;
+					case 2:
+						strcat(nameBuf,"Tough ");
+						bonus = new ItemBonus(ItemBonus::DR,1);
+						break;
+					case 3:
+						strcat(nameBuf,"High Tech ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+						break;
+					case 4:
+						strcat(nameBuf,"Reliable ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,30);
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"Mylar Boots");
+
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	myBoots->blocks = false;
+	myBoots->name = nameBuf;
+	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,2);
+	//MLR->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
+	//1 = min damage, 6 = max damage, 2 is crit mult, RANGED, 0 = not equipped,RANGED, bonus, req
+	myBoots->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
+	myBoots->sort = 4;
+	myBoots->pickable->value = 200;
+	myBoots->pickable->inkValue = 30;
+	//col = TCODColor::white;
+	myBoots->col = col;
 	return myBoots;
 }
-Actor *Map::createMLR(int x, int y){
+Actor *Map::createMLR(int x, int y, bool isVend){
 	char* nameBuf = new char[80]; 
 	memset(nameBuf,0,80);
 	TCODRandom *random = TCODRandom::getInstance();
@@ -2764,148 +2859,152 @@ Actor *Map::createMLR(int x, int y){
 	int flaw = random->getInt(1,5);
 	int max = random->getInt(0,2);
 	int gain = random->getInt(1,5);
-	switch(choices) 
-	{
-		case 1:
-			//random flaws
-			
-			switch(flaw)
-			{
-				case 1:
-					strcat(nameBuf,"Heavy ");
-					bonus = new ItemBonus(ItemBonus::STRENGTH,-1);
-					break;
-				case 2:
-					strcat(nameBuf,"Overly Complex ");
-					bonus = new ItemBonus(ItemBonus::INTELLIGENCE,-1);
-					break;
-				case 3:
-					strcat(nameBuf,"Low Damage ");
-					maxDmg -= 2;
-					break;
-				case 4:
-					strcat(nameBuf,"Critically Flawed ");
-					critMult = 1;
-					break;
-				case 5:
-					strcat(nameBuf,"Burning ");
-					bonus = new ItemBonus(ItemBonus::HEALTH,-5);
-					break;
-				default:break;
-			}
-			//bad MLR'S
-			col = TCODColor::lighterRed;
-			switch(names)
-			{
-				case 1:
-					strcat(nameBuf,"Chinese MLR");
-					break;
-				case 2:
-					strcat(nameBuf,"Cheap Plastic MLR");
-					break;
-				case 3:
-					strcat(nameBuf,"Barely functional MLR");
-					break;
-				case 4:
-					strcat(nameBuf,"Low Capacity MLR");
-					break;
-				case 5:
-					strcat(nameBuf,"Training MLR");
-					break;
-				default:break;
-			}
-			
-			break;
-		case 2:
-			//random damage slightly
-			
-			//int min = random->getInt(1,2);
-			switch(max)
-			{
-				case 0:
-					strcat(nameBuf,"Lower Damage  ");
-					maxDmg -= 1;
-					break;
-				case 1:
-					break;
-				case 2:
-					strcat(nameBuf,"Higher Damage ");
-					maxDmg += 1;
-					break;
-				default:break;
-			}
-			//avergae MLR'S
-			switch(names)
-			{
-				case 1:
-					strcat(nameBuf,"MLR");
-					break;
-				case 2:
-					strcat(nameBuf,"Military Issue MLR");
-					break;
-				case 3:
-					strcat(nameBuf,"Standard MLR");
-					break;
-				case 4:
-					strcat(nameBuf,"Jet Black MLR");
-					break;
-				case 5:
-					strcat(nameBuf,"Trusty MLR");
-					break;
-				default:break;
-			}
-			break;
-		case 3:
-			//random gains
-			
-			switch(gain)
-			{
-				case 1:
-					strcat(nameBuf,"Light ");
-					bonus = new ItemBonus(ItemBonus::STRENGTH,1);
-					break;
-				case 2:
-					strcat(nameBuf,"User Friendly ");
-					bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
-					break;
-				case 3:
-					strcat(nameBuf,"High Power ");
-					maxDmg += 3;
-					minDmg += 1;
-					break;
-				case 4:
-					strcat(nameBuf,"Critically Good ");
-					critMult = 3;
-					break;
-				case 5:
-					strcat(nameBuf,"Reliable ");
-					minDmg += 4;
-					break;
-				default:break;
-			}
-			col = TCODColor::lighterGreen;
-			//good MLR's
-			switch(names)
-			{
-				case 1:
-					strcat(nameBuf,"Overclocked MLR");
-					break;
-				case 2:
-					strcat(nameBuf,"Battle-Tested MLR");
-					break;
-				case 3:
-					strcat(nameBuf,"High-Voltage MLR");
-					break;
-				case 4:
-					strcat(nameBuf,"Spec-Op's MLR");
-					break;
-				case 5:
-					strcat(nameBuf,"Swiss Made MLR");
-					break;
-				default:break;
-			}
-			break;
-		default:break;
+	if(!isVend){
+		switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Heavy ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,-1);
+						break;
+					case 2:
+						strcat(nameBuf,"Overly Complex ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,-1);
+						break;
+					case 3:
+						strcat(nameBuf,"Low Damage ");
+						maxDmg -= 2;
+						break;
+					case 4:
+						strcat(nameBuf,"Critically Flawed ");
+						critMult = 1;
+						break;
+					case 5:
+						strcat(nameBuf,"Burning ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,-5);
+						break;
+					default:break;
+				}
+				//bad MLR'S
+				col = TCODColor::lighterRed;
+				switch(names)
+				{
+					case 1:
+						strcat(nameBuf,"Chinese MLR");
+						break;
+					case 2:
+						strcat(nameBuf,"Cheap Plastic MLR");
+						break;
+					case 3:
+						strcat(nameBuf,"Barely functional MLR");
+						break;
+					case 4:
+						strcat(nameBuf,"Low Capacity MLR");
+						break;
+					case 5:
+						strcat(nameBuf,"Training MLR");
+						break;
+					default:break;
+				}
+				
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Lower Damage  ");
+						maxDmg -= 1;
+						break;
+					case 1:
+						break;
+					case 2:
+						strcat(nameBuf,"Higher Damage ");
+						maxDmg += 1;
+						break;
+					default:break;
+				}
+				//avergae MLR'S
+				switch(names)
+				{
+					case 1:
+						strcat(nameBuf,"MLR");
+						break;
+					case 2:
+						strcat(nameBuf,"Military Issue MLR");
+						break;
+					case 3:
+						strcat(nameBuf,"Standard MLR");
+						break;
+					case 4:
+						strcat(nameBuf,"Jet Black MLR");
+						break;
+					case 5:
+						strcat(nameBuf,"Trusty MLR");
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Light ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+						break;
+					case 2:
+						strcat(nameBuf,"User Friendly ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+						break;
+					case 3:
+						strcat(nameBuf,"High Power ");
+						maxDmg += 3;
+						minDmg += 1;
+						break;
+					case 4:
+						strcat(nameBuf,"Critically Good ");
+						critMult = 3;
+						break;
+					case 5:
+						strcat(nameBuf,"Reliable ");
+						minDmg += 4;
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				//good MLR's
+				switch(names)
+				{
+					case 1:
+						strcat(nameBuf,"Overclocked MLR");
+						break;
+					case 2:
+						strcat(nameBuf,"Battle-Tested MLR");
+						break;
+					case 3:
+						strcat(nameBuf,"High-Voltage MLR");
+						break;
+					case 4:
+						strcat(nameBuf,"Spec-Op's MLR");
+						break;
+					case 5:
+						strcat(nameBuf,"Swiss Made MLR");
+						break;
+					default:break;
+				}
+				break;
+			default:break;
+		}
+	}else{
+		strcat(nameBuf,"MLR");
 	}
 	
 	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);

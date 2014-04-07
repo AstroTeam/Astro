@@ -2277,7 +2277,7 @@ Actor *VendingAi::clone(Actor *owner){
 			case Pickable::FLARE: droppy->pickable = new Flare(((Flare*)(owner->pickable))->nbTurns, ((Flare*)(owner->pickable))->range, ((Flare*)(owner->pickable))->lightRange); droppy->sort = 2; break;
 			case Pickable::EQUIPMENT: droppy->pickable = new Equipment(0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement); droppy->sort = owner->sort; break;
 			case Pickable::FRAGMENT: droppy->pickable = new Fragment(((Fragment*)(owner->pickable))->range,((Fragment*)(owner->pickable))->damage,((Fragment*)(owner->pickable))->maxRange); droppy->sort = 2; break;
-			case Pickable::WEAPON: droppy->pickable = new Weapon(((Weapon*)(owner->pickable))->minDmg,((Weapon*)(owner->pickable))->maxDmg,((Weapon*)(owner->pickable))->critMult,((Weapon*)(owner->pickable))->wType,0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement);break;
+			case Pickable::WEAPON: droppy->pickable = new Weapon(((Weapon*)(owner->pickable))->minDmg,((Weapon*)(owner->pickable))->maxDmg,((Weapon*)(owner->pickable))->critMult,((Weapon*)(owner->pickable))->wType,0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement); droppy->sort = 4; break;
 			case Pickable::FOOD: break; //I don't think FOOD should be in vending machines, interestingly enough. There are PCMUs for that
 			case Pickable::KEY: break; //Keys probably shouldn't be in vending machines
 			case Pickable::NONE: break;
@@ -2291,11 +2291,11 @@ void VendingAi::populate(Actor *owner){
 	engine.actors.push(combatKnife);
 	combatKnife->pickable->pick(combatKnife,owner);
 	
-	Actor *mlr = engine.map->createMLR(0,0);
+	Actor *mlr = engine.map->createMLR(0,0,true);
 	engine.actors.push(mlr);
 	mlr->pickable->pick(mlr,owner);
 	
-	Actor *myBoots = engine.map->createMylarBoots(0,0);
+	Actor *myBoots = engine.map->createMylarBoots(0,0,true);
 	engine.actors.push(myBoots);
 	myBoots->pickable->pick(myBoots,owner);
 	

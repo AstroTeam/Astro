@@ -105,8 +105,8 @@ public:
 	Actor *createFireBomb(int x, int y);
 	Actor *createEMP(int x,int y);
 	Actor *createTitanMail(int x, int y);
-	Actor *createMylarBoots(int x, int y);
-	Actor *createMLR(int x, int y);
+	Actor *createMylarBoots(int x, int y, bool isVend);
+	Actor *createMLR(int x, int y, bool isVend);
 	Actor *createCombatKnife(int x, int y);
 	Actor *createFrag(int x, int y);
 	Actor *createFood(int x, int y);
