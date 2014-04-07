@@ -81,7 +81,9 @@ void Renderer::render(void *sdlSurface){
 	//flowers
 	SDL_Surface *flowers = SDL_LoadBMP("tile_assets/flowers.bmp");
 	SDL_SetColorKey(flowers,SDL_SRCCOLORKEY,255);
-	
+	//alcohols
+	SDL_Surface *alcohol = SDL_LoadBMP("tile_assets/alcohol.bmp");
+	SDL_SetColorKey(alcohol,SDL_SRCCOLORKEY,255);
 	
 	
 	
@@ -392,6 +394,24 @@ void Renderer::render(void *sdlSurface){
 				srcRect.y = 0;
 				SDL_BlitSurface(shadows,&srcRect,floorMap,&dstRect);
 			}
+			//render BOOZE
+			if (engine.mapcon->getChar(xM,yM) == 15)  
+			{
+				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
+					{
+						//light
+						srcRect.y = 0;
+					}
+					else
+					{
+						//dark
+						srcRect.y = 16;
+					}
+					int inc = engine.map->tiles[xM+yM*engine.map->width].decoration - 61; //61 because 0 indexed
+					srcRect.x = inc*16;
+					SDL_BlitSurface(alcohol,&srcRect,floorMap,&dstRect);
+			}
+			
 			//render all decorations
 			//cout << "decor start" << endl;
 			//PROBLEM IN HERE BRO!
@@ -1193,6 +1213,7 @@ void Renderer::render(void *sdlSurface){
 	SDL_FreeSurface(terminal);
 	SDL_FreeSurface(decor);
 	SDL_FreeSurface(flowers);
+	SDL_FreeSurface(alcohol);
 	
 	//engine.menuState = engine.transfer;
 	
