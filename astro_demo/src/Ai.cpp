@@ -148,7 +148,7 @@ void PlayerAi::update(Actor *owner) {
 			case Menu::CONSTITUTION	:
 				owner->destructible->maxHp += owner->getHpUp();
 				owner->destructible->hp += owner->getHpUp();
-				owner->vit += 1;
+				owner->vit += owner->getHpUp();;
 				choice_made = true;
 				break;
 			case Menu::STRENGTH :

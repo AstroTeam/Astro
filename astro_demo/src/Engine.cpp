@@ -98,14 +98,14 @@ void Engine::init() {
 		case 2:
 			player->race="Robot";
 			plyrAscii = 159;
-			player->hunger = 300;
-			player->maxHunger = 300;			
+			player->hunger = 100;
+			player->maxHunger = 100;			
 			break;
 		case 3:
 			player->race="Alien";
 			plyrAscii = 175;
-			player->hunger = 100;
-			player->maxHunger = 100;			
+			player->hunger = 40000;
+			player->maxHunger = 40000;			
 			break;
 		default:
 			player->race="Human";
@@ -1569,7 +1569,7 @@ int Engine::getInitStr(int race, int job){
 			strength += 2;
 			break; 
 		case 3: //Alien
-			strength -= 2;
+			strength -= 1;
 			break;
 			
 	switch (job){
@@ -1607,7 +1607,7 @@ int Engine::getInitDex(int race, int job){
 			dexterity -= 2;
 			break; 
 		case 3: //Alien
-			dexterity += 2;
+			dexterity -= 1;
 			break;
 	}
 	
@@ -1646,7 +1646,7 @@ int Engine::getInitIntel(int race, int job){
 			intelligence += 2;
 			break; 
 		case 3: //Alien
-			intelligence += 2; 
+			intelligence -= 1; 
 			break;
 	}
 	
