@@ -988,7 +988,7 @@ void TriggerAi::update(Actor *owner) {
 		//make me red
 		termwindow.setDefaultForeground(TCODColor(67,199,50));
 		termwindow.setDefaultBackground(TCODColor(0,0,0));
-		termwindow.printFrame(0,0,32,16,true,TCOD_BKGND_ALPHA(50),"\{ AUTOMATED INTERCOM \{");
+		termwindow.printFrame(0,0,32,16,true,TCOD_BKGND_ALPHA(50),"\{ AUTOMATED TERMINAL \{");
 		termwindow.printRect(1,1,30,16,text);
 		TCODConsole::blit(&termwindow,0,0,32,16,TCODConsole::root,menux,menuy);
 		TCODConsole::flush();
