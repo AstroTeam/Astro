@@ -2040,7 +2040,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				else
 				{
 					attackMode = 1;
-					engine.gui->message(TCODColor::orange, "Unauthorized access deteched, the turret console is now locked.");
+					engine.gui->message(TCODColor::orange, "Unauthorized access detected, the turret console is now locked.");
 				}
 				locked = true;
 				choice_made = true;
@@ -2054,7 +2054,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				else
 				{
 					attackMode = 1;
-					engine.gui->message(TCODColor::orange, "Unauthorized access deteched, the turret console is now locked.");
+					engine.gui->message(TCODColor::orange, "Unauthorized access detected, the turret console is now locked.");
 				}
 				locked = true;
 				choice_made = true;
@@ -2068,7 +2068,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				else
 				{
 					attackMode = 1;
-					engine.gui->message(TCODColor::orange, "Unauthorized access deteched, the turret console is now locked.");
+					engine.gui->message(TCODColor::orange, "Unauthorized access detected, the turret console is now locked.");
 				}
 				locked = true;
 				choice_made = true;
@@ -2500,10 +2500,17 @@ zip.putInt(LOCKER);
 void LockerAi::load(TCODZip &zip){
 }
 void LockerAi::interaction(Actor *owner, Actor *target){
-	engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
-	owner->ch = 243;
+
+	if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
+		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
+	}
+	//owner->ch = 243;
 	if(!owner->container->inventory.isEmpty()){
-		engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
+		if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
+			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
+		} else if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 44){
+			engine.gui->message(TCODColor::lightGrey,"The PCMU beeps and spits out a brick of foodstuffs");
+		}
 		Actor **iterator=owner->container->inventory.begin();
 		for(int i = 0; i < owner->container->size; i++){
 			if(owner->container->inventory.isEmpty()){
