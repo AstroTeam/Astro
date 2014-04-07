@@ -867,35 +867,30 @@ void Gui::classSidebar(){
 			//classBar.setDefaultForeground(TCODColor::white);
 			classBar.print(1,5,"RACE: ");
 			switch(raceSelection){
-				case 1:
-					classBar.print(7,5,"HUMAN");
-				break;
 				case 2:
 					classBar.print(7,5,"ROBOT");
 				break;
 				case 3:
 					classBar.print(7,5,"ALIEN");
 				break;
-				default: break;
+				default:
+					classBar.print(7,5,"HUMAN");
+				break;
 			}
 			classBar.print(1,7,"CLASS: ");
 			switch(roleSelection){
-				case 1:
-					classBar.print(8,7,"MARINE");
-				break;
 				case 2:
 					classBar.print(8,7,"EXPLORER");
 				break;
 				case 3:
 					classBar.print(8,7,"MERCENARY");
 				break;
-				default: break;
+				default:
+					classBar.print(8,7,"MARINE");
+				break;
 			}
 			classBar.print(6,9,"SUBCLASS");
 			switch(jobSelection){
-				case 1:
-					classBar.print(6,11,"INFANTRY");
-				break;
 				case 2:
 					classBar.print(6,11,"MEDIC");
 				break;
@@ -920,7 +915,9 @@ void Gui::classSidebar(){
 				case 9:
 					classBar.print(6,11,"HACKER");
 				break;
-				default: break;
+				default:
+					classBar.print(6,11,"INFANTRY");
+				break;
 			}
 			classBar.print(7,15,"STATS");
 			classBar.print(1,17,"AVAIL. POINTS: %d",statPoints);

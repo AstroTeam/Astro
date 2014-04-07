@@ -71,10 +71,12 @@ void Engine::init() {
 	actors.push(player);
 	player->flashable = true;
 	
-	engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
-	engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
-	engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
-	engine.gui->intelValue = getInitIntel(engine.gui->raceSelection, engine.gui->jobSelection);
+	//Add unused statpoints into vitality
+	if (engine.gui->statPoints <= 2 && engine.gui->statPoints >= 1){
+		gui->message(TCODColor::red, "Bonus added! %d", (engine.gui->statPoints)*20);
+		engine.gui->vitValue += (engine.gui->statPoints)*20;
+	}
+	
 	player->str=engine.gui->strValue;
 	player->totalStr=engine.gui->strValue;
 	player->dex=engine.gui->dexValue;
@@ -85,6 +87,7 @@ void Engine::init() {
 	player->destructible->hp=engine.gui->vitValue;
 	player->destructible->maxHp=engine.gui->vitValue;	
 	int plyrAscii = 64;
+	
 	
 	switch(engine.gui->raceSelection){
 		case 1:
@@ -679,6 +682,11 @@ void Engine::load(bool pause) {
 		//menuState = 0;
 	} else if (menuItem == Menu::TUTORIAL) {
 		startTutorial = true;
+		engine.gui->statPoints = 2; //to be used for defaulting bonus points to vitality
+		engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
+		engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
+		engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
+		engine.gui->intelValue = getInitIntel(engine.gui->raceSelection, engine.gui->jobSelection);
 		engine.term();
 		engine.init();
 	} else if (menuItem == Menu::NEW_GAME) {
@@ -1436,6 +1444,7 @@ if(cat == 1){
 					break;
 				default: break;
 			}
+		engine.gui->statPoints = 2;
 		engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
 		engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
 		engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
