@@ -4,6 +4,7 @@ public:
 	NONE,
 	NO_CHOICE,
 	NEW_GAME,
+	TUTORIAL,
 	CONTINUE,
 	SAVE,
 	EXIT,
