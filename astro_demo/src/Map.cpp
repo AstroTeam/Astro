@@ -2712,59 +2712,107 @@ Actor *Map::createAlcohol(int x, int y){
 	memset(nameBuf,0,80);
 	TCODRandom *random = TCODRandom::getInstance();
 	Actor *scrollOfDrunk = new Actor(x,y,'a',"Bottle 'o' Alcohol", TCODColor::white);
+	TCODColor col = TCODColor::white; 
 	int type = random->getInt(1,15);
 	int schnapp = random->getInt(1,5);
-	int origin = random->getInt(1,10,4);
+	int origin = random->getInt(1,10);
+	switch(origin)
+	{
+		case 1:
+			break;
+		case 2:
+			strcat(nameBuf,"Legal ");
+			break;
+		case 3:
+			strcat(nameBuf,"Smuggled ");
+			break;
+		case 4:
+			strcat(nameBuf,"Sanctioned ");
+			break;
+		case 5:
+			strcat(nameBuf,"Illegal ");
+			break;
+		case 6:
+			strcat(nameBuf,"Approved ");
+			break;
+		case 7:
+			strcat(nameBuf,"Banned ");
+			break;
+		case 8:
+			strcat(nameBuf,"Lawful ");
+			break;
+		case 9:
+			strcat(nameBuf,"Illicit ");
+			break;
+		case 10:
+			strcat(nameBuf,"Stolen ");
+			break;
+	}
 	switch(type) 
 	{
 		case 1:
 			strcat(nameBuf,"Beer");
+			col = TCODColor::desaturatedOrange;
 			break;
 		case 2:
 			strcat(nameBuf,"Whiskey");
+			col = TCODColor::lightOrange;
 			break;
 		case 3:
 			strcat(nameBuf,"Brandy");
+			col = TCODColor::darkOrange;
 			break;
 		case 4:
 			strcat(nameBuf,"Vodka");
+			col = TCODColor::lighterGrey;
 			break;
 		case 5:
 			strcat(nameBuf,"Absinthe");
+			col = TCODColor::lighterGreen;
 			break;
 		case 6:
 			strcat(nameBuf,"Moonshine");
+			//col = TCODColor::lighterBrown;
 			break;
 		case 7:
 			strcat(nameBuf,"Wine");
+			col = TCODColor::lighterPurple;
 			break;
 		case 8:
 			strcat(nameBuf,"Merlot");
+			col = TCODColor::purple;
 			break;
 		case 9:
 			strcat(nameBuf,"Bourbon");
+			col = TCODColor::darkOrange;
 			break;
 		case 10:
 			strcat(nameBuf,"Rum");
+			col = TCODColor::darkerOrange;
 			break;
 		case 11:
 			
 			switch(schnapp)
 			{
 				case 1:
-					strcat(nameBuf,"Peppermint ");
+					strcat(nameBuf,"Mint ");
+					col = TCODColor::lighterRed;
 					break;
 				case 2:
 					strcat(nameBuf,"Peach ");
+					col = TCODColor::pink;
 					break;	
 				case 3:
-					strcat(nameBuf,"Raspberry ");
+					strcat(nameBuf,"Berry ");
+					col = TCODColor::red;
 					break;	
 				case 4:
 					strcat(nameBuf,"Orange ");
+					col = TCODColor::lighterOrange;
 					break;
 				case 5:
-					strcat(nameBuf,"Watermelon ");
+					strcat(nameBuf,"Bland ");
+					//col = TCODColor::lighterBrown;
 					break;	
 				default:break;
 			}
@@ -2772,51 +2820,23 @@ Actor *Map::createAlcohol(int x, int y){
 			break;
 		case 12:
 			strcat(nameBuf,"Fermented Starfruit");
+			col = TCODColor::lighterYellow;
 			break;
 		case 13:
 			strcat(nameBuf,"\"Engineer\'s special\"");
+			col = TCODColor::darkerGrey;
 			break;	
 		case 14:
 			strcat(nameBuf,"Lager");
+			col = TCODColor::lighterOrange;
 			break;	
 		case 15:
 			strcat(nameBuf,"Tequila");
+			col = TCODColor::lightGreen;
 			break;	
 		default:break;
 	}
-	switch(origin)
-	{
-		case 1:
-			strcat(nameBuf,"");
-			break;
-		case 2:
-			strcat(nameBuf,"");
-			break;
-		case 3:
-			strcat(nameBuf," from Mars");
-			break;
-		case 4:
-			strcat(nameBuf," from smugglers");
-			break;
-		case 5:
-			strcat(nameBuf," from Jupiter");
-			break;
-		case 6:
-			strcat(nameBuf," from Alpha-Centauri");
-			break;
-		case 7:
-			strcat(nameBuf," distilled on Earth");
-			break;
-		case 8:
-			strcat(nameBuf," from Lab 7-W");
-			break;
-		case 9:
-			strcat(nameBuf," from \"Nowhere\"");
-			break;
-		case 10:
-			strcat(nameBuf," from Asteroid#10293");
-			break;
-	}
+	
 	
 	
 	scrollOfDrunk->name = nameBuf;
@@ -2825,6 +2845,7 @@ Actor *Map::createAlcohol(int x, int y){
 	scrollOfDrunk->pickable = new Alcohol();//10 is turns, can be random, 5 is range of throwability (constant), 5 is range of flare
 	scrollOfDrunk->pickable->value = 30;
 	scrollOfDrunk->pickable->inkValue = 5;
+	scrollOfDrunk->col = col;
 	return scrollOfDrunk;
 }
 Actor *Map::createRecord(int x, int y){

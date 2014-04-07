@@ -919,6 +919,8 @@ void Alcohol::save(TCODZip &zip) {
 }
 
 bool Alcohol::use(Actor *owner) {
+	Aura *alcoholINT = new Aura(10, Aura::TOTALSTR, Aura::CONTINUOUS, 5);
+	engine.player->auras.push(alcoholINT); // the list contains 1 element at position 0, value = 5
 	//float amountFed = owner->hunger;
 	//wearer->feed(amountFed);
 	//if (amountFed > 0) {
