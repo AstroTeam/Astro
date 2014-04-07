@@ -2009,10 +2009,10 @@ void TurretControlAi::update(Actor *owner)
 }
 
 void TurretControlAi::interaction(Actor *owner, Actor *target)
-{
-	int intelReqToFrenzy = 1;
-	int intelReqToDis = 2;
-	int intelReqToFriendly = 5;
+{	
+	TCODRandom *rang = TCODRandom::getInstance();
+	int dice = rang->getInt(0,100);
+	
 	bool choice_made = false, first = true;
 	if(locked)
 	{
@@ -2032,7 +2032,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::TURRET_CONTROL);
 		switch (menuItem) {
 			case Menu::DISABLE_TURRETS:
-				if(engine.player->intel >= intelReqToDis)
+				if(dice <= 40 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 0;
 					engine.gui->message(TCODColor::orange, "Turrets in this room have been disabled.");
@@ -2046,7 +2046,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				choice_made = true;
 				break;
 			case Menu::DISABLE_IFF :
-				if(engine.player->intel >= intelReqToFrenzy)
+				if(dice <= 70 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 2;
 					engine.gui->message(TCODColor::orange, "Turrets in this room have become hostile to all.");
@@ -2060,7 +2060,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				choice_made = true;
 				break;
 			case Menu::IDENTIFY_FRIENDLY :
-				if(engine.player->intel >= intelReqToFriendly)
+				if(dice <= 30 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 3;
 					engine.gui->message(TCODColor::orange, "Turrets in this room have become hostile to all except you.");
