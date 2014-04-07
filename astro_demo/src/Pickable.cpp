@@ -919,9 +919,10 @@ void Alcohol::save(TCODZip &zip) {
 }
 
 bool Alcohol::use(Actor *owner, Actor *wearer) {
-	Aura *alcoholINT = new Aura(10, Aura::TOTALSTR, Aura::CONTINUOUS, -5);
-	engine.player->auras.push(alcoholINT); // the list contains 1 element at position 0, value = 5
-	engine.gui->message(TCODColor::white, "You drink the %s and you begin to feel stronger, but more confused.",owner->name);
+	Aura *alcoholSTR = new Aura(10, Aura::TOTALSTR, Aura::CONTINUOUS, 5);//-5 is really +5 STR
+	engine.player->auras.push(alcoholSTR); // the list contains 1 element at position 0, value = 5
+	engine.gui->message(TCODColor::red, "You drink the %s and you begin to feel stronger, but more confused.",owner->name);
+	alcoholSTR->apply(engine.player);
 	//float amountFed = owner->hunger;
 	//wearer->feed(amountFed);
 	//if (amountFed > 0) {
