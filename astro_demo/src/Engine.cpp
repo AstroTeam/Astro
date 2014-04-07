@@ -73,7 +73,6 @@ void Engine::init() {
 	
 	//Add unused statpoints into vitality
 	if (engine.gui->statPoints <= 2 && engine.gui->statPoints >= 1){
-		gui->message(TCODColor::red, "Bonus added! %d", (engine.gui->statPoints)*20);
 		engine.gui->vitValue += (engine.gui->statPoints)*20;
 	}
 	
