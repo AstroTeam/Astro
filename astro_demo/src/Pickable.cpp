@@ -22,7 +22,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 		case WEAPON: pickable = new Weapon(0,0,0); break;
 		case FOOD: pickable = new Food(0); break;
 		case KEY: pickable = new Key(0); break;
-		case ALCOHOL: pickable = new Alcohol();break;
+		case ALCOHOL: pickable = new Alcohol(0,0);break;
 		case NONE: break;
 	}
 	std::cout << "chose a module type " << std::endl;
@@ -459,7 +459,7 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 				case FRAGMENT: droppy->pickable = new Fragment(((Fragment*)(owner->pickable))->range,((Fragment*)(owner->pickable))->damage,((Fragment*)(owner->pickable))->maxRange); droppy->sort = 2; break;
 				case FOOD: droppy->pickable = new Food(numberDropped); droppy->sort = 1; break;
 				case KEY: droppy->pickable = new Key(((Key*)(owner->pickable))->keyType); droppy->sort = 1; break;
-				case ALCOHOL: droppy->pickable = new Alcohol(); droppy->sort = 1; break;
+				case ALCOHOL: droppy->pickable = new Alcohol(((Alcohol*)(owner->pickable))->strength,((Alcohol*)(owner->pickable))->quality); droppy->sort = 1; break;
 				case NONE: break;
 			}
 			droppy->pickable->stackSize = numberDropped;
@@ -898,14 +898,17 @@ bool Key::use(Actor *owner, Actor *wearer)
 	return false;
 }
 
-Alcohol::Alcohol()
+Alcohol::Alcohol(int str, int qual)
 : Pickable(true, 1, ALCOHOL){
-
+	strength = str;
+	quality = qual;
 }
 
 void Alcohol::load(TCODZip &zip) {
 	stacks = zip.getInt();
 	stackSize = zip.getInt();
+	strength = zip.getInt();
+	quality = zip.getInt();
 	value = zip.getInt();
 	inkValue = zip.getInt();
 }
@@ -914,15 +917,20 @@ void Alcohol::save(TCODZip &zip) {
 	zip.putInt(type);
 	zip.putInt(stacks);
 	zip.putInt(stackSize);
+	zip.putInt(strength);
+	zip.putInt(quality);
 	zip.putInt(value);
 	zip.putInt(inkValue);
 }
 
 bool Alcohol::use(Actor *owner, Actor *wearer) {
-	Aura *alcoholSTR = new Aura(10, Aura::TOTALSTR, Aura::CONTINUOUS, 5);//-5 is really +5 STR
+	Aura *alcoholSTR = new Aura(quality, Aura::TOTALSTR, Aura::CONTINUOUS, strength);
+	Aura *alcoholINT = new Aura(quality, Aura::TOTALINTEL, Aura::CONTINUOUS, -strength);
 	engine.player->auras.push(alcoholSTR); // the list contains 1 element at position 0, value = 5
+	engine.player->auras.push(alcoholINT); // the list contains 1 element at position 0, value = 5
 	engine.gui->message(TCODColor::red, "You drink the %s and you begin to feel stronger, but more confused.",owner->name);
 	alcoholSTR->apply(engine.player);
+	alcoholINT->apply(engine.player);
 	//float amountFed = owner->hunger;
 	//wearer->feed(amountFed);
 	//if (amountFed > 0) {
