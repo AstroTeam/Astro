@@ -2777,7 +2777,7 @@ Actor *Map::createAlcohol(int x, int y){
 			strcat(nameBuf,"\"Engineer\'s special\"");
 			break;	
 		case 14:
-			strcat(nameBuf,"Lauger");
+			strcat(nameBuf,"Lager");
 			break;	
 		case 15:
 			strcat(nameBuf,"Tequila");
