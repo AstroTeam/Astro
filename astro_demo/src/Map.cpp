@@ -2716,10 +2716,10 @@ Actor *Map::createMLR(int x, int y){
 	TCODColor col = TCODColor::white;
 	//artifact->pickable = new Equipment(0);
 	//Equipment::SlotType slot = Equipment::NOSLOT;
-	ItemBonus *bonus = NULL;
+	//ItemBonus *bonus = NULL;
 	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
 	//min damage, max damage, critMult, 
-	//ItemBonus *bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+	ItemBonus *bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
 	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
 	int minDmg = 1;
 	int maxDmg = 6;
