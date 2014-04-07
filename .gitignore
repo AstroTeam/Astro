@@ -16,7 +16,6 @@ screenshot*.png
 # Executables
 *.out
 *.app
-tuto.exe
 
 # Unecessary Text Files
 stderr.txt
