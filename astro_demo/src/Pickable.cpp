@@ -995,5 +995,8 @@ bool Teleporter::use(Actor *owner, Actor *wearer) {
 	engine.gui->message(TCODColor::orange, "You teleport to the chosen location!");
 	engine.player->x = x;
 	engine.player->y = y;
+	engine.playerLight->x = x;
+	engine.playerLight->y = y;
+	engine.map->computeFov();
 	return Pickable::use(owner,wearer);
 }
