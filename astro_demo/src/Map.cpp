@@ -1,6 +1,6 @@
 
 #include "main.hpp"
-#include <iostream>
+
 #include <cstring>
 using namespace Param;
 using namespace std;
@@ -612,12 +612,18 @@ void Map::spawnTutorial() {
 		Actor *MLR3 = createMLR(x1+6,tiley,false);
 		engine.actors.push(MLR3);
 		engine.sendToBack(MLR3);*/
-		Actor *booze = createAlcohol(x1+5,tiley);
+		/*Actor *booze = createAlcohol(x1+5,tiley);
 		engine.actors.push(booze);
 		Actor *booze2 = createAlcohol(x1+6,tiley);
 		engine.actors.push(booze2);		
 		Actor *booze3 = createAlcohol(x1+7,tiley);
-		engine.actors.push(booze3);
+		engine.actors.push(booze3);*/
+		Actor *record = createRecord(x1+5,tiley);
+		engine.actors.push(record);
+		Actor *record2 = createRecord(x1+6,tiley);
+		engine.actors.push(record2);
+		Actor *record3 = createRecord(x1+7,tiley);
+		engine.actors.push(record3);
 		
 	}
 	
@@ -2927,8 +2933,39 @@ Actor *Map::createAlcohol(int x, int y){
 }
 Actor *Map::createRecord(int x, int y){
 	Actor *scrollOfRecords = new Actor(x,y,227,"Personal Recorder", TCODColor::white);
-	scrollOfRecords->ai = new TriggerAi( ">>102:329:32<< This is an example recording, the ship has become madness, I have had headaches every day for a week, the crew have begun attacking each other without cause");
+	char* nameBuf = new char[200]; 
+	memset(nameBuf,0,200);
+	//TCODRandom *random = TCODRandom::getInstance();
+	//cout << "about to get temp" << endl;
+	//FINALchar ** temp = &engine.records[0];
+	//char *temp = engine.records[0];
+	//cout << "about to get msg, got temp"<< endl;
+	//FINALchar  * msg = temp[random->getInt(0,4)];
+	//cout << "msg recieved" << endl;
+	//scrollOfRecords->ai = new TriggerAi( ">>102:329:32<< This is an example recording, the ship has become madness, I have had headaches every day for a week, the crew have begun attacking each other without cause");
+	string line;
+	ifstream myfile ("genericMSG.txt");
+	
+	if (myfile.is_open())
+	{
+		//while ( getline (myfile,line) )
+		//{
+		//cout << line << '\n';
+			
+		//}
+		
+		getline(myfile,line,'@');
+		strcat(nameBuf,line.c_str());
+		cout << line << '\n';
+		myfile.close();
+	}
+	//string s = line.c_str();
+	//std::string str;
+	const char * message = line.c_str();
+	cout << message << " message text " << '\n';
+	scrollOfRecords->ai = new TriggerAi(nameBuf);
 	scrollOfRecords->blocks = false;
+	
 	return scrollOfRecords;
 		//make interaction terminal
 	//Actor *triggerTileI = new Actor(x1+1,y1+1, 227, "Intercom Terminal", TCODColor::white);
