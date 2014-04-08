@@ -102,11 +102,13 @@ public:
 	Actor *createBatteryPack(int x, int y);
 	Actor *createFlashBang(int x, int y);
 	Actor *createFlare(int x, int y);
+	Actor *createAlcohol(int x, int y);
+	Actor *createRecord(int x, int y);
 	Actor *createFireBomb(int x, int y);
 	Actor *createEMP(int x,int y);
 	Actor *createTitanMail(int x, int y);
-	Actor *createMylarBoots(int x, int y);
-	Actor *createMLR(int x, int y);
+	Actor *createMylarBoots(int x, int y, bool isVend);
+	Actor *createMLR(int x, int y, bool isVend);
 	Actor *createCombatKnife(int x, int y);
 	Actor *createFrag(int x, int y);
 	Actor *createFood(int x, int y);

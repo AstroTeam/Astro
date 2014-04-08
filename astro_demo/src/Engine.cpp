@@ -56,35 +56,6 @@ void Engine::term() {
 void Engine::init() {
 	engine.killCount = 0;
 	
-	bool choice_made = false;
-	bool first = true;
-	bool startTutorial = false;
-	while (!choice_made) 
-	{
-		if (first) {
-			TCODConsole::flush();
-		}
-		engine.gui->menu.clear();
-		engine.gui->menu.addItem(Menu::TUTORIAL_NO, "Skip the tutorial.");
-		engine.gui->menu.addItem(Menu::TUTORIAL_YES, "Begin game with tutorial.");
-		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::TUTORIAL_SELECT);
-		switch (menuItem) {
-			case Menu::TUTORIAL_NO:
-				choice_made = true;
-				break;
-			case Menu::TUTORIAL_YES:
-				startTutorial = true;	
-				choice_made = true;
-				break;
-			case Menu::EXIT :
-				choice_made = true;
-				break;
-			case Menu::NO_CHOICE:
-				first = false;
-				break;
-			default: break;
-		}
-	}
 	player = new Actor(40,25,'@', "player","Human","Marine","Infantry",TCODColor::white);
 	//playerLight = new Actor(40, 25, 'l', "Your Flashlight", TCODColor::white);
 	//playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
@@ -100,10 +71,11 @@ void Engine::init() {
 	actors.push(player);
 	player->flashable = true;
 	
-	engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
-	engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
-	engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
-	engine.gui->intelValue = getInitIntel(engine.gui->raceSelection, engine.gui->jobSelection);
+	//Add unused statpoints into vitality
+	if (engine.gui->statPoints <= 2 && engine.gui->statPoints >= 1){
+		engine.gui->vitValue += (engine.gui->statPoints)*20;
+	}
+	
 	player->str=engine.gui->strValue;
 	player->totalStr=engine.gui->strValue;
 	player->dex=engine.gui->dexValue;
@@ -115,6 +87,7 @@ void Engine::init() {
 	player->destructible->maxHp=engine.gui->vitValue;	
 	int plyrAscii = 64;
 	
+	
 	switch(engine.gui->raceSelection){
 		case 1:
 			player->race="Human";
@@ -125,14 +98,14 @@ void Engine::init() {
 		case 2:
 			player->race="Robot";
 			plyrAscii = 159;
-			player->hunger = 300;
-			player->maxHunger = 300;			
+			player->hunger = 100;
+			player->maxHunger = 100;			
 			break;
 		case 3:
 			player->race="Alien";
 			plyrAscii = 175;
-			player->hunger = 100;
-			player->maxHunger = 100;			
+			player->hunger = 40000;
+			player->maxHunger = 40000;			
 			break;
 		default:
 			player->race="Human";
@@ -668,6 +641,7 @@ void Engine::load(bool pause) {
 	engine.gui->menu.addItem(Menu::NO_CHOICE, "RESUME GAME");
 	}
 	if (!pause) {
+	engine.gui->menu.addItem(Menu::TUTORIAL, "TUTORIAL");
 	engine.gui->menu.addItem(Menu::NEW_GAME, "NEW GAME");
 	}
 	//else if (level > 0){
@@ -705,9 +679,19 @@ void Engine::load(bool pause) {
 		save();
 		exit(0);
 		//menuState = 0;
+	} else if (menuItem == Menu::TUTORIAL) {
+		startTutorial = true;
+		engine.gui->statPoints = 2; //to be used for defaulting bonus points to vitality
+		engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
+		engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
+		engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
+		engine.gui->intelValue = getInitIntel(engine.gui->raceSelection, engine.gui->jobSelection);
+		engine.term();
+		engine.init();
 	} else if (menuItem == Menu::NEW_GAME) {
 		//new game 
 		engine.classMenu();
+		startTutorial = false;
 		//menuState = 0;
 		//engine.term();
 		//engine.init();
@@ -1459,6 +1443,7 @@ if(cat == 1){
 					break;
 				default: break;
 			}
+		engine.gui->statPoints = 2;
 		engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
 		engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
 		engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
@@ -1584,7 +1569,7 @@ int Engine::getInitStr(int race, int job){
 			strength += 2;
 			break; 
 		case 3: //Alien
-			strength -= 2;
+			strength -= 1;
 			break;
 			
 	switch (job){
@@ -1622,7 +1607,7 @@ int Engine::getInitDex(int race, int job){
 			dexterity -= 2;
 			break; 
 		case 3: //Alien
-			dexterity += 2;
+			dexterity -= 1;
 			break;
 	}
 	
@@ -1661,7 +1646,7 @@ int Engine::getInitIntel(int race, int job){
 			intelligence += 2;
 			break; 
 		case 3: //Alien
-			intelligence += 2; 
+			intelligence -= 1; 
 			break;
 	}
 	

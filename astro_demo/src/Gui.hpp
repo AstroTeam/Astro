@@ -5,6 +5,7 @@ public:
 	NO_CHOICE,
 	NEW_GAME,
 	CONTINUE,
+	TUTORIAL,
 	SAVE,
 	EXIT,
 	QUIT,
@@ -41,9 +42,7 @@ public:
 	RESET,
 	DISABLE_TURRETS,
 	DISABLE_IFF,
-	IDENTIFY_FRIENDLY,
-	TUTORIAL_YES,
-	TUTORIAL_NO,
+	IDENTIFY_FRIENDLY
 	};
 	enum DisplayMode {
 		MAIN,
@@ -54,7 +53,6 @@ public:
 		CLASS_MENU,
 		CLASS_SELECT,
 		TURRET_CONTROL,
-		TUTORIAL_SELECT,
 	};
 	~Menu();
 	void clear();
