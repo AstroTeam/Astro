@@ -10,7 +10,7 @@ public:
 protected:
 	enum AiType {
 		MONSTER, SECURITY, CONFUSED_ACTOR, PLAYER, TRIGGER, RANGED, LIGHT, 
-		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, CONSOLE, VENDING, ENGINEER, EPICENTER, TURRETCONTROL, LOCKER
+		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, CONSOLE, VENDING, ENGINEER, EPICENTER, TURRETCONTROL, LOCKER, GARDNER
 
 	};
 };
@@ -265,5 +265,19 @@ public:
 	void load(TCODZip &zip);
 	void interaction(Actor *owner, Actor *target);
 
+};
+
+class GardnerAi : public MonsterAi
+{
+public: 
+	GardnerAi();
+	void update(Actor *owner);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+	int initX1, initY1;
+	int initX2, initY2;
+protected:
+	int moveCount;
+	void moveOrAttack(Actor *owner, int targetx, int targety);
 };
 

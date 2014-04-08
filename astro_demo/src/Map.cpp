@@ -806,6 +806,8 @@ void Map::addMonster(int x, int y, bool isHorde) {
 
 	
 	int dice = rng->getInt(0,uB);
+	if(engine.map->tiles[x+y*width].tileType == HYDROPONICS) //no enemies here
+		return;
 	
 	if(engine.map->tiles[x+y*width].tileType == GENERATOR && !isHorde) //only engineers spawn in generator rooms (unless it's a horde)
 	{
@@ -1189,11 +1191,12 @@ Actor* Map::createGardner(int x, int y)
 	int gardnerAscii = 'G';
 	
 	Actor *gardner = new Actor(x,y,gardnerAscii,"Crazed Gardner",TCODColor::white);
+	gardner->hostile = false;
 	gardner->totalDex = gardnerDex;
 	gardner->destructible = new MonsterDestructible(gardnerHp,gardnerDodge,gardnerDR,gardnerXp);
 	gardner->totalStr = gardnerStr;
 	gardner->attacker = new Attacker(gardnerStr);
-	gardner->ai = new MonsterAi();
+	gardner->ai = new GardnerAi();
 	gardner->container = new Container(2);
 	generateRandom(gardner, gardnerAscii);
 	engine.actors.push(gardner);
@@ -1982,10 +1985,14 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					Actor * plant = new Actor(i, j, 211, "Hydroponic Starfruit", TCODColor::white);//large hunger restore
 					engine.actors.push(plant);
 				}
-				if(!gardnerCreated && canWalk(i,j+1) && engine.getAnyActor(i,j+1)==NULL)
+				if(!gardnerCreated && canWalk(x1,y1) && engine.getAnyActor(x1,y1)==NULL)
 				{
-						createGardner(i, j+1);
+						Actor *g = createGardner(x1, y1);
 						gardnerCreated = true;
+						((GardnerAi*)g->ai)->initX1 = x1;
+						((GardnerAi*)g->ai)->initY1 = y1;
+						((GardnerAi*) g->ai)->initY2 = y2;
+						((GardnerAi*) g->ai)->initX2 = x2;
 				}
 				engine.map->tiles[i+j*engine.map->width].decoration = 48;
 
