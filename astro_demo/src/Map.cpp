@@ -3025,7 +3025,7 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 						break;
 					default:break;
 				}
-				//bad MLR'S
+				//bad Mylar Boots
 				col = TCODColor::lighterRed;
 				break;
 			case 2:
@@ -3081,13 +3081,10 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 	myBoots->blocks = false;
 	myBoots->name = nameBuf;
 	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,2);
-	//MLR->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
-	//1 = min damage, 6 = max damage, 2 is crit mult, RANGED, 0 = not equipped,RANGED, bonus, req
-	myBoots->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
-	myBoots->sort = 4;
-	myBoots->pickable->value = 200;
-	myBoots->pickable->inkValue = 30;
-	//col = TCODColor::white;
+	myBoots->pickable = new Equipment(0,Equipment::FEET,bonus,requirement);
+	myBoots->sort = 3;
+	myBoots->pickable->value = 100;
+	myBoots->pickable->inkValue = 20;
 	myBoots->col = col;
 	return myBoots;
 }
