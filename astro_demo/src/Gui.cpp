@@ -588,12 +588,20 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 			CLASS_SELECT_HEIGHT,true,TCOD_BKGND_ALPHA(100));
 	}else if(mode == TURRET_CONTROL)
 	{
+		
 		menux = engine.screenWidth / 2 - TURRET_CONTROL_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - TURRET_CONTROL_HEIGHT / 2;
-		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
-		TCODConsole::root->printFrame(menux+4,menuy - 4,TURRET_CONTROL_WIDTH,
-			TURRET_CONTROL_HEIGHT,true,TCOD_BKGND_ALPHA(0),"TURRET ROOM CONTROL");
-	
+		char c[] = {'\0'};
+		TCODConsole termwindow(TURRET_CONTROL_WIDTH,TURRET_CONTROL_HEIGHT);
+			//make me red
+		termwindow.setDefaultForeground(TCODColor(67,199,50));
+		termwindow.setDefaultBackground(TCODColor(0,0,0));
+		termwindow.printFrame(0,0,TURRET_CONTROL_WIDTH,TURRET_CONTROL_HEIGHT,true,TCOD_BKGND_ALPHA(50),"TURRET CONTROL");
+		termwindow.printRect(1,1,TURRET_CONTROL_WIDTH-2,TURRET_CONTROL_HEIGHT,c);
+		TCODConsole::blit(&termwindow,0,0,TURRET_CONTROL_WIDTH,TURRET_CONTROL_HEIGHT,TCODConsole::root,menux+4,menuy-4);
+		TCODConsole::flush();
+		
+		 
 	}
 	else if(mode == TUTORIAL_SELECT)
 	{
