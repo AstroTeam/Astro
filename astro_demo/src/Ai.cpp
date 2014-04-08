@@ -2285,6 +2285,7 @@ Actor *VendingAi::clone(Actor *owner){
 			case Pickable::FOOD: break; //I don't think FOOD should be in vending machines, interestingly enough. There are PCMUs for that
 			case Pickable::KEY: break; //Keys probably shouldn't be in vending machines
 			case Pickable::ALCOHOL: break; //NO ALCOHOL IN 3D PRINTERS!
+			case Pickable::TELEPORTER: break; //no teleporters in 3D printers
 			case Pickable::NONE: break;
 		}
 		return droppy;

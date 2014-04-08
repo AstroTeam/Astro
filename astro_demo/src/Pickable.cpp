@@ -23,6 +23,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 		case FOOD: pickable = new Food(0); break;
 		case KEY: pickable = new Key(0); break;
 		case ALCOHOL: pickable = new Alcohol(0,0);break;
+		case TELEPORTER: pickable = new Teleporter(0);break;
 		case NONE: break;
 	}
 	std::cout << "chose a module type " << std::endl;
@@ -460,6 +461,7 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 				case FOOD: droppy->pickable = new Food(numberDropped); droppy->sort = 1; break;
 				case KEY: droppy->pickable = new Key(((Key*)(owner->pickable))->keyType); droppy->sort = 1; break;
 				case ALCOHOL: droppy->pickable = new Alcohol(((Alcohol*)(owner->pickable))->strength,((Alcohol*)(owner->pickable))->quality); droppy->sort = 1; break;
+				case TELEPORTER: droppy->pickable = new Teleporter(((Teleporter*)(owner->pickable))->range); droppy->sort = 2; break;
 				case NONE: break;
 			}
 			droppy->pickable->stackSize = numberDropped;
@@ -924,18 +926,77 @@ void Alcohol::save(TCODZip &zip) {
 }
 
 bool Alcohol::use(Actor *owner, Actor *wearer) {
-	Aura *alcoholSTR = new Aura(quality, Aura::TOTALSTR, Aura::CONTINUOUS, strength);
-	Aura *alcoholINT = new Aura(quality, Aura::TOTALINTEL, Aura::CONTINUOUS, -strength);
-	engine.player->auras.push(alcoholSTR); // the list contains 1 element at position 0, value = 5
-	engine.player->auras.push(alcoholINT); // the list contains 1 element at position 0, value = 5
-	engine.gui->message(TCODColor::red, "You drink the %s and you begin to feel stronger, but more confused.",owner->name);
-	alcoholSTR->apply(engine.player);
-	alcoholINT->apply(engine.player);
-	//float amountFed = owner->hunger;
-	//wearer->feed(amountFed);
-	//if (amountFed > 0) {
-	//	return Pickable::use(owner,wearer);
-	//}
-	return Pickable::use(owner,wearer);
+	if (wearer->totalIntel > 0)
+	{
+		Aura *alcoholSTR = new Aura(quality, Aura::TOTALSTR, Aura::CONTINUOUS, strength);//is this good mitchell?
+		Aura *alcoholDR = new Aura(quality, Aura::TOTALDR, Aura::CONTINUOUS, strength/2);//is this good mitchell?
+		Aura *alcoholINT = new Aura(quality, Aura::TOTALINTEL, Aura::CONTINUOUS, -strength);//is this good mitchell?
+		Aura *alcoholDODGE = new Aura(quality, Aura::TOTALDODGE, Aura::CONTINUOUS, -strength/2);//is this good mitchell?
+		engine.player->auras.push(alcoholSTR);
+		engine.player->auras.push(alcoholINT);
+		engine.player->auras.push(alcoholDR);
+		engine.player->auras.push(alcoholDODGE);
+		engine.gui->message(TCODColor::blue, "You drink the %s and you begin to feel stronger, but more confused.",owner->name);
+		alcoholSTR->apply(engine.player);
+		alcoholINT->apply(engine.player);
+		alcoholDR->apply(engine.player);
+		alcoholDODGE->apply(engine.player);
+
+		return Pickable::use(owner,wearer);
+	}
+	else
+	{
+		engine.gui->message(TCODColor::red, "You try to drink from the %s but are so drunk it shatters everywhere since your INT is 0.",owner->name);
+		return Pickable::use(owner,wearer);
+	}
 }
 
+Teleporter::Teleporter(float range, bool stacks, int stackSize, PickableType type) 
+	: Pickable(stacks, stackSize, type), range(range) {
+}
+
+void Teleporter::load(TCODZip &zip) {
+	range = zip.getFloat();
+	stacks = zip.getInt();
+	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
+}
+
+void Teleporter::save(TCODZip &zip) {
+	zip.putInt(TELEPORTER);
+	zip.putFloat(range);
+	zip.putInt(stacks);
+	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
+}
+
+bool Teleporter::use(Actor *owner, Actor *wearer) {
+	engine.gui->message(TCODColor::orange, "Choose where to teleport "
+		"or hit escape to cancel.");
+	int x = engine.player->x;
+	int y = engine.player->y;
+	if (!engine.pickATile(&x,&y, 20, 0)) {
+		return false;
+	}
+	//teleport if not blocked
+	if(!engine.map->isVisible(x,y) || !engine.map->canWalk(x,y)){
+		engine.gui->message(TCODColor::orange,"You cannot teleport there!");
+		return false;
+	}
+	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+		Actor *actor = *it;
+		if (actor->getDistance(x,y) <= 0 && actor->blocks == true) {
+			engine.gui->message(TCODColor::orange,"You cannot teleport there!");
+			return false;
+		}
+	}
+	engine.gui->message(TCODColor::orange, "You teleport to the chosen location!");
+	engine.player->x = x;
+	engine.player->y = y;
+	engine.playerLight->x = x;
+	engine.playerLight->y = y;
+	engine.map->computeFov();
+	return Pickable::use(owner,wearer);
+}
