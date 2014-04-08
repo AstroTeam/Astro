@@ -2592,17 +2592,17 @@ void GardnerAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	
 	if(!owner->hostile)
 	{
-		if(engine.map->canWalk(x+1, y) && y == initY1)
+		if(engine.map->canWalk(x+1, y) && y == initY1 && x+1 <= initX2)
 			owner->x = x + 1;
-		else if(engine.map->canWalk(x, y+1) && x == initX2)
+		else if(engine.map->canWalk(x, y+1) && x == initX2 && y+1 <= initY2)
 		{
 			owner->y = y + 1;
 		}
-		else if(engine.map->canWalk(x-1, y) && y == initY2)
+		else if(engine.map->canWalk(x-1, y) && y == initY2 && x-1 >= initX1)
 		{
 			owner->x = x - 1;
 		}
-		else if(engine.map->canWalk(x, y-1) && x == initX1)
+		else if(engine.map->canWalk(x, y-1) && x == initX1 && y-1 >= initY1)
 		{
 			owner->y = y - 1;
 		}
