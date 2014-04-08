@@ -924,18 +924,28 @@ void Alcohol::save(TCODZip &zip) {
 }
 
 bool Alcohol::use(Actor *owner, Actor *wearer) {
-	Aura *alcoholSTR = new Aura(quality, Aura::TOTALSTR, Aura::CONTINUOUS, strength);
-	Aura *alcoholINT = new Aura(quality, Aura::TOTALINTEL, Aura::CONTINUOUS, -strength);
-	engine.player->auras.push(alcoholSTR); // the list contains 1 element at position 0, value = 5
-	engine.player->auras.push(alcoholINT); // the list contains 1 element at position 0, value = 5
-	engine.gui->message(TCODColor::red, "You drink the %s and you begin to feel stronger, but more confused.",owner->name);
-	alcoholSTR->apply(engine.player);
-	alcoholINT->apply(engine.player);
-	//float amountFed = owner->hunger;
-	//wearer->feed(amountFed);
-	//if (amountFed > 0) {
-	//	return Pickable::use(owner,wearer);
-	//}
-	return Pickable::use(owner,wearer);
+	if (wearer->totalIntel > 0)
+	{
+		Aura *alcoholSTR = new Aura(quality, Aura::TOTALSTR, Aura::CONTINUOUS, strength);//is this good mitchell?
+		Aura *alcoholDR = new Aura(quality, Aura::TOTALDR, Aura::CONTINUOUS, strength/2);//is this good mitchell?
+		Aura *alcoholINT = new Aura(quality, Aura::TOTALINTEL, Aura::CONTINUOUS, -strength);//is this good mitchell?
+		Aura *alcoholDODGE = new Aura(quality, Aura::TOTALDODGE, Aura::CONTINUOUS, -strength/2);//is this good mitchell?
+		engine.player->auras.push(alcoholSTR);
+		engine.player->auras.push(alcoholINT);
+		engine.player->auras.push(alcoholDR);
+		engine.player->auras.push(alcoholDODGE);
+		engine.gui->message(TCODColor::blue, "You drink the %s and you begin to feel stronger, but more confused.",owner->name);
+		alcoholSTR->apply(engine.player);
+		alcoholINT->apply(engine.player);
+		alcoholDR->apply(engine.player);
+		alcoholDODGE->apply(engine.player);
+
+		return Pickable::use(owner,wearer);
+	}
+	else
+	{
+		engine.gui->message(TCODColor::red, "You attempt to drink from the %s but are so dazed you drop it and it shatters because your INT is 0.",owner->name);
+		return Pickable::use(owner,wearer);
+	}
 }
 

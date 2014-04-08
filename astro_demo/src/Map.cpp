@@ -2725,6 +2725,29 @@ Actor *Map::createAlcohol(int x, int y){
 	int type = random->getInt(1,15);
 	int schnapp = random->getInt(1,5);
 	int origin = random->getInt(1,10);
+	int quality = random->getInt(-2,2,0);
+	int base = 0;
+	int strength = 0;
+	switch (quality)
+	{
+		case -2:
+			strcat(nameBuf,"Stale ");
+			break;
+		case -1:
+			strcat(nameBuf,"Old ");
+			break;
+		case 0:
+			break;
+		case 1:
+			strcat(nameBuf,"Nice ");
+			break;
+		case 2:
+			strcat(nameBuf,"Top Shelf ");
+			break;
+		default:break;
+	}
+	
+	
 	switch(origin)
 	{
 		case 1:
@@ -2764,51 +2787,71 @@ Actor *Map::createAlcohol(int x, int y){
 			strcat(nameBuf,"Beer");
 			//col = TCODColor::desaturatedOrange;
 			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
+			base = 2;//8 PROOF
+			strength = 1;
 			break;
 		case 2:
 			strcat(nameBuf,"Whiskey");
 			//col = TCODColor::lightOrange;
 			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
+			base = 9;//108 PROOF
+			strength = 2;
 			break;
 		case 3:
 			strcat(nameBuf,"Brandy");
 			//col = TCODColor::darkOrange;
 			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
+			base = 9;//106 PROOF
+			strength = 2;
 			break;
 		case 4:
 			strcat(nameBuf,"Vodka");
 			//col = TCODColor::lighterGrey;
 			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
+			base = 7;//80 PROOF
+			strength = 1;
 			break;
 		case 5:
 			strcat(nameBuf,"Absinthe");
 			//col = TCODColor::lighterGreen;
 			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
+			base = 12;//140 PROOF
+			strength = 2;
 			break;
 		case 6:
 			strcat(nameBuf,"Moonshine");
 			//col = TCODColor::lighterBrown;
 			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
+			base = 14;//150 PROOF
+			strength = 3;
 			break;
 		case 7:
 			strcat(nameBuf,"Wine");
 			//col = TCODColor::lighterPurple;
 			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
+			base = 4;//20 PROOF
+			strength = 1;
 			break;
 		case 8:
 			strcat(nameBuf,"Merlot");
 			//col = TCODColor::purple;
 			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
+			base = 5;//22 PROOF
+			strength = 1;
 			break;
 		case 9:
 			strcat(nameBuf,"Bourbon");
 			//col = TCODColor::darkOrange;
 			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
+			base = 9;//109 PROOF
+			strength = 2;
 			break;
 		case 10:
 			strcat(nameBuf,"Rum");
 			//col = TCODColor::darkerOrange;
 			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
+			base = 9;//107 PROOF
+			strength = 2;
 			break;
 		case 11:
 			
@@ -2838,37 +2881,45 @@ Actor *Map::createAlcohol(int x, int y){
 			}
 			strcat(nameBuf,"Schnapps");
 			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
+			base = 8;//100 PROOF
+			strength = 1;
 			break;
 		case 12:
 			strcat(nameBuf,"Fermented Starfruit");
 			//col = TCODColor::lighterYellow;
 			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
+			base = 10;//125 PROOF
+			strength = 2;
 			break;
 		case 13:
 			strcat(nameBuf,"\"Engineer\'s special\"");
 			//col = TCODColor::darkerGrey;
 			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
+			base = 16;//160 PROOF
+			strength = 3;
 			break;	
 		case 14:
 			strcat(nameBuf,"Lager");
 			//col = TCODColor::lighterOrange;
 			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
+			base = 3;//10 PROOF
+			strength = 1;
 			break;	
 		case 15:
 			strcat(nameBuf,"Tequila");
 			//col = TCODColor::lightGreen;
 			engine.map->tiles[x+y*engine.map->width].decoration = dec+type;
+			base = 6;//75 PROOF
+			strength = 1;
 			break;	
 		default:break;
 	}
-	
-	
 	
 	scrollOfDrunk->name = nameBuf;
 	//scrollOfDrunk->ch = ascii;
 	scrollOfDrunk->sort = 1;
 	scrollOfDrunk->blocks = false;
-	scrollOfDrunk->pickable = new Alcohol(1,10);//1 is the amt of buff/debuff, 10 is the length of buff/debuff
+	scrollOfDrunk->pickable = new Alcohol(strength,base+quality);//1 is the amt of buff/debuff, 10 is the length of buff/debuff
 	scrollOfDrunk->pickable->value = 30;
 	scrollOfDrunk->pickable->inkValue = 5;
 	//scrollOfDrunk->col = col;
