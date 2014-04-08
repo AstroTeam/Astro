@@ -26,6 +26,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case SECURITY: ai = new SecurityBotAi(); break;
 		case TURRETCONTROL: ai = new TurretControlAi(); break;
 		case LOCKER: ai = new LockerAi(); break;
+		case GARDNER: ai = new GardnerAi(); break;
 		//
 		
 	}
@@ -245,12 +246,15 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 					{
 						actor->hostile = true;
 						actor->ch = 130; //update to active security bot
-					}
+					}else if(!actor->hostile && actor->ch == 'G') //gardner become hostile
+						actor->hostile = true;
 					engine.damageDone += owner->attacker->totalPower - actor->destructible->totalDodge;
 				}else if(actor->interact && !owner->hostile)
 					((InteractibleAi*)actor->ai)->interaction(actor, owner);
 				else if(!owner->hostile && !actor->hostile && actor->ch == 129)
 					engine.gui->message(TCODColor::grey, "The %s seems to be inactive", actor->name);
+				else if(!owner->hostile && !actor->hostile && actor->ch == 'G')
+					engine.gui->message(TCODColor::grey, "Welcome to Hydroponics, please do not touch anything!", actor->name);
 			}
 			//attacking something like a generator that doesn't have a destructible or something
 			owner->destructible->takeFireDamage(owner, 3.0);
@@ -2032,7 +2036,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::TURRET_CONTROL);
 		switch (menuItem) {
 			case Menu::DISABLE_TURRETS:
-				if(dice <= 40 + 5*engine.player->intel || engine.player->job[0] == 'H')
+				if(dice <= 25 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 0;
 					engine.gui->message(TCODColor::orange, "Turrets in this room have been disabled.");
@@ -2040,13 +2044,13 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				else
 				{
 					attackMode = 1;
-					engine.gui->message(TCODColor::orange, "Unauthorized access deteched, the turret console is now locked.");
+					engine.gui->message(TCODColor::orange, "Unauthorized access detected, the turret console is now locked.");
 				}
 				locked = true;
 				choice_made = true;
 				break;
 			case Menu::DISABLE_IFF :
-				if(dice <= 70 + 5*engine.player->intel || engine.player->job[0] == 'H')
+				if(dice <= 50 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 2;
 					engine.gui->message(TCODColor::orange, "Turrets in this room have become hostile to all.");
@@ -2054,13 +2058,13 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				else
 				{
 					attackMode = 1;
-					engine.gui->message(TCODColor::orange, "Unauthorized access deteched, the turret console is now locked.");
+					engine.gui->message(TCODColor::orange, "Unauthorized access detected, the turret console is now locked.");
 				}
 				locked = true;
 				choice_made = true;
 				break;
 			case Menu::IDENTIFY_FRIENDLY :
-				if(dice <= 30 + 5*engine.player->intel || engine.player->job[0] == 'H')
+				if(dice <= 15 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 3;
 					engine.gui->message(TCODColor::orange, "Turrets in this room have become hostile to all except you.");
@@ -2068,7 +2072,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				else
 				{
 					attackMode = 1;
-					engine.gui->message(TCODColor::orange, "Unauthorized access deteched, the turret console is now locked.");
+					engine.gui->message(TCODColor::orange, "Unauthorized access detected, the turret console is now locked.");
 				}
 				locked = true;
 				choice_made = true;
@@ -2528,3 +2532,84 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 		}
 	}
 }
+
+GardnerAi::GardnerAi()
+{
+	initX1 = -1;
+	initY1 = -1;
+	moveCount = 0;
+}
+
+void GardnerAi::load(TCODZip &zip)
+{
+	moveCount = zip.getInt();
+	initX1 = zip.getInt();
+	initY1 = zip.getInt();
+	initX2 = zip.getInt();
+	initY2 = zip.getInt();
+}
+void GardnerAi::save(TCODZip &zip)
+{
+	zip.putInt(GARDNER);
+	zip.putInt(moveCount);
+	zip.putInt(initX1);
+	zip.putInt(initY1);
+	zip.putInt(initX2);
+	zip.putInt(initY2);
+}
+
+void GardnerAi::update(Actor *owner)
+{
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	if(!owner->hostile)
+	{
+		moveOrAttack(owner, 0,0);
+		return;
+	}
+	if (engine.map->isInFov(owner->x,owner->y)) {
+		//can see the palyer, move towards him
+		moveCount = TRACKING_TURNS;
+	} else {
+		moveCount--;
+	}
+	
+	if (moveCount > 0) {
+		MonsterAi::moveOrAttack(owner, engine.player->x, engine.player->y);
+	} else {
+		moveCount = 0;
+	}
+	owner->destructible->takeFireDamage(owner, 3.0);
+
+}
+
+void GardnerAi::moveOrAttack(Actor *owner, int targetx, int targety)
+{
+	//if the player bumps in the gardner and not hostile, then I need to do flavor text, possibly show in playerAi
+	int x = owner->x;
+	int y = owner->y;
+
+	
+	if(!owner->hostile)
+	{
+		if(engine.map->canWalk(x+1, y) && y == initY1 && x+1 <= initX2)
+			owner->x = x + 1;
+		else if(engine.map->canWalk(x, y+1) && x == initX2 && y+1 <= initY2)
+		{
+			owner->y = y + 1;
+		}
+		else if(engine.map->canWalk(x-1, y) && y == initY2 && x-1 >= initX1)
+		{
+			owner->x = x - 1;
+		}
+		else if(engine.map->canWalk(x, y-1) && x == initX1 && y-1 >= initY1)
+		{
+			owner->y = y - 1;
+		}
+			
+		
+	}
+}
+
+

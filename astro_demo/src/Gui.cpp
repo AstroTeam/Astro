@@ -224,20 +224,56 @@ void Gui::currentTileInfo(int x, int y) {
 		float i = engine.map->tiles[x+y*engine.map->width].infection;
 		
 		int f = engine.map->tiles[x+y*engine.map->width].flower;
+		
+		int r = engine.map->tileType(x,y);
+		
+		switch (r)
+		{
+			case 1://generic
+				tileInfoMessage(TCODColor::grey, "A grated floor");
+				break;
+			case 2://office
+				tileInfoMessage(TCODColor::lighterPink, "Boring carpet");
+				break;
+			case 3://barracks
+				tileInfoMessage(TCODColor::grey, "A smooth flooring");
+				break;
+			case 4://generator
+				tileInfoMessage(TCODColor::grey, "A floor with exposed pipes");
+				break;
+			case 5://kitchen and messhall
+			case 7:
+				tileInfoMessage(TCODColor::lightOrange, "A tan tiled floor");
+				break;
+			case 6://server
+				tileInfoMessage(TCODColor::darkGrey, "A dark mechanical floor");
+				break;
+			case 8://armory
+				tileInfoMessage(TCODColor::grey, "A large grated floor");
+				break;
+			case 9://obs
+				tileInfoMessage(TCODColor::white, "A glass floor looking into space");
+				break;
+			case 10://hydroponics
+				tileInfoMessage(TCODColor::chartreuse, "Flooring with grass in it");
+				break;
+			default:break;
+		
+		}
 
 		if (i < 1){}
 		else if (i < 2)
-			tileInfoMessage(TCODColor::green, "an area with some green moss on it");
+			tileInfoMessage(TCODColor::green, "with some green moss on it");
 		else if (i < 3)
-			tileInfoMessage(TCODColor::green, "an area with some odd green moss on its surface");
+			tileInfoMessage(TCODColor::green, "with some odd green moss on its surface");
 		else if (i < 4)
-			tileInfoMessage(TCODColor::green, "an area which has weird moss covering it");
+			tileInfoMessage(TCODColor::green, "which has weird moss covering it");
 		else if (i < 5)
-			tileInfoMessage(TCODColor::green, "an area that has a lot of moss on it");
+			tileInfoMessage(TCODColor::green, "that has a lot of moss on it");
 		else if (i < 6)
-			tileInfoMessage(TCODColor::green, "an area almost covered in odd green moss");
+			tileInfoMessage(TCODColor::green, "almost covered in odd green moss");
 		else
-			tileInfoMessage(TCODColor::green, "an area completely covered in weird moss");
+			tileInfoMessage(TCODColor::green, "completely covered in weird moss");
 		
 		if (f != -1)
 			tileInfoMessage(TCODColor::purple, "and odd purple flowers");
@@ -297,54 +333,65 @@ void Gui::renderKeyLook() {
 		//char buf[128] = ""; 
 		//if (engine.map->isInFov(x,y)){
 			
-			//tileInfoMessage(TCODColor::lightGrey, "You see:");
-			
 			//int c = engine.map->tiles[x+y*engine.map->width].num;
 
-			float i = engine.map->tiles[x+y*engine.map->width].infection;
-			
-			//int t = engine.map->tiles[x+y*engine.map->width].temperature;
-			
-			//int e = engine.map->tiles[x+y*engine.map->width].envSta;
+		float i = engine.map->tiles[x+y*engine.map->width].infection;
+		
+		int f = engine.map->tiles[x+y*engine.map->width].flower;
+		
+		int r = engine.map->tileType(x,y);
+		
+		switch (r)
+		{
+			case 1://generic
+				tileInfoMessage(TCODColor::grey, "A grated floor");
+				break;
+			case 2://office
+				tileInfoMessage(TCODColor::lighterPink, "Boring carpet");
+				break;
+			case 3://barracks
+				tileInfoMessage(TCODColor::grey, "A smooth flooring");
+				break;
+			case 4://generator
+				tileInfoMessage(TCODColor::grey, "A floor with exposed pipes");
+				break;
+			case 5://kitchen and messhall
+			case 7:
+				tileInfoMessage(TCODColor::lightOrange, "A tan tiled floor");
+				break;
+			case 6://server
+				tileInfoMessage(TCODColor::darkGrey, "A dark mechanical floor");
+				break;
+			case 8://armory
+				tileInfoMessage(TCODColor::grey, "A large grated floor");
+				break;
+			case 9://obs
+				tileInfoMessage(TCODColor::white, "A glass floor looking into space");
+				break;
+			case 10://hydroponics
+				tileInfoMessage(TCODColor::chartreuse, "Flooring with grass in it");
+				break;
+			default:break;
+		
+		}
 
-			//tileInfoMessage(TCODColor::green, "an infection level of %g",i);
-
-			//Uncomment this if you want it to go into the tileInfoScreen
-			if (i < 1){}
-				//tileInfoMessage(TCODColor::green, "an area free of any ailment");
-				//could have this be nothing
-			else if (i < 2)
-				tileInfoMessage(TCODColor::green, "an area with some green moss on it");
-			else if (i < 3)
-				tileInfoMessage(TCODColor::green, "an area with some odd green moss on its surface");
-			else if (i < 4)
-				tileInfoMessage(TCODColor::green, "an area with has weird moss covering it");
-			else if (i < 5)
-				tileInfoMessage(TCODColor::green, "an area that has a lot of moss on it");
-			else if (i < 6)
-				tileInfoMessage(TCODColor::green, "an area almost covered in odd green moss");
-			else
-				tileInfoMessage(TCODColor::green, "an area completely covered in weird moss");
-			
-			/*
-			if (i < 1)
-				//engine.gui->message(TCODColor::green, "The ground you look at is free of any apparent ailment.");
-				{}
-			else if (i < 2)
-				engine.gui->message(TCODColor::green, "The ground you look at has some green moss on it.");
-			else if (i < 3)
-				engine.gui->message(TCODColor::green, "The ground you look at has some odd green moss on it's surface.");
-			else if (i < 4)
-				engine.gui->message(TCODColor::green, "The ground you look at has weird moss covering it.");
-			else if (i < 5)
-				engine.gui->message(TCODColor::green, "The ground you look at has a lot of moss on it.");
-			else if (i < 6)
-				engine.gui->message(TCODColor::green, "The ground you look at is almost covered in odd green moss.");
-			else
-				engine.gui->message(TCODColor::green, "The ground you look at is completely covered in weird moss.");
-				
-			//engine.gui->message(TCODColor::green, "the infection level is %g",i);
-			*/
+		if (i < 1){}
+		else if (i < 2)
+			tileInfoMessage(TCODColor::green, "with some green moss on it");
+		else if (i < 3)
+			tileInfoMessage(TCODColor::green, "with some odd green moss on its surface");
+		else if (i < 4)
+			tileInfoMessage(TCODColor::green, "which has weird moss covering it");
+		else if (i < 5)
+			tileInfoMessage(TCODColor::green, "that has a lot of moss on it");
+		else if (i < 6)
+			tileInfoMessage(TCODColor::green, "almost covered in odd green moss");
+		else
+			tileInfoMessage(TCODColor::green, "completely covered in weird moss");
+		
+		if (f != -1)
+			tileInfoMessage(TCODColor::purple, "and odd purple flowers");
+		
 
 			//tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
 			if (engine.map->tiles[x+y*engine.map->width].temperature > 0)
@@ -585,12 +632,20 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 			CLASS_SELECT_HEIGHT,true,TCOD_BKGND_ALPHA(100));
 	}else if(mode == TURRET_CONTROL)
 	{
+		
 		menux = engine.screenWidth / 2 - TURRET_CONTROL_WIDTH / 2;
 		menuy = engine.screenHeight / 2 - TURRET_CONTROL_HEIGHT / 2;
-		TCODConsole::root->setDefaultForeground(TCODColor(200,180,50));
-		TCODConsole::root->printFrame(menux+4,menuy - 4,TURRET_CONTROL_WIDTH,
-			TURRET_CONTROL_HEIGHT,true,TCOD_BKGND_ALPHA(0),"TURRET ROOM CONTROL");
-	
+		char c[] = {'\0'};
+		TCODConsole termwindow(TURRET_CONTROL_WIDTH,TURRET_CONTROL_HEIGHT);
+			//make me red
+		termwindow.setDefaultForeground(TCODColor(67,199,50));
+		termwindow.setDefaultBackground(TCODColor(0,0,0));
+		termwindow.printFrame(0,0,TURRET_CONTROL_WIDTH,TURRET_CONTROL_HEIGHT,true,TCOD_BKGND_ALPHA(50),"TURRET CONTROL");
+		termwindow.printRect(1,1,TURRET_CONTROL_WIDTH-2,TURRET_CONTROL_HEIGHT,c);
+		TCODConsole::blit(&termwindow,0,0,TURRET_CONTROL_WIDTH,TURRET_CONTROL_HEIGHT,TCODConsole::root,menux+4,menuy-4);
+		TCODConsole::flush();
+		
+		 
 	}
 	else{
 		static TCODImage img("wesleyPIXEL.png");
