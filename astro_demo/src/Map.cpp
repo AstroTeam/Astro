@@ -3305,7 +3305,7 @@ Actor* Map::createKey(int x, int y, int keyType)
 }
 
 Actor *Map::createFood(int x, int y){
-	Actor *scrollOfFeeding = new Actor(x,y,'F',"Brick of Foodstuffs", TCODColor::lightGreen);
+	Actor *scrollOfFeeding = new Actor(x,y,14,"Brick of Foodstuffs", TCODColor::white);
 	scrollOfFeeding->sort = 1;
 	scrollOfFeeding->blocks = false;
 	scrollOfFeeding->pickable = new Food(1);//this is the stack size. Food should feed for a static amount

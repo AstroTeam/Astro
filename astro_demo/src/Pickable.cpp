@@ -944,7 +944,7 @@ bool Alcohol::use(Actor *owner, Actor *wearer) {
 	}
 	else
 	{
-		engine.gui->message(TCODColor::red, "You attempt to drink from the %s but are so dazed you drop it and it shatters because your INT is 0.",owner->name);
+		engine.gui->message(TCODColor::red, "You try to drink from the %s but are so drunk it shatters everywhere since your INT is 0.",owner->name);
 		return Pickable::use(owner,wearer);
 	}
 }
