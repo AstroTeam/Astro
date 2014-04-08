@@ -2889,6 +2889,15 @@ Actor *Map::createFireBomb(int x, int y){
 	scrollOfFireball->pickable->inkValue = 10;
 	return scrollOfFireball;
 }
+Actor *Map::createTeleporter(int x, int y){
+	Actor *scrollOfTeleport = new Actor(x,y,182,"Blink Stone",TCODColor::white);
+	scrollOfTeleport->sort = 2;
+	scrollOfTeleport->blocks = false;
+	scrollOfTeleport->pickable = new Teleporter(20);
+	scrollOfTeleport->pickable->value = 95;
+	scrollOfTeleport->pickable->inkValue = 20;
+	return scrollOfTeleport;
+}
 Actor *Map::createFrag(int x, int y){
 	Actor *scrollOfFragging = new Actor(x,y,198,"Frag Grenade",TCODColor::white);
 	scrollOfFragging->sort = 2;

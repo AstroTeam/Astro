@@ -149,6 +149,15 @@ void Engine::init() {
 	
 	Actor *equip1 = NULL;
 	
+	//get a teleporter
+	for(int i=0; i<1; i++){
+		Actor *equip1 = new Actor(0,0,182,"Blink Stone",TCODColor::white);
+		equip1->sort = 2;
+		equip1->blocks = false;
+		equip1->pickable = new Teleporter(20);
+		engine.actors.push(equip1);
+		equip1->pickable->pick(equip1,player);
+	}
 	
 	switch(engine.gui->jobSelection){
 		

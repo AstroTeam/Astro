@@ -105,6 +105,7 @@ public:
 	Actor *createAlcohol(int x, int y);
 	Actor *createRecord(int x, int y);
 	Actor *createFireBomb(int x, int y);
+	Actor *createTeleporter(int x, int y);
 	Actor *createEMP(int x,int y);
 	Actor *createTitanMail(int x, int y);
 	Actor *createMylarBoots(int x, int y, bool isVend);

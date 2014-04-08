@@ -23,6 +23,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 		case FOOD: pickable = new Food(0); break;
 		case KEY: pickable = new Key(0); break;
 		case ALCOHOL: pickable = new Alcohol(0,0);break;
+		case TELEPORTER: pickable = new Teleporter(0);break;
 		case NONE: break;
 	}
 	std::cout << "chose a module type " << std::endl;
@@ -460,6 +461,7 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 				case FOOD: droppy->pickable = new Food(numberDropped); droppy->sort = 1; break;
 				case KEY: droppy->pickable = new Key(((Key*)(owner->pickable))->keyType); droppy->sort = 1; break;
 				case ALCOHOL: droppy->pickable = new Alcohol(((Alcohol*)(owner->pickable))->strength,((Alcohol*)(owner->pickable))->quality); droppy->sort = 1; break;
+				case TELEPORTER: droppy->pickable = new Teleporter(((Teleporter*)(owner->pickable))->range); droppy->sort = 2; break;
 				case NONE: break;
 			}
 			droppy->pickable->stackSize = numberDropped;
@@ -939,3 +941,49 @@ bool Alcohol::use(Actor *owner, Actor *wearer) {
 	return Pickable::use(owner,wearer);
 }
 
+Teleporter::Teleporter(float range, bool stacks, int stackSize, PickableType type) 
+	: Pickable(stacks, stackSize, type), range(range) {
+}
+
+void Teleporter::load(TCODZip &zip) {
+	range = zip.getFloat();
+	stacks = zip.getInt();
+	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
+}
+
+void Teleporter::save(TCODZip &zip) {
+	zip.putInt(TELEPORTER);
+	zip.putFloat(range);
+	zip.putInt(stacks);
+	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
+}
+
+bool Teleporter::use(Actor *owner, Actor *wearer) {
+	engine.gui->message(TCODColor::orange, "Choose where to teleport "
+		"or hit escape to cancel.");
+	int x = engine.player->x;
+	int y = engine.player->y;
+	if (!engine.pickATile(&x,&y, 20, 0)) {
+		return false;
+	}
+	//teleport if not blocked
+	if(!engine.map->isVisible(x,y) || !engine.map->canWalk(x,y)){
+		engine.gui->message(TCODColor::orange,"You cannot teleport there!");
+		return false;
+	}
+	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+		Actor *actor = *it;
+		if (actor->getDistance(x,y) <= 0 && actor->blocks == true) {
+			engine.gui->message(TCODColor::orange,"You cannot teleport there!");
+			return false;
+		}
+	}
+	engine.gui->message(TCODColor::orange, "You teleport to the chosen location!");
+	engine.player->x = x;
+	engine.player->y = y;
+	return Pickable::use(owner,wearer);
+}
