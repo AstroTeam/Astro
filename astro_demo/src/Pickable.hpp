@@ -180,7 +180,9 @@ public:
 
 class Alcohol: public Pickable {
 public:
-	Alcohol();
+	Alcohol(int str, int qual);
+	int strength;
+	int quality;
 	bool use(Actor *owner, Actor *wearer);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);

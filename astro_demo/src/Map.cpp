@@ -2861,7 +2861,7 @@ Actor *Map::createAlcohol(int x, int y){
 	//scrollOfDrunk->ch = ascii;
 	scrollOfDrunk->sort = 1;
 	scrollOfDrunk->blocks = false;
-	scrollOfDrunk->pickable = new Alcohol();//10 is turns, can be random, 5 is range of throwability (constant), 5 is range of flare
+	scrollOfDrunk->pickable = new Alcohol(1,10);//1 is the amt of buff/debuff, 10 is the length of buff/debuff
 	scrollOfDrunk->pickable->value = 30;
 	scrollOfDrunk->pickable->inkValue = 5;
 	//scrollOfDrunk->col = col;
