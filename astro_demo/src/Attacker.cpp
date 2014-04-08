@@ -51,16 +51,16 @@ void Attacker::attack(Actor *owner, Actor *target) {
 		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
 			if (owner->oozing && target->susceptible) {
 				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name,damageTaken + 1);
-				target->destructible->takeDamage(target,damageTaken+1);
+				target->destructible->takeDamage(target,owner, damageTaken+1);
 			}
 			else if(strcmp(target->name,"A Government Issue Locker") == 0)//locker code exception
 			{
 				engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
-				target->destructible->takeDamage(target,damageTaken);
+				target->destructible->takeDamage(target,owner,damageTaken);
 			}
 			else {
 				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name,damageTaken);
-				target->destructible->takeDamage(target,damageTaken);
+				target->destructible->takeDamage(target,owner,damageTaken);
 				if(strcmp(target->name,"player") == 0)
 					engine.damageReceived += damageTaken;
 			}
@@ -101,11 +101,11 @@ void Attacker::shoot(Actor *owner, Actor *target) {
 		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
 			if (owner->oozing && target->susceptible) {
 				engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hit points!",owner->name, target->name,damageTaken + 1);
-				target->destructible->takeDamage(target,damageTaken+1);
+				target->destructible->takeDamage(target,owner,damageTaken+1);
 			}
 			else {
 				engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hit points!",owner->name, target->name,damageTaken);
-				target->destructible->takeDamage(target,damageTaken);
+				target->destructible->takeDamage(target,owner,damageTaken);
 			}
 		} else {
 			engine.gui->message(TCODColor::lightGrey,"The %s shoots the %s but it has no effect...",owner->name, target->name);

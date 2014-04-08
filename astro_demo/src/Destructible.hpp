@@ -12,9 +12,9 @@ public:
 	Destructible(float maxHp, float dodge, float dr, int xp);
 	~Destructible();
 	inline bool isDead() {return hp <= 0;}
-	float takeDamage(Actor *owner, float damage);
+	float takeDamage(Actor *owner, Actor *attacker, float damage);
 	float takeFireDamage(Actor *owner, float damage);
-	virtual void die(Actor *owner);
+	virtual void die(Actor *owner, Actor *killer);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
 	static Destructible *create(TCODZip &zip);
@@ -29,13 +29,13 @@ class MonsterDestructible : public Destructible {
 public:
 	MonsterDestructible(float maxHp, float dodge, float dr, int xp);
 	void suicide(Actor *owner);
-	void die (Actor *owner);
+	void die (Actor *owner, Actor *killer);
 	void save(TCODZip &zip);
 };
 
 class PlayerDestructible : public Destructible {
 public:
 	PlayerDestructible(float maxHp, float dodge, float dr);
-	void die(Actor *owner);
+	void die(Actor *owner, Actor *killer);
 	void save(TCODZip &zip);
 };

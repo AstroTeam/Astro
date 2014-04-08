@@ -1483,7 +1483,7 @@ void GrenadierAi::update(Actor *owner) {
 }
 void GrenadierAi::useEmpGrenade(Actor *owner, int targetx, int targety)
 {
-	float damageTaken = engine.player->destructible->takeDamage(engine.player, -3 + 3 * owner->totalIntel);
+	float damageTaken = engine.player->destructible->takeDamage(engine.player, owner,-3 + 3 * owner->totalIntel);
 	numGrenades--;
 	engine.gui->message(TCODColor::red,"The %s uses an EMP Grenade on the player for %g hit points!",owner->name, damageTaken);
 	engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
@@ -1501,7 +1501,7 @@ void GrenadierAi::useFirebomb(Actor *owner, int targetx, int targety)
 			&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
 			//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 			float damageTaken = 1;
-			actor->destructible->takeDamage(actor, 1);
+			actor->destructible->takeDamage(actor, owner, 1);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
 				if(actor == engine.player)
@@ -1540,7 +1540,7 @@ void GrenadierAi::useFrag(Actor *owner, int targetx, int targety)
 			&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
 		{
 			float damageTaken = 2 * owner->totalIntel;
-			actor->destructible->takeDamage(actor, damageTaken);
+			actor->destructible->takeDamage(actor, owner, damageTaken);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) 
 			{	if(actor == engine.player)
@@ -1564,7 +1564,7 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 	if(dice <= 15)
 	{
 		//emp grenade
-		float damageTaken = target->destructible->takeDamage(target, -1*numGrenades*(-3 + 3 * owner->totalIntel));
+		float damageTaken = target->destructible->takeDamage(target, owner, -1*numGrenades*(-3 + 3 * owner->totalIntel));
 		engine.gui->message(TCODColor::red, "The %s kamikazes with an EMP Grenade on the %s for %g hit points!",owner->name,name, damageTaken);
 		if(target == engine.player)
 			engine.damageReceived += -1*numGrenades*(3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
@@ -1584,7 +1584,7 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
 			{
 				float damageTaken = 2 * owner->totalIntel;
-				actor->destructible->takeDamage(actor, damageTaken);
+				actor->destructible->takeDamage(actor, owner, damageTaken);
 				//engine.damageDone +=  2 * wearer->totalIntel;
 				if (!actor->destructible->isDead()) 
 				{	if(actor == engine.player)
@@ -1614,7 +1614,7 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
 				//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 				float damageTaken = 1;
-				actor->destructible->takeDamage(actor, damageTaken);
+				actor->destructible->takeDamage(actor, owner, damageTaken);
 				//engine.damageDone +=  2 * wearer->totalIntel;
 				if (!actor->destructible->isDead()) {
 					if(actor == engine.player)
