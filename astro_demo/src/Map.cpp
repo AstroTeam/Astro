@@ -2956,48 +2956,67 @@ Actor *Map::createRecord(int x, int y){
 	string line;
 	ifstream myfile ("genericMSG.txt");
 	int id2find = random->getInt(1,8);//1-8 for the numbers avaiable, 1-99 MAX
-	if (myfile.is_open())
+	bool txt = true;
+	if (engine.ctrTer > 0)
 	{
-		//while ( getline (myfile,line) )
-		//{
-		//cout << line << '\n';
-			
-		//}
-		//char c = id2find;
-		//cout << "id to find " << id2find << endl;
-		for(int i = 0; i < id2find; i++)
+		while (!engine.valTer[id2find])
 		{
-			//cout << "line before getline " << line << endl;
-			getline(myfile, line,'@');
-			//cout << "line after getline " << line << endl;
+			id2find = random->getInt(1,8);
 		}
-		
-		//cout << "line before last getline " << line << endl;
-		getline(myfile, line,'@');
-		//cout << "final display " << line << endl;
-		//getline(myfile,line,'@');
-		//int tens = (line[11]-48)*10;
-		//int ones = line[12]-48;
-		//int id = tens+ones;
-		//cout << "line[10] = " << line[11] << endl;
-		//cout << "line[11] = " << line[12] << endl;
-		//cout << "ten's " << tens << endl;
-		//cout << "one's " << ones << endl;
-		//cout << "id found: " << id << endl;
-		//cout << id2find << endl;
-		//getline(myfile,line,'@');
-		//getline(myfile,line,'@');
-		//cout << "about to strcat!" << endl;
-		strcat(nameBuf,line.c_str());
-		//cout << "strcat done" << endl;
-		//cout << line << '\n';
-		myfile.close();
+		engine.ctrTer--;
+		engine.valTer[id2find] = false;
 	}
-	//string s = line.c_str();
-	//std::string str;
-	//const char * message = line.c_str();
-	//cout << message << " message text " << '\n';
-	//cout << "setting it to scroll" << endl;
+	else if (engine.ctrTer == 0)
+	{
+		strcat(nameBuf,"You have found all of the Astro's crew's terminal logs.");
+		txt = false;
+	}
+	
+	if (txt)
+	{
+		if (myfile.is_open())
+		{
+			//while ( getline (myfile,line) )
+			//{
+			//cout << line << '\n';
+				
+			//}
+			//char c = id2find;
+			//cout << "id to find " << id2find << endl;
+			for(int i = 0; i < id2find; i++)
+			{
+				//cout << "line before getline " << line << endl;
+				getline(myfile, line,'@');
+				//cout << "line after getline " << line << endl;
+			}
+			
+			//cout << "line before last getline " << line << endl;
+			getline(myfile, line,'@');
+			//cout << "final display " << line << endl;
+			//getline(myfile,line,'@');
+			//int tens = (line[11]-48)*10;
+			//int ones = line[12]-48;
+			//int id = tens+ones;
+			//cout << "line[10] = " << line[11] << endl;
+			//cout << "line[11] = " << line[12] << endl;
+			//cout << "ten's " << tens << endl;
+			//cout << "one's " << ones << endl;
+			//cout << "id found: " << id << endl;
+			//cout << id2find << endl;
+			//getline(myfile,line,'@');
+			//getline(myfile,line,'@');
+			//cout << "about to strcat!" << endl;
+			strcat(nameBuf,line.c_str());
+			//cout << "strcat done" << endl;
+			//cout << line << '\n';
+			myfile.close();
+		}
+		//string s = line.c_str();
+		//std::string str;
+		//const char * message = line.c_str();
+		//cout << message << " message text " << '\n';
+		//cout << "setting it to scroll" << endl;
+	}
 	scrollOfRecords->ai = new TriggerAi(nameBuf);
 	scrollOfRecords->blocks = false;
 	//cout << "done with record" << endl;

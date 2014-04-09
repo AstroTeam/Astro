@@ -608,6 +608,16 @@ void Engine::init() {
 	engine.gui->jobSelection = 0;
 	engine.gui->roleSelection = 0;
 	
+	//initialize valTer
+	int size = sizeof(valTer);
+	for (int i = 0; i < size;i++)
+	{
+		valTer[i] = true;
+	}
+	ctrTer = 8;//8 is size
+	
+	
+	
 	player->ch = plyrAscii;
 	stairs = new Actor(0,0,'>', "stairs", TCODColor::white);
 	stairs->blocks = false;
