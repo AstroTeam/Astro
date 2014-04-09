@@ -2668,5 +2668,10 @@ void FruitAi::interaction(Actor *owner, Actor *target){
 		} else {
 			engine.gui->message(TCODColor::grey,"Inventory is full.");
 		}
+		if (((FruitAi*)owner->ai)->limit == 0){
+			engine.actors.remove(owner);
+			delete owner;
+		}
+		
 	}
 }
