@@ -149,16 +149,6 @@ void Engine::init() {
 	
 	Actor *equip1 = NULL;
 	
-	//get a teleporter
-	for(int i=0; i<1; i++){
-		Actor *equip1 = new Actor(0,0,'.',"Blinkstone",TCODColor::red);
-		equip1->sort = 2;
-		equip1->blocks = false;
-		equip1->pickable = new Teleporter(20);
-		engine.actors.push(equip1);
-		equip1->pickable->pick(equip1,player);
-	}
-	
 	switch(engine.gui->jobSelection){
 		
 		case 2:
@@ -336,6 +326,16 @@ void Engine::init() {
 			player->role="Explorer";
 			player->job="Merchant";
 			
+			//get a blinkstone
+			for(int i=0; i<1; i++){
+				Actor *equip1 = new Actor(0,0,'.',"Blinkstone",TCODColor::red);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Teleporter(20);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
 			//add flare, for now is generic flare
 			for(int i=0; i<20; i++){
 				equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
@@ -403,6 +403,16 @@ void Engine::init() {
 			player->role="Mercenary";
 			player->job="Assassin";
 			
+			//get blinkstones
+			for(int i=0; i<3; i++){
+				Actor *equip1 = new Actor(0,0,'.',"Blinkstone",TCODColor::red);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Teleporter(20);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
 			//get frag grenades
 			for(int i=0; i<3; i++){
 				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
@@ -447,6 +457,16 @@ void Engine::init() {
 			player->role="Mercenary";
 			player->job="Brute";
 			
+			//get blinkstones
+			for(int i=0; i<3; i++){
+				Actor *equip1 = new Actor(0,0,'.',"Blinkstone",TCODColor::red);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Teleporter(20);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
 			//get frag grenades
 			for(int i=0; i<3; i++){
 				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
@@ -472,6 +492,16 @@ void Engine::init() {
 		case 9:
 			player->role="Mercenary";
 			player->job="Hacker";
+			
+			//get blinkstones
+			for(int i=0; i<7; i++){
+				Actor *equip1 = new Actor(0,0,'.',"Blinkstone",TCODColor::red);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Teleporter(20);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
 			
 			//get frag grenades
 			for(int i=0; i<3; i++){
@@ -935,47 +965,110 @@ void Engine::render()
 
 void Engine::nextLevel() {
 	level++;
-	
-	player->destructible->heal(player->destructible->maxHp/2);
 	gui->message(TCODColor::red,"Gathering your courage, you rush into the station's teleporter, mindful that greater dangers may lurk beyond...");
-	TCODRandom * updateRng = TCODRandom::getInstance();
-	int temp = updateRng->getInt(0,2);
 	
-	//explorers find flares
-	if(player->role[0] == 'E'){
-		if (temp == 0) 
-			gui->message(TCODColor::white,"As an explorer, you discover more flares hidden in your bag that your buggy tablet app didn't tell you about!");
-		else if (temp == 1)
-			gui->message(TCODColor::white,"As an explorer, you suddenly discover more flares hidden in your back pocket!");
-		else
-			gui->message(TCODColor::white,"Flares fall from the ceiling and land on your head! You add them to your inventory.");
-		for(int i=0; i<20; i++){
-				Actor *equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
-				equip1->sort = 2;
-				equip1->blocks = false;
-				equip1->pickable = new Flare(10,5,5);
-				engine.actors.push(equip1);
-				equip1->pickable->pick(equip1,player);
+	if(level != 1) { //tutorial stairs won't heal you if you try to cheese level 2. Also, no duplicate bonus items for doing tutorial
+		player->destructible->heal(player->destructible->maxHp/2);
+		TCODRandom * updateRng = TCODRandom::getInstance();
+		int temp = updateRng->getInt(0,2);
+		
+		//find food near teleporter
+		player->hunger = player->maxHunger > player->hunger + 50? player->hunger + 50 : player->maxHunger;
+		
+		//infantry find grenades
+		if(player->job[0] == 'I'){ 
+			if (temp == 0) 
+				gui->message(TCODColor::white,"As an infantry, you discover more grenades hidden in your bag that your buggy tablet app didn't tell you about!");
+			else if (temp == 1)
+				gui->message(TCODColor::white,"As an infantry, you discover more grenades hidden in your back pocket!");
+			else
+				gui->message(TCODColor::white,"You trip on the teleporter pad and find some grenades! You add them to your inventory.");
+			for(int i=0; i<2; i++){
+					Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
+					equip1->sort = 2;
+					equip1->blocks = false;
+					equip1->pickable = new Fragment(3,12,8);
+					equip1->pickable->value = 55;
+					equip1->pickable->inkValue = 10;
+					engine.actors.push(equip1);
+					equip1->pickable->pick(equip1,player);
+				}
 		}
-	}
-	
-	else if(player->job[0] == 'I'){ //infantry find grenades
-		if (temp == 0) 
-			gui->message(TCODColor::white,"As an infantry, you discover more grenades hidden in your bag that your buggy tablet app didn't tell you about!");
-		else if (temp == 1)
-			gui->message(TCODColor::white,"As an infantry, you discover more grenades hidden in your back pocket!");
-		else
-			gui->message(TCODColor::white,"You trip on the teleporter pad and find some grenades! You add them to your inventory.");
-		for(int i=0; i<2; i++){
-				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
-				equip1->sort = 2;
+		
+		//Medics get a medkit
+		else if(player->job[2] == 'd'){
+			if (temp == 0) 
+				gui->message(TCODColor::white,"As a medic, you notice a rusty medkit by the teleporter! You add it to your inventory.");
+			else if (temp == 1)
+				gui->message(TCODColor::white,"As medic, you suddenly discover a medkit hidden in your back pocket!");
+			else
+				gui->message(TCODColor::white,"A medkit falls from the ceiling and land on your head! You add it to your inventory.");
+			//Give a medkits
+			for(int i=0; i<1; i++){
+				Actor *equip1 = new Actor(0,0,184,"Medkit", TCODColor::white);
+				equip1->sort = 1;
 				equip1->blocks = false;
-				equip1->pickable = new Fragment(3,12,8);
-				equip1->pickable->value = 55;
-				equip1->pickable->inkValue = 10;
+				equip1->pickable = new Healer(20);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
+		}
+		
+		//Quartermasters get some quarters
+		else if(player->job[0] == 'Q'){
+			if (temp == 0) 
+				gui->message(TCODColor::white,"As a quartermaster, you notice a rusty petabitcoins by the teleporter! You add them to your wallet.");
+			else if (temp == 1)
+				gui->message(TCODColor::white,"As a quartermaster, you suddenly discover %d quarters (of a petabitcoin) you forgot about in your back pocket!", (level + 2) * 400);
+			else
+				gui->message(TCODColor::white,"Petabitcoins fall from the ceiling and land on your head! You joyfully add them to your wallet.");
+			//gain 400 * (level + 2) quarters        (...of a PBC)
+			for(int i=0 ; i<(level + 2) ; i++){
+				Actor *equip1 = new Actor(0,0,188,"PetaBitcoins",TCODColor::yellow);
+				equip1->sort = 0;
+				equip1->blocks = false;
+				equip1->pickable = new Coinage(1,100);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+		}
+		
+		//explorers find flares
+		else if(player->role[0] == 'E'){
+			if (temp == 0) 
+				gui->message(TCODColor::white,"As an explorer, you discover more flares hidden in your bag that your buggy tablet app didn't tell you about!");
+			else if (temp == 1)
+				gui->message(TCODColor::white,"As an explorer, you suddenly discover more flares hidden in your back pocket!");
+			else
+				gui->message(TCODColor::white,"Flares fall from the ceiling and land on your head! You add them to your inventory.");
+			for(int i=0; i<20; i++){
+					Actor *equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
+					equip1->sort = 2;
+					equip1->blocks = false;
+					equip1->pickable = new Flare(10,5,5);
+					engine.actors.push(equip1);
+					equip1->pickable->pick(equip1,player);
+			}
+		}
+		
+		//Mercenaries get blinkstones
+		else if(player->role[1] == 'e'){
+			if (temp == 0) 
+				gui->message(TCODColor::white,"As a mercenary, you recognize a pile of devices by the teleporter! You add the blinkstones to your inventory.");
+			else if (temp == 1)
+				gui->message(TCODColor::white,"As mercenary, you suddenly discover blinkstones you forgot were in your back pocket!");
+			else
+				gui->message(TCODColor::white,"Blinkstones fall from the ceiling and land on your head! You add them to your inventory.");
+			//get blinkstones
+			for(int i=0; i<5; i++){
+				Actor *equip1 = new Actor(0,0,'.',"Blinkstone",TCODColor::red);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Teleporter(20);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+		}
 	}
 	
 	delete map;
