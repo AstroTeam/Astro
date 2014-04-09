@@ -31,23 +31,48 @@ void Attacker::attack(Actor *owner, Actor *target) {
 		float damageTaken = 0;
 		float damageRoll1 = (float)TCODRandom::getInstance()->getInt(1,4);
 		float critMult = 2;
+		int hands = 1;
 		if(owner->container->hand1){
 			int minDmg = ((Weapon*)owner->container->hand1->pickable)->minDmg;
 			int maxDmg = ((Weapon*)owner->container->hand1->pickable)->maxDmg;
 			critMult = ((Weapon*)owner->container->hand1->pickable)->critMult;
 			damageRoll1 = (float)TCODRandom::getInstance()->getInt(minDmg,maxDmg);
+			if(((Weapon*)owner->container->hand1->pickable)->wType == Weapon::HEAVY){
+				hands = 2;
+			}
 		}
 		if(roll >= 20){
 			engine.gui->message(TCODColor::red,"CRITICAL HIT!");
-			damageTaken += critMult * (damageRoll1 + owner->totalStr) - target->destructible->totalDR; //save for damage roll
+			damageTaken += (critMult * damageRoll1) + hands * owner->totalStr - target->destructible->totalDR;
 		}
 		else if(roll <= 1){
 			engine.gui->message(TCODColor::lightGrey,"critical miss...");
 			damageTaken += 0;
 		}
 		else if(attackRoll >= target->destructible->totalDodge){
-			damageTaken += damageRoll1 + owner->totalStr - target->destructible->totalDR; //save for damage roll
+			damageTaken += damageRoll1 + hands * owner->totalStr - target->destructible->totalDR;
 		}
+		//HAND2 stuff!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		if(owner->container->hand2 != NULL){
+			int minDmg = ((Weapon*)owner->container->hand2->pickable)->minDmg;
+			int maxDmg = ((Weapon*)owner->container->hand2->pickable)->maxDmg;
+			critMult = ((Weapon*)owner->container->hand2->pickable)->critMult;
+			float damageRoll2 = (float)TCODRandom::getInstance()->getInt(minDmg,maxDmg);
+			roll = TCODRandom::getInstance()->getInt(1,20);
+			attackRoll = roll + owner->totalStr;
+			if(roll >= 20){
+				engine.gui->message(TCODColor::red,"OFFHAND CRITICAL HIT!");
+				damageTaken += critMult * damageRoll2 + ((int)(owner->totalStr/2)) - target->destructible->totalDR;
+			}
+			else if(roll <= 1){
+				engine.gui->message(TCODColor::lightGrey,"offhand critical miss...");
+				damageTaken += 0;
+			}
+			else if(attackRoll >= target->destructible->totalDodge){
+				//engine.gui->message(TCODColor::red,"Offhand Attack");
+				damageTaken += damageRoll2 + (int)(owner->totalStr/2) - target->destructible->totalDR;
+			}
+		}//end of HAND2 stuff!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
 			if (owner->oozing && target->susceptible) {
 				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name,damageTaken + 1);
