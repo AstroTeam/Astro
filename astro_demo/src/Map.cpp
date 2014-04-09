@@ -2076,6 +2076,34 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	 * SETTINGS FOR OTHER ROOMS CAN BE PLACED HERE
 	 *
 	 */
+	int Recx = 0;
+	int Recy = 0;
+	if (roomNum == 2 || roomNum == 4 || roomNum == 6)
+	{
+		Recx = rng->getInt(x1,x2);
+		Recy = rng->getInt(y1,y2);
+		while (!canWalk(Recx,Recy))
+		{
+			Recx = rng->getInt(x1,x2);
+			Recy = rng->getInt(y1,y2);
+		}
+	}
+	if (roomNum == 2)
+	{
+		Actor *r1 = createRecord(Recx, Recy);
+		engine.actors.push(r1);
+	}
+	else if (roomNum == 4)
+	{
+		Actor *r2 = createRecord(Recx, Recy);
+		engine.actors.push(r2);
+	}
+	else if (roomNum == 6)
+	{
+		Actor *r3 = createRecord(Recx, Recy);
+		engine.actors.push(r3);
+	}
+	
 	
 	//placing starting locations
 	if (roomNum == 0) {
@@ -2097,6 +2125,20 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		engine.playerLight->blocks = false;
 		//playerLight->ai->moving = true;
 		engine.sendToBack(engine.playerLight);
+		
+		//Actor *r4 = createRecord(engine.player->x, engine.player->y-1);
+		//engine.actors.push(r4);
+		/*if (true)
+		{
+			cout << "making level messages" << endl;
+			Actor *r1 = createRecord(engine.player->x+1, engine.player->y);
+			engine.actors.push(r1);
+			Actor *r2 = createRecord(engine.player->x+2, engine.player->y);
+			engine.actors.push(r2);
+			Actor *r3 = createRecord(engine.player->x+3, engine.player->y);
+			engine.actors.push(r3); 
+		}*/
+		
 	}
 	//TCODRandom *rng = TCODRandom::getInstance();
 
@@ -3059,7 +3101,44 @@ Actor *Map::createRecord(int x, int y){
 	ifstream myfile(file);
 	//myfile = new ifstream(file);
 	//cout << "file gotten" << endl;
-	int id2find = random->getInt(1,engine.numTer);//1-8 for the numbers avaiable, 1-99 MAX
+	int lvl = engine.level; 
+	//if lvl = 0 NONE
+	//if lvl = 1 (1-3)
+	//if lvl = 2 (4-6)
+	//if lvl = 3 (7-9)
+	//if lvl = 4 (10-12)
+	//if lvl = 5 (13)
+	int maxid = 0;
+	int minid = 0;
+	switch (lvl)
+	{
+		case 0:
+			maxid = 0;
+			minid = 0;
+			break;
+		case 1:
+			maxid = 3;
+			minid = 1;
+			break;
+		case 2:
+			maxid = 6;
+			minid = 4;
+			break;
+		case 3:
+			maxid = 9;
+			minid = 7;
+			break;
+		case 4:
+			maxid = 12;
+			minid = 10;
+			break;
+		case 5:
+			maxid = 13;
+			minid = 13;
+			break;
+		default:break;
+	}
+	int id2find = random->getInt(minid,maxid);//1-8 for the numbers avaiable, 1-99 MAX
 	bool txt = true;
 	//cout << "there are " << engine.ctrTer << " terminals left" << endl;
 	//cout << "ctrTer " << engine.ctrTer << endl;
@@ -3068,7 +3147,7 @@ Actor *Map::createRecord(int x, int y){
 		while (!engine.valTer[id2find-1])
 		{
 			//cout << "id2find: " << id2find << endl;
-			id2find = random->getInt(1,engine.numTer);
+			id2find = random->getInt(minid,maxid);
 		}
 		engine.ctrTer--;
 		engine.valTer[id2find-1] = false;

@@ -617,7 +617,7 @@ void Engine::init() {
 	{
 		valTer[i] = true;
 	}
-	ctrTer = numTer;//13 is size
+	
 	
 	
 	
@@ -627,9 +627,13 @@ void Engine::init() {
 	actors.push(stairs);
 	map = new Map(mapWidth, mapHeight);
 	if (startTutorial) {
+		ctrTer = 0;//13 is size
+		cout << "number of terminals in this level " << ctrTer << endl;
 		map->init(true, Param::TUTORIAL);
 	}
 	else {
+		ctrTer = 3;//13 is size
+		cout << "number of terminals in this level " << ctrTer << endl;
 		map->init(true, Param::GENERIC);
 	}
 	gui->message(TCODColor::red, "Welcome to Astroverius Station! Warning unknown alien life form detected!");
@@ -1107,7 +1111,11 @@ void Engine::nextLevel() {
 	//engine.mapconDec->clear();
 	//create a new map
 	map = new Map(mapWidth,mapHeight);
-	
+	if (engine.level != 5)
+	{
+		ctrTer = 3;                                                  ////set ctrTer
+	}
+	cout << "number of terminals this level " << ctrTer << endl;
 	TCODRandom * levelRng = TCODRandom::getInstance();
 	if (0 == levelRng->getInt(0,8)) {
 		map->init(true, Param::OFFICE_FLOOR);
