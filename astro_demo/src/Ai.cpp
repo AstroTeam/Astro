@@ -2581,8 +2581,8 @@ void GardnerAi::update(Actor *owner)
 	} else {
 		moveCount--;
 	}
-	
-	if (moveCount > 0) {
+	//the Gardner will move towards the player if he is in the garden and is hostile
+	if (moveCount > 0 ||(engine.player->x <= initX2 && engine.player->x >= initX1 && engine.player->y >= initY1 && engine.player->y <= initY2)) {
 		MonsterAi::moveOrAttack(owner, engine.player->x, engine.player->y);
 	} else {
 		moveCount = 0;

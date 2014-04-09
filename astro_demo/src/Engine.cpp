@@ -609,7 +609,7 @@ void Engine::init() {
 	engine.gui->roleSelection = 0;
 	
 	
-	numTer = 35;////////////////////////////////////////////////////////////////SET NUMBER OF TERMINALS
+	numTer = 13;////////////////////////////////////////////////////////////////SET NUMBER OF TERMINALS
 	//valTer = new bool[numTer];  
 	//initialize valTer
 	int size = sizeof(valTer);
@@ -617,7 +617,7 @@ void Engine::init() {
 	{
 		valTer[i] = true;
 	}
-	ctrTer = numTer;//8 is size
+	ctrTer = numTer;//13 is size
 	
 	
 	
@@ -683,6 +683,12 @@ void Engine::save() {
 		//finally the message log
 		std::cout << "saving gui " <<std::endl;
 		gui->save(zip);
+		zip.putInt(numTer);
+		zip.putInt(ctrTer);
+		for (int i = 0; i < numTer; i++) {
+			zip.putInt(valTer[i]);
+			std::cout << "valTer " << valTer[i] << std::endl;
+		}
 		zip.saveToFile("game.sav");
 	}
 }
@@ -814,6 +820,12 @@ void Engine::load(bool pause) {
 		//finally, the message log
 		std::cout << "got to gui " << std::endl;
 		gui->load(zip);
+		numTer = zip.getInt();
+		ctrTer = zip.getInt();
+		for (int i = 0; i < numTer; i++) {
+			valTer[i] = zip.getInt();
+			std::cout << "valTer " << valTer[i] << std::endl;
+		}
 		std::cout << "got past gui " <<std::endl;
 		gui->message(TCODColor::pink,"loaded");
 		gameStatus = STARTUP;

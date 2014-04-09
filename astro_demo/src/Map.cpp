@@ -305,6 +305,7 @@ void Map::spawnTutorial() {
 	int y1 = -20 +engine.mapHeight-12;
 	int y2 = -20 +engine.mapHeight-7;
 	cout << "creating tutorial room"<< endl;
+	
 	for (int tilex = x1; tilex <=x2; tilex++) {//first room
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
@@ -320,7 +321,7 @@ void Map::spawnTutorial() {
 	"Most items can be interacted with by simply moving into them by pressing the corresponding movement key whilst being adjacent to it. (Like these automated terminals)");
 	triggerTileI->blocks = false; 
 	engine.actors.push(triggerTileI);
-
+	cout << "got past first terminal" << endl;
 	//make FOV terminal
 	Actor *triggerTileFov = new Actor(x2-1,y2-1, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileFov->ai = new TriggerAi(  
@@ -386,7 +387,7 @@ void Map::spawnTutorial() {
 	triggerTileLR->blocks = false;
 	engine.actors.push(triggerTileLR);
 	
-	
+	cout << "got past light room terminal" << endl;
 	
 	//add server and console
 	tiles[x2+y1*engine.mapWidth].tileType = Param::SERVER;
@@ -600,6 +601,30 @@ void Map::spawnTutorial() {
 		dummy->destructible = new MonsterDestructible(10,0,0,1);
 		engine.actors.push(dummy);
 	}
+	//melee weapons for testing
+	/*Actor *combatKnife = new Actor(x,y,169,"Combat Knife",TCODColor::white);
+	combatKnife->blocks = false;
+	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,3);
+	combatKnife->pickable = new Weapon(1,4,3,Weapon::LIGHT,0,Equipment::HAND1,bonus,requirement);
+	combatKnife->sort = 4;*/
+	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,3);
+	Actor *knife1 = new Actor(x1+6,y1+1,169,"Standard Knife",TCODColor::white);
+	knife1->blocks = false;
+	knife1->pickable = new Weapon(1,4,3,Weapon::LIGHT,0,Equipment::HAND1,bonus,requirement);
+	knife1->sort = 4;
+	engine.actors.push(knife1);
+	Actor *knife2 = new Actor(x1+6,y1+3,169,"Offhand Knife",TCODColor::white);
+	knife2->blocks = false;
+	knife2->pickable = new Weapon(1,4,3,Weapon::LIGHT,0,Equipment::HAND2,bonus,requirement);
+	knife2->sort = 4;
+	engine.actors.push(knife2);
+	Actor *knife3 = new Actor(x1+6,y1+5,169,"Zweihander",TCODColor::white);
+	knife3->blocks = false;
+	knife3->pickable = new Weapon(1,8,3,Weapon::HEAVY,0,Equipment::HAND1,bonus,requirement);
+	knife3->sort = 4;
+	engine.actors.push(knife3);
 	
 	for (int tiley = y1; tiley <= y2; tiley+=1) {
 		Actor *MLR = createMLR(x1+4,tiley,false);
@@ -2981,22 +3006,28 @@ Actor *Map::createRecord(int x, int y){
 	//FINALchar  * msg = temp[random->getInt(0,4)];
 	//cout << "msg recieved" << endl;
 	//scrollOfRecords->ai = new TriggerAi( ">>102:329:32<< This is an example recording, the ship has become madness, I have had headaches every day for a week, the crew have begun attacking each other without cause");
+	//cout << "getting file" << endl;
 	string line;
-	char * file = new char[30];
-	memset(file,0,30);
-	strcat(file,"terminals/ter_generic2.txt");
+	char * file = new char[35];
+	memset(file,0,35);
+	strcat(file,"terminals/questTerminals.txt");
 	ifstream myfile(file);
 	//myfile = new ifstream(file);
+	//cout << "file gotten" << endl;
 	int id2find = random->getInt(1,engine.numTer);//1-8 for the numbers avaiable, 1-99 MAX
 	bool txt = true;
+	//cout << "there are " << engine.ctrTer << " terminals left" << endl;
+	//cout << "ctrTer " << engine.ctrTer << endl;
 	if (engine.ctrTer > 0)
 	{
-		while (!engine.valTer[id2find])
+		while (!engine.valTer[id2find-1])
 		{
+			//cout << "id2find: " << id2find << endl;
 			id2find = random->getInt(1,engine.numTer);
 		}
 		engine.ctrTer--;
-		engine.valTer[id2find] = false;
+		engine.valTer[id2find-1] = false;
+		//cout << "id2find final: " << id2find << endl;
 	}
 	else if (engine.ctrTer == 0)
 	{
@@ -3046,7 +3077,7 @@ Actor *Map::createRecord(int x, int y){
 		//string s = line.c_str();
 		//std::string str;
 		//const char * message = line.c_str();
-		//cout << message << " message text " << '\n';
+		//cout << nameBuf << " message text " << '\n';
 		//cout << "setting it to scroll" << endl;
 	}
 	scrollOfRecords->ai = new TriggerAi(nameBuf);
