@@ -608,7 +608,9 @@ void Map::spawnTutorial() {
 	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,3);
 	combatKnife->pickable = new Weapon(1,4,3,Weapon::LIGHT,0,Equipment::HAND1,bonus,requirement);
 	combatKnife->sort = 4;*/
-	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+	
+	
+	/*ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
 	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,3);
 	Actor *knife1 = new Actor(x1+6,y1+1,169,"Standard Knife",TCODColor::white);
 	knife1->blocks = false;
@@ -624,11 +626,11 @@ void Map::spawnTutorial() {
 	knife3->blocks = false;
 	knife3->pickable = new Weapon(1,8,3,Weapon::HEAVY,0,Equipment::HAND1,bonus,requirement);
 	knife3->sort = 4;
-	engine.actors.push(knife3);
+	engine.actors.push(knife3);*/
 	
 	//cout << "got to records creation" << endl;
-	/*for (int tiley = y1; tiley <= y2; tiley+=1) {
-		Actor *MLR = createMLR(x1+4,tiley,false);
+	for (int tiley = y1; tiley <= y2; tiley+=1) {
+		/*Actor *MLR = createMLR(x1+4,tiley,false);
 		engine.actors.push(MLR);
 		engine.sendToBack(MLR);
 
@@ -656,9 +658,19 @@ void Map::spawnTutorial() {
 		Actor *record3 = createRecord(x1+7,tiley);
 		//cout << "about to push " << record << endl;
 		engine.actors.push(record3);
-		//cout << "done with one row" << endl;
+		//cout << "done with one row" << endl;*/
+		Actor *MLR = createCombatKnife(x1+4,tiley);
+		engine.actors.push(MLR);
+		engine.sendToBack(MLR);
+
+		Actor *MLR2 = createCombatKnife(x1+5,tiley);
+		engine.actors.push(MLR2);
+		engine.sendToBack(MLR2);
 		
-	}*/
+		Actor *MLR3 = createCombatKnife(x1+6,tiley);
+		engine.actors.push(MLR3);
+		engine.sendToBack(MLR3);
+	}
 	//cout << "got past records creation" << endl;
 	
 	//Actor *record = createRecord(x1+8,y1);
@@ -3908,15 +3920,198 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 	return MLR;
 }
 Actor *Map::createCombatKnife(int x, int y){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
 	Actor *combatKnife = new Actor(x,y,169,"Combat Knife",TCODColor::white);
 	combatKnife->blocks = false;
-	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,2);
 	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,3);
+	TCODRandom *random = TCODRandom::getInstance();
+	TCODColor col = TCODColor::white;
+	Equipment::SlotType *slot = new Equipment::SlotType(Equipment::HAND1);
+	Weapon::WeaponType *wpn = new Weapon::WeaponType(Weapon::LIGHT);
+	int goodbad = random->getInt(1,3);
+	int hand = random->getInt(1,3);
+	int weight = random->getInt(1,3);
+	int name = random->getInt(1,5);
+	int flawName = random->getInt(1,5);
+	int strBUF = 1;
+	int reqBUF = 3;
+	int minDmg = 1;
+	int maxDmg = 4;
+	switch (goodbad)
+	{
+		case 1://bad
+			strBUF -= 1;
+			switch (flawName)
+			{
+				case 1:
+					strcat(nameBuf,"Weak ");
+					break;
+				case 2:
+					strcat(nameBuf,"Bent ");
+					break;
+				case 3:
+					strcat(nameBuf,"Dull ");
+					break;
+				case 4:
+					strcat(nameBuf,"Old ");
+					break;
+				case 5:
+					strcat(nameBuf,"Rusty ");
+					break;
+				default:break;
+			}
+			col = TCODColor::lighterRed;
+			break;
+		case 2://average
+			switch (flawName)
+			{
+				case 1:
+					strcat(nameBuf,"Average ");
+					break;
+				case 2:
+					strcat(nameBuf,"Normal ");
+					break;
+				case 3:
+					strcat(nameBuf,"Fine ");
+					break;
+				case 4:
+				case 5:
+					break;
+				default:break;
+			}
+			break;
+		case 3://good
+			strBUF += 1;
+			switch (flawName)
+			{
+				case 1:
+					strcat(nameBuf,"New ");
+					break;
+				case 2:
+					strcat(nameBuf,"Strong ");
+					break;
+				case 3:
+					strcat(nameBuf,"Gleaming ");
+					break;
+				case 4:
+					strcat(nameBuf,"Sharp ");
+					break;
+				case 5:
+					strcat(nameBuf,"Perfect ");
+					break;
+				default:break;
+			}
+			col = TCODColor::lighterGreen;
+			break;
+		default:break;
+	}
+	switch(weight)
+	{
+		case 1://light
+			reqBUF -= 1;
+			minDmg += 1;//faster, so more reliable
+			break;
+		case 2://average
+			break;
+		case 3://heavy
+			reqBUF += 1;
+			maxDmg += 1;//heavier, so more max
+			break;
+		default:break;
+		
+	}
+	switch (hand)
+	{
+		case 1://right hand
+			minDmg += 1;//faster, so more reliable
+			bonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+1);//2 is "average"
+			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF);//3 is "average"
+			slot = new Equipment::SlotType(Equipment::HAND1);
+			wpn = new Weapon::WeaponType(Weapon::LIGHT);
+			switch (name)
+			{
+				case 1:
+					strcat(nameBuf,"Knife");
+					break;
+				case 2:
+					strcat(nameBuf,"Dagger");
+					break;
+				case 3:
+					strcat(nameBuf,"Shank");
+					break;
+				case 4:
+					strcat(nameBuf,"Pipe");
+					break;
+				case 5:
+					strcat(nameBuf,"Crowbar");
+					break;
+				default:break;
+			}
+			
+			break;
+		case 2://offhand
+			minDmg += 1;//faster, so more reliable
+			bonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+1);//2 is "average"
+			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF);//3 is "average"
+			slot = new Equipment::SlotType(Equipment::HAND2);
+			wpn = new Weapon::WeaponType(Weapon::LIGHT);
+			switch (name)
+			{
+				case 1:
+					strcat(nameBuf,"Wrench(H2)");
+					break;
+				case 2:
+					strcat(nameBuf,"Knife(H2)");
+					break;
+				case 3:
+					strcat(nameBuf,"Saw(H2)");
+					break;
+				case 4:
+					strcat(nameBuf,"Machete(H2)");
+					break;
+				case 5:
+					strcat(nameBuf,"KaBar(H2)");
+					break;
+				default:break;
+			}
+			break;
+		case 3://TWO HANDED
+			maxDmg += 1;//heavier, so more max
+			bonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+4);//5 is "average" (1 more than 2 average 1 handers)
+			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF+4);//7 is "average"
+			slot = new Equipment::SlotType(Equipment::HAND1);
+			wpn = new Weapon::WeaponType(Weapon::HEAVY);
+			switch (name)
+			{
+				case 1:
+					strcat(nameBuf,"Sword");
+					break;
+				case 2:
+					strcat(nameBuf,"Fire-Axe");
+					break;
+				case 3:
+					strcat(nameBuf,"Large Pipe");
+					break;
+				case 4:
+					strcat(nameBuf,"Auto-Saw");
+					break;
+				case 5:
+					strcat(nameBuf,"Makeshift Morningstar");
+					break;
+				default:break;
+			}
+			break;
+		default:break;
+	}
+	combatKnife->name = nameBuf;
 	//combatKnife->pickable = new Equipment(0,Equipment::HAND1,bonus,requirement);
-	combatKnife->pickable = new Weapon(1,4,3,Weapon::LIGHT,0,Equipment::HAND1,bonus,requirement);
+	combatKnife->pickable = new Weapon(minDmg,maxDmg,3,*wpn,0,*slot,bonus,requirement);
 	combatKnife->pickable->value = 100;
 	combatKnife->pickable->inkValue = 10;
 	combatKnife->sort = 4;
+	combatKnife->col = col;
 	return combatKnife;
 }
 Actor *Map::createBatteryPack(int x,int y){
