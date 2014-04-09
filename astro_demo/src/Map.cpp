@@ -3403,14 +3403,17 @@ Actor *Map::createMylarVest(int x, int y, bool isVend){
 					case 1:
 						strcat(nameBuf,"Tattered ");
 						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					case 2:
 						strcat(nameBuf,"Worn ");
 						bonus = new ItemBonus(ItemBonus::HEALTH,25);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					case 3:
 						strcat(nameBuf,"Ruined ");
 						bonus = new ItemBonus(ItemBonus::NOBONUS,0);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					default:break;
 				}
@@ -3426,6 +3429,7 @@ Actor *Map::createMylarVest(int x, int y, bool isVend){
 					case 0:
 						strcat(nameBuf,"Durable ");
 						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,3);
 						break;
 					case 1:
 						strcat(nameBuf,"Useful ");
@@ -3435,6 +3439,7 @@ Actor *Map::createMylarVest(int x, int y, bool isVend){
 					case 2:
 						strcat(nameBuf,"Cheap ");
 						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,3);
 						break;
 					default:break;
 				}
@@ -3447,18 +3452,22 @@ Actor *Map::createMylarVest(int x, int y, bool isVend){
 					case 1:
 						strcat(nameBuf,"Reinforced ");
 						bonus = new ItemBonus(ItemBonus::STRENGTH,3);
+						requirement = new ItemReq(ItemReq::STRENGTH,5);
 						break;
 					case 2:
 						strcat(nameBuf,"Tough ");
 						bonus = new ItemBonus(ItemBonus::DR,4);
+						requirement = new ItemReq(ItemReq::DEXTERITY,5);
 						break;
 					case 3:
 						strcat(nameBuf,"High Tech ");
 						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,2);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,5);
 						break;
 					case 4:
 						strcat(nameBuf,"Reliable ");
 						bonus = new ItemBonus(ItemBonus::HEALTH,50);
+						requirement = new ItemReq(ItemReq::DEXTERITY,4);
 						break;
 					default:break;
 				}
@@ -3718,6 +3727,7 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
 	//min damage, max damage, critMult, 
 	ItemBonus *bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,4);
 	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
 	int minDmg = 1;
 	int maxDmg = 6;
@@ -3879,7 +3889,6 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	MLR->blocks = false;
 	MLR->name = nameBuf;
-	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,4);
 	//MLR->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
 	//1 = min damage, 6 = max damage, 2 is crit mult, RANGED, 0 = not equipped,RANGED, bonus, req
 	MLR->pickable = new Weapon(minDmg,maxDmg,critMult,Weapon::RANGED,0,Equipment::RANGED,bonus,requirement);
