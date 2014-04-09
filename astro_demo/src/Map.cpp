@@ -1288,7 +1288,7 @@ Actor* Map::createConsole(int x, int y)
 void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,475);
+	int dice = rng->getInt(0,515);
 	if (dice < 40) {
 		//create a health potion
 		Actor *healthPotion = createHealthPotion(x,y);
@@ -1334,7 +1334,12 @@ void Map::addItem(int x, int y, RoomType roomType) {
 		Actor *scrollOfFragging = createFrag(x,y);
 		engine.actors.push(scrollOfFragging);
 		engine.sendToBack(scrollOfFragging);
-	}else if(dice<40+40+40+15+15+5+40+40+40+100) {
+	}else if(dice< 40+40+40+15+15+5+40+40+40+40){
+		//create a scroll of drunkeness
+		Actor *scrollOfDrunkeness = createAlcohol(x,y);
+		engine.actors.push(scrollOfDrunkeness);
+		engine.sendToBack(scrollOfDrunkeness);
+	}else if(dice<40+40+40+15+15+5+40+40+40+40+100) {
 		Actor *stackOfFood = createFood(x,y);
 		engine.actors.push(stackOfFood);
 		engine.sendToBack(stackOfFood);
