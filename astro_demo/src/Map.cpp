@@ -2640,7 +2640,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 			for(int i = 0; i < owner->container->size; i++){
 				int rndA2 = rng->getInt(0,100);
 				if(rndA2 > 45){
-					int rnd = rng->getInt(0,120);
+					int rnd = rng->getInt(0,200);
 					if (rnd < 30) {
 						//create a health potion
 						Actor *healthPotion = createHealthPotion(0,0);
@@ -2656,11 +2656,26 @@ void Map::generateRandom(Actor *owner, int ascii){
 						Actor *scrollOfFireball = createFireBomb(0,0);
 						engine.actors.push(scrollOfFireball);
 						scrollOfFireball->pickable->pick(scrollOfFireball,owner);
-					}else if(rnd < 10+30+20+20){
+					}else if(rnd < 10+30+20+30){
 						//create a pair of mylar boots
 						Actor *myBoots = createMylarBoots(0,0,false);
 						engine.actors.push(myBoots);
 						myBoots->pickable->pick(myBoots,owner);
+					}else if(rnd < 10+30+20+30+30){
+						//create a pair of mylar greaves
+						Actor *myGreaves = createMylarGreaves(0,0,false);
+						engine.actors.push(myGreaves);
+						myGreaves->pickable->pick(myGreaves,owner);
+					}else if(rnd < 10+30+20+30+30+20){
+						//create a mylar vest
+						Actor *myVest = createMylarVest(0,0,false);
+						engine.actors.push(myVest);
+						myVest->pickable->pick(myVest,owner);
+					}else if(rnd < 10+30+20+30+30+20+30){
+						//create a mylar cap
+						Actor *myCap = createMylarCap(0,0,false);
+						engine.actors.push(myCap);
+						myCap->pickable->pick(myCap,owner);
 					}else{
 						//create a scroll of confusion
 						Actor *scrollOfConfusion = createFlashBang(0,0);
@@ -3221,7 +3236,7 @@ Actor *Map::createMylarGreaves(int x, int y, bool isVend){
 				switch(max)
 				{
 					case 0:
-						strcat(nameBuf,"Durable  ");
+						strcat(nameBuf,"Durable ");
 						bonus = new ItemBonus(ItemBonus::STRENGTH,1);
 						break;
 					case 1:
@@ -3330,7 +3345,7 @@ Actor *Map::createMylarVest(int x, int y, bool isVend){
 				switch(max)
 				{
 					case 0:
-						strcat(nameBuf,"Durable  ");
+						strcat(nameBuf,"Durable ");
 						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
 						break;
 					case 1:
@@ -3441,7 +3456,7 @@ Actor *Map::createMylarCap(int x, int y, bool isVend){
 				switch(max)
 				{
 					case 0:
-						strcat(nameBuf,"Durable  ");
+						strcat(nameBuf,"Durable ");
 						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
 						requirement = new ItemReq(ItemReq::STRENGTH,3);
 						break;
@@ -3555,7 +3570,7 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 				switch(max)
 				{
 					case 0:
-						strcat(nameBuf,"Durable  ");
+						strcat(nameBuf,"Durable ");
 						bonus = new ItemBonus(ItemBonus::HEALTH,25);
 						break;
 					case 1:
