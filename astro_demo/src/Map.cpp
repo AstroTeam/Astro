@@ -626,24 +626,24 @@ void Map::spawnTutorial() {
 	knife3->sort = 4;
 	engine.actors.push(knife3);
 	
-	cout << "got to records creation" << endl;
-	for (int tiley = y1; tiley <= y2; tiley+=1) {
+	//cout << "got to records creation" << endl;
+	/*for (int tiley = y1; tiley <= y2; tiley+=1) {
 		Actor *MLR = createMLR(x1+4,tiley,false);
 		engine.actors.push(MLR);
 		engine.sendToBack(MLR);
 
-		/*Actor *MLR2 = createMLR(x1+5,tiley,false);
+		Actor *MLR2 = createMLR(x1+5,tiley,false);
 		engine.actors.push(MLR2);
 		engine.sendToBack(MLR2);
 		Actor *MLR3 = createMLR(x1+6,tiley,false);
 		engine.actors.push(MLR3);
-		engine.sendToBack(MLR3);*/
-		/*Actor *booze = createAlcohol(x1+5,tiley);
+		engine.sendToBack(MLR3);
+		Actor *booze = createAlcohol(x1+5,tiley);
 		engine.actors.push(booze);
 		Actor *booze2 = createAlcohol(x1+6,tiley);
 		engine.actors.push(booze2);		
 		Actor *booze3 = createAlcohol(x1+7,tiley);
-		engine.actors.push(booze3);*/
+		engine.actors.push(booze3);
 		//cout << "creating (" << x1+5 << "," << tiley << ")" << endl;
 		Actor *record = createRecord(x1+5,tiley);
 		//cout << "about to push " << record << endl;
@@ -658,8 +658,8 @@ void Map::spawnTutorial() {
 		engine.actors.push(record3);
 		//cout << "done with one row" << endl;
 		
-	}
-	cout << "got past records creation" << endl;
+	}*/
+	//cout << "got past records creation" << endl;
 	
 	//Actor *record = createRecord(x1+8,y1);
 	//engine.actors.push(record);

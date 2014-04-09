@@ -12,10 +12,18 @@ namespace Param {
 		GENERATOR, //done - can turn on power, not yet though
 		SERVER,    //done - can look at a map of deck, not yet though
 		KITCHEN,   //done - drops food from food processors, can go into refrigerators, not yet though, steal items, frozen people come for you
-		MESSHALL,  //to-do - add tables and trash cans that drop items maybe?
-		ARMORY,    //to-do - add gun racks and security bots and glass cases, locked door?  need to kill security bot to get in?
-		OBSERVATORY, //to-do - breakable floor, no oxygen
-		HYDROPONICS, //to-do - grass, spawns food in garden
+		MESSHALL,  //done - add tables and trash cans that drop items maybe?
+		ARMORY,    //done* - add gun racks and security bots and glass cases, locked door?  need to kill security bot to get in?
+				   //need to finish vaults
+		OBSERVATORY, //done - breakable floor, no oxygen
+		HYDROPONICS, //done - grass, spawns food in garden
+		//PRIORITY//
+		//BAR - spawns alcohol/drugs
+		//DEFENDED - spawns companions
+		//INFECTED - spawns lot of infection.  infected equipment?
+		
+		
+		////
 		//lobby - stair room with seating
 		//cult rooms - blood everywhere, crazy cult enemies that have high str, low hp
 		//defended rooms - friendly marines inside, give you a gun and ammo, have a medic who will help you? scientist give you tech
