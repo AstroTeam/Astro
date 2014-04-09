@@ -609,7 +609,7 @@ void Engine::init() {
 	engine.gui->roleSelection = 0;
 	
 	
-	numTer = 8;////////////////////////////////////////////////////////////////SET NUMBER OF TERMINALS
+	numTer = 35;////////////////////////////////////////////////////////////////SET NUMBER OF TERMINALS
 	//valTer = new bool[numTer];  
 	//initialize valTer
 	int size = sizeof(valTer);

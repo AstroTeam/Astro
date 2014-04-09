@@ -20,7 +20,7 @@ public:
 	Map *map;
 	//Map *mapCpy;
 	//Renderer *rend;
-	bool valTer[8];        //SAVE ME GARRETT
+	bool valTer[35];        //SAVE ME GARRETT
 	int ctrTer;            //SAVE ME GARRETT
 	int numTer;
 	

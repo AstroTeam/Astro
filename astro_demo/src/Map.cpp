@@ -2954,7 +2954,11 @@ Actor *Map::createRecord(int x, int y){
 	//cout << "msg recieved" << endl;
 	//scrollOfRecords->ai = new TriggerAi( ">>102:329:32<< This is an example recording, the ship has become madness, I have had headaches every day for a week, the crew have begun attacking each other without cause");
 	string line;
-	ifstream myfile ("genericMSG.txt");
+	char * file = new char[30];
+	memset(file,0,30);
+	strcat(file,"terminals/ter_generic2.txt");
+	ifstream myfile(file);
+	//myfile = new ifstream(file);
 	int id2find = random->getInt(1,engine.numTer);//1-8 for the numbers avaiable, 1-99 MAX
 	bool txt = true;
 	if (engine.ctrTer > 0)
