@@ -588,6 +588,30 @@ void Map::spawnTutorial() {
 		dummy->destructible = new MonsterDestructible(10,0,0,1);
 		engine.actors.push(dummy);
 	}
+	//melee weapons for testing
+	/*Actor *combatKnife = new Actor(x,y,169,"Combat Knife",TCODColor::white);
+	combatKnife->blocks = false;
+	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,3);
+	combatKnife->pickable = new Weapon(1,4,3,Weapon::LIGHT,0,Equipment::HAND1,bonus,requirement);
+	combatKnife->sort = 4;*/
+	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,3);
+	Actor *knife1 = new Actor(x1+6,y1+1,169,"Standard Knife",TCODColor::white);
+	knife1->blocks = false;
+	knife1->pickable = new Weapon(1,4,3,Weapon::LIGHT,0,Equipment::HAND1,bonus,requirement);
+	knife1->sort = 4;
+	engine.actors.push(knife1);
+	Actor *knife2 = new Actor(x1+6,y1+3,169,"Offhand Knife",TCODColor::white);
+	knife2->blocks = false;
+	knife2->pickable = new Weapon(1,4,3,Weapon::LIGHT,0,Equipment::HAND2,bonus,requirement);
+	knife2->sort = 4;
+	engine.actors.push(knife2);
+	Actor *knife3 = new Actor(x1+6,y1+5,169,"Zweihander",TCODColor::white);
+	knife3->blocks = false;
+	knife3->pickable = new Weapon(1,8,3,Weapon::HEAVY,0,Equipment::HAND1,bonus,requirement);
+	knife3->sort = 4;
+	engine.actors.push(knife3);
 	//fence
 	int batteries = 0;
 	for (int tiley = y1; tiley <= y2; tiley++) {
