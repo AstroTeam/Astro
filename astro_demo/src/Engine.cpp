@@ -326,12 +326,12 @@ void Engine::init() {
 			player->role="Explorer";
 			player->job="Merchant";
 			
-			//get a blinkstone
+			//get a Blink Grenade
 			for(int i=0; i<1; i++){
-				Actor *equip1 = new Actor(0,0,'.',"Blinkstone",TCODColor::red);
+				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(20);
+				equip1->pickable = new Teleporter(4);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -403,12 +403,12 @@ void Engine::init() {
 			player->role="Mercenary";
 			player->job="Assassin";
 			
-			//get blinkstones
+			//get Blink Grenades
 			for(int i=0; i<3; i++){
-				Actor *equip1 = new Actor(0,0,'.',"Blinkstone",TCODColor::red);
+				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(20);
+				equip1->pickable = new Teleporter(4);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -457,12 +457,12 @@ void Engine::init() {
 			player->role="Mercenary";
 			player->job="Brute";
 			
-			//get blinkstones
+			//get Blink Grenades
 			for(int i=0; i<3; i++){
-				Actor *equip1 = new Actor(0,0,'.',"Blinkstone",TCODColor::red);
+				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(20);
+				equip1->pickable = new Teleporter(4);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -493,12 +493,12 @@ void Engine::init() {
 			player->role="Mercenary";
 			player->job="Hacker";
 			
-			//get blinkstones
+			//get Blink Grenades
 			for(int i=0; i<7; i++){
-				Actor *equip1 = new Actor(0,0,'.',"Blinkstone",TCODColor::red);
+				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(20);
+				equip1->pickable = new Teleporter(4);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -981,7 +981,7 @@ void Engine::nextLevel() {
 	gui->message(TCODColor::red,"Gathering your courage, you rush into the station's teleporter, mindful that greater dangers may lurk beyond...");
 	
 	if(level != 1) { //tutorial stairs won't heal you if you try to cheese level 2. Also, no duplicate bonus items for doing tutorial
-		player->destructible->heal(player->destructible->maxHp/2);
+		player->destructible->heal((int)player->destructible->maxHp/2);
 		TCODRandom * updateRng = TCODRandom::getInstance();
 		int temp = updateRng->getInt(0,2);
 		
@@ -1064,20 +1064,20 @@ void Engine::nextLevel() {
 			}
 		}
 		
-		//Mercenaries get blinkstones
+		//Mercenaries get Blink Grenades
 		else if(player->role[1] == 'e'){
 			if (temp == 0) 
-				gui->message(TCODColor::white,"As a mercenary, you recognize a pile of devices by the teleporter! You add the blinkstones to your inventory.");
+				gui->message(TCODColor::white,"As a mercenary, you recognize a pile of devices by the teleporter! You add the Blink Grenades to your inventory.");
 			else if (temp == 1)
-				gui->message(TCODColor::white,"As mercenary, you suddenly discover blinkstones you forgot were in your back pocket!");
+				gui->message(TCODColor::white,"As mercenary, you suddenly discover Blink Grenades you forgot were in your back pocket!");
 			else
-				gui->message(TCODColor::white,"Blinkstones fall from the ceiling and land on your head! You add them to your inventory.");
-			//get blinkstones
+				gui->message(TCODColor::white,"Blink Grenades fall from the ceiling and land on your head! You add them to your inventory.");
+			//get Blink Grenades
 			for(int i=0; i<5; i++){
-				Actor *equip1 = new Actor(0,0,'.',"Blinkstone",TCODColor::red);
+				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(20);
+				equip1->pickable = new Teleporter(4);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}

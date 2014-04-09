@@ -977,7 +977,7 @@ bool Teleporter::use(Actor *owner, Actor *wearer) {
 		"or hit escape to cancel.");
 	int x = engine.player->x;
 	int y = engine.player->y;
-	if (!engine.pickATile(&x,&y, 20, 0)) {
+	if (!engine.pickATile(&x,&y, range, 0)) {
 		return false;
 	}
 	//teleport if not blocked
