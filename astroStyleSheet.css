@@ -1,0 +1,66 @@
+html{
+	overflow-x: hidden;
+}
+body
+{
+top: 0;
+bottom: 0;
+left: 0;
+right: 0;
+background-color:#000000;
+font-family: 'Roboto', sans-serif;
+position: relative;
+margin 0px;
+}
+h
+{
+text-align:center;
+
+}
+h1
+{
+color:green;
+text-decoration: none;
+text-align:center;
+font-family: 'Roboto', sans-serif;
+font-size:40px;
+}
+nav
+{
+color:green;
+text-align:center;
+font-family: 'Roboto', sans-serif;
+font-size:20px;
+}
+p
+{
+color:white;
+text-align:justify;
+font-size:20px;
+display:  block;
+margin-left: 300px;
+margin-right: 300px;
+}
+
+
+
+/*Ordering of these 4 matters*/
+nav a:link 
+{
+color:ForestGreen;
+}      /* unvisited link */
+nav a:visited 
+{
+color:GoldenRod ;
+}  /* visited link */
+nav a:hover 
+{
+color:DarkMagenta ;
+}  /* mouse over link */
+nav a:active 
+{
+color:#0000FF;
+}  /* selected link */
+a{
+	text-decoration: none;
+}
