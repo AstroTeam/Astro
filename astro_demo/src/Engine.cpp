@@ -608,13 +608,16 @@ void Engine::init() {
 	engine.gui->jobSelection = 0;
 	engine.gui->roleSelection = 0;
 	
+	
+	numTer = 8;////////////////////////////////////////////////////////////////SET NUMBER OF TERMINALS
+	//valTer = new bool[numTer];  
 	//initialize valTer
 	int size = sizeof(valTer);
 	for (int i = 0; i < size;i++)
 	{
 		valTer[i] = true;
 	}
-	ctrTer = 8;//8 is size
+	ctrTer = numTer;//8 is size
 	
 	
 	

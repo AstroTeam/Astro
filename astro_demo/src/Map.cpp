@@ -634,8 +634,8 @@ void Map::spawnTutorial() {
 		
 	}
 	
-	Actor *record = createRecord(x1+8,y1);
-	engine.actors.push(record);
+	//Actor *record = createRecord(x1+8,y1);
+	//engine.actors.push(record);
 	//fence
 	int batteries = 0;
 	for (int tiley = y1; tiley <= y2; tiley++) {
@@ -2955,13 +2955,13 @@ Actor *Map::createRecord(int x, int y){
 	//scrollOfRecords->ai = new TriggerAi( ">>102:329:32<< This is an example recording, the ship has become madness, I have had headaches every day for a week, the crew have begun attacking each other without cause");
 	string line;
 	ifstream myfile ("genericMSG.txt");
-	int id2find = random->getInt(1,8);//1-8 for the numbers avaiable, 1-99 MAX
+	int id2find = random->getInt(1,engine.numTer);//1-8 for the numbers avaiable, 1-99 MAX
 	bool txt = true;
 	if (engine.ctrTer > 0)
 	{
 		while (!engine.valTer[id2find])
 		{
-			id2find = random->getInt(1,8);
+			id2find = random->getInt(1,engine.numTer);
 		}
 		engine.ctrTer--;
 		engine.valTer[id2find] = false;
