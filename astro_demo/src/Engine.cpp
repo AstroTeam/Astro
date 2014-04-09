@@ -56,35 +56,6 @@ void Engine::term() {
 void Engine::init() {
 	engine.killCount = 0;
 	
-	bool choice_made = false;
-	bool first = true;
-	bool startTutorial = false;
-	while (!choice_made) 
-	{
-		if (first) {
-			TCODConsole::flush();
-		}
-		engine.gui->menu.clear();
-		engine.gui->menu.addItem(Menu::TUTORIAL_NO, "Skip the tutorial.");
-		engine.gui->menu.addItem(Menu::TUTORIAL_YES, "Begin game with tutorial.");
-		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::TUTORIAL_SELECT);
-		switch (menuItem) {
-			case Menu::TUTORIAL_NO:
-				choice_made = true;
-				break;
-			case Menu::TUTORIAL_YES:
-				startTutorial = true;	
-				choice_made = true;
-				break;
-			case Menu::EXIT :
-				choice_made = true;
-				break;
-			case Menu::NO_CHOICE:
-				first = false;
-				break;
-			default: break;
-		}
-	}
 	player = new Actor(40,25,'@', "player","Human","Marine","Infantry",TCODColor::white);
 	//playerLight = new Actor(40, 25, 'l', "Your Flashlight", TCODColor::white);
 	//playerLight->ai = new LightAi(2,1,true); //could adjust second '1' to less if the flashlight should flicker
@@ -96,14 +67,15 @@ void Engine::init() {
 	player->destructible = new PlayerDestructible(100, 2, 0);
 	player->attacker = new Attacker(5,20);
 	player->ai = new PlayerAi();
-	player->container = new Container(50);
+	player->container = new Container(26);
 	actors.push(player);
 	player->flashable = true;
 	
-	engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
-	engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
-	engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
-	engine.gui->intelValue = getInitIntel(engine.gui->raceSelection, engine.gui->jobSelection);
+	//Add unused statpoints into vitality
+	if (engine.gui->statPoints <= 2 && engine.gui->statPoints >= 1){
+		engine.gui->vitValue += (engine.gui->statPoints)*20;
+	}
+	
 	player->str=engine.gui->strValue;
 	player->totalStr=engine.gui->strValue;
 	player->dex=engine.gui->dexValue;
@@ -115,6 +87,7 @@ void Engine::init() {
 	player->destructible->maxHp=engine.gui->vitValue;	
 	int plyrAscii = 64;
 	
+	
 	switch(engine.gui->raceSelection){
 		case 1:
 			player->race="Human";
@@ -125,14 +98,14 @@ void Engine::init() {
 		case 2:
 			player->race="Robot";
 			plyrAscii = 159;
-			player->hunger = 300;
-			player->maxHunger = 300;			
+			player->hunger = 100;
+			player->maxHunger = 100;			
 			break;
 		case 3:
 			player->race="Alien";
 			plyrAscii = 175;
-			player->hunger = 100;
-			player->maxHunger = 100;			
+			player->hunger = 40000;
+			player->maxHunger = 40000;			
 			break;
 		default:
 			player->race="Human";
@@ -175,7 +148,6 @@ void Engine::init() {
 	ItemBonus *bonusR;
 	
 	Actor *equip1 = NULL;
-	
 	
 	switch(engine.gui->jobSelection){
 		
@@ -354,6 +326,16 @@ void Engine::init() {
 			player->role="Explorer";
 			player->job="Merchant";
 			
+			//get a Blink Grenade
+			for(int i=0; i<1; i++){
+				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Teleporter(4);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
 			//add flare, for now is generic flare
 			for(int i=0; i<20; i++){
 				equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
@@ -421,6 +403,16 @@ void Engine::init() {
 			player->role="Mercenary";
 			player->job="Assassin";
 			
+			//get Blink Grenades
+			for(int i=0; i<3; i++){
+				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Teleporter(4);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
 			//get frag grenades
 			for(int i=0; i<3; i++){
 				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
@@ -465,6 +457,16 @@ void Engine::init() {
 			player->role="Mercenary";
 			player->job="Brute";
 			
+			//get Blink Grenades
+			for(int i=0; i<3; i++){
+				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Teleporter(4);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
 			//get frag grenades
 			for(int i=0; i<3; i++){
 				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
@@ -490,6 +492,16 @@ void Engine::init() {
 		case 9:
 			player->role="Mercenary";
 			player->job="Hacker";
+			
+			//get Blink Grenades
+			for(int i=0; i<7; i++){
+				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Teleporter(4);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
 			
 			//get frag grenades
 			for(int i=0; i<3; i++){
@@ -596,15 +608,32 @@ void Engine::init() {
 	engine.gui->jobSelection = 0;
 	engine.gui->roleSelection = 0;
 	
+	
+	numTer = 13;////////////////////////////////////////////////////////////////SET NUMBER OF TERMINALS
+	//valTer = new bool[numTer];  
+	//initialize valTer
+	int size = sizeof(valTer);
+	for (int i = 0; i < size;i++)
+	{
+		valTer[i] = true;
+	}
+	
+	
+	
+	
 	player->ch = plyrAscii;
 	stairs = new Actor(0,0,'>', "stairs", TCODColor::white);
 	stairs->blocks = false;
 	actors.push(stairs);
 	map = new Map(mapWidth, mapHeight);
 	if (startTutorial) {
+		ctrTer = 0;//13 is size
+		cout << "number of terminals in this level " << ctrTer << endl;
 		map->init(true, Param::TUTORIAL);
 	}
 	else {
+		ctrTer = 3;//13 is size
+		cout << "number of terminals in this level " << ctrTer << endl;
 		map->init(true, Param::GENERIC);
 	}
 	gui->message(TCODColor::red, "Welcome to Astroverius Station! Warning unknown alien life form detected!");
@@ -658,6 +687,12 @@ void Engine::save() {
 		//finally the message log
 		std::cout << "saving gui " <<std::endl;
 		gui->save(zip);
+		zip.putInt(numTer);
+		zip.putInt(ctrTer);
+		for (int i = 0; i < numTer; i++) {
+			zip.putInt(valTer[i]);
+			std::cout << "valTer " << valTer[i] << std::endl;
+		}
 		zip.saveToFile("game.sav");
 	}
 }
@@ -668,6 +703,7 @@ void Engine::load(bool pause) {
 	engine.gui->menu.addItem(Menu::NO_CHOICE, "RESUME GAME");
 	}
 	if (!pause) {
+	engine.gui->menu.addItem(Menu::TUTORIAL, "TUTORIAL");
 	engine.gui->menu.addItem(Menu::NEW_GAME, "NEW GAME");
 	}
 	//else if (level > 0){
@@ -705,9 +741,19 @@ void Engine::load(bool pause) {
 		save();
 		exit(0);
 		//menuState = 0;
+	} else if (menuItem == Menu::TUTORIAL) {
+		startTutorial = true;
+		engine.gui->statPoints = 2; //to be used for defaulting bonus points to vitality
+		engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
+		engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
+		engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
+		engine.gui->intelValue = getInitIntel(engine.gui->raceSelection, engine.gui->jobSelection);
+		engine.term();
+		engine.init();
 	} else if (menuItem == Menu::NEW_GAME) {
 		//new game 
 		engine.classMenu();
+		startTutorial = false;
 		//menuState = 0;
 		//engine.term();
 		//engine.init();
@@ -778,6 +824,12 @@ void Engine::load(bool pause) {
 		//finally, the message log
 		std::cout << "got to gui " << std::endl;
 		gui->load(zip);
+		numTer = zip.getInt();
+		ctrTer = zip.getInt();
+		for (int i = 0; i < numTer; i++) {
+			valTer[i] = zip.getInt();
+			std::cout << "valTer " << valTer[i] << std::endl;
+		}
 		std::cout << "got past gui " <<std::endl;
 		gui->message(TCODColor::pink,"loaded");
 		gameStatus = STARTUP;
@@ -942,47 +994,110 @@ void Engine::render()
 
 void Engine::nextLevel() {
 	level++;
-	
-	player->destructible->heal(player->destructible->maxHp/2);
 	gui->message(TCODColor::red,"Gathering your courage, you rush into the station's teleporter, mindful that greater dangers may lurk beyond...");
-	TCODRandom * updateRng = TCODRandom::getInstance();
-	int temp = updateRng->getInt(0,2);
 	
-	//explorers find flares
-	if(player->role[0] == 'E'){
-		if (temp == 0) 
-			gui->message(TCODColor::white,"As an explorer, you discover more flares hidden in your bag that your buggy tablet app didn't tell you about!");
-		else if (temp == 1)
-			gui->message(TCODColor::white,"As an explorer, you suddenly discover more flares hidden in your back pocket!");
-		else
-			gui->message(TCODColor::white,"Flares fall from the ceiling and land on your head! You add them to your inventory.");
-		for(int i=0; i<20; i++){
-				Actor *equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
-				equip1->sort = 2;
-				equip1->blocks = false;
-				equip1->pickable = new Flare(10,5,5);
-				engine.actors.push(equip1);
-				equip1->pickable->pick(equip1,player);
+	if(level != 1) { //tutorial stairs won't heal you if you try to cheese level 2. Also, no duplicate bonus items for doing tutorial
+		player->destructible->heal((int)player->destructible->maxHp/2);
+		TCODRandom * updateRng = TCODRandom::getInstance();
+		int temp = updateRng->getInt(0,2);
+		
+		//find food near teleporter
+		player->hunger = player->maxHunger > player->hunger + 50? player->hunger + 50 : player->maxHunger;
+		
+		//infantry find grenades
+		if(player->job[0] == 'I'){ 
+			if (temp == 0) 
+				gui->message(TCODColor::white,"As an infantry, you discover more grenades hidden in your bag that your buggy tablet app didn't tell you about!");
+			else if (temp == 1)
+				gui->message(TCODColor::white,"As an infantry, you discover more grenades hidden in your back pocket!");
+			else
+				gui->message(TCODColor::white,"You trip on the teleporter pad and find some grenades! You add them to your inventory.");
+			for(int i=0; i<2; i++){
+					Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
+					equip1->sort = 2;
+					equip1->blocks = false;
+					equip1->pickable = new Fragment(3,12,8);
+					equip1->pickable->value = 55;
+					equip1->pickable->inkValue = 10;
+					engine.actors.push(equip1);
+					equip1->pickable->pick(equip1,player);
+				}
 		}
-	}
-	
-	else if(player->job[0] == 'I'){ //infantry find grenades
-		if (temp == 0) 
-			gui->message(TCODColor::white,"As an infantry, you discover more grenades hidden in your bag that your buggy tablet app didn't tell you about!");
-		else if (temp == 1)
-			gui->message(TCODColor::white,"As an infantry, you discover more grenades hidden in your back pocket!");
-		else
-			gui->message(TCODColor::white,"You trip on the teleporter pad and find some grenades! You add them to your inventory.");
-		for(int i=0; i<2; i++){
-				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
-				equip1->sort = 2;
+		
+		//Medics get a medkit
+		else if(player->job[2] == 'd'){
+			if (temp == 0) 
+				gui->message(TCODColor::white,"As a medic, you notice a rusty medkit by the teleporter! You add it to your inventory.");
+			else if (temp == 1)
+				gui->message(TCODColor::white,"As medic, you suddenly discover a medkit hidden in your back pocket!");
+			else
+				gui->message(TCODColor::white,"A medkit falls from the ceiling and land on your head! You add it to your inventory.");
+			//Give a medkits
+			for(int i=0; i<1; i++){
+				Actor *equip1 = new Actor(0,0,184,"Medkit", TCODColor::white);
+				equip1->sort = 1;
 				equip1->blocks = false;
-				equip1->pickable = new Fragment(3,12,8);
-				equip1->pickable->value = 55;
-				equip1->pickable->inkValue = 10;
+				equip1->pickable = new Healer(20);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
+		}
+		
+		//Quartermasters get some quarters
+		else if(player->job[0] == 'Q'){
+			if (temp == 0) 
+				gui->message(TCODColor::white,"As a quartermaster, you notice a rusty petabitcoins by the teleporter! You add them to your wallet.");
+			else if (temp == 1)
+				gui->message(TCODColor::white,"As a quartermaster, you suddenly discover %d quarters (of a petabitcoin) you forgot about in your back pocket!", (level + 2) * 400);
+			else
+				gui->message(TCODColor::white,"Petabitcoins fall from the ceiling and land on your head! You joyfully add them to your wallet.");
+			//gain 400 * (level + 2) quarters        (...of a PBC)
+			for(int i=0 ; i<(level + 2) ; i++){
+				Actor *equip1 = new Actor(0,0,188,"PetaBitcoins",TCODColor::yellow);
+				equip1->sort = 0;
+				equip1->blocks = false;
+				equip1->pickable = new Coinage(1,100);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+		}
+		
+		//explorers find flares
+		else if(player->role[0] == 'E'){
+			if (temp == 0) 
+				gui->message(TCODColor::white,"As an explorer, you discover more flares hidden in your bag that your buggy tablet app didn't tell you about!");
+			else if (temp == 1)
+				gui->message(TCODColor::white,"As an explorer, you suddenly discover more flares hidden in your back pocket!");
+			else
+				gui->message(TCODColor::white,"Flares fall from the ceiling and land on your head! You add them to your inventory.");
+			for(int i=0; i<20; i++){
+					Actor *equip1 = new Actor(0,0,' ',"Flare", TCODColor::white);
+					equip1->sort = 2;
+					equip1->blocks = false;
+					equip1->pickable = new Flare(10,5,5);
+					engine.actors.push(equip1);
+					equip1->pickable->pick(equip1,player);
+			}
+		}
+		
+		//Mercenaries get Blink Grenades
+		else if(player->role[1] == 'e'){
+			if (temp == 0) 
+				gui->message(TCODColor::white,"As a mercenary, you recognize a pile of devices by the teleporter! You add the Blink Grenades to your inventory.");
+			else if (temp == 1)
+				gui->message(TCODColor::white,"As mercenary, you suddenly discover Blink Grenades you forgot were in your back pocket!");
+			else
+				gui->message(TCODColor::white,"Blink Grenades fall from the ceiling and land on your head! You add them to your inventory.");
+			//get Blink Grenades
+			for(int i=0; i<5; i++){
+				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new Teleporter(4);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+		}
 	}
 	
 	delete map;
@@ -996,7 +1111,11 @@ void Engine::nextLevel() {
 	//engine.mapconDec->clear();
 	//create a new map
 	map = new Map(mapWidth,mapHeight);
-	
+	if (engine.level != 5)
+	{
+		ctrTer = 3;                                                  ////set ctrTer
+	}
+	cout << "number of terminals this level " << ctrTer << endl;
 	TCODRandom * levelRng = TCODRandom::getInstance();
 	if (0 == levelRng->getInt(0,8)) {
 		map->init(true, Param::OFFICE_FLOOR);
@@ -1459,6 +1578,7 @@ if(cat == 1){
 					break;
 				default: break;
 			}
+		engine.gui->statPoints = 2;
 		engine.gui->vitValue = getInitVit(engine.gui->raceSelection, engine.gui->jobSelection);
 		engine.gui->strValue = getInitStr(engine.gui->raceSelection, engine.gui->jobSelection);
 		engine.gui->dexValue = getInitDex(engine.gui->raceSelection, engine.gui->jobSelection);
@@ -1584,7 +1704,7 @@ int Engine::getInitStr(int race, int job){
 			strength += 2;
 			break; 
 		case 3: //Alien
-			strength -= 2;
+			strength -= 1;
 			break;
 			
 	switch (job){
@@ -1622,7 +1742,7 @@ int Engine::getInitDex(int race, int job){
 			dexterity -= 2;
 			break; 
 		case 3: //Alien
-			dexterity += 2;
+			dexterity -= 1;
 			break;
 	}
 	
@@ -1661,7 +1781,7 @@ int Engine::getInitIntel(int race, int job){
 			intelligence += 2;
 			break; 
 		case 3: //Alien
-			intelligence += 2; 
+			intelligence -= 1; 
 			break;
 	}
 	

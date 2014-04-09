@@ -26,6 +26,8 @@ Ai *Ai::create(TCODZip &zip) {
 		case SECURITY: ai = new SecurityBotAi(); break;
 		case TURRETCONTROL: ai = new TurretControlAi(); break;
 		case LOCKER: ai = new LockerAi(); break;
+		case GARDNER: ai = new GardnerAi(); break;
+		case FRUIT: ai = new FruitAi(NULL,0); break;
 		//
 		
 	}
@@ -148,13 +150,14 @@ void PlayerAi::update(Actor *owner) {
 			case Menu::CONSTITUTION	:
 				owner->destructible->maxHp += owner->getHpUp();
 				owner->destructible->hp += owner->getHpUp();
-				owner->vit += 1;
+				owner->vit += owner->getHpUp();;
 				choice_made = true;
 				break;
 			case Menu::STRENGTH :
 				owner->attacker->basePower += 1;
 				owner->attacker->totalPower += 1;
 				owner->str += 1;
+				owner->totalStr += 1;
 				choice_made = true;
 				break;
 			case Menu::DEXTERITY :
@@ -245,12 +248,17 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 					{
 						actor->hostile = true;
 						actor->ch = 130; //update to active security bot
-					}
+					}else if(!actor->hostile && actor->ch == 'G') //gardner become hostile
+						actor->hostile = true;
 					engine.damageDone += owner->attacker->totalPower - actor->destructible->totalDodge;
 				}else if(actor->interact && !owner->hostile)
 					((InteractibleAi*)actor->ai)->interaction(actor, owner);
 				else if(!owner->hostile && !actor->hostile && actor->ch == 129)
 					engine.gui->message(TCODColor::grey, "The %s seems to be inactive", actor->name);
+				else if(!owner->hostile && !actor->hostile && actor->ch == 'G')
+					engine.gui->message(TCODColor::grey, "Welcome to Hydroponics, please do not touch anything!", actor->name);
+			}else if(actor->interact){
+					((InteractibleAi*)actor->ai)->interaction(actor, owner);
 			}
 			//attacking something like a generator that doesn't have a destructible or something
 			owner->destructible->takeFireDamage(owner, 3.0);
@@ -327,12 +335,9 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			}
 		}
 		break;
-		case 'I':
-			engine.map->computeFov();
-			engine.gui->menu.clear();
-			TCODConsole::flush();
-			engine.invState = 5;
-			invSkip = true;
+		//case 'I':
+			//engine.invState = 5;
+			//invSkip = true;
 			
 		case 'i': //display inventory
 		{ 
@@ -483,7 +488,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		} else {
 			engine.gui->message(TCODColor::lightGrey, "There are no stairs here. Perhaps you are disoriented?");
 		} break;
-		case 'v':
+		/*case 'v':
 		int w, h;
 		if (!TCODConsole::isFullscreen()){
 			TCODSystem::getCurrentResolution(&w,&h);
@@ -491,7 +496,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		} else {
 			engine.gui->message(TCODColor::darkerPink,"minimizing");
 			TCODConsole::initRoot(engine.screenWidth,engine.screenHeight, "Astro", false);
-		}
+		}*/
 		break;
 		case 'f':
 			//shooty shooty bang bang -Mitchell
@@ -954,6 +959,7 @@ void EpicenterAi::save(TCODZip &zip) {
 }
 
 TriggerAi::TriggerAi(const char *text) {
+	//cout << "trigger made, message: " << text << endl;
 	this->text = text;
 	pressed = false;
 }
@@ -973,6 +979,7 @@ void TriggerAi::save(TCODZip &zip) {
 }
 
 void TriggerAi::update(Actor *owner) {
+	//cout << "updating: " << text << endl;
 	if (!pressed && engine.player->x == owner->x && engine.player->y == owner->y) {
 		//engine.gui->message(TCODColor::yellow, text);
 		pressed = true;
@@ -988,7 +995,7 @@ void TriggerAi::update(Actor *owner) {
 		//make me red
 		termwindow.setDefaultForeground(TCODColor(67,199,50));
 		termwindow.setDefaultBackground(TCODColor(0,0,0));
-		termwindow.printFrame(0,0,32,16,true,TCOD_BKGND_ALPHA(50),"\{ AUTOMATED INTERCOM \{");
+		termwindow.printFrame(0,0,32,16,true,TCOD_BKGND_ALPHA(50),"\{ AUTOMATED TERMINAL \{");
 		termwindow.printRect(1,1,30,16,text);
 		TCODConsole::blit(&termwindow,0,0,32,16,TCODConsole::root,menux,menuy);
 		TCODConsole::flush();
@@ -1137,7 +1144,7 @@ void LightAi::update(Actor * owner)
 				//if (engine.distance(owner->x,x,owner->y,y) <= radius)
 				//{
 					if (lmap->isInFov(x-minx,y-miny)){ //&& !(engine.player->x == x && engine.player->y == y)) {
-					
+						
 						engine.map->tiles[x+y*engine.map->width].lit = true;
 						if (moving)
 								engine.map->tiles[x+y*engine.map->width].drty = true;
@@ -1479,7 +1486,7 @@ void GrenadierAi::update(Actor *owner) {
 }
 void GrenadierAi::useEmpGrenade(Actor *owner, int targetx, int targety)
 {
-	float damageTaken = engine.player->destructible->takeDamage(engine.player, -3 + 3 * owner->totalIntel);
+	float damageTaken = engine.player->destructible->takeDamage(engine.player, owner,-3 + 3 * owner->totalIntel);
 	numGrenades--;
 	engine.gui->message(TCODColor::red,"The %s uses an EMP Grenade on the player for %g hit points!",owner->name, damageTaken);
 	engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
@@ -1497,7 +1504,7 @@ void GrenadierAi::useFirebomb(Actor *owner, int targetx, int targety)
 			&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
 			//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 			float damageTaken = 1;
-			actor->destructible->takeDamage(actor, 1);
+			actor->destructible->takeDamage(actor, owner, 1);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
 				if(actor == engine.player)
@@ -1536,7 +1543,7 @@ void GrenadierAi::useFrag(Actor *owner, int targetx, int targety)
 			&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
 		{
 			float damageTaken = 2 * owner->totalIntel;
-			actor->destructible->takeDamage(actor, damageTaken);
+			actor->destructible->takeDamage(actor, owner, damageTaken);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) 
 			{	if(actor == engine.player)
@@ -1560,7 +1567,7 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 	if(dice <= 15)
 	{
 		//emp grenade
-		float damageTaken = target->destructible->takeDamage(target, -1*numGrenades*(-3 + 3 * owner->totalIntel));
+		float damageTaken = target->destructible->takeDamage(target, owner, -1*numGrenades*(-3 + 3 * owner->totalIntel));
 		engine.gui->message(TCODColor::red, "The %s kamikazes with an EMP Grenade on the %s for %g hit points!",owner->name,name, damageTaken);
 		if(target == engine.player)
 			engine.damageReceived += -1*numGrenades*(3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
@@ -1580,7 +1587,7 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
 			{
 				float damageTaken = 2 * owner->totalIntel;
-				actor->destructible->takeDamage(actor, damageTaken);
+				actor->destructible->takeDamage(actor, owner, damageTaken);
 				//engine.damageDone +=  2 * wearer->totalIntel;
 				if (!actor->destructible->isDead()) 
 				{	if(actor == engine.player)
@@ -1610,7 +1617,7 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
 				//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 				float damageTaken = 1;
-				actor->destructible->takeDamage(actor, damageTaken);
+				actor->destructible->takeDamage(actor, owner, damageTaken);
 				//engine.damageDone +=  2 * wearer->totalIntel;
 				if (!actor->destructible->isDead()) {
 					if(actor == engine.player)
@@ -2032,7 +2039,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::TURRET_CONTROL);
 		switch (menuItem) {
 			case Menu::DISABLE_TURRETS:
-				if(dice <= 40 + 5*engine.player->intel || engine.player->job[0] == 'H')
+				if(dice <= 25 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 0;
 					engine.gui->message(TCODColor::orange, "Turrets in this room have been disabled.");
@@ -2040,13 +2047,13 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				else
 				{
 					attackMode = 1;
-					engine.gui->message(TCODColor::orange, "Unauthorized access deteched, the turret console is now locked.");
+					engine.gui->message(TCODColor::orange, "Unauthorized access detected, the turret console is now locked.");
 				}
 				locked = true;
 				choice_made = true;
 				break;
 			case Menu::DISABLE_IFF :
-				if(dice <= 70 + 5*engine.player->intel || engine.player->job[0] == 'H')
+				if(dice <= 50 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 2;
 					engine.gui->message(TCODColor::orange, "Turrets in this room have become hostile to all.");
@@ -2054,13 +2061,13 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				else
 				{
 					attackMode = 1;
-					engine.gui->message(TCODColor::orange, "Unauthorized access deteched, the turret console is now locked.");
+					engine.gui->message(TCODColor::orange, "Unauthorized access detected, the turret console is now locked.");
 				}
 				locked = true;
 				choice_made = true;
 				break;
 			case Menu::IDENTIFY_FRIENDLY :
-				if(dice <= 30 + 5*engine.player->intel || engine.player->job[0] == 'H')
+				if(dice <= 15 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 3;
 					engine.gui->message(TCODColor::orange, "Turrets in this room have become hostile to all except you.");
@@ -2068,7 +2075,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				else
 				{
 					attackMode = 1;
-					engine.gui->message(TCODColor::orange, "Unauthorized access deteched, the turret console is now locked.");
+					engine.gui->message(TCODColor::orange, "Unauthorized access detected, the turret console is now locked.");
 				}
 				locked = true;
 				choice_made = true;
@@ -2277,9 +2284,11 @@ Actor *VendingAi::clone(Actor *owner){
 			case Pickable::FLARE: droppy->pickable = new Flare(((Flare*)(owner->pickable))->nbTurns, ((Flare*)(owner->pickable))->range, ((Flare*)(owner->pickable))->lightRange); droppy->sort = 2; break;
 			case Pickable::EQUIPMENT: droppy->pickable = new Equipment(0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement); droppy->sort = owner->sort; break;
 			case Pickable::FRAGMENT: droppy->pickable = new Fragment(((Fragment*)(owner->pickable))->range,((Fragment*)(owner->pickable))->damage,((Fragment*)(owner->pickable))->maxRange); droppy->sort = 2; break;
-			case Pickable::WEAPON: droppy->pickable = new Weapon(((Weapon*)(owner->pickable))->minDmg,((Weapon*)(owner->pickable))->maxDmg,((Weapon*)(owner->pickable))->critMult,((Weapon*)(owner->pickable))->wType,0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement);break;
+			case Pickable::WEAPON: droppy->pickable = new Weapon(((Weapon*)(owner->pickable))->minDmg,((Weapon*)(owner->pickable))->maxDmg,((Weapon*)(owner->pickable))->critMult,((Weapon*)(owner->pickable))->wType,0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement); droppy->sort = 4; break;
 			case Pickable::FOOD: break; //I don't think FOOD should be in vending machines, interestingly enough. There are PCMUs for that
 			case Pickable::KEY: break; //Keys probably shouldn't be in vending machines
+			case Pickable::ALCOHOL: break; //NO ALCOHOL IN 3D PRINTERS!
+			case Pickable::TELEPORTER: break; //no teleporters in 3D printers
 			case Pickable::NONE: break;
 		}
 		return droppy;
@@ -2291,11 +2300,23 @@ void VendingAi::populate(Actor *owner){
 	engine.actors.push(combatKnife);
 	combatKnife->pickable->pick(combatKnife,owner);
 	
-	Actor *mlr = engine.map->createMLR(0,0);
+	Actor *mlr = engine.map->createMLR(0,0,true);
 	engine.actors.push(mlr);
 	mlr->pickable->pick(mlr,owner);
 	
-	Actor *myBoots = engine.map->createMylarBoots(0,0);
+	Actor* myCap = engine.map->createMylarCap(0,0,true);
+	engine.actors.push(myCap);
+	myCap->pickable->pick(myCap,owner);
+	
+	Actor* myVest = engine.map->createMylarVest(0,0,true);
+	engine.actors.push(myVest);
+	myVest->pickable->pick(myVest,owner);
+	
+	Actor *myGreaves = engine.map->createMylarGreaves(0,0,true);
+	engine.actors.push(myGreaves);
+	myGreaves->pickable->pick(myGreaves,owner);
+	
+	Actor *myBoots = engine.map->createMylarBoots(0,0,true);
 	engine.actors.push(myBoots);
 	myBoots->pickable->pick(myBoots,owner);
 	
@@ -2524,5 +2545,133 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 			++iterator;
 			}
 		}
+	}
+}
+
+GardnerAi::GardnerAi()
+{
+	initX1 = -1;
+	initY1 = -1;
+	moveCount = 0;
+}
+
+void GardnerAi::load(TCODZip &zip)
+{
+	moveCount = zip.getInt();
+	initX1 = zip.getInt();
+	initY1 = zip.getInt();
+	initX2 = zip.getInt();
+	initY2 = zip.getInt();
+}
+void GardnerAi::save(TCODZip &zip)
+{
+	zip.putInt(GARDNER);
+	zip.putInt(moveCount);
+	zip.putInt(initX1);
+	zip.putInt(initY1);
+	zip.putInt(initX2);
+	zip.putInt(initY2);
+}
+
+void GardnerAi::update(Actor *owner)
+{
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	if(!owner->hostile)
+	{
+		moveOrAttack(owner, 0,0);
+		return;
+	}
+	if (engine.map->isInFov(owner->x,owner->y)) {
+		//can see the palyer, move towards him
+		moveCount = TRACKING_TURNS;
+	} else {
+		moveCount--;
+	}
+	//the Gardner will move towards the player if he is in the garden and is hostile
+	if (moveCount > 0 ||(engine.player->x <= initX2 && engine.player->x >= initX1 && engine.player->y >= initY1 && engine.player->y <= initY2)) {
+		MonsterAi::moveOrAttack(owner, engine.player->x, engine.player->y);
+	} else {
+		moveCount = 0;
+	}
+	owner->destructible->takeFireDamage(owner, 3.0);
+
+}
+
+void GardnerAi::moveOrAttack(Actor *owner, int targetx, int targety)
+{
+	//if the player bumps in the gardner and not hostile, then I need to do flavor text, possibly show in playerAi
+	int x = owner->x;
+	int y = owner->y;
+
+	
+	if(!owner->hostile)
+	{
+		if(engine.map->canWalk(x+1, y) && y == initY1 && x+1 <= initX2)
+			owner->x = x + 1;
+		else if(engine.map->canWalk(x, y+1) && x == initX2 && y+1 <= initY2)
+		{
+			owner->y = y + 1;
+		}
+		else if(engine.map->canWalk(x-1, y) && y == initY2 && x-1 >= initX1)
+		{
+			owner->x = x - 1;
+		}
+		else if(engine.map->canWalk(x, y-1) && x == initX1 && y-1 >= initY1)
+		{
+			owner->y = y - 1;
+		}
+			
+		
+	}
+}
+
+FruitAi::FruitAi(Actor *keeper, int limit) : keeper(keeper),limit(limit) {
+}
+
+void FruitAi::save(TCODZip &zip){
+	zip.putInt(FRUIT);
+	zip.putInt(limit);
+	keeper->save(zip);
+}
+
+void FruitAi::load(TCODZip &zip){
+	limit = zip.getInt();
+	
+	Actor *act = new Actor(0,0,0,NULL,TCODColor::white);
+	act->load(zip);
+	keeper = act;
+}
+
+void FruitAi::interaction(Actor *owner, Actor *target){
+	
+	if ( !((FruitAi*)owner->ai)->keeper->destructible->isDead() && ((FruitAi*)owner->ai)->keeper->hostile != true){
+		((FruitAi*)owner->ai)->keeper->hostile = true;
+		engine.gui->message(TCODColor::red,"The %s seems angry that you've picked his fruit!",((FruitAi*)owner->ai)->keeper->name);
+	}
+	
+	TCODRandom *rng = TCODRandom::getInstance();
+	int stacksize = rng->getInt(1,3);
+	Actor *fruit = new Actor(0,0,14,owner->name,TCODColor::white);
+	fruit->sort = 1;
+	fruit->blocks = false;
+	fruit->pickable = new Food(stacksize);
+	fruit->pickable->value = 25;
+	fruit->pickable->inkValue = 10;
+	fruit->hunger = owner->hunger;
+	
+	if (((FruitAi*)owner->ai)->limit > 0){
+		if (target->container && target->container->add(fruit)) {
+			engine.gui->message(TCODColor::green,"You pick some %s",fruit->name);
+			((FruitAi*)owner->ai)->limit -= 1;
+		} else {
+			engine.gui->message(TCODColor::grey,"Inventory is full.");
+		}
+		if (((FruitAi*)owner->ai)->limit == 0){
+			engine.actors.remove(owner);
+			delete owner;
+		}
+		
 	}
 }

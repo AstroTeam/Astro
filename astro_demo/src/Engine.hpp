@@ -20,6 +20,10 @@ public:
 	Map *map;
 	//Map *mapCpy;
 	//Renderer *rend;
+	bool valTer[13];
+	int ctrTer;
+	int numTer;           
+	
 	
 	int invState;
 	int invFrames;
@@ -28,6 +32,7 @@ public:
 	int selX;
 	int selY;
 	bool printMap;
+	bool startTutorial;
 	
 	int mapx1;
 	int mapx2;

@@ -42,20 +42,22 @@ Destructible *Destructible::create(TCODZip &zip) {
 	return destructible;
 }
 
-float Destructible::takeDamage(Actor *owner, float damage) {
-	
-	if (damage > 0){
-		hp -= damage;
-		if (hp <= 0) {
-			die(owner);
-		}
-	} else {
-		damage = 0;
-	}
+float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
+	//take a second Actor pointer here, such as attacker, also pass it into the die method
 	if(owner->ch == 225) //meaning you're attacking a Vending machine
 	{
 		VendingAi* va = (VendingAi*) owner->ai;
 		va->deployedSecurity = true;
+	}
+	
+	if (damage > 0){
+	
+		hp -= damage;
+		if (hp <= 0) {
+			die(owner, attacker);
+		}
+	} else {
+		damage = 0;
 	}
 	
 	return damage;
@@ -76,7 +78,7 @@ float Destructible::takeFireDamage(Actor *owner, float damage) {
 			hp -= damage;
 			engine.gui->message(TCODColor::red, "%s takes %g fire damage.",owner->name,damage);
 			if (hp <= 0) {
-				die(owner);
+				die(owner, NULL);
 			}
 		} else {
 			damage = 0;
@@ -95,7 +97,7 @@ float Destructible::heal(float amount) {
 	return amount;
 }
 
-void Destructible::die(Actor *owner) {
+void Destructible::die(Actor *owner, Actor *killer) {
 	//transform the actor into a corpse
 	//check who owner was to decide what corpse they get
 	//if spore creature they get spore body
@@ -148,7 +150,7 @@ PlayerDestructible::PlayerDestructible(float maxHp, float dodge, float dr) :
 	Destructible(maxHp, dodge, dr, 0) {
 }
 
-void MonsterDestructible::die(Actor *owner) {
+void MonsterDestructible::die(Actor *owner, Actor *killer) {
 	//transform it into a corpse
 	//doesnt block, cant be attacked, doesnt move
 	//cout << "Destrutible::Die beginning" << endl;
@@ -185,7 +187,8 @@ void MonsterDestructible::die(Actor *owner) {
 		//cout << "target dummy killed!" << endl;
 	}
 	//cout << "done testing" << endl;
-	engine.player->destructible->xp += xp;
+	if(killer && killer == engine.player) //only increase XP if the player is the killer
+		engine.player->destructible->xp += xp;
 	
 	//Makes Vending UI appear upon monster death (For Testing Purposes Only)
 	//engine.gui->vendingMenu(owner);
@@ -209,7 +212,7 @@ void MonsterDestructible::die(Actor *owner) {
 		}
 	}
 	//cout << "destrutible::Die called" << endl;
-	Destructible::die(owner);
+	Destructible::die(owner, killer);
 }
 
 void MonsterDestructible::suicide(Actor *owner) {
@@ -233,11 +236,11 @@ void MonsterDestructible::suicide(Actor *owner) {
 			}
 		}
 	}
-	Destructible::die(owner);
+	Destructible::die(owner, NULL);
 }
-void PlayerDestructible::die(Actor *owner) {
+void PlayerDestructible::die(Actor *owner, Actor *killer) {
 	engine.gui->message(TCODColor::darkRed,"You died!\n");
-	Destructible::die(owner);
+	Destructible::die(owner, killer);
 	engine.gameStatus=Engine::DEFEAT;
 	engine.save();
 }

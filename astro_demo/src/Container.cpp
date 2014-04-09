@@ -2,8 +2,8 @@
 #include <string>
 #include <iostream>
 
-Container::Container(int size) : size(size),wallet(0),head(NULL),chest(NULL),
-	legs(NULL),feet(NULL),hand1(NULL),hand2(NULL),ranged(NULL){
+Container::Container(int size) : size(4*size), sort1_size(size),sort2_size(size),sort3_size(size),sort4_size(size),
+	wallet(0),head(NULL),chest(NULL),legs(NULL),feet(NULL),hand1(NULL),hand2(NULL),ranged(NULL){
 }
 
 Container::~Container() {
@@ -12,6 +12,10 @@ Container::~Container() {
 
 void Container::load(TCODZip &zip) {
 	size = zip.getInt();
+	sort1_size = zip.getInt();
+	sort2_size = zip.getInt();
+	sort3_size = zip.getInt();
+	sort4_size = zip.getInt();
 	wallet = zip.getInt();
 	int nbActors = zip.getInt();
 	std::cout << "got size " << nbActors << std::endl;
@@ -61,6 +65,10 @@ void Container::load(TCODZip &zip) {
 
 void Container::save(TCODZip &zip) {
 	zip.putInt(size);
+	zip.putInt(sort1_size);
+	zip.putInt(sort2_size);
+	zip.putInt(sort3_size);
+	zip.putInt(sort4_size);
 	zip.putInt(wallet);
 	zip.putInt(inventory.size());
 	std::cout << "put size " << inventory.size() << std::endl;
@@ -95,10 +103,7 @@ bool Container::add(Actor *actor) {
 		Actor *actor = *it;
 		amount += actor->pickable->stackSize;
 	}
-	if (size > 0 && amount >= size) {
-		//inventory full
-		return false;
-	}
+
 	bool wasIn = false;
 	if (actor->pickable->stacks) {
 		for (Actor **it = inventory.begin(); it != inventory.end(); it++) {
@@ -111,13 +116,51 @@ bool Container::add(Actor *actor) {
 		}
 	}
 	if (wasIn == false) {
-	inventory.push(actor);
+		switch(actor->sort){
+			case 1:
+				if (sort1_size >0){
+					sort1_size--;
+				}else {
+					return false;
+				}
+				break;
+			case 2:
+				if (sort2_size >0){
+					sort2_size--;
+				}else {
+					return false;
+				}
+				break;
+			case 3:
+				if (sort3_size >0){
+					sort3_size--;
+				}else {
+					return false;
+				}
+				break;
+			case 4:
+				if (sort4_size >0){
+					sort4_size--;
+				}else {
+					return false;
+				}
+				break;
+			default: return false; break;
+		}
+		inventory.push(actor);
 	}
 	return true;
 }
 
 void Container::remove(Actor *actor) {
 	inventory.remove(actor);
+	switch(actor->sort){
+		case 1: sort1_size++; break;
+		case 2: sort2_size++; break;
+		case 3: sort3_size++; break;
+		case 4: sort4_size++; break;
+		default: break;
+	}
 }
 
 void Container::sendToBegin(Actor *actor) {

@@ -1,5 +1,8 @@
 #include "libtcod.hpp"
 #include "SDL/SDL.h"
+#include <string>
+#include <fstream>
+#include <iostream>
 class Actor;
 #include "Persistent.hpp"
 #include "Aura.hpp"
