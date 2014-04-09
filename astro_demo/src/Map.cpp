@@ -3006,22 +3006,28 @@ Actor *Map::createRecord(int x, int y){
 	//FINALchar  * msg = temp[random->getInt(0,4)];
 	//cout << "msg recieved" << endl;
 	//scrollOfRecords->ai = new TriggerAi( ">>102:329:32<< This is an example recording, the ship has become madness, I have had headaches every day for a week, the crew have begun attacking each other without cause");
+	//cout << "getting file" << endl;
 	string line;
-	char * file = new char[30];
-	memset(file,0,30);
-	strcat(file,"terminals/ter_generic2.txt");
+	char * file = new char[35];
+	memset(file,0,35);
+	strcat(file,"terminals/questTerminals.txt");
 	ifstream myfile(file);
 	//myfile = new ifstream(file);
+	//cout << "file gotten" << endl;
 	int id2find = random->getInt(1,engine.numTer);//1-8 for the numbers avaiable, 1-99 MAX
 	bool txt = true;
+	//cout << "there are " << engine.ctrTer << " terminals left" << endl;
+	//cout << "ctrTer " << engine.ctrTer << endl;
 	if (engine.ctrTer > 0)
 	{
-		while (!engine.valTer[id2find])
+		while (!engine.valTer[id2find-1])
 		{
+			//cout << "id2find: " << id2find << endl;
 			id2find = random->getInt(1,engine.numTer);
 		}
 		engine.ctrTer--;
-		engine.valTer[id2find] = false;
+		engine.valTer[id2find-1] = false;
+		//cout << "id2find final: " << id2find << endl;
 	}
 	else if (engine.ctrTer == 0)
 	{
@@ -3071,7 +3077,7 @@ Actor *Map::createRecord(int x, int y){
 		//string s = line.c_str();
 		//std::string str;
 		//const char * message = line.c_str();
-		//cout << message << " message text " << '\n';
+		//cout << nameBuf << " message text " << '\n';
 		//cout << "setting it to scroll" << endl;
 	}
 	scrollOfRecords->ai = new TriggerAi(nameBuf);

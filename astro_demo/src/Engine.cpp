@@ -617,7 +617,7 @@ void Engine::init() {
 	{
 		valTer[i] = true;
 	}
-	ctrTer = numTer;//8 is size
+	ctrTer = numTer;//13 is size
 	
 	
 	
