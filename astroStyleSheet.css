@@ -1,22 +1,26 @@
-
-
+html{
+	overflow-x: hidden;
+}
 body
 {
+top: 0;
+bottom: 0;
+left: 0;
+right: 0;
 background-color:#000000;
-text-align:center;
-margin:auto;
-}
-header
-{
-position: fixed;
-width: 100%;
-height: 100%;
-text-align:center;
 font-family: 'Roboto', sans-serif;
+position: relative;
+margin 0px;
+}
+h
+{
+text-align:center;
+
 }
 h1
 {
-color:blue;
+color:green;
+text-decoration: none;
 text-align:center;
 font-family: 'Roboto', sans-serif;
 font-size:40px;
@@ -31,24 +35,32 @@ font-size:20px;
 p
 {
 color:white;
-text-align:center;
-font-family: 'Roboto', sans-serif;
+text-align:justify;
 font-size:20px;
+display:  block;
+margin-left: 300px;
+margin-right: 300px;
 }
+
+
+
 /*Ordering of these 4 matters*/
-a:link 
+nav a:link 
 {
 color:ForestGreen;
 }      /* unvisited link */
-a:visited 
+nav a:visited 
 {
 color:GoldenRod ;
 }  /* visited link */
-a:hover 
+nav a:hover 
 {
 color:DarkMagenta ;
 }  /* mouse over link */
-a:active 
+nav a:active 
 {
 color:#0000FF;
 }  /* selected link */
+a{
+	text-decoration: none;
+}
