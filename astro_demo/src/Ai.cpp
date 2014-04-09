@@ -958,6 +958,7 @@ void EpicenterAi::save(TCODZip &zip) {
 }
 
 TriggerAi::TriggerAi(const char *text) {
+	//cout << "trigger made, message: " << text << endl;
 	this->text = text;
 	pressed = false;
 }
@@ -977,6 +978,7 @@ void TriggerAi::save(TCODZip &zip) {
 }
 
 void TriggerAi::update(Actor *owner) {
+	//cout << "updating: " << text << endl;
 	if (!pressed && engine.player->x == owner->x && engine.player->y == owner->y) {
 		//engine.gui->message(TCODColor::yellow, text);
 		pressed = true;

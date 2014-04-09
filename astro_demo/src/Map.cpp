@@ -618,12 +618,19 @@ void Map::spawnTutorial() {
 		engine.actors.push(booze2);		
 		Actor *booze3 = createAlcohol(x1+7,tiley);
 		engine.actors.push(booze3);*/
+		//cout << "creating (" << x1+5 << "," << tiley << ")" << endl;
 		Actor *record = createRecord(x1+5,tiley);
+		//cout << "about to push " << record << endl;
 		engine.actors.push(record);
+		//cout << "creating (" << x1+6 << "," << tiley << ")" << endl;
 		Actor *record2 = createRecord(x1+6,tiley);
+		//cout << "about to push " << record << endl;
 		engine.actors.push(record2);
+		//cout << "creating (" << x1+7 << "," << tiley << ")" << endl;
 		Actor *record3 = createRecord(x1+7,tiley);
+		//cout << "about to push " << record << endl;
 		engine.actors.push(record3);
+		//cout << "done with one row" << endl;
 		
 	}
 	
@@ -2932,10 +2939,13 @@ Actor *Map::createAlcohol(int x, int y){
 	return scrollOfDrunk;
 }
 Actor *Map::createRecord(int x, int y){
+	//cout << "making recorder" << endl;
 	Actor *scrollOfRecords = new Actor(x,y,227,"Personal Recorder", TCODColor::white);
-	char* nameBuf = new char[200]; 
-	memset(nameBuf,0,200);
-	//TCODRandom *random = TCODRandom::getInstance();
+	//cout << "making namebuf" << endl;
+	char* nameBuf = new char[250]; 
+	memset(nameBuf,0,250);
+	//cout << "namebuf made" << endl;
+	TCODRandom *random = TCODRandom::getInstance();
 	//cout << "about to get temp" << endl;
 	//FINALchar ** temp = &engine.records[0];
 	//char *temp = engine.records[0];
@@ -2945,7 +2955,7 @@ Actor *Map::createRecord(int x, int y){
 	//scrollOfRecords->ai = new TriggerAi( ">>102:329:32<< This is an example recording, the ship has become madness, I have had headaches every day for a week, the crew have begun attacking each other without cause");
 	string line;
 	ifstream myfile ("genericMSG.txt");
-	
+	int id2find = random->getInt(1,8);
 	if (myfile.is_open())
 	{
 		//while ( getline (myfile,line) )
@@ -2953,19 +2963,44 @@ Actor *Map::createRecord(int x, int y){
 		//cout << line << '\n';
 			
 		//}
+		//char c = id2find;
+		//cout << "id to find " << id2find << endl;
+		for(int i = 0; i < id2find; i++)
+		{
+			//cout << "line before getline " << line << endl;
+			getline(myfile, line,'@');
+			//cout << "line after getline " << line << endl;
+		}
 		
-		getline(myfile,line,'@');
+		//cout << "line before last getline " << line << endl;
+		getline(myfile, line,'@');
+		//cout << "final display " << line << endl;
+		//getline(myfile,line,'@');
+		//int tens = (line[11]-48)*10;
+		//int ones = line[12]-48;
+		//int id = tens+ones;
+		//cout << "line[10] = " << line[11] << endl;
+		//cout << "line[11] = " << line[12] << endl;
+		//cout << "ten's " << tens << endl;
+		//cout << "one's " << ones << endl;
+		//cout << "id found: " << id << endl;
+		//cout << id2find << endl;
+		//getline(myfile,line,'@');
+		//getline(myfile,line,'@');
+		//cout << "about to strcat!" << endl;
 		strcat(nameBuf,line.c_str());
-		cout << line << '\n';
+		//cout << "strcat done" << endl;
+		//cout << line << '\n';
 		myfile.close();
 	}
 	//string s = line.c_str();
 	//std::string str;
-	const char * message = line.c_str();
-	cout << message << " message text " << '\n';
+	//const char * message = line.c_str();
+	//cout << message << " message text " << '\n';
+	//cout << "setting it to scroll" << endl;
 	scrollOfRecords->ai = new TriggerAi(nameBuf);
 	scrollOfRecords->blocks = false;
-	
+	//cout << "done with record" << endl;
 	return scrollOfRecords;
 		//make interaction terminal
 	//Actor *triggerTileI = new Actor(x1+1,y1+1, 227, "Intercom Terminal", TCODColor::white);
