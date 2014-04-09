@@ -992,7 +992,10 @@ bool Teleporter::use(Actor *owner, Actor *wearer) {
 			return false;
 		}
 	}
-	engine.gui->message(TCODColor::orange, "You teleport to the chosen location!");
+	if(engine.player->job[0] == 'H') //hacker
+		engine.gui->message(TCODColor::orange, "As a hacker, you mod your own x and y variables to tactically reposition yourself!");
+	else
+		engine.gui->message(TCODColor::orange, "You teleport to the chosen location!");
 	engine.player->x = x;
 	engine.player->y = y;
 	engine.playerLight->x = x;

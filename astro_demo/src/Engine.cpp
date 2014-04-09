@@ -151,7 +151,7 @@ void Engine::init() {
 	
 	//get a teleporter
 	for(int i=0; i<1; i++){
-		Actor *equip1 = new Actor(0,0,182,"Blink Stone",TCODColor::white);
+		Actor *equip1 = new Actor(0,0,'.',"Blinkstone",TCODColor::red);
 		equip1->sort = 2;
 		equip1->blocks = false;
 		equip1->pickable = new Teleporter(20);
