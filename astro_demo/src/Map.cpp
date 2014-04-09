@@ -2943,7 +2943,7 @@ Actor *Map::createRecord(int x, int y){
 	Actor *scrollOfRecords = new Actor(x,y,227,"Personal Recorder", TCODColor::white);
 	//cout << "making namebuf" << endl;
 	char* nameBuf = new char[250]; 
-	memset(nameBuf,0,250);
+	memset(nameBuf,0,250);//250 is the maximum # of characters
 	//cout << "namebuf made" << endl;
 	TCODRandom *random = TCODRandom::getInstance();
 	//cout << "about to get temp" << endl;
@@ -2955,7 +2955,7 @@ Actor *Map::createRecord(int x, int y){
 	//scrollOfRecords->ai = new TriggerAi( ">>102:329:32<< This is an example recording, the ship has become madness, I have had headaches every day for a week, the crew have begun attacking each other without cause");
 	string line;
 	ifstream myfile ("genericMSG.txt");
-	int id2find = random->getInt(1,8);
+	int id2find = random->getInt(1,8);//1-8 for the numbers avaiable, 1-99 MAX
 	if (myfile.is_open())
 	{
 		//while ( getline (myfile,line) )
