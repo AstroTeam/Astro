@@ -67,7 +67,7 @@ void Engine::init() {
 	player->destructible = new PlayerDestructible(100, 2, 0);
 	player->attacker = new Attacker(5,20);
 	player->ai = new PlayerAi();
-	player->container = new Container(50);
+	player->container = new Container(26);
 	actors.push(player);
 	player->flashable = true;
 	

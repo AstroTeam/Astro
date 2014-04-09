@@ -626,6 +626,7 @@ void Map::spawnTutorial() {
 	knife3->sort = 4;
 	engine.actors.push(knife3);
 	
+	cout << "got to records creation" << endl;
 	for (int tiley = y1; tiley <= y2; tiley+=1) {
 		Actor *MLR = createMLR(x1+4,tiley,false);
 		engine.actors.push(MLR);
@@ -658,6 +659,7 @@ void Map::spawnTutorial() {
 		//cout << "done with one row" << endl;
 		
 	}
+	cout << "got past records creation" << endl;
 	
 	//Actor *record = createRecord(x1+8,y1);
 	//engine.actors.push(record);
@@ -2586,7 +2588,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 			}
 		}else if(ascii == 133) //infected grenadier
 		{
-			for(int i = 0; i < owner->container->size; i++)
+			for(int i = 0; i < owner->container->size/4; i++)
 			{
 				int rand = rng->getInt(0,30);
 				if(rand <= 15)
@@ -2623,7 +2625,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 			
 			
 		}else if(ascii == 164){
-			for(int i = 0; i < owner->container->size; i++){
+			for(int i = 0; i < owner->container->size/4; i++){
 				int rndA = rng->getInt(0,100);
 				if(rndA > 40){
 					int rnd = rng->getInt(0,100);
@@ -2651,7 +2653,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 				}
 			}
 		}else if(ascii == 165 || ascii == 166){ //Spore Creature and Mini Spore Creature
-			for(int i = 0; i < owner->container->size; i++){
+			for(int i = 0; i < owner->container->size/4; i++){
 				int rndA2 = rng->getInt(0,100);
 				if(rndA2 > 45){
 					int rnd2 = rng->getInt(0,100);
@@ -2679,7 +2681,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 				}
 			}
 		}else if(ascii == 148){
-			for(int i = 0; i < owner->container->size; i++){
+			for(int i = 0; i < owner->container->size/4; i++){
 				int rndA2 = rng->getInt(0,100);
 				if(rndA2 > 45){
 					int rnd = rng->getInt(0,200);
@@ -2728,7 +2730,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 				}
 			
 		}else if(ascii == 132){
-			for(int i = 0; i < owner->container->size; i++){
+			for(int i = 0; i < owner->container->size/4; i++){
 				int rndA2 = rng->getInt(0,100);
 				if(rndA2 > 45){
 					int rnd = rng->getInt(0,100);
@@ -2761,7 +2763,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 				}
 			}
 		}else if(ascii == 134){
-			for(int i = 0; i < owner->container->size; i++){
+			for(int i = 0; i < owner->container->size/4; i++){
 				int rndA2 = rng->getInt(0,100);
 				if(rndA2 > 30){
 					int rnd = rng->getInt(0,100);
@@ -2791,7 +2793,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 		}else if(ascii == 147){ //Turret
 			int rndA2 = rng->getInt(0,100);
 			if(rndA2 > 50){
-				for(int i = 0; i < owner->container->size; i++){
+				for(int i = 0; i < owner->container->size/4; i++){
 					//Fill Inventory with Batteries
 					Actor *battery = createBatteryPack(0,0);
 					engine.actors.push(battery);
@@ -2801,7 +2803,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 		}
 		else if(ascii == 129 || ascii == 130 || ascii == 146) //Security Bot gets keys
 		{
-			for(int i = 0; i < owner->container->size; i++)
+			for(int i = 0; i < owner->container->size/4; i++)
 			{
 					//Fill Inventory with Batteries and 1 key
 					if(i >= 1)
@@ -3149,6 +3151,7 @@ Actor *Map::createRecord(int x, int y){
 			//cout << "id2find: " << id2find << endl;
 			id2find = random->getInt(minid,maxid);
 		}
+		cout << engine.ctrTer << endl;
 		engine.ctrTer--;
 		engine.valTer[id2find-1] = false;
 		//cout << "id2find final: " << id2find << endl;
@@ -3194,7 +3197,7 @@ Actor *Map::createRecord(int x, int y){
 			//getline(myfile,line,'@');
 			//cout << "about to strcat!" << endl;
 			strcat(nameBuf,line.c_str());
-			//cout << "strcat done" << endl;
+			cout << "strcat done" << endl;
 			//cout << line << '\n';
 			myfile.close();
 		}
@@ -3206,7 +3209,7 @@ Actor *Map::createRecord(int x, int y){
 	}
 	scrollOfRecords->ai = new TriggerAi(nameBuf);
 	scrollOfRecords->blocks = false;
-	//cout << "done with record" << endl;
+	cout << "done with record" << endl;
 	return scrollOfRecords;
 		//make interaction terminal
 	//Actor *triggerTileI = new Actor(x1+1,y1+1, 227, "Intercom Terminal", TCODColor::white);

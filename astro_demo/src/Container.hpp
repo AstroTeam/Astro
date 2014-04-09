@@ -3,6 +3,11 @@
 class Container : public Persistent {
 public:
 	int size;
+	int sort1_size;
+	int sort2_size;
+	int sort3_size;
+	int sort4_size;
+	
 	TCODList<Actor *> inventory;
 	std::map <char,const char*> select;
 	//the following bools could be actor pointers instead, really
