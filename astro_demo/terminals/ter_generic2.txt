@@ -1,0 +1,37 @@
+@
+>>100:AST:01<< The ship's systems went down again.  3 minutes this time.  This is getting ridiculous.@
+>>100:AST:02<< I was walking over to deck 7 and I almost slipped on this weird grass.  I told maintenance about it and they said that they would clean it, but I went back today and it was even bigger.@
+>>100:AST:03<< The grating in the room next to mine keeps getting worse.  Does maintenance do anything around here?@
+>>100:AST:04<< I was walking back to my bunk yesterday and a piece of this moss stuff fell into my eyes, I went to an eyewash station immediately and had the doc look at me.  He said I was fine, but it still burns.@
+>>100:AST:05<< TO:ALL// FROM:HR // There has been a recent rise in unrest and a 75 percent rise in complaints, 200 percent rise larceny reports and a 2500 percent rise in maintenance requests.  Please do what you can to help, the staff is overworked as it is.@
+>>100:AST:06<< I can't imagine why they need us to all get physicals again; we were just checked about a week ago!@
+>>100:AST:07<< Of all the times to get five 3's on my diary number it is today.  I would celebrate this cool bit of numerology, but my jaw was broken by a mess hall tray today.@
+>>100:AST:08<< The pipes here must be getting faulty or something. I see maintenance work on them every other day, and they never seem to get everything fixed.@
+>>107:ARM:09<< If one more person comes in here and asks for an unauthorized gun I am going to shoot them.@
+>>107:ARM:10<< //LARCENY REPORT//  3 MLR batteries, 2 MLR's and 7 combat knifes have gone missing in the past 48 hours.@
+>>107:ARM:11<< I have begun to lock up the weapons in the vaults to protect them from this thieving crew.@
+>>102:BAR:12<< I opened Jim's locker today, the damn thing smells awful.  It was this weird moss in the bottom of it.@
+>>102:BAR:13<< SOMEONE MOVED MY BED! WHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY! I AM GOING TO MURDER THEM!@
+>>102:BAR:14<< Henderson found some moss behind his endtable, he cleaned it off but that shit came back.@
+>>103:GEN:15<< Someone is passing over their pay-grade because something is turning off the engineering lights, and no one is supposed to be toughing those controls.@
+>>103:GEN:16<< If anyone touches my pallets I am going to flip out.  THEY ARE MINE!@
+>>103:GEN:17<< I had to rig up one of the spare generators today to power the floor, it barely works.@
+>>109:HYD:18<< One of the oranges had a growth on it.  I incinerated it immediately, but then today two more did.@
+>>109:HYD:19<< SOMETHING IS WRONG!  SOMETHING IS WRONG! Someone took my fruit!  THAT IS NOT PROTOCOL!@
+>>109:HYD:20<< They took it.  I am going to KILL THE NEXT PERSON TO TOUCH MY FRUIT.@
+>>105:KIT:21<< As if making food isn't hard enough on a station these people seem angrier and angrier every day. @
+>>105:KIT:22<< Someone waiting for food in line today straight up punched the guy in front of him, for NO REASON.  I've never seen anything like it.@
+>>105:KIT:23<< Roger put some of this weird shit in the soup today, it smelled so bad but everyone ate it and we laughed for hours.@
+>>106:MES:24<< More trash left out, what are they animals!  This is against protocol.@
+>>106:MES:25<< Today a man smashed his tray over another guy and a whole brawl started!  It took 12 marines to break it up.@
+>>106:MES:26<< If one more person throws their drink on me I am going to the armory and I'm going to shoot all of these idiots.@
+>>108:OBS:27<< The stars are so beautiful.  If only they weren't painted in red.@
+>>108:OBS:28<< The more I look out into space the more I want to jump into it…it seems so peaceful…sublime.@
+>>108:OBS:29<< The glass here is so thick, we can look out, but never be connected with space, we are so close, yet, so far…if only I could be closer.@
+>>101:OFF:30<< The printer wouldn't work.  I took out the toner cartridge and there was a green fungus thing on it, I cleaned it off completely but the printer still wouldn't work.@
+>>101:OFF:31<< TO: JOHNSON// FROM: HENDRIKS// I don't pay you to sit in your desk, yesterday you barely moved a muscle all day, you didn't even get up for lunch.  People are starting to talk.  Pull it together.@
+>>101:OFF:32<< //MAINTENANCE REQUEST// Computer dysfunctional, glitching.  Needs some sort of repair, no obvious fix.@
+>>104:SER:33<< More page faults today, more servers gone down, I feel like someone is messing with me.@
+>>104:SER:34<< One of the CAT-5's started to have over 65 percent fault rate, what is even going on?@
+>>104:SER:35<< I can't believe George yesterday, he tried to unplug 30 different wires, I had to have the marines escort him out!  I guess he finally had enough.  They make us work way too long.@
+@

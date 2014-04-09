@@ -5,6 +5,7 @@ public:
 	NO_CHOICE,
 	NEW_GAME,
 	CONTINUE,
+	TUTORIAL,
 	SAVE,
 	EXIT,
 	QUIT,
@@ -51,7 +52,7 @@ public:
 		VENDING,
 		CLASS_MENU,
 		CLASS_SELECT,
-		TURRET_CONTROL
+		TURRET_CONTROL,
 	};
 	~Menu();
 	void clear();

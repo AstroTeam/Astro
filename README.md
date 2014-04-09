@@ -19,7 +19,7 @@ Stats
     Governs medkits, cryo-weapons, flamethrowers, flashbangs, and explosives. 
     A large enough value is equired for certain powerful weapons and tech.
 
-    ○ Vitality - Base health. Resistance to astrocephaly.
+    ○ Vitality - Base health.
 
 
 
@@ -27,34 +27,25 @@ Races
 -----
 The player upon startup can choose between a certain race+class combo, each class has 3 “specialty” tech trees that have powerups, skills, etc.  So you pick 1 race, 1 role, and 1 job.
 
-● Human - Base class. Flat starting stats with no innate specialization. 
-Adequate at everything. 
-        **Ability**: Greed: increases money drops.
+● Human - Base class. Flat starting stats with no innate specialization. Adequate at everything. 
 
-● Robot - High starting vitality, strength, and intelligence. Cannot wear 
-armor. 
-        **Ability**: Consume Armor: destroys armor for small health regeneration. 
+● Robot - High starting vitality, strength, and intelligence. Runs on an internal chemical converter that turns human food into a small amount of power.
 
-● Alien - High base dexterity and intelligence. Low base vitality and strength. 
-        **Ability**: Consume Corpse: eliminates corpses for small health regeneration. 
+● Alien - Low base stats. Absorbs teleporter energy and can store insane amounts of food to prevent hunger for weeks.
 
 
 Classes & Subclasses 
 --------------------
 ● Marine - Combat-focused specialties. Starts with gun with cheap parts. 
-**Ability**: Barricade: drops a small wall to obstruct enemy movement that lasts two 
-turns. Requires kills to refresh. 
 
     ○ Infantry - Bonus starting dexterity. 
 
     ○ Medic - Bonus starting intelligence and medkits. 
 
-    ○ Quartermaster - Starts game with 4000 quarters of a PetaBitcoin
+    ○ Quartermaster - Starts game with 4000 quarters of a PetaBitcoin.
 
 
-● Explorer - Utility-based specialties. Starts with a combat knife. Have 
-more starting vision distance. **Ability**: Flare Generation: Starts with many flares that 
- give vision in an area. Requires taking stairs to refresh.
+● Explorer - Utility-based specialties. Starts with a combat knife.
 
     ○ Survivalist - Bonus starting vitality. Starts with many flashbangs.
 
@@ -64,9 +55,7 @@ more starting vision distance. **Ability**: Flare Generation: Starts with many f
         many various items. 
 
 
-● Mercenary- Narrowly-focused classes. Start with 3 grenades. **Ability**: 
-Dash: Gives a free move without using a turn. Requires kills to 
-refresh. 
+● Mercenary- Narrowly-focused classes. Start with 3 grenades.
 
     ○ Assassin - Starts with high strength, dexterity, and intelligence.
         Has extremely low vitality. Starts with a sword and many EMPs. 
@@ -75,3 +64,4 @@ refresh.
 
     ○ Hacker -  Has significant starting bonus intelligence. 
         Has increased dexterity, but has low strenth and vitality. Starts with taser. 
+        Has 100% chance of hacking terminals.

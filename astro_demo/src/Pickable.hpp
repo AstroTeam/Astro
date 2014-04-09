@@ -1,7 +1,7 @@
 class Pickable : public Persistent {
 public:
 	enum PickableType {
-		NONE, HEALER, CHARGER, LIGHTNING_BOLT, CONFUSER, FIREBALL, EQUIPMENT, FLARE, CURRENCY, FRAGMENT, WEAPON,FOOD
+		NONE, HEALER, CHARGER, LIGHTNING_BOLT, CONFUSER, FIREBALL, EQUIPMENT, FLARE, CURRENCY, FRAGMENT, WEAPON,FOOD, KEY, ALCOHOL, TELEPORTER
 	};
 	bool stacks;
 	int stackSize;
@@ -164,6 +164,34 @@ public:
 class Food : public Pickable {
 public:
 	Food(int stackSize);
+	bool use(Actor *owner, Actor *wearer);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+};
+
+class Key: public Pickable {
+public: 
+	int keyType; //vaultKey = 0
+	Key(int keyType, bool stacks = true, int stackSize = 1, PickableType type = KEY);
+	bool use(Actor *owner, Actor *wearer);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+};
+
+class Alcohol: public Pickable {
+public:
+	Alcohol(int str, int qual);
+	int strength;
+	int quality;
+	bool use(Actor *owner, Actor *wearer);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+};
+
+class Teleporter: public Pickable {
+public:
+	Teleporter(float range, bool stacks = true, int stackSize = 1, PickableType type = TELEPORTER);
+	float range;
 	bool use(Actor *owner, Actor *wearer);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);

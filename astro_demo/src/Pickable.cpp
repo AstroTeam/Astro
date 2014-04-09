@@ -1,4 +1,5 @@
 #include "main.hpp"
+#include <iostream>
 
 Pickable::Pickable(bool stacks, int stackSize, PickableType type) : 
 	stacks(stacks),stackSize(stackSize), type(type) {
@@ -6,6 +7,7 @@ Pickable::Pickable(bool stacks, int stackSize, PickableType type) :
 
 Pickable *Pickable::create(TCODZip &zip) {
 	PickableType type = (PickableType)zip.getInt();
+	std::cout << "pickabletype " << std::endl;
 	Pickable *pickable = NULL;
 	switch(type) {
 		case CURRENCY: pickable = new Coinage(0); break;
@@ -19,8 +21,12 @@ Pickable *Pickable::create(TCODZip &zip) {
 		case FRAGMENT: pickable = new Fragment(0,0,0); break;
 		case WEAPON: pickable = new Weapon(0,0,0); break;
 		case FOOD: pickable = new Food(0); break;
+		case KEY: pickable = new Key(0); break;
+		case ALCOHOL: pickable = new Alcohol(0,0);break;
+		case TELEPORTER: pickable = new Teleporter(0);break;
 		case NONE: break;
 	}
+	std::cout << "chose a module type " << std::endl;
 	pickable->load(zip);
 	return pickable;
 }
@@ -157,7 +163,7 @@ bool LightningBolt::use(Actor *owner, Actor *wearer) {
 		return false;
 	}
 	//hit the closest monster for <damage> hit points;
-	float damageTaken = closestMonster->destructible->takeDamage(closestMonster, -3 + 3 * wearer->totalIntel);
+	float damageTaken = closestMonster->destructible->takeDamage(closestMonster,wearer, -3 + 3 * wearer->totalIntel);
 	engine.damageDone += 3 * wearer->totalIntel - 3;
 	if (!closestMonster->destructible->isDead()) {
 		engine.gui->message(TCODColor::orange,"Taking %g damage, the %s crackles with electricity, crying out in rage.",damageTaken,closestMonster->name);
@@ -208,7 +214,7 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 			&&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) {
 			//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 			float damageTaken = 1;
-			actor->destructible->takeDamage(actor, 1);
+			actor->destructible->takeDamage(actor,wearer, 1);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
 				engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damageTaken);
@@ -282,7 +288,7 @@ bool Fragment::use(Actor *owner, Actor *wearer) {
 		if (actor->destructible && !actor->destructible->isDead()
 			&&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) {
 			float damageTaken = 2 * wearer->totalIntel;
-			actor->destructible->takeDamage(actor, damageTaken);
+			actor->destructible->takeDamage(actor,wearer, damageTaken);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
 				engine.gui->message(TCODColor::orange,"The %s gets wounded from the blast for %g hit points.",actor->name,damageTaken);
@@ -453,6 +459,9 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 				case WEAPON: break;
 				case FRAGMENT: droppy->pickable = new Fragment(((Fragment*)(owner->pickable))->range,((Fragment*)(owner->pickable))->damage,((Fragment*)(owner->pickable))->maxRange); droppy->sort = 2; break;
 				case FOOD: droppy->pickable = new Food(numberDropped); droppy->sort = 1; break;
+				case KEY: droppy->pickable = new Key(((Key*)(owner->pickable))->keyType); droppy->sort = 1; break;
+				case ALCOHOL: droppy->pickable = new Alcohol(((Alcohol*)(owner->pickable))->strength,((Alcohol*)(owner->pickable))->quality); droppy->sort = 1; break;
+				case TELEPORTER: droppy->pickable = new Teleporter(((Teleporter*)(owner->pickable))->range); droppy->sort = 2; break;
 				case NONE: break;
 			}
 			droppy->pickable->stackSize = numberDropped;
@@ -883,3 +892,135 @@ bool Food::use(Actor *owner, Actor *wearer) {
 	return false;
 }
 
+Key::Key(int keyType, bool stacks, int stackSize, PickableType type) 
+: Pickable(stacks, stackSize,type), keyType(keyType) {
+
+}
+
+void Key::load(TCODZip &zip) {
+	stacks = zip.getInt();
+	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
+	keyType = zip.getInt();
+}
+
+void Key::save(TCODZip &zip) {
+	zip.putInt(type);
+	zip.putInt(stacks);
+	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
+	zip.putInt(keyType);
+}
+
+bool Key::use(Actor *owner, Actor *wearer)
+{
+	if(wearer == engine.player && keyType == 0)
+		engine.gui->message(TCODColor::blue, "This key seems to go to some sort of vault, possibly found in an armory");
+	return false;
+}
+
+Alcohol::Alcohol(int str, int qual)
+: Pickable(true, 1, ALCOHOL){
+	strength = str;
+	quality = qual;
+}
+
+void Alcohol::load(TCODZip &zip) {
+	stacks = zip.getInt();
+	stackSize = zip.getInt();
+	strength = zip.getInt();
+	quality = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
+}
+
+void Alcohol::save(TCODZip &zip) {
+	zip.putInt(type);
+	zip.putInt(stacks);
+	zip.putInt(stackSize);
+	zip.putInt(strength);
+	zip.putInt(quality);
+	zip.putInt(value);
+	zip.putInt(inkValue);
+}
+
+bool Alcohol::use(Actor *owner, Actor *wearer) {
+	if (wearer->totalIntel > 0)
+	{
+		Aura *alcoholSTR = new Aura(quality, Aura::TOTALSTR, Aura::CONTINUOUS, strength);//is this good mitchell?
+		Aura *alcoholDR = new Aura(quality, Aura::TOTALDR, Aura::CONTINUOUS, strength/2);//is this good mitchell?
+		Aura *alcoholINT = new Aura(quality, Aura::TOTALINTEL, Aura::CONTINUOUS, -strength);//is this good mitchell?
+		Aura *alcoholDODGE = new Aura(quality, Aura::TOTALDODGE, Aura::CONTINUOUS, -strength/2);//is this good mitchell?
+		engine.player->auras.push(alcoholSTR);
+		engine.player->auras.push(alcoholINT);
+		engine.player->auras.push(alcoholDR);
+		engine.player->auras.push(alcoholDODGE);
+		engine.gui->message(TCODColor::blue, "You drink the %s and you begin to feel stronger, but more confused.",owner->name);
+		alcoholSTR->apply(engine.player);
+		alcoholINT->apply(engine.player);
+		alcoholDR->apply(engine.player);
+		alcoholDODGE->apply(engine.player);
+
+		return Pickable::use(owner,wearer);
+	}
+	else
+	{
+		engine.gui->message(TCODColor::red, "You try to drink from the %s but are so drunk it shatters everywhere since your INT is 0.",owner->name);
+		return Pickable::use(owner,wearer);
+	}
+}
+
+Teleporter::Teleporter(float range, bool stacks, int stackSize, PickableType type) 
+	: Pickable(stacks, stackSize, type), range(range) {
+}
+
+void Teleporter::load(TCODZip &zip) {
+	range = zip.getFloat();
+	stacks = zip.getInt();
+	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
+}
+
+void Teleporter::save(TCODZip &zip) {
+	zip.putInt(TELEPORTER);
+	zip.putFloat(range);
+	zip.putInt(stacks);
+	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
+}
+
+bool Teleporter::use(Actor *owner, Actor *wearer) {
+	engine.gui->message(TCODColor::orange, "Choose where to teleport "
+		"or hit escape to cancel.");
+	int x = engine.player->x;
+	int y = engine.player->y;
+	if (!engine.pickATile(&x,&y, range, 0)) {
+		return false;
+	}
+	//teleport if not blocked
+	if(!engine.map->isVisible(x,y) || !engine.map->canWalk(x,y)){
+		engine.gui->message(TCODColor::orange,"You cannot teleport there!");
+		return false;
+	}
+	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
+		Actor *actor = *it;
+		if (actor->getDistance(x,y) <= 0 && actor->blocks == true) {
+			engine.gui->message(TCODColor::orange,"You cannot teleport there!");
+			return false;
+		}
+	}
+	if(engine.player->job[0] == 'H') //hacker
+		engine.gui->message(TCODColor::orange, "As a hacker, you mod your own x and y variables to tactically reposition yourself!");
+	else
+		engine.gui->message(TCODColor::orange, "You teleport to the chosen location!");
+	engine.player->x = x;
+	engine.player->y = y;
+	engine.playerLight->x = x;
+	engine.playerLight->y = y;
+	engine.map->computeFov();
+	return Pickable::use(owner,wearer);
+}
