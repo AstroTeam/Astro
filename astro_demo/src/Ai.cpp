@@ -157,6 +157,7 @@ void PlayerAi::update(Actor *owner) {
 				owner->attacker->basePower += 1;
 				owner->attacker->totalPower += 1;
 				owner->str += 1;
+				owner->totalStr += 1;
 				choice_made = true;
 				break;
 			case Menu::DEXTERITY :
@@ -335,10 +336,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		}
 		break;
 		case 'I':
-			engine.map->computeFov();
-			engine.gui->menu.clear();
-			TCODConsole::flush();
-			engine.invState = 5;
+			//engine.invState = 5;
 			invSkip = true;
 			
 		case 'i': //display inventory
@@ -349,6 +347,10 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			if (!invSkip)
 			{
 				engine.invState = 1;
+			}
+			else{
+				engine.invState = 1;
+				engine.invState = 2;
 			}
 			engine.gui->menu.addItem(Menu::ITEMS, "ITEMS");
 			engine.gui->menu.addItem(Menu::TECH, "TECH");
