@@ -296,7 +296,13 @@ public:
 
 class CompanionAi : public Ai {
 public:
+	enum Command{
+		STAY, FOLLOW, ATTACK
+	};
+	
 	Actor *tamer;
 	int range_limit; //
+	
+	
 	
 };
