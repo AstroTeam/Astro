@@ -108,6 +108,9 @@ public:
 	Actor *createTeleporter(int x, int y);
 	Actor *createEMP(int x,int y);
 	Actor *createTitanMail(int x, int y);
+	Actor *createMylarCap(int x, int y, bool isVend);
+	Actor *createMylarVest(int x, int y, bool isVend);
+	Actor *createMylarGreaves(int x, int y, bool isVend);
 	Actor *createMylarBoots(int x, int y, bool isVend);
 	Actor *createMLR(int x, int y, bool isVend);
 	Actor *createCombatKnife(int x, int y);

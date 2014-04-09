@@ -2304,6 +2304,18 @@ void VendingAi::populate(Actor *owner){
 	engine.actors.push(mlr);
 	mlr->pickable->pick(mlr,owner);
 	
+	Actor* myCap = engine.map->createMylarCap(0,0,true);
+	engine.actors.push(myCap);
+	myCap->pickable->pick(myCap,owner);
+	
+	Actor* myVest = engine.map->createMylarVest(0,0,true);
+	engine.actors.push(myVest);
+	myVest->pickable->pick(myVest,owner);
+	
+	Actor *myGreaves = engine.map->createMylarGreaves(0,0,true);
+	engine.actors.push(myGreaves);
+	myGreaves->pickable->pick(myGreaves,owner);
+	
 	Actor *myBoots = engine.map->createMylarBoots(0,0,true);
 	engine.actors.push(myBoots);
 	myBoots->pickable->pick(myBoots,owner);

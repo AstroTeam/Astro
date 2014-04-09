@@ -1256,7 +1256,7 @@ Actor* Map::createVendor(int x, int y)
 	vendor->interact = true;
 	vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge,vendorDR,vendorXp);
 	vendor->ai = new VendingAi();
-	vendor->container = new Container(10);
+	vendor->container = new Container(50);
 	//generateRandom(vendor, vendorAscii); Vending Machines get populated with items when they are interacted with
 	engine.actors.push(vendor);
 	
@@ -2494,19 +2494,31 @@ void Map::generateRandom(Actor *owner, int ascii){
 			return;
 	}else{
 		if(ascii == 243){//locker, this might be a problem if we want multiple decors to drop different things
-			int random = rng->getInt(0,100);
+			int random = rng->getInt(0,230);
 			if(random < 30){
 				Actor *flare = createFlare(0,0);
 				engine.actors.push(flare);
 				flare->pickable->pick(flare,owner);
-			}else if(random < 30+10){
+			}else if(random < 30+20){
 				Actor *chainMail = createTitanMail(0,0);
 				engine.actors.push(chainMail);
 				chainMail->pickable->pick(chainMail,owner);
-			}else if(random < 30+10+20){
+			}else if(random < 30+20+40){
 				Actor *myBoots = createMylarBoots(0,0,false);
 				engine.actors.push(myBoots);
 				myBoots->pickable->pick(myBoots,owner);
+			}else if(random < 30+20+40+30){
+				Actor *myGreaves = createMylarGreaves(0,0,false);
+				engine.actors.push(myGreaves);
+				myGreaves->pickable->pick(myGreaves,owner);
+			}else if(random < 30+20+40+30+30){
+				Actor *myVest = createMylarVest(0,0,false);
+				engine.actors.push(myVest);
+				myVest->pickable->pick(myVest,owner);
+			}else if(random < 30+20+40+30+30+40){
+				Actor *myCap = createMylarCap(0,0,false);
+				engine.actors.push(myCap);
+				myCap->pickable->pick(myCap,owner);
 			}else{
 				Actor *batt = createBatteryPack(0,0);
 				engine.actors.push(batt);
@@ -3139,6 +3151,340 @@ Actor *Map::createTitanMail(int x, int y){
 	chainMail->pickable->inkValue = 50;
 	return chainMail;
 }
+Actor *Map::createMylarGreaves(int x, int y, bool isVend){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *myGreaves = new Actor(x,y,185,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
+	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,1);
+	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,3);
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Tattered ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,20);
+						break;
+					case 2:
+						strcat(nameBuf,"Worn ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,25);
+						break;
+					case 3:
+						strcat(nameBuf,"Ruined ");
+						bonus = new ItemBonus(ItemBonus::NOBONUS,0);
+						break;
+					default:break;
+				}
+				//bad Mylar Boots
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Durable  ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+						break;
+					case 1:
+						strcat(nameBuf,"Useful ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,30);
+						requirement = new ItemReq(ItemReq::DEXTERITY,3);
+						break;
+					case 2:
+						strcat(nameBuf,"Cheap ");
+						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						break;
+					case 2:
+						strcat(nameBuf,"Tough ");
+						bonus = new ItemBonus(ItemBonus::DR,3);
+						break;
+					case 3:
+						strcat(nameBuf,"High Tech ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,2);
+						break;
+					case 4:
+						strcat(nameBuf,"Reliable ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,40);
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"Mylar Greaves");
+
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	myGreaves->blocks = false;
+	myGreaves->name = nameBuf;
+	
+	myGreaves->pickable = new Equipment(0,Equipment::LEGS,bonus,requirement);
+	myGreaves->sort = 3;
+	myGreaves->pickable->value = 200;
+	myGreaves->pickable->inkValue = 30;
+	myGreaves->col = col;
+	return myGreaves;
+}
+Actor *Map::createMylarVest(int x, int y, bool isVend){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *myVest = new Actor(x,y,185,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
+	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,3);
+	
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Tattered ");
+						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						break;
+					case 2:
+						strcat(nameBuf,"Worn ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,25);
+						break;
+					case 3:
+						strcat(nameBuf,"Ruined ");
+						bonus = new ItemBonus(ItemBonus::NOBONUS,0);
+						break;
+					default:break;
+				}
+				//bad Mylar Boots
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Durable  ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						break;
+					case 1:
+						strcat(nameBuf,"Useful ");
+						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						requirement = new ItemReq(ItemReq::DEXTERITY,3);
+						break;
+					case 2:
+						strcat(nameBuf,"Cheap ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,3);
+						break;
+					case 2:
+						strcat(nameBuf,"Tough ");
+						bonus = new ItemBonus(ItemBonus::DR,4);
+						break;
+					case 3:
+						strcat(nameBuf,"High Tech ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,2);
+						break;
+					case 4:
+						strcat(nameBuf,"Reliable ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,50);
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"Mylar Vest");
+
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	myVest->blocks = false;
+	myVest->name = nameBuf;
+	
+	myVest->pickable = new Equipment(0,Equipment::CHEST,bonus,requirement);
+	myVest->sort = 3;
+	myVest->pickable->value = 300;
+	myVest->pickable->inkValue = 40;
+	myVest->col = col;
+	return myVest;
+}
+Actor *Map::createMylarCap(int x, int y, bool isVend){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *myCap = new Actor(x,y,185,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
+	ItemBonus *bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,1);
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Tattered ");
+						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 2:
+						strcat(nameBuf,"Worn ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,15);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 3:
+						strcat(nameBuf,"Ruined ");
+						bonus = new ItemBonus(ItemBonus::NOBONUS,0);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					default:break;
+				}
+				//bad Mylar Boots
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Durable  ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,3);
+						break;
+					case 1:
+						strcat(nameBuf,"Useful ");
+						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						requirement = new ItemReq(ItemReq::DEXTERITY,3);
+						break;
+					case 2:
+						strcat(nameBuf,"Cheap ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,3);
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,5);
+						break;
+					case 2:
+						strcat(nameBuf,"Tough ");
+						bonus = new ItemBonus(ItemBonus::DR,3);
+						requirement = new ItemReq(ItemReq::DEXTERITY,4);
+						break;
+					case 3:
+						strcat(nameBuf,"High Tech ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,3);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,5);
+						break;
+					case 4:
+						strcat(nameBuf,"Reliable ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,30);
+						requirement = new ItemReq(ItemReq::DEXTERITY,3);
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"Mylar Cap");
+
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	myCap->blocks = false;
+	myCap->name = nameBuf;
+	//ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,1);
+	myCap->pickable = new Equipment(0,Equipment::HEAD,bonus,requirement);
+	myCap->sort = 3;
+	myCap->pickable->value = 100;
+	myCap->pickable->inkValue = 20;
+	myCap->col = col;
+	return myCap;
+}
 Actor *Map::createMylarBoots(int x, int y, bool isVend){
 	char* nameBuf = new char[80]; 
 	memset(nameBuf,0,80);
@@ -3152,6 +3498,7 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
 	//min damage, max damage, critMult, 
 	ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
+	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,2);
 	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
 	//random 1-3, 1 is worse, 2 is average, 3 is good
 	int choices = random->getInt(1,3);
@@ -3176,6 +3523,7 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 						break;
 					case 3:
 						strcat(nameBuf,"Destroyed ");
+						bonus = new ItemBonus(ItemBonus::NOBONUS,0);
 						break;
 					default:break;
 				}
@@ -3193,6 +3541,9 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 						bonus = new ItemBonus(ItemBonus::HEALTH,25);
 						break;
 					case 1:
+						strcat(nameBuf,"Useful ");
+						bonus = new ItemBonus(ItemBonus::DR,1);
+						requirement = new ItemReq(ItemReq::DEXTERITY,2);
 						break;
 					case 2:
 						strcat(nameBuf,"Cheap ");
@@ -3234,7 +3585,7 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	myBoots->blocks = false;
 	myBoots->name = nameBuf;
-	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,2);
+	
 	myBoots->pickable = new Equipment(0,Equipment::FEET,bonus,requirement);
 	myBoots->sort = 3;
 	myBoots->pickable->value = 100;
