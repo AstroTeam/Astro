@@ -488,7 +488,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		} else {
 			engine.gui->message(TCODColor::lightGrey, "There are no stairs here. Perhaps you are disoriented?");
 		} break;
-		case 'v':
+		/*case 'v':
 		int w, h;
 		if (!TCODConsole::isFullscreen()){
 			TCODSystem::getCurrentResolution(&w,&h);
@@ -496,7 +496,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		} else {
 			engine.gui->message(TCODColor::darkerPink,"minimizing");
 			TCODConsole::initRoot(engine.screenWidth,engine.screenHeight, "Astro", false);
-		}
+		}*/
 		break;
 		case 'f':
 			//shooty shooty bang bang -Mitchell
