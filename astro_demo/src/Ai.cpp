@@ -27,6 +27,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case TURRETCONTROL: ai = new TurretControlAi(); break;
 		case LOCKER: ai = new LockerAi(); break;
 		case GARDNER: ai = new GardnerAi(); break;
+		case FRUIT: ai = new FruitAi(NULL,0); break;
 		//
 		
 	}
@@ -255,6 +256,8 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 					engine.gui->message(TCODColor::grey, "The %s seems to be inactive", actor->name);
 				else if(!owner->hostile && !actor->hostile && actor->ch == 'G')
 					engine.gui->message(TCODColor::grey, "Welcome to Hydroponics, please do not touch anything!", actor->name);
+			}else if(actor->interact){
+					((InteractibleAi*)actor->ai)->interaction(actor, owner);
 			}
 			//attacking something like a generator that doesn't have a destructible or something
 			owner->destructible->takeFireDamage(owner, 3.0);
@@ -2614,4 +2617,46 @@ void GardnerAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	}
 }
 
+FruitAi::FruitAi(Actor *keeper, int limit) : keeper(keeper),limit(limit) {
+}
 
+void FruitAi::save(TCODZip &zip){
+	zip.putInt(FRUIT);
+	zip.putInt(limit);
+	keeper->save(zip);
+}
+
+void FruitAi::load(TCODZip &zip){
+	limit = zip.getInt();
+	
+	Actor *act = new Actor(0,0,0,NULL,TCODColor::white);
+	act->load(zip);
+	keeper = act;
+}
+
+void FruitAi::interaction(Actor *owner, Actor *target){
+	
+	if ( !((FruitAi*)owner->ai)->keeper->destructible->isDead() && ((FruitAi*)owner->ai)->keeper->hostile != true){
+		((FruitAi*)owner->ai)->keeper->hostile = true;
+		engine.gui->message(TCODColor::red,"The %s seems angry that you've picked his fruit!",((FruitAi*)owner->ai)->keeper->name);
+	}
+	
+	TCODRandom *rng = TCODRandom::getInstance();
+	int stacksize = rng->getInt(1,3);
+	Actor *fruit = new Actor(0,0,14,owner->name,TCODColor::white);
+	fruit->sort = 1;
+	fruit->blocks = false;
+	fruit->pickable = new Food(stacksize);
+	fruit->pickable->value = 25;
+	fruit->pickable->inkValue = 10;
+	fruit->hunger = owner->hunger;
+	
+	if (((FruitAi*)owner->ai)->limit > 0){
+		if (target->container && target->container->add(fruit)) {
+			engine.gui->message(TCODColor::green,"You pick some %s",fruit->name);
+			((FruitAi*)owner->ai)->limit -= 1;
+		} else {
+			engine.gui->message(TCODColor::grey,"Inventory is full.");
+		}
+	}
+}

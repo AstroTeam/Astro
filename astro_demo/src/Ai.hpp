@@ -10,7 +10,8 @@ public:
 protected:
 	enum AiType {
 		MONSTER, SECURITY, CONFUSED_ACTOR, PLAYER, TRIGGER, RANGED, LIGHT, 
-		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, CONSOLE, VENDING, ENGINEER, EPICENTER, TURRETCONTROL, LOCKER, GARDNER
+		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, CONSOLE, VENDING, ENGINEER, EPICENTER, TURRETCONTROL, LOCKER, GARDNER,
+		FRUIT
 
 	};
 };
@@ -281,3 +282,15 @@ protected:
 	void moveOrAttack(Actor *owner, int targetx, int targety);
 };
 
+class FruitAi: public InteractibleAi{
+public:
+	Actor *keeper;
+	int limit; //how many times they will give fruit
+	
+	FruitAi(Actor *keeper, int limit);
+	void update();
+	void save(TCODZip &zip);
+	void load(TCODZip &zip);
+	void interaction(Actor *owner, Actor *target);
+
+};

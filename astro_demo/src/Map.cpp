@@ -1977,27 +1977,6 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		bool gardnerCreated = false;
 		for (int i = x1+1; i <= x2-1; i++) {
 			for (int j = y1+1; j <= y2-1; j+=2) {
-				int hydroRng = rng->getInt(0,3,1);
-				if (hydroRng == 0)
-				{
-					Actor * plant = new Actor(i, j, 208, "Hydroponic Oranges", TCODColor::white);//low hunger restore
-					engine.actors.push(plant);
-				}
-				else if (hydroRng == 1)
-				{
-					Actor * plant = new Actor(i, j, 209, "Hydroponic Apples", TCODColor::white);//low hunger restore
-					engine.actors.push(plant);
-				}
-				else if (hydroRng == 2)
-				{
-					Actor * plant = new Actor(i, j, 210, "Hydroponic Bananas", TCODColor::white);//moderate hunger restore
-					engine.actors.push(plant);
-				}
-				else if (hydroRng == 3)
-				{
-					Actor * plant = new Actor(i, j, 211, "Hydroponic Starfruit", TCODColor::white);//large hunger restore
-					engine.actors.push(plant);
-				}
 				if(!gardnerCreated && canWalk(x1,y1) && engine.getAnyActor(x1,y1)==NULL)
 				{
 						Actor *g = createGardner(x1, y1);
@@ -2006,6 +1985,55 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 						((GardnerAi*)g->ai)->initY1 = y1;
 						((GardnerAi*) g->ai)->initY2 = y2;
 						((GardnerAi*) g->ai)->initX2 = x2;
+				}
+				int hydroRng = rng->getInt(0,3,1);
+				if (hydroRng == 0)
+				{
+					Actor * plant = new Actor(i, j, 208, "Hydroponic Oranges", TCODColor::white);//low hunger restore
+					plant->hunger = 5;
+					if (gardnerCreated == true){
+						plant->interact = true;
+						Actor *g = engine.getAnyActor(x1,y1);
+						int count = rng->getInt(1,3);
+						plant->ai = new FruitAi(g,count);
+					}
+					engine.actors.push(plant);
+				}
+				else if (hydroRng == 1)
+				{
+					Actor * plant = new Actor(i, j, 209, "Hydroponic Apples", TCODColor::white);//low hunger restore
+					plant->hunger = 5;
+					if (gardnerCreated == true){
+						plant->interact = true;
+						Actor *g = engine.getAnyActor(x1,y1);
+						int count = rng->getInt(1,3);
+						plant->ai = new FruitAi(g,count);
+					}
+					engine.actors.push(plant);
+				}
+				else if (hydroRng == 2)
+				{
+					Actor * plant = new Actor(i, j, 210, "Hydroponic Bananas", TCODColor::white);//moderate hunger restore
+					plant->hunger = 10;
+					if (gardnerCreated == true){
+						plant->interact = true;
+						Actor *g = engine.getAnyActor(x1,y1);
+						int count = rng->getInt(1,3);
+						plant->ai = new FruitAi(g,count);
+					}
+					engine.actors.push(plant);
+				}
+				else if (hydroRng == 3)
+				{
+					Actor * plant = new Actor(i, j, 211, "Hydroponic Starfruit", TCODColor::white);//large hunger restore
+					plant->hunger = 15;
+					if (gardnerCreated == true){
+						plant->interact = true;
+						Actor *g = engine.getAnyActor(x1,y1);
+						int count = rng->getInt(1,3);
+						plant->ai = new FruitAi(g,count);
+					}
+					engine.actors.push(plant);
 				}
 				engine.map->tiles[i+j*engine.map->width].decoration = 48;
 
