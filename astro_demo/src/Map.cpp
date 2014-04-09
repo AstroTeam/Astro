@@ -305,6 +305,7 @@ void Map::spawnTutorial() {
 	int y1 = -20 +engine.mapHeight-12;
 	int y2 = -20 +engine.mapHeight-7;
 	cout << "creating tutorial room"<< endl;
+	
 	for (int tilex = x1; tilex <=x2; tilex++) {//first room
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
@@ -320,7 +321,7 @@ void Map::spawnTutorial() {
 	"Most items can be interacted with by simply moving into them by pressing the corresponding movement key whilst being adjacent to it. (Like these automated terminals)");
 	triggerTileI->blocks = false; 
 	engine.actors.push(triggerTileI);
-
+	cout << "got past first terminal" << endl;
 	//make FOV terminal
 	Actor *triggerTileFov = new Actor(x2-1,y2-1, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileFov->ai = new TriggerAi(  
@@ -386,7 +387,7 @@ void Map::spawnTutorial() {
 	triggerTileLR->blocks = false;
 	engine.actors.push(triggerTileLR);
 	
-	
+	cout << "got past light room terminal" << endl;
 	
 	//add server and console
 	tiles[x2+y1*engine.mapWidth].tileType = Param::SERVER;
