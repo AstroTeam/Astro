@@ -2182,7 +2182,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					}
 				}
 				//add inner sandbags if room allows
-				if ((dx > 7 && dy > 5) || (dy > 7 && dx > 5))
+				if ((dx > 7 && dy > 9) || (dy > 7 && dx > 9))
 				{
 					if (
 					   (x == x1+2 && (y >= y1+4 && y <= y2-4))
@@ -2196,6 +2196,18 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 						engine.actors.push(pcmu);
 						pcmu->blocks = false;
 						engine.sendToBack(pcmu);
+					}
+					if ((x == x2-3 && y == y1+5) || (x == x1+3 && y == y2-5))
+					{
+						Actor *MLR = createMLR(x,y, false);
+						engine.actors.push(MLR);
+						engine.sendToBack(MLR);
+						Actor *pallet = new Actor(x, y, 243, "An empty pallet.", TCODColor::white);
+						//engine.mapconDec->setChar(x,y, 32);//
+						engine.map->tiles[x+y*engine.map->width].decoration = 32;
+						engine.actors.push(pallet);
+						pallet->blocks = false;
+						engine.sendToBack(pallet);
 					}
 				}
 				
