@@ -16,12 +16,12 @@ namespace Param {
 		ARMORY,    //to-do - add gun racks and security bots and glass cases, locked door?  need to kill security bot to get in?
 		OBSERVATORY, //to-do - breakable floor, no oxygen
 		HYDROPONICS, //to-do - grass, spawns food in garden
+		DEFENDED_ROOM,//defended rooms - friendly marines inside, give you a gun and ammo, have a medic who will help you? scientist give you tech
+		LAB,//laboratory - experiment with spores, infected scientists, 
+		INFECTED_ROOM,//infected room - all floor is infected level 6, epicenters in middle
 		//lobby - stair room with seating
 		//cult rooms - blood everywhere, crazy cult enemies that have high str, low hp
-		//defended rooms - friendly marines inside, give you a gun and ammo, have a medic who will help you? scientist give you tech
 		//THE BRIDGE - the win room, has a blackbox
-		//laboratory - experiment with spores, infected scientists, 
-		//infected room - all floor is infected level 6, epicenters in middle
 	};
 };
 

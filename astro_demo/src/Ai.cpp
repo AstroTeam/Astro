@@ -28,7 +28,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case LOCKER: ai = new LockerAi(); break;
 		case GARDNER: ai = new GardnerAi(); break;
 		case FRUIT: ai = new FruitAi(NULL,0); break;
-		//
+		case ZED: ai = new ZedAi(); break;
 		
 	}
 	ai->load(zip);
@@ -2634,6 +2634,7 @@ void FruitAi::load(TCODZip &zip){
 	keeper = act;
 }
 
+
 void FruitAi::interaction(Actor *owner, Actor *target){
 	
 	if ( !((FruitAi*)owner->ai)->keeper->destructible->isDead() && ((FruitAi*)owner->ai)->keeper->hostile != true){
@@ -2658,5 +2659,73 @@ void FruitAi::interaction(Actor *owner, Actor *target){
 		} else {
 			engine.gui->message(TCODColor::grey,"Inventory is full.");
 		}
+	}
+}
+
+ZedAi::ZedAi() : moveCount(0), range(3){
+}
+
+void ZedAi::load(TCODZip &zip) {
+	moveCount = zip.getInt();
+	range = zip.getInt();
+}
+
+void ZedAi::save(TCODZip &zip) {
+	zip.putInt(RANGED);
+	zip.putInt(moveCount);
+	zip.putInt(range);
+}
+
+void ZedAi::update(Actor *owner) {
+
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	
+	if (engine.map->isInFov(owner->x,owner->y)) {
+		//can see the palyer, move towards him
+		moveCount = TRACKING_TURNS + 2; //give ranged characters longer tracking
+	} else {
+		moveCount--;
+	}
+	if (moveCount > 0) {
+		moveOrAttack(owner, engine.player->x, engine.player->y);
+	} else {
+		moveCount = 0;
+	}
+	owner->destructible->takeFireDamage(owner, 3.0);
+}
+void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
+{
+	int dx = targetx - owner->x;
+	int dy = targety - owner->y;
+	int stepdx = (dx > 0 ? 1:-1);
+	int stepdy = (dy > 0 ? 1:-1);
+	float distance = sqrtf(dx*dx+dy*dy);
+	//If the distance > range, then the rangedAi will move towards the player
+	//If the distance <= range, then the rangedAi will shoot the player unless the player is right next the rangedAi
+
+	if (distance > range) {
+
+		dx = (int) (round(dx / distance));
+		dy = (int)(round(dy / distance));
+		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+			owner->x+=dx;
+			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
+			owner->x += stepdx;
+		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
+			owner->y += stepdy;
+		}
+		if (owner->oozing) {
+			engine.map->infectFloor(owner->x, owner->y);
+		}
+	} else if (distance !=1 && owner->attacker) {
+		owner->attacker->shoot(owner,engine.player);
+		engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDodge);
+	}
+	else if (owner->attacker) {
+		owner->attacker->attack(owner,engine.player);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
 }

@@ -107,6 +107,12 @@ int Map::tileType(int x, int y) {
 	{return 9;}
 	else if (tiles[i].tileType == Param::HYDROPONICS)//
 	{return 10;}
+	else if (tiles[i].tileType == Param::DEFENDED_ROOM)//
+	{return 11;}
+	else if (tiles[i].tileType == Param::LAB)//
+	{return 12;}
+	else if (tiles[i].tileType == Param::INFECTED_ROOM)//
+	{return 13;}
 	else
 	{return 1;}
 	//return tiles[x*y].tileType;
@@ -129,13 +135,48 @@ void Map::init(bool withActors, LevelType levelType) {
 
 		//Create boss, for now it is a simple security bot
 		if (withActors) {
-			Actor *boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
-			boss->name = "Infected Security Bot";
-			boss->ch = 146;
-			boss->destructible->hp = boss->destructible->hp*2;
-			boss->destructible->maxHp = boss->destructible->hp;
-			boss->totalStr = boss->totalStr*1.25;
-			engine.boss = boss;
+			if (engine.level == 5) {
+				//creating the final boss
+				int level = engine.level;
+				float scale = 1 + .1*(level - 1);
+				float zHp = 40*scale;
+				float zDodge = 1*scale;
+				float zDR = 1*scale;
+				float zStr = 20*scale;
+				float zDex = 20*scale;
+				float zXp = 100*scale;
+
+				Actor *z = new Actor(engine.stairs->x+1, engine.stairs->y,'Z',"Zed Umber",TCODColor::white);
+				Actor *boss = z;
+				z->destructible = new MonsterDestructible(zHp,zDodge,zDR,zXp);
+				z->totalStr = zStr;
+				z->totalDex = zDex;
+				z->attacker = new Attacker(zStr);
+				z->container = new Container(2);
+				z->ai = new ZedAi();
+				//generateRandom(z, zAscii);
+
+				boss->name = "Zed Umber";
+				boss->ch = 'Z';
+				boss->destructible->hp = boss->destructible->hp*2;
+				boss->destructible->maxHp = boss->destructible->hp;
+				boss->totalStr = boss->totalStr*1.25;
+				boss->totalDex = boss->totalStr*1.25;
+
+				generateRandom(z, 'Z');
+
+				engine.actors.push(z);
+				engine.boss = boss;
+			}
+			else {
+				Actor *boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
+				boss->name = "Infected Security Bot";
+				boss->ch = 146;
+				boss->destructible->hp = boss->destructible->hp*2;
+				boss->destructible->maxHp = boss->destructible->hp;
+				boss->totalStr = boss->totalStr*1.25;
+				engine.boss = boss;
+			}
 		}
 		if (engine.level > 1 && artifacts > 0) {
 			engine.gui->message(TCODColor::red,"The air hums with unknown energy... Perhaps there is an artifact of great power here!");
@@ -1342,6 +1383,10 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 				roomList->push(MESSHALL);
 				roomList->push(HYDROPONICS);
 				roomList->push(OBSERVATORY);
+				roomList->push(LAB);
+				roomList->push(LAB);
+				roomList->push(DEFENDED_ROOM);
+				roomList->push(INFECTED_ROOM);
 				break;
 			case OFFICE_FLOOR:
 				for (int i = 0; i <= 40; i++) {
@@ -2039,6 +2084,17 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 
 			}
 		}
+
+	}
+	if (room->type == DEFENDED_ROOM) {
+
+	}
+	if (room->type == LAB) {
+
+	}
+
+	if (room->type == INFECTED_ROOM) {
+
 
 	}
 	/*
