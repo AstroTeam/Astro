@@ -1417,6 +1417,10 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 				for (int i = 0; i <= rng->getInt(1,3); i++) {
 					roomList->push(BARRACKS);
 				}	
+				//roomList->push(DEFENDED_ROOM);
+				//roomList->push(DEFENDED_ROOM);
+				//roomList->push(DEFENDED_ROOM);
+				
 				roomList->push(KITCHEN);
 				roomList->push(KITCHEN);
 				//need to see if end list items are less common
@@ -1430,14 +1434,16 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 				roomList->push(BAR);
 				roomList->push(BAR);
 				roomList->push(DEFENDED_ROOM);
-				roomList->push(DEFENDED_ROOM);
-				roomList->push(DEFENDED_ROOM);
-				roomList->push(DEFENDED_ROOM);
 				roomList->push(INFECTED_ROOM);
 				break;
 			case OFFICE_FLOOR:
 				for (int i = 0; i <= 40; i++) {
 					roomList->push(OFFICE);
+				}
+				break;
+			case DEFENDED:
+				for (int i = 0; i <= 40; i++) {
+					roomList->push(DEFENDED_ROOM);
 				}
 				break;
 			case TUTORIAL:
@@ -2194,11 +2200,11 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					}
 				}
 				//add inner sandbags if room allows
-				if ((dx >= 10 && dy >= 10))// || (dy > 7 && dx > 10))
+				if ((dx >= 7 && dy >= 10))// || (dy > 7 && dx > 10))
 				{
 					//sandbags UP DOWN
-					if ((x == x1+2 && (y >= y1+4 && y <= y2-4))
-					|| (x == x2-2 && (y >= y1+4 && y <= y2-4)))
+					if (((x == x1+2 && (y >= y1+4 && y <= y2-4))
+					|| (x == x2-2 && (y >= y1+4 && y <= y2-4))) && !((x == x1+2 && y == y1+4) || (x == x1+2 && y == y2-4) || (x == x2-2 && y == y1+4) || (x == x2-2 && y == y2-4)))
 					{
 						Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
 						engine.map->tiles[x+y*engine.map->width].decoration = 58;
@@ -2207,8 +2213,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 						engine.sendToBack(pcmu);
 					}
 					//sandbags LEFT RIGHT
-					if ((y == y1+4 && (x >= x1+2 && x <= x2-2)) 
-					|| (y == y2-4 && (x >= x1+2 && x <= x2-2)))
+					if (((y == y1+4 && (x >= x1+2 && x <= x2-2)) 
+					|| (y == y2-4 && (x >= x1+2 && x <= x2-2))) && !((x == x1+2 && y == y1+4) || (x == x1+2 && y == y2-4) || (x == x2-2 && y == y1+4) || (x == x2-2 && y == y2-4)))
 					{
 						Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
 						engine.map->tiles[x+y*engine.map->width].decoration = 76;
