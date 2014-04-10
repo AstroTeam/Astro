@@ -2136,7 +2136,33 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 
 	}
 	if (room->type == DEFENDED_ROOM) {
-
+		//sandbag
+		for (int x = x1; x <= x2; x++)
+		{
+			for (int y = y1; y <= y2; y++)
+			{
+				if (x == x1 || x == x2 || y == y1 || y == y2)
+				{
+					Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
+					engine.map->tiles[x+y*engine.map->width].decoration = 58;
+					engine.actors.push(pcmu);
+					pcmu->blocks = false;
+					engine.sendToBack(pcmu);
+				}
+				if ((x == x1+2 && (y == y1+2 || y == y1+3)) || (x == x1+3 && (y == y1+2 || y ==y1+3)))
+				{
+					Actor *stackOfFood = createFood(x,y);
+					engine.actors.push(stackOfFood);
+					engine.sendToBack(stackOfFood);
+					Actor *pallet = new Actor(x, y, 243, "An empty pallet.", TCODColor::white);
+					//engine.mapconDec->setChar(x,y, 32);//
+					engine.map->tiles[x+y*engine.map->width].decoration = 32;
+					engine.actors.push(pallet);
+					pallet->blocks = false;
+					engine.sendToBack(pallet);
+				}
+			}
+		}
 	}
 	if (room->type == BAR) {
 

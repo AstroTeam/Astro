@@ -875,6 +875,37 @@ void Renderer::render(void *sdlSurface){
 					
 				//}
 				}
+				////////////////////////////////////////////////////////////////////DEFENDED_ROOM
+				if (engine.map->tileType(xM,yM) == 11)//|| engine.map->tileType(xM,yM) == 1)
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.x=32;
+					}else{
+						//dark/*commet*/
+						srcRect.x=48;
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 58)//sandbag wall
+					{
+						
+						srcRect.y = 6*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.x=0;
+					}else{
+						//dark
+						srcRect.x=32;
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 32)//pallet
+					{
+						srcRect.x +=240;
+						srcRect.y = 48;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+				}
 			}
 			
 			//cout << "decor end" << endl;
