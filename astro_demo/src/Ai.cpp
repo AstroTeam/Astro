@@ -242,7 +242,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 		Actor *actor = *iterator;
 		if (actor->blocks && actor->x == targetx &&actor->y == targety) {
 			if (actor->destructible && !actor->destructible->isDead() ) {
-				if (actor->hostile||owner->hostile){
+				if (actor->hostile|| (owner->hostile && engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration != 56)){
 					owner->attacker->attack(owner, actor);
 					if(!actor->hostile && actor->ch == 129) //currently this only applies to security bots, if the player attacks a nonhostile enemy, should that actor generally become hostile?
 					{
@@ -251,7 +251,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 					}else if(!actor->hostile && actor->ch == 'G') //gardner become hostile
 						actor->hostile = true;
 					engine.damageDone += owner->attacker->totalPower - actor->destructible->totalDodge;
-				}else if(actor->interact && !owner->hostile)
+				}else if(actor->interact && (!owner->hostile || engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration == 56))
 					((InteractibleAi*)actor->ai)->interaction(actor, owner);
 				else if(!owner->hostile && !actor->hostile && actor->ch == 129)
 					engine.gui->message(TCODColor::grey, "The %s seems to be inactive", actor->name);
@@ -2545,8 +2545,6 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 			bool choice_made = false, first = true;
 			bool hasKey = false;
 			Actor *key;
-			
-			
 			//check if the player has a key
 			for (Actor **it = engine.player->container->inventory.begin(); it != engine.player->container->inventory.end(); it++) 
 			{
@@ -2555,9 +2553,11 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 				{
 					hasKey = true;
 					key = actor;
+					break;
 				}
 			}
-				
+			if(!hasKey)
+				engine.gui->message(TCODColor::blue, "The %s appears to be locked, perhaps a key is needed.", owner->name);
 			while (!choice_made && locked && hasKey) 
 			{
 				if (first) {
@@ -2587,8 +2587,6 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 					default: break;
 				}
 			}
-			if(!hasKey)
-				engine.gui->message(TCODColor::blue, "The %s appears to be locked, perhaps a key is needed.", owner->name);
 		}
 		if(!locked)
 		{

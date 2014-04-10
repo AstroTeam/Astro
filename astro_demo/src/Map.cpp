@@ -2044,7 +2044,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 						//weapon vaults:
 						Actor *vault = new Actor(i,j,243,"Weapon Vault", TCODColor::white);
 						engine.map->tiles[i+j*engine.map->width].decoration = 56;
-						vault->destructible = new MonsterDestructible(10000,0,0,0);
+						vault->destructible = new MonsterDestructible(10,0,0,0);
 						vault->ai = new LockerAi();
 						((LockerAi*)vault->ai)->locked = true;
 						vault->hostile = false;
@@ -2741,6 +2741,16 @@ void Map::render() const {
 void Map::generateRandom(Actor *owner, int ascii){
 	TCODRandom *rng = TCODRandom::getInstance();
 	int dice = rng->getInt(0,100);
+	
+	//modify as needed:
+	if(ascii == 243 && engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 56) //this is the weapon vault, add whatever gubbins that you want
+	{
+		//for now, they just get artifacts, but change to whatever
+		Actor *artifact = createArtifact(0,0);
+		artifact->pickable->pick(artifact, owner);
+		return;
+	}
+	
 	if(dice <= 40 && !(ascii == 129 || ascii == 130 || ascii == 146)){ //security bots should always drop keys
 			return;
 	}else{
