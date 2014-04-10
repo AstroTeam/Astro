@@ -1430,6 +1430,9 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 				roomList->push(BAR);
 				roomList->push(BAR);
 				roomList->push(DEFENDED_ROOM);
+				roomList->push(DEFENDED_ROOM);
+				roomList->push(DEFENDED_ROOM);
+				roomList->push(DEFENDED_ROOM);
 				roomList->push(INFECTED_ROOM);
 				break;
 			case OFFICE_FLOOR:
@@ -2143,11 +2146,20 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		{
 			for (int y = y1; y <= y2; y++)
 			{
-				//add all sandbags!
-				if (x == x1 || x == x2 || y == y1 || y == y2)
+				//add all sandbags UP DOWN!
+				if ((x == x1 || x == x2) && !((x == x1 && y == y1) || (x == x1 && y == y2) || (x == x2 && y == y1) || (x == x2 && y == y2)))
 				{
 					Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
 					engine.map->tiles[x+y*engine.map->width].decoration = 58;
+					engine.actors.push(pcmu);
+					pcmu->blocks = false;
+					engine.sendToBack(pcmu);
+				}
+				//add all sandbags LEFT RIGHT!
+				if ((y == y1 || y == y2) && !((x == x1 && y == y1) || (x == x1 && y == y2) || (x == x2 && y == y1) || (x == x2 && y == y2)))
+				{
+					Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
+					engine.map->tiles[x+y*engine.map->width].decoration = 76;
 					engine.actors.push(pcmu);
 					pcmu->blocks = false;
 					engine.sendToBack(pcmu);
@@ -2182,17 +2194,24 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					}
 				}
 				//add inner sandbags if room allows
-				if ((dx > 7 && dy > 9) || (dy > 7 && dx > 9))
+				if ((dx >= 10 && dy >= 10))// || (dy > 7 && dx > 10))
 				{
-					if (
-					   (x == x1+2 && (y >= y1+4 && y <= y2-4))
-					|| (x == x2-2 && (y >= y1+4 && y <= y2-4))
-					|| (y == y1+4 && (x >= x1+2 && x <= x2-2)) 
-					|| (y == y2-4 && (x >= x1+2 && x <= x2-2))
-					)
+					//sandbags UP DOWN
+					if ((x == x1+2 && (y >= y1+4 && y <= y2-4))
+					|| (x == x2-2 && (y >= y1+4 && y <= y2-4)))
 					{
 						Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
 						engine.map->tiles[x+y*engine.map->width].decoration = 58;
+						engine.actors.push(pcmu);
+						pcmu->blocks = false;
+						engine.sendToBack(pcmu);
+					}
+					//sandbags LEFT RIGHT
+					if ((y == y1+4 && (x >= x1+2 && x <= x2-2)) 
+					|| (y == y2-4 && (x >= x1+2 && x <= x2-2)))
+					{
+						Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
+						engine.map->tiles[x+y*engine.map->width].decoration = 76;
 						engine.actors.push(pcmu);
 						pcmu->blocks = false;
 						engine.sendToBack(pcmu);
@@ -2201,7 +2220,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					{
 						Actor *MLR = createMLR(x,y, false);
 						engine.actors.push(MLR);
-						engine.sendToBack(MLR);
+						//engine.sendToBack(MLR);
 						Actor *pallet = new Actor(x, y, 243, "A pallet.", TCODColor::white);
 						//engine.mapconDec->setChar(x,y, 32);//
 						engine.map->tiles[x+y*engine.map->width].decoration = 32;
