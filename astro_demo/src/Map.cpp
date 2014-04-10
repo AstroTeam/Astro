@@ -2152,6 +2152,13 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		{
 			for (int y = y1; y <= y2; y++)
 			{
+				if ((x == x1+1 && y == y1+1) || (x == x2-1 && y == y1+1) || (x == x1+1 && y == y2-1) || (x == x2-1 && y == y2-1))
+				{
+					float flkr = 1.0;
+					Actor *light = new Actor(x,y, 224, "A hastily erected Emergency Light", TCODColor::white);
+					light->ai = new LightAi(5,flkr);                //224, crashes when using 224
+					engine.actors.push(light);				
+				}
 				//add all sandbags UP DOWN!
 				if ((x == x1 || x == x2) && !((x == x1 && y == y1) || (x == x1 && y == y2) || (x == x2 && y == y1) || (x == x2 && y == y2)))
 				{
@@ -2341,7 +2348,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	}
 	//TCODRandom *rnd = TCODRandom::getInstance();
 	//add lights to all rooms, make test later
-	if (rng->getInt(0,10) > 4)
+	if (rng->getInt(0,10) > 4 && room->type != DEFENDED_ROOM)
 	{
 		//42 is star 
 		int numLights = 0;
