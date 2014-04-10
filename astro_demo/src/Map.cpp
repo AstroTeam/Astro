@@ -2137,10 +2137,13 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	}
 	if (room->type == DEFENDED_ROOM) {
 		//sandbag
+		int dx = x2-x1;
+		int dy = y2-y1;
 		for (int x = x1; x <= x2; x++)
 		{
 			for (int y = y1; y <= y2; y++)
 			{
+				//add all sandbags!
 				if (x == x1 || x == x2 || y == y1 || y == y2)
 				{
 					Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
@@ -2149,6 +2152,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					pcmu->blocks = false;
 					engine.sendToBack(pcmu);
 				}
+				//add the top left pallets+foodStuffs
 				if ((x == x1+2 && (y == y1+2 || y == y1+3)) || (x == x1+3 && (y == y1+2 || y ==y1+3)))
 				{
 					Actor *stackOfFood = createFood(x,y);
@@ -2161,6 +2165,40 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					pallet->blocks = false;
 					engine.sendToBack(pallet);
 				}
+				//add bottom right pallets+foodStuffs
+				if (dx > 7 || dy > 7)
+				{
+					if ((x == x2-2 && (y == y2-2 || y == y2-3)) || (x == x2-3 && (y == y2-2 || y ==y2-3)))
+					{
+						Actor *stackOfFood = createFood(x,y);
+						engine.actors.push(stackOfFood);
+						engine.sendToBack(stackOfFood);
+						Actor *pallet = new Actor(x, y, 243, "An empty pallet.", TCODColor::white);
+						//engine.mapconDec->setChar(x,y, 32);//
+						engine.map->tiles[x+y*engine.map->width].decoration = 32;
+						engine.actors.push(pallet);
+						pallet->blocks = false;
+						engine.sendToBack(pallet);
+					}
+				}
+				//add inner sandbags if room allows
+				if ((dx > 7 && dy > 5) || (dy > 7 && dx > 5))
+				{
+					if (
+					   (x == x1+2 && (y >= y1+4 && y <= y2-4))
+					|| (x == x2-2 && (y >= y1+4 && y <= y2-4))
+					|| (y == y1+4 && (x >= x1+2 && x <= x2-2)) 
+					|| (y == y2-4 && (x >= x1+2 && x <= x2-2))
+					)
+					{
+						Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
+						engine.map->tiles[x+y*engine.map->width].decoration = 58;
+						engine.actors.push(pcmu);
+						pcmu->blocks = false;
+						engine.sendToBack(pcmu);
+					}
+				}
+				
 			}
 		}
 	}
