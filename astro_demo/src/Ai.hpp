@@ -261,6 +261,7 @@ class TurretControlAi: public InteractibleAi
 class LockerAi: public InteractibleAi{
 public:
 	LockerAi();
+	bool locked;
 	void update();
 	void save(TCODZip &zip);
 	void load(TCODZip &zip);

@@ -2041,9 +2041,17 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					int mid = (y1+y2)/2;
 					if (j == mid+1 || j == mid-1 || j == mid)
 					{
-						Actor * pcmu = new Actor(i, j, 243, "Weapon Vault", TCODColor::white);
+						//weapon vaults:
+						Actor *vault = new Actor(i,j,243,"Weapon Vault", TCODColor::white);
 						engine.map->tiles[i+j*engine.map->width].decoration = 56;
-						engine.actors.push(pcmu);
+						vault->destructible = new MonsterDestructible(10000,0,0,0);
+						vault->ai = new LockerAi();
+						((LockerAi*)vault->ai)->locked = true;
+						vault->hostile = false;
+						vault->interact = true;
+						vault->container = new Container(3);
+						generateRandom(vault,243);
+						engine.actors.push(vault);
 					}
 					
 					if(j == mid+2 || j == mid - 2)

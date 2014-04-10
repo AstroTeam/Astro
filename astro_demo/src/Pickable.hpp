@@ -172,6 +172,7 @@ public:
 class Key: public Pickable {
 public: 
 	int keyType; //vaultKey = 0
+	bool used;
 	Key(int keyType, bool stacks = true, int stackSize = 1, PickableType type = KEY);
 	bool use(Actor *owner, Actor *wearer);
 	void load(TCODZip &zip);

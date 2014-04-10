@@ -2514,37 +2514,107 @@ void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
 
 
 LockerAi::LockerAi(){
+locked = false;
 }
 void LockerAi::save(TCODZip &zip){
 zip.putInt(LOCKER);
+zip.putInt(locked);
+
 }
 void LockerAi::load(TCODZip &zip){
+locked = zip.getInt();
 }
 void LockerAi::interaction(Actor *owner, Actor *target){
 
+	//this line of code causes the locker dropping flavor text to never be printed, is that intentional?
 	if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
 	}
 	//owner->ch = 243;
-	if(!owner->container->inventory.isEmpty()){
+	if(!owner->container->inventory.isEmpty())
+	{
 		if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
 			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
 		} else if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 44){
-			engine.gui->message(TCODColor::lightGrey,"The PCMU beeps and spits out a brick of foodstuffs");
+			engine.gui->message(TCODColor::lightGrey,"The PCMU beeps and spits out a brick of foodstuffs.");
 		}
-		Actor **iterator=owner->container->inventory.begin();
-		for(int i = 0; i < owner->container->size; i++){
-			if(owner->container->inventory.isEmpty()){
-				break;
+		else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 56)
+		{
+		
+		
+			bool choice_made = false, first = true;
+			bool hasKey = false;
+			Actor *key;
+			
+			
+			//check if the player has a key
+			for (Actor **it = engine.player->container->inventory.begin(); it != engine.player->container->inventory.end(); it++) 
+			{
+				Actor *actor = *it;
+				if(actor->ch == 'K')
+				{
+					hasKey = true;
+					key = actor;
+				}
 			}
-		Actor *actor = *iterator;
-		if(actor){
-			actor->pickable->drop(actor,owner,true);
-		}				
-		if(iterator != owner->container->inventory.end()){
-			++iterator;
+				
+			while (!choice_made && locked && hasKey) 
+			{
+				if (first) {
+					TCODConsole::flush();
+				}
+				engine.gui->menu.clear();
+				engine.gui->menu.addItem(Menu::DISABLE_TURRETS, "Unlock weapon vault with a single use key");
+				engine.gui->menu.addItem(Menu::EXIT, "Exit");
+				Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::TURRET_CONTROL);
+				switch (menuItem) {
+					case Menu::DISABLE_TURRETS:
+						locked = false;
+						((Key*)key->pickable)->used = true;
+						if(key->pickable->use(key, engine.player))
+						{
+							engine.gui->message(TCODColor::blue, "The %s opens!", owner->name);
+							locked = false;
+						}
+						choice_made = true;
+						break;
+					case Menu::EXIT :
+						choice_made = true;
+						break;
+					case Menu::NO_CHOICE:
+						first = false;
+						break;
+					default: break;
+				}
+			}
+			if(!hasKey)
+				engine.gui->message(TCODColor::blue, "The %s appears to be locked, perhaps a key is needed.", owner->name);
+		}
+		if(!locked)
+		{
+			Actor **iterator=owner->container->inventory.begin();
+			for(int i = 0; i < owner->container->size; i++)
+			{
+				if(owner->container->inventory.isEmpty())
+				{
+					break;
+				}
+				Actor *actor = *iterator;
+				if(actor)
+				{
+					actor->pickable->drop(actor,owner,true);
+				}				
+				if(iterator != owner->container->inventory.end())
+				{
+					++iterator;
+				}
 			}
 		}
+	}
+	else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 56)
+	{
+		if(!locked)
+				engine.gui->message(TCODColor::blue,"The %s has been opened and is now empty.", owner->name);
 	}
 }
 
