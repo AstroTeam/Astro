@@ -157,6 +157,7 @@ void PlayerAi::update(Actor *owner) {
 				owner->attacker->basePower += 1;
 				owner->attacker->totalPower += 1;
 				owner->str += 1;
+				owner->totalStr += 1;
 				choice_made = true;
 				break;
 			case Menu::DEXTERITY :
@@ -334,12 +335,9 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			}
 		}
 		break;
-		case 'I':
-			engine.map->computeFov();
-			engine.gui->menu.clear();
-			TCODConsole::flush();
-			engine.invState = 5;
-			invSkip = true;
+		//case 'I':
+			//engine.invState = 5;
+			//invSkip = true;
 			
 		case 'i': //display inventory
 		{ 
@@ -490,7 +488,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		} else {
 			engine.gui->message(TCODColor::lightGrey, "There are no stairs here. Perhaps you are disoriented?");
 		} break;
-		case 'v':
+		/*case 'v':
 		int w, h;
 		if (!TCODConsole::isFullscreen()){
 			TCODSystem::getCurrentResolution(&w,&h);
@@ -498,7 +496,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		} else {
 			engine.gui->message(TCODColor::darkerPink,"minimizing");
 			TCODConsole::initRoot(engine.screenWidth,engine.screenHeight, "Astro", false);
-		}
+		}*/
 		break;
 		case 'f':
 			//shooty shooty bang bang -Mitchell
@@ -2306,6 +2304,18 @@ void VendingAi::populate(Actor *owner){
 	engine.actors.push(mlr);
 	mlr->pickable->pick(mlr,owner);
 	
+	Actor* myCap = engine.map->createMylarCap(0,0,true);
+	engine.actors.push(myCap);
+	myCap->pickable->pick(myCap,owner);
+	
+	Actor* myVest = engine.map->createMylarVest(0,0,true);
+	engine.actors.push(myVest);
+	myVest->pickable->pick(myVest,owner);
+	
+	Actor *myGreaves = engine.map->createMylarGreaves(0,0,true);
+	engine.actors.push(myGreaves);
+	myGreaves->pickable->pick(myGreaves,owner);
+	
 	Actor *myBoots = engine.map->createMylarBoots(0,0,true);
 	engine.actors.push(myBoots);
 	myBoots->pickable->pick(myBoots,owner);
@@ -2579,8 +2589,8 @@ void GardnerAi::update(Actor *owner)
 	} else {
 		moveCount--;
 	}
-	
-	if (moveCount > 0) {
+	//the Gardner will move towards the player if he is in the garden and is hostile
+	if (moveCount > 0 ||(engine.player->x <= initX2 && engine.player->x >= initX1 && engine.player->y >= initY1 && engine.player->y <= initY2)) {
 		MonsterAi::moveOrAttack(owner, engine.player->x, engine.player->y);
 	} else {
 		moveCount = 0;
@@ -2659,6 +2669,11 @@ void FruitAi::interaction(Actor *owner, Actor *target){
 		} else {
 			engine.gui->message(TCODColor::grey,"Inventory is full.");
 		}
+		if (((FruitAi*)owner->ai)->limit == 0){
+			engine.actors.remove(owner);
+			delete owner;
+		}
+		
 	}
 }
 

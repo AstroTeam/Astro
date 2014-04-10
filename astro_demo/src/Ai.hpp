@@ -292,7 +292,19 @@ public:
 	void save(TCODZip &zip);
 	void load(TCODZip &zip);
 	void interaction(Actor *owner, Actor *target);
+};
 
+class CompanionAi : public Ai {
+public:
+	enum Command{
+		STAY, FOLLOW, ATTACK
+	};
+	
+	Actor *tamer;
+	int range_limit; //
+	
+	
+	
 };
 
 class ZedAi : public Ai

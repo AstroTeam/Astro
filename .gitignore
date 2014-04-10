@@ -16,7 +16,10 @@ screenshot*.png
 # Executables
 *.out
 *.app
-*tuto.exe
+*.exe
+
+#Track Demo.exe
+!astro_demo\Demo.exe
 
 # Unecessary Text Files
 stderr.txt

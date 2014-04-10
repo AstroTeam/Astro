@@ -109,7 +109,7 @@ int Map::tileType(int x, int y) {
 	{return 10;}
 	else if (tiles[i].tileType == Param::DEFENDED_ROOM)//
 	{return 11;}
-	else if (tiles[i].tileType == Param::LAB)//
+	else if (tiles[i].tileType == Param::BAR)//
 	{return 12;}
 	else if (tiles[i].tileType == Param::INFECTED_ROOM)//
 	{return 13;}
@@ -346,6 +346,7 @@ void Map::spawnTutorial() {
 	int y1 = -20 +engine.mapHeight-12;
 	int y2 = -20 +engine.mapHeight-7;
 	cout << "creating tutorial room"<< endl;
+	
 	for (int tilex = x1; tilex <=x2; tilex++) {//first room
 		for (int tiley = y1; tiley <= y2; tiley++) {
 
@@ -361,7 +362,7 @@ void Map::spawnTutorial() {
 	"Most items can be interacted with by simply moving into them by pressing the corresponding movement key whilst being adjacent to it. (Like these automated terminals)");
 	triggerTileI->blocks = false; 
 	engine.actors.push(triggerTileI);
-
+	cout << "got past first terminal" << endl;
 	//make FOV terminal
 	Actor *triggerTileFov = new Actor(x2-1,y2-1, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileFov->ai = new TriggerAi(  
@@ -427,7 +428,7 @@ void Map::spawnTutorial() {
 	triggerTileLR->blocks = false;
 	engine.actors.push(triggerTileLR);
 	
-	
+	cout << "got past light room terminal" << endl;
 	
 	//add server and console
 	tiles[x2+y1*engine.mapWidth].tileType = Param::SERVER;
@@ -641,24 +642,51 @@ void Map::spawnTutorial() {
 		dummy->destructible = new MonsterDestructible(10,0,0,1);
 		engine.actors.push(dummy);
 	}
+	//melee weapons for testing
+	/*Actor *combatKnife = new Actor(x,y,169,"Combat Knife",TCODColor::white);
+	combatKnife->blocks = false;
+	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,3);
+	combatKnife->pickable = new Weapon(1,4,3,Weapon::LIGHT,0,Equipment::HAND1,bonus,requirement);
+	combatKnife->sort = 4;*/
 	
+	
+	/*ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,3);
+	Actor *knife1 = new Actor(x1+6,y1+1,169,"Standard Knife",TCODColor::white);
+	knife1->blocks = false;
+	knife1->pickable = new Weapon(1,4,3,Weapon::LIGHT,0,Equipment::HAND1,bonus,requirement);
+	knife1->sort = 4;
+	engine.actors.push(knife1);
+	Actor *knife2 = new Actor(x1+6,y1+3,169,"Offhand Knife",TCODColor::white);
+	knife2->blocks = false;
+	knife2->pickable = new Weapon(1,4,3,Weapon::LIGHT,0,Equipment::HAND2,bonus,requirement);
+	knife2->sort = 4;
+	engine.actors.push(knife2);
+	Actor *knife3 = new Actor(x1+6,y1+5,169,"Zweihander",TCODColor::white);
+	knife3->blocks = false;
+	knife3->pickable = new Weapon(1,8,3,Weapon::HEAVY,0,Equipment::HAND1,bonus,requirement);
+	knife3->sort = 4;
+	engine.actors.push(knife3);*/
+	
+	//cout << "got to records creation" << endl;
 	for (int tiley = y1; tiley <= y2; tiley+=1) {
-		Actor *MLR = createMLR(x1+4,tiley,false);
+		/*Actor *MLR = createMLR(x1+4,tiley,false);
 		engine.actors.push(MLR);
 		engine.sendToBack(MLR);
 
-		/*Actor *MLR2 = createMLR(x1+5,tiley,false);
+		Actor *MLR2 = createMLR(x1+5,tiley,false);
 		engine.actors.push(MLR2);
 		engine.sendToBack(MLR2);
 		Actor *MLR3 = createMLR(x1+6,tiley,false);
 		engine.actors.push(MLR3);
-		engine.sendToBack(MLR3);*/
-		/*Actor *booze = createAlcohol(x1+5,tiley);
+		engine.sendToBack(MLR3);
+		Actor *booze = createAlcohol(x1+5,tiley);
 		engine.actors.push(booze);
 		Actor *booze2 = createAlcohol(x1+6,tiley);
 		engine.actors.push(booze2);		
 		Actor *booze3 = createAlcohol(x1+7,tiley);
-		engine.actors.push(booze3);*/
+		engine.actors.push(booze3);
 		//cout << "creating (" << x1+5 << "," << tiley << ")" << endl;
 		Actor *record = createRecord(x1+5,tiley);
 		//cout << "about to push " << record << endl;
@@ -671,9 +699,20 @@ void Map::spawnTutorial() {
 		Actor *record3 = createRecord(x1+7,tiley);
 		//cout << "about to push " << record << endl;
 		engine.actors.push(record3);
-		//cout << "done with one row" << endl;
+		//cout << "done with one row" << endl;*/
+		Actor *MLR = createCombatKnife(x1+4,tiley);
+		engine.actors.push(MLR);
+		engine.sendToBack(MLR);
+
+		Actor *MLR2 = createCombatKnife(x1+5,tiley);
+		engine.actors.push(MLR2);
+		engine.sendToBack(MLR2);
 		
+		Actor *MLR3 = createCombatKnife(x1+6,tiley);
+		engine.actors.push(MLR3);
+		engine.sendToBack(MLR3);
 	}
+	//cout << "got past records creation" << endl;
 	
 	//Actor *record = createRecord(x1+8,y1);
 	//engine.actors.push(record);
@@ -1272,7 +1311,7 @@ Actor* Map::createVendor(int x, int y)
 	vendor->interact = true;
 	vendor->destructible = new MonsterDestructible(vendorHp, vendorDodge,vendorDR,vendorXp);
 	vendor->ai = new VendingAi();
-	vendor->container = new Container(10);
+	vendor->container = new Container(50);
 	//generateRandom(vendor, vendorAscii); Vending Machines get populated with items when they are interacted with
 	engine.actors.push(vendor);
 	
@@ -1302,7 +1341,7 @@ Actor* Map::createConsole(int x, int y)
 void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,475);
+	int dice = rng->getInt(0,515);
 	if (dice < 40) {
 		//create a health potion
 		Actor *healthPotion = createHealthPotion(x,y);
@@ -1348,7 +1387,12 @@ void Map::addItem(int x, int y, RoomType roomType) {
 		Actor *scrollOfFragging = createFrag(x,y);
 		engine.actors.push(scrollOfFragging);
 		engine.sendToBack(scrollOfFragging);
-	}else if(dice<40+40+40+15+15+5+40+40+40+100) {
+	}else if(dice< 40+40+40+15+15+5+40+40+40+40){
+		//create a scroll of drunkeness
+		Actor *scrollOfDrunkeness = createAlcohol(x,y);
+		engine.actors.push(scrollOfDrunkeness);
+		engine.sendToBack(scrollOfDrunkeness);
+	}else if(dice<40+40+40+15+15+5+40+40+40+40+100) {
 		Actor *stackOfFood = createFood(x,y);
 		engine.actors.push(stackOfFood);
 		engine.sendToBack(stackOfFood);
@@ -1383,8 +1427,8 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 				roomList->push(MESSHALL);
 				roomList->push(HYDROPONICS);
 				roomList->push(OBSERVATORY);
-				roomList->push(LAB);
-				roomList->push(LAB);
+				roomList->push(BAR);
+				roomList->push(BAR);
 				roomList->push(DEFENDED_ROOM);
 				roomList->push(INFECTED_ROOM);
 				break;
@@ -1993,6 +2037,11 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 						engine.actors.push(pcmu);
 					}
 					
+					if(j == mid+2 || j == mid - 2)
+					{
+						createTurret(i,j);
+					}
+					
 				}
 				
 				
@@ -2089,7 +2138,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	if (room->type == DEFENDED_ROOM) {
 
 	}
-	if (room->type == LAB) {
+	if (room->type == BAR) {
 
 	}
 
@@ -2102,6 +2151,34 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	 * SETTINGS FOR OTHER ROOMS CAN BE PLACED HERE
 	 *
 	 */
+	int Recx = 0;
+	int Recy = 0;
+	if (roomNum == 2 || roomNum == 4 || roomNum == 6)
+	{
+		Recx = rng->getInt(x1,x2);
+		Recy = rng->getInt(y1,y2);
+		while (!canWalk(Recx,Recy))
+		{
+			Recx = rng->getInt(x1,x2);
+			Recy = rng->getInt(y1,y2);
+		}
+	}
+	if (roomNum == 2)
+	{
+		Actor *r1 = createRecord(Recx, Recy);
+		engine.actors.push(r1);
+	}
+	else if (roomNum == 4)
+	{
+		Actor *r2 = createRecord(Recx, Recy);
+		engine.actors.push(r2);
+	}
+	else if (roomNum == 6)
+	{
+		Actor *r3 = createRecord(Recx, Recy);
+		engine.actors.push(r3);
+	}
+	
 	
 	//placing starting locations
 	if (roomNum == 0) {
@@ -2123,6 +2200,20 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		engine.playerLight->blocks = false;
 		//playerLight->ai->moving = true;
 		engine.sendToBack(engine.playerLight);
+		
+		//Actor *r4 = createRecord(engine.player->x, engine.player->y-1);
+		//engine.actors.push(r4);
+		/*if (true)
+		{
+			cout << "making level messages" << endl;
+			Actor *r1 = createRecord(engine.player->x+1, engine.player->y);
+			engine.actors.push(r1);
+			Actor *r2 = createRecord(engine.player->x+2, engine.player->y);
+			engine.actors.push(r2);
+			Actor *r3 = createRecord(engine.player->x+3, engine.player->y);
+			engine.actors.push(r3); 
+		}*/
+		
 	}
 	//TCODRandom *rng = TCODRandom::getInstance();
 
@@ -2291,7 +2382,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 
 	}
 	//15% chance of spawning turrets in the corners of standard rooms
-	if((rand >= 15 && rand <= 30) && room->type == STANDARD)
+	if(((rand >= 15 && rand <= 30) && room->type == STANDARD) || room->type == ARMORY)
 	{
 		int cx = (x1 + x2)/2.0;
 		int cy = (y1 + y2)/2.0;
@@ -2301,44 +2392,57 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		bool x1y2 = canWalk(x1,y2) && engine.getAnyActor(x1,y2)==NULL;
 		bool x2y2 = canWalk(x2,y2) && engine.getAnyActor(x2,y2)==NULL;
 		bool x2y1 = canWalk(x2,y1) && engine.getAnyActor(x2,y1)==NULL;
-		if(console)
+		if(console || room->type == ARMORY)
 		{
-			Actor * turret;
-			createTurretControl(cx,cy);
+			Actor * turret, *turretControl = NULL;
+			if(room->type == STANDARD)
+				turretControl = createTurretControl(cx,cy);
 			for(int i = 0; i < 4; i++)
 			{
 				c = rng->getInt(0,3);
-				if(c == 0 && x1y1)
+				if((c == 0 || room->type == ARMORY) && x1y1)
 				{
 					turret = createTurret(x1,y1);
 					TurretAi *ai = (TurretAi*)turret->ai;
-					ai->controlX = cx;
-					ai->controlY = cy;
+					if(turretControl)
+					{
+						ai->controlX = cx;
+						ai->controlY = cy;
+					}
 					x1y1 = false;
 				}
-				if(c == 1 && x1y2)
+				if((c == 1 || room->type == ARMORY) && x1y2)
 				{
 					turret = createTurret(x1,y2);
 					TurretAi *ai = (TurretAi*)turret->ai;
-					ai->controlX = cx;
-					ai->controlY = cy;
+					if(turretControl)
+					{
+						ai->controlX = cx;
+						ai->controlY = cy;
+					}
 					x1y2 = false;
 				}
 					
-				if(c == 2 && x2y2)
+				if((c == 2 || room->type == ARMORY) && x2y2)
 				{
 					turret = createTurret(x2,y2);
 					TurretAi *ai = (TurretAi*)turret->ai;
-					ai->controlX = cx;
-					ai->controlY = cy;
+					if(turretControl)
+					{
+						ai->controlX = cx;
+						ai->controlY = cy;
+					}
 					x2y2 = false;
 				}
-				if(c == 3 && x2y1)
+				if((c == 3 || room->type == ARMORY) && x2y1)
 				{
 					turret = createTurret(x2, y1);
 					TurretAi *ai = (TurretAi*)turret->ai;
-					ai->controlX = cx;
-					ai->controlY = cy;
+					if(turretControl)
+					{
+						ai->controlX = cx;
+						ai->controlY = cy;
+					}
 					x2y1 = false;
 				}
 			}
@@ -2525,19 +2629,31 @@ void Map::generateRandom(Actor *owner, int ascii){
 			return;
 	}else{
 		if(ascii == 243){//locker, this might be a problem if we want multiple decors to drop different things
-			int random = rng->getInt(0,100);
+			int random = rng->getInt(0,230);
 			if(random < 30){
 				Actor *flare = createFlare(0,0);
 				engine.actors.push(flare);
 				flare->pickable->pick(flare,owner);
-			}else if(random < 30+10){
+			}else if(random < 30+20){
 				Actor *chainMail = createTitanMail(0,0);
 				engine.actors.push(chainMail);
 				chainMail->pickable->pick(chainMail,owner);
-			}else if(random < 30+10+20){
+			}else if(random < 30+20+40){
 				Actor *myBoots = createMylarBoots(0,0,false);
 				engine.actors.push(myBoots);
 				myBoots->pickable->pick(myBoots,owner);
+			}else if(random < 30+20+40+30){
+				Actor *myGreaves = createMylarGreaves(0,0,false);
+				engine.actors.push(myGreaves);
+				myGreaves->pickable->pick(myGreaves,owner);
+			}else if(random < 30+20+40+30+30){
+				Actor *myVest = createMylarVest(0,0,false);
+				engine.actors.push(myVest);
+				myVest->pickable->pick(myVest,owner);
+			}else if(random < 30+20+40+30+30+40){
+				Actor *myCap = createMylarCap(0,0,false);
+				engine.actors.push(myCap);
+				myCap->pickable->pick(myCap,owner);
 			}else{
 				Actor *batt = createBatteryPack(0,0);
 				engine.actors.push(batt);
@@ -2545,7 +2661,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 			}
 		}else if(ascii == 133) //infected grenadier
 		{
-			for(int i = 0; i < owner->container->size; i++)
+			for(int i = 0; i < owner->container->size/4; i++)
 			{
 				int rand = rng->getInt(0,30);
 				if(rand <= 15)
@@ -2582,7 +2698,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 			
 			
 		}else if(ascii == 164){
-			for(int i = 0; i < owner->container->size; i++){
+			for(int i = 0; i < owner->container->size/4; i++){
 				int rndA = rng->getInt(0,100);
 				if(rndA > 40){
 					int rnd = rng->getInt(0,100);
@@ -2610,7 +2726,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 				}
 			}
 		}else if(ascii == 165 || ascii == 166){ //Spore Creature and Mini Spore Creature
-			for(int i = 0; i < owner->container->size; i++){
+			for(int i = 0; i < owner->container->size/4; i++){
 				int rndA2 = rng->getInt(0,100);
 				if(rndA2 > 45){
 					int rnd2 = rng->getInt(0,100);
@@ -2638,10 +2754,10 @@ void Map::generateRandom(Actor *owner, int ascii){
 				}
 			}
 		}else if(ascii == 148){
-			for(int i = 0; i < owner->container->size; i++){
+			for(int i = 0; i < owner->container->size/4; i++){
 				int rndA2 = rng->getInt(0,100);
 				if(rndA2 > 45){
-					int rnd = rng->getInt(0,120);
+					int rnd = rng->getInt(0,200);
 					if (rnd < 30) {
 						//create a health potion
 						Actor *healthPotion = createHealthPotion(0,0);
@@ -2657,11 +2773,26 @@ void Map::generateRandom(Actor *owner, int ascii){
 						Actor *scrollOfFireball = createFireBomb(0,0);
 						engine.actors.push(scrollOfFireball);
 						scrollOfFireball->pickable->pick(scrollOfFireball,owner);
-					}else if(rnd < 10+30+20+20){
+					}else if(rnd < 10+30+20+30){
 						//create a pair of mylar boots
 						Actor *myBoots = createMylarBoots(0,0,false);
 						engine.actors.push(myBoots);
 						myBoots->pickable->pick(myBoots,owner);
+					}else if(rnd < 10+30+20+30+30){
+						//create a pair of mylar greaves
+						Actor *myGreaves = createMylarGreaves(0,0,false);
+						engine.actors.push(myGreaves);
+						myGreaves->pickable->pick(myGreaves,owner);
+					}else if(rnd < 10+30+20+30+30+20){
+						//create a mylar vest
+						Actor *myVest = createMylarVest(0,0,false);
+						engine.actors.push(myVest);
+						myVest->pickable->pick(myVest,owner);
+					}else if(rnd < 10+30+20+30+30+20+30){
+						//create a mylar cap
+						Actor *myCap = createMylarCap(0,0,false);
+						engine.actors.push(myCap);
+						myCap->pickable->pick(myCap,owner);
 					}else{
 						//create a scroll of confusion
 						Actor *scrollOfConfusion = createFlashBang(0,0);
@@ -2672,7 +2803,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 				}
 			
 		}else if(ascii == 132){
-			for(int i = 0; i < owner->container->size; i++){
+			for(int i = 0; i < owner->container->size/4; i++){
 				int rndA2 = rng->getInt(0,100);
 				if(rndA2 > 45){
 					int rnd = rng->getInt(0,100);
@@ -2705,7 +2836,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 				}
 			}
 		}else if(ascii == 134){
-			for(int i = 0; i < owner->container->size; i++){
+			for(int i = 0; i < owner->container->size/4; i++){
 				int rndA2 = rng->getInt(0,100);
 				if(rndA2 > 30){
 					int rnd = rng->getInt(0,100);
@@ -2735,7 +2866,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 		}else if(ascii == 147){ //Turret
 			int rndA2 = rng->getInt(0,100);
 			if(rndA2 > 50){
-				for(int i = 0; i < owner->container->size; i++){
+				for(int i = 0; i < owner->container->size/4; i++){
 					//Fill Inventory with Batteries
 					Actor *battery = createBatteryPack(0,0);
 					engine.actors.push(battery);
@@ -2745,7 +2876,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 		}
 		else if(ascii == 129 || ascii == 130 || ascii == 146) //Security Bot gets keys
 		{
-			for(int i = 0; i < owner->container->size; i++)
+			for(int i = 0; i < owner->container->size/4; i++)
 			{
 					//Fill Inventory with Batteries and 1 key
 					if(i >= 1)
@@ -3037,22 +3168,66 @@ Actor *Map::createRecord(int x, int y){
 	//FINALchar  * msg = temp[random->getInt(0,4)];
 	//cout << "msg recieved" << endl;
 	//scrollOfRecords->ai = new TriggerAi( ">>102:329:32<< This is an example recording, the ship has become madness, I have had headaches every day for a week, the crew have begun attacking each other without cause");
+	//cout << "getting file" << endl;
 	string line;
-	char * file = new char[30];
-	memset(file,0,30);
-	strcat(file,"terminals/ter_generic2.txt");
+	char * file = new char[35];
+	memset(file,0,35);
+	strcat(file,"terminals/questTerminals.txt");
 	ifstream myfile(file);
 	//myfile = new ifstream(file);
-	int id2find = random->getInt(1,engine.numTer);//1-8 for the numbers avaiable, 1-99 MAX
+	//cout << "file gotten" << endl;
+	int lvl = engine.level; 
+	//if lvl = 0 NONE
+	//if lvl = 1 (1-3)
+	//if lvl = 2 (4-6)
+	//if lvl = 3 (7-9)
+	//if lvl = 4 (10-12)
+	//if lvl = 5 (13)
+	int maxid = 0;
+	int minid = 0;
+	switch (lvl)
+	{
+		case 0:
+			maxid = 0;
+			minid = 0;
+			break;
+		case 1:
+			maxid = 3;
+			minid = 1;
+			break;
+		case 2:
+			maxid = 6;
+			minid = 4;
+			break;
+		case 3:
+			maxid = 9;
+			minid = 7;
+			break;
+		case 4:
+			maxid = 12;
+			minid = 10;
+			break;
+		case 5:
+			maxid = 13;
+			minid = 13;
+			break;
+		default:break;
+	}
+	int id2find = random->getInt(minid,maxid);//1-8 for the numbers avaiable, 1-99 MAX
 	bool txt = true;
+	//cout << "there are " << engine.ctrTer << " terminals left" << endl;
+	//cout << "ctrTer " << engine.ctrTer << endl;
 	if (engine.ctrTer > 0)
 	{
-		while (!engine.valTer[id2find])
+		while (!engine.valTer[id2find-1])
 		{
-			id2find = random->getInt(1,engine.numTer);
+			//cout << "id2find: " << id2find << endl;
+			id2find = random->getInt(minid,maxid);
 		}
+		cout << engine.ctrTer << endl;
 		engine.ctrTer--;
-		engine.valTer[id2find] = false;
+		engine.valTer[id2find-1] = false;
+		//cout << "id2find final: " << id2find << endl;
 	}
 	else if (engine.ctrTer == 0)
 	{
@@ -3095,19 +3270,19 @@ Actor *Map::createRecord(int x, int y){
 			//getline(myfile,line,'@');
 			//cout << "about to strcat!" << endl;
 			strcat(nameBuf,line.c_str());
-			//cout << "strcat done" << endl;
+			cout << "strcat done" << endl;
 			//cout << line << '\n';
 			myfile.close();
 		}
 		//string s = line.c_str();
 		//std::string str;
 		//const char * message = line.c_str();
-		//cout << message << " message text " << '\n';
+		//cout << nameBuf << " message text " << '\n';
 		//cout << "setting it to scroll" << endl;
 	}
 	scrollOfRecords->ai = new TriggerAi(nameBuf);
 	scrollOfRecords->blocks = false;
-	//cout << "done with record" << endl;
+	cout << "done with record" << endl;
 	return scrollOfRecords;
 		//make interaction terminal
 	//Actor *triggerTileI = new Actor(x1+1,y1+1, 227, "Intercom Terminal", TCODColor::white);
@@ -3164,6 +3339,349 @@ Actor *Map::createTitanMail(int x, int y){
 	chainMail->pickable->inkValue = 50;
 	return chainMail;
 }
+Actor *Map::createMylarGreaves(int x, int y, bool isVend){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *myGreaves = new Actor(x,y,185,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
+	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,1);
+	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,3);
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Tattered ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,20);
+						break;
+					case 2:
+						strcat(nameBuf,"Worn ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,25);
+						break;
+					case 3:
+						strcat(nameBuf,"Ruined ");
+						bonus = new ItemBonus(ItemBonus::NOBONUS,0);
+						break;
+					default:break;
+				}
+				//bad Mylar Boots
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Durable ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+						break;
+					case 1:
+						strcat(nameBuf,"Useful ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,30);
+						requirement = new ItemReq(ItemReq::DEXTERITY,3);
+						break;
+					case 2:
+						strcat(nameBuf,"Cheap ");
+						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						break;
+					case 2:
+						strcat(nameBuf,"Tough ");
+						bonus = new ItemBonus(ItemBonus::DR,3);
+						break;
+					case 3:
+						strcat(nameBuf,"High Tech ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,2);
+						break;
+					case 4:
+						strcat(nameBuf,"Reliable ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,40);
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"Mylar Greaves");
+
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	myGreaves->blocks = false;
+	myGreaves->name = nameBuf;
+	
+	myGreaves->pickable = new Equipment(0,Equipment::LEGS,bonus,requirement);
+	myGreaves->sort = 3;
+	myGreaves->pickable->value = 200;
+	myGreaves->pickable->inkValue = 30;
+	myGreaves->col = col;
+	return myGreaves;
+}
+Actor *Map::createMylarVest(int x, int y, bool isVend){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *myVest = new Actor(x,y,185,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
+	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,3);
+	
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Tattered ");
+						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 2:
+						strcat(nameBuf,"Worn ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,25);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 3:
+						strcat(nameBuf,"Ruined ");
+						bonus = new ItemBonus(ItemBonus::NOBONUS,0);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					default:break;
+				}
+				//bad Mylar Boots
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Durable ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,3);
+						break;
+					case 1:
+						strcat(nameBuf,"Useful ");
+						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						requirement = new ItemReq(ItemReq::DEXTERITY,3);
+						break;
+					case 2:
+						strcat(nameBuf,"Cheap ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,3);
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,3);
+						requirement = new ItemReq(ItemReq::STRENGTH,5);
+						break;
+					case 2:
+						strcat(nameBuf,"Tough ");
+						bonus = new ItemBonus(ItemBonus::DR,4);
+						requirement = new ItemReq(ItemReq::DEXTERITY,5);
+						break;
+					case 3:
+						strcat(nameBuf,"High Tech ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,2);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,5);
+						break;
+					case 4:
+						strcat(nameBuf,"Reliable ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,50);
+						requirement = new ItemReq(ItemReq::DEXTERITY,4);
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"Mylar Vest");
+
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	myVest->blocks = false;
+	myVest->name = nameBuf;
+	
+	myVest->pickable = new Equipment(0,Equipment::CHEST,bonus,requirement);
+	myVest->sort = 3;
+	myVest->pickable->value = 300;
+	myVest->pickable->inkValue = 40;
+	myVest->col = col;
+	return myVest;
+}
+Actor *Map::createMylarCap(int x, int y, bool isVend){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *myCap = new Actor(x,y,185,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
+	ItemBonus *bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,1);
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Tattered ");
+						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 2:
+						strcat(nameBuf,"Worn ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,15);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 3:
+						strcat(nameBuf,"Ruined ");
+						bonus = new ItemBonus(ItemBonus::NOBONUS,0);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					default:break;
+				}
+				//bad Mylar Boots
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Durable ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,3);
+						break;
+					case 1:
+						strcat(nameBuf,"Useful ");
+						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						requirement = new ItemReq(ItemReq::DEXTERITY,3);
+						break;
+					case 2:
+						strcat(nameBuf,"Cheap ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,3);
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,5);
+						break;
+					case 2:
+						strcat(nameBuf,"Tough ");
+						bonus = new ItemBonus(ItemBonus::DR,3);
+						requirement = new ItemReq(ItemReq::DEXTERITY,4);
+						break;
+					case 3:
+						strcat(nameBuf,"High Tech ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,3);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,5);
+						break;
+					case 4:
+						strcat(nameBuf,"Reliable ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,30);
+						requirement = new ItemReq(ItemReq::DEXTERITY,3);
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"Mylar Cap");
+
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	myCap->blocks = false;
+	myCap->name = nameBuf;
+	//ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,1);
+	myCap->pickable = new Equipment(0,Equipment::HEAD,bonus,requirement);
+	myCap->sort = 3;
+	myCap->pickable->value = 100;
+	myCap->pickable->inkValue = 20;
+	myCap->col = col;
+	return myCap;
+}
 Actor *Map::createMylarBoots(int x, int y, bool isVend){
 	char* nameBuf = new char[80]; 
 	memset(nameBuf,0,80);
@@ -3177,6 +3695,7 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
 	//min damage, max damage, critMult, 
 	ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
+	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,2);
 	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
 	//random 1-3, 1 is worse, 2 is average, 3 is good
 	int choices = random->getInt(1,3);
@@ -3201,6 +3720,7 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 						break;
 					case 3:
 						strcat(nameBuf,"Destroyed ");
+						bonus = new ItemBonus(ItemBonus::NOBONUS,0);
 						break;
 					default:break;
 				}
@@ -3214,10 +3734,13 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 				switch(max)
 				{
 					case 0:
-						strcat(nameBuf,"Durable  ");
+						strcat(nameBuf,"Durable ");
 						bonus = new ItemBonus(ItemBonus::HEALTH,25);
 						break;
 					case 1:
+						strcat(nameBuf,"Useful ");
+						bonus = new ItemBonus(ItemBonus::DR,1);
+						requirement = new ItemReq(ItemReq::DEXTERITY,2);
 						break;
 					case 2:
 						strcat(nameBuf,"Cheap ");
@@ -3259,7 +3782,7 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	myBoots->blocks = false;
 	myBoots->name = nameBuf;
-	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,2);
+	
 	myBoots->pickable = new Equipment(0,Equipment::FEET,bonus,requirement);
 	myBoots->sort = 3;
 	myBoots->pickable->value = 100;
@@ -3280,6 +3803,7 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
 	//min damage, max damage, critMult, 
 	ItemBonus *bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,4);
 	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
 	int minDmg = 1;
 	int maxDmg = 6;
@@ -3441,7 +3965,6 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	MLR->blocks = false;
 	MLR->name = nameBuf;
-	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,4);
 	//MLR->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
 	//1 = min damage, 6 = max damage, 2 is crit mult, RANGED, 0 = not equipped,RANGED, bonus, req
 	MLR->pickable = new Weapon(minDmg,maxDmg,critMult,Weapon::RANGED,0,Equipment::RANGED,bonus,requirement);
@@ -3453,15 +3976,198 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 	return MLR;
 }
 Actor *Map::createCombatKnife(int x, int y){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
 	Actor *combatKnife = new Actor(x,y,169,"Combat Knife",TCODColor::white);
 	combatKnife->blocks = false;
-	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,2);
 	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,3);
+	TCODRandom *random = TCODRandom::getInstance();
+	TCODColor col = TCODColor::white;
+	Equipment::SlotType *slot = new Equipment::SlotType(Equipment::HAND1);
+	Weapon::WeaponType *wpn = new Weapon::WeaponType(Weapon::LIGHT);
+	int goodbad = random->getInt(1,3);
+	int hand = random->getInt(1,3);
+	int weight = random->getInt(1,3);
+	int name = random->getInt(1,5);
+	int flawName = random->getInt(1,5);
+	int strBUF = 1;
+	int reqBUF = 3;
+	int minDmg = 1;
+	int maxDmg = 4;
+	switch (goodbad)
+	{
+		case 1://bad
+			strBUF -= 1;
+			switch (flawName)
+			{
+				case 1:
+					strcat(nameBuf,"Weak ");
+					break;
+				case 2:
+					strcat(nameBuf,"Bent ");
+					break;
+				case 3:
+					strcat(nameBuf,"Dull ");
+					break;
+				case 4:
+					strcat(nameBuf,"Old ");
+					break;
+				case 5:
+					strcat(nameBuf,"Rusty ");
+					break;
+				default:break;
+			}
+			col = TCODColor::lighterRed;
+			break;
+		case 2://average
+			switch (flawName)
+			{
+				case 1:
+					strcat(nameBuf,"Average ");
+					break;
+				case 2:
+					strcat(nameBuf,"Normal ");
+					break;
+				case 3:
+					strcat(nameBuf,"Fine ");
+					break;
+				case 4:
+				case 5:
+					break;
+				default:break;
+			}
+			break;
+		case 3://good
+			strBUF += 1;
+			switch (flawName)
+			{
+				case 1:
+					strcat(nameBuf,"New ");
+					break;
+				case 2:
+					strcat(nameBuf,"Strong ");
+					break;
+				case 3:
+					strcat(nameBuf,"Gleaming ");
+					break;
+				case 4:
+					strcat(nameBuf,"Sharp ");
+					break;
+				case 5:
+					strcat(nameBuf,"Perfect ");
+					break;
+				default:break;
+			}
+			col = TCODColor::lighterGreen;
+			break;
+		default:break;
+	}
+	switch(weight)
+	{
+		case 1://light
+			reqBUF -= 1;
+			minDmg += 1;//faster, so more reliable
+			break;
+		case 2://average
+			break;
+		case 3://heavy
+			reqBUF += 1;
+			maxDmg += 1;//heavier, so more max
+			break;
+		default:break;
+		
+	}
+	switch (hand)
+	{
+		case 1://right hand
+			minDmg += 1;//faster, so more reliable
+			bonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+1);//2 is "average"
+			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF);//3 is "average"
+			slot = new Equipment::SlotType(Equipment::HAND1);
+			wpn = new Weapon::WeaponType(Weapon::LIGHT);
+			switch (name)
+			{
+				case 1:
+					strcat(nameBuf,"Knife");
+					break;
+				case 2:
+					strcat(nameBuf,"Dagger");
+					break;
+				case 3:
+					strcat(nameBuf,"Shank");
+					break;
+				case 4:
+					strcat(nameBuf,"Pipe");
+					break;
+				case 5:
+					strcat(nameBuf,"Crowbar");
+					break;
+				default:break;
+			}
+			
+			break;
+		case 2://offhand
+			minDmg += 1;//faster, so more reliable
+			bonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+1);//2 is "average"
+			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF);//3 is "average"
+			slot = new Equipment::SlotType(Equipment::HAND2);
+			wpn = new Weapon::WeaponType(Weapon::LIGHT);
+			switch (name)
+			{
+				case 1:
+					strcat(nameBuf,"Wrench(H2)");
+					break;
+				case 2:
+					strcat(nameBuf,"Knife(H2)");
+					break;
+				case 3:
+					strcat(nameBuf,"Saw(H2)");
+					break;
+				case 4:
+					strcat(nameBuf,"Machete(H2)");
+					break;
+				case 5:
+					strcat(nameBuf,"KaBar(H2)");
+					break;
+				default:break;
+			}
+			break;
+		case 3://TWO HANDED
+			maxDmg += 1;//heavier, so more max
+			bonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+4);//5 is "average" (1 more than 2 average 1 handers)
+			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF+4);//7 is "average"
+			slot = new Equipment::SlotType(Equipment::HAND1);
+			wpn = new Weapon::WeaponType(Weapon::HEAVY);
+			switch (name)
+			{
+				case 1:
+					strcat(nameBuf,"Sword");
+					break;
+				case 2:
+					strcat(nameBuf,"Fire-Axe");
+					break;
+				case 3:
+					strcat(nameBuf,"Large Pipe");
+					break;
+				case 4:
+					strcat(nameBuf,"Auto-Saw");
+					break;
+				case 5:
+					strcat(nameBuf,"Makeshift Morningstar");
+					break;
+				default:break;
+			}
+			break;
+		default:break;
+	}
+	combatKnife->name = nameBuf;
 	//combatKnife->pickable = new Equipment(0,Equipment::HAND1,bonus,requirement);
-	combatKnife->pickable = new Weapon(1,4,3,Weapon::LIGHT,0,Equipment::HAND1,bonus,requirement);
+	combatKnife->pickable = new Weapon(minDmg,maxDmg,3,*wpn,0,*slot,bonus,requirement);
 	combatKnife->pickable->value = 100;
 	combatKnife->pickable->inkValue = 10;
 	combatKnife->sort = 4;
+	combatKnife->col = col;
 	return combatKnife;
 }
 Actor *Map::createBatteryPack(int x,int y){

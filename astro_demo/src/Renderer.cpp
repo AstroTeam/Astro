@@ -859,7 +859,7 @@ void Renderer::render(void *sdlSurface){
 				////////////////////////////////////////////////////////////////////HYDROPONICS
 				if (engine.map->tileType(xM,yM) == 10)//|| engine.map->tileType(xM,yM) == 1)
 				{
-					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+					if (engine.map->isInFov(xM,yM)){
 						//light
 						srcRect.y=32;
 					}else{

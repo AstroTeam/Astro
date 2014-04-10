@@ -538,12 +538,14 @@ void Equipment::load(TCODZip &zip) {
 bool Equipment::use(Actor *owner, Actor *wearer) {
 	if (!equipped) {
 		switch(slot) {
-			case HEAD: 
-				if (wearer->container->head) {
-					engine.gui->message(TCODColor::orange,"You already have a head item equipped!");
-					return false;
-				} else {
+			case HEAD:
 					if(requirementsMet(owner,wearer)){
+						if (wearer->container->head) {
+							engine.gui->message(TCODColor::orange,"You swap out your head item.");
+							wearer->container->head->pickable->use(wearer->container->head,wearer);
+							//return false;
+						} //else {
+						
 						wearer->container->head = owner;
 					}else{
 						switch(requirement->type){
@@ -563,14 +565,15 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 						}
 						
 					}
-					
-				} break;
+				break; //} break;
 			case CHEST:
-				if (wearer->container->chest) {
-					engine.gui->message(TCODColor::orange,"You already have a chest item equipped!");
-					return false;
-				} else {
 					if(requirementsMet(owner,wearer)){
+						if (wearer->container->chest) {
+							engine.gui->message(TCODColor::orange,"You swap out your chest item.");
+							wearer->container->chest->pickable->use(wearer->container->chest,wearer);
+							//return false;
+						} //else {
+						
 						wearer->container->chest = owner;
 					}else{
 						switch(requirement->type){
@@ -589,13 +592,15 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 							default: break;
 						}
 					}
-				} break;
+				break; //} break;
 			case LEGS:
-				if (wearer->container->legs) {
-					engine.gui->message(TCODColor::orange,"You already have a leg item equipped!");
-					return false;
-				} else {
 					if(requirementsMet(owner,wearer)){
+						if (wearer->container->legs) {
+							engine.gui->message(TCODColor::orange,"You swap out your leg item.");
+							wearer->container->legs->pickable->use(wearer->container->legs,wearer);
+							//return false;
+						} //else {
+						
 						wearer->container->legs = owner;
 					}else{
 						switch(requirement->type){
@@ -614,13 +619,15 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 							default: break;
 						}
 					}
-				} break;
+				break; //} break;
 			case FEET:
-				if (wearer->container->feet) {
-					engine.gui->message(TCODColor::orange,"You already have a foot item equipped!");
-					return false;
-				} else {
 					if(requirementsMet(owner,wearer)){
+						if (wearer->container->feet) {
+							engine.gui->message(TCODColor::orange,"You swap out your feet item.");
+							wearer->container->feet->pickable->use(wearer->container->feet,wearer);
+							//return false;
+						} //else {
+						
 						wearer->container->feet = owner;
 					}else{
 						switch(requirement->type){
@@ -639,13 +646,19 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 							default: break;
 						}
 					}
-				} break;
+				break; //} break;
 			case HAND1:
-				if (wearer->container->hand1) {
-					engine.gui->message(TCODColor::orange,"You already have a melee weapon equipped!");
-					return false;
-				} else {
 					if(requirementsMet(owner,wearer)){
+						if (wearer->container->hand1) {
+							engine.gui->message(TCODColor::orange,"You swap out your main hand item.");
+							wearer->container->hand1->pickable->use(wearer->container->hand1,wearer);
+							//return false;
+						} //else {
+						if((((Weapon*)owner->pickable)->wType == Weapon::HEAVY) && (wearer->container->hand2 != NULL)){
+							engine.gui->message(TCODColor::orange,"You swap out your off hand item.");
+							wearer->container->hand2->pickable->use(wearer->container->hand2,wearer);
+						}
+						
 						wearer->container->hand1 = owner;
 					}else{
 						switch(requirement->type){
@@ -664,13 +677,19 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 							default: break;
 						}
 					}
-				} break;
+				break; //} break;
 			case HAND2:
-				if (wearer->container->hand2) {
-					engine.gui->message(TCODColor::orange,"You already have an off-hand item equipped!");
-					return false;
-				} else {
 					if(requirementsMet(owner,wearer)){
+						if (wearer->container->hand2) {
+							engine.gui->message(TCODColor::orange,"You swap out your off hand item.");
+							wearer->container->hand2->pickable->use(wearer->container->hand2,wearer);
+							//return false;
+						}
+						if((wearer->container->hand1) && ((Weapon*)wearer->container->hand1->pickable)->wType == Weapon::HEAVY){
+							engine.gui->message(TCODColor::orange,"You swap out your heavy main hand item.");
+							wearer->container->hand1->pickable->use(wearer->container->hand1,wearer);
+						}//else {
+						
 						wearer->container->hand2 = owner;
 					}else{
 						switch(requirement->type){
@@ -689,13 +708,15 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 							default: break;
 						}
 					}
-				} break;
+				break; //} break;
 			case RANGED:
-				if (wearer->container->ranged) {
-					engine.gui->message(TCODColor::orange,"You already have a ranged weapon equipped!");
-					return false;
-				} else {
 					if(requirementsMet(owner,wearer)){
+						if (wearer->container->ranged) {
+							engine.gui->message(TCODColor::orange,"You swap out your ranged item.");
+							wearer->container->ranged->pickable->use(wearer->container->ranged,wearer);
+							//return false;
+						} //else {
+						
 						wearer->container->ranged = owner;
 					}else{
 						switch(requirement->type){
@@ -714,7 +735,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 							default: break;
 						}
 					}
-				} break;
+				break; //} break;
 			case NOSLOT: break;
 			default: break;
 		}

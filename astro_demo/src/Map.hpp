@@ -12,13 +12,16 @@ namespace Param {
 		GENERATOR, //done - can turn on power, not yet though
 		SERVER,    //done - can look at a map of deck, not yet though
 		KITCHEN,   //done - drops food from food processors, can go into refrigerators, not yet though, steal items, frozen people come for you
-		MESSHALL,  //to-do - add tables and trash cans that drop items maybe?
-		ARMORY,    //to-do - add gun racks and security bots and glass cases, locked door?  need to kill security bot to get in?
-		OBSERVATORY, //to-do - breakable floor, no oxygen
-		HYDROPONICS, //to-do - grass, spawns food in garden
-		DEFENDED_ROOM,//defended rooms - friendly marines inside, give you a gun and ammo, have a medic who will help you? scientist give you tech
-		LAB,//laboratory - experiment with spores, infected scientists, 
-		INFECTED_ROOM,//infected room - all floor is infected level 6, epicenters in middle
+		MESSHALL,  //done - add tables and trash cans that drop items maybe?
+		ARMORY,    //done* - add gun racks and security bots and glass cases, locked door?  need to kill security bot to get in?
+				   //need to finish vaults
+		OBSERVATORY, //done - breakable floor, no oxygen
+		HYDROPONICS, //done - grass, spawns food in garden
+		DEFENDED_ROOM, // to-do - spawns companions
+		BAR, //to-do - spawns alcohol/drugs
+		INFECTED_ROOM //to-do spawns lot of infection.  infected equipment?
+		
+		
 		//lobby - stair room with seating
 		//cult rooms - blood everywhere, crazy cult enemies that have high str, low hp
 		//THE BRIDGE - the win room, has a blackbox
@@ -108,14 +111,16 @@ public:
 	Actor *createTeleporter(int x, int y);
 	Actor *createEMP(int x,int y);
 	Actor *createTitanMail(int x, int y);
+	Actor *createMylarCap(int x, int y, bool isVend);
+	Actor *createMylarVest(int x, int y, bool isVend);
+	Actor *createMylarGreaves(int x, int y, bool isVend);
 	Actor *createMylarBoots(int x, int y, bool isVend);
 	Actor *createMLR(int x, int y, bool isVend);
 	Actor *createCombatKnife(int x, int y);
 	Actor *createFrag(int x, int y);
 	Actor *createFood(int x, int y);
 	Actor *createArtifact(int x, int y);
-	void generateRandom(Actor *owner, int ascii);
-	Tile *tiles;
+	void generateRandom(Actor *owner, int ascii); Tile *tiles;
 
 	
 protected:
