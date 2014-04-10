@@ -2568,11 +2568,11 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 					TCODConsole::flush();
 				}
 				engine.gui->menu.clear();
-				engine.gui->menu.addItem(Menu::DISABLE_TURRETS, "Unlock weapon vault with a single use key");
+				engine.gui->menu.addItem(Menu::UNLOCK_VAULT, "Unlock weapon vault with a single use key");
 				engine.gui->menu.addItem(Menu::EXIT, "Exit");
-				Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::TURRET_CONTROL);
+				Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::KEY_MENU);
 				switch (menuItem) {
-					case Menu::DISABLE_TURRETS:
+					case Menu::UNLOCK_VAULT:
 						locked = false;
 						((Key*)key->pickable)->used = true;
 						if(key->pickable->use(key, engine.player))
