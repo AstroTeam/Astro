@@ -2158,7 +2158,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					Actor *stackOfFood = createFood(x,y);
 					engine.actors.push(stackOfFood);
 					engine.sendToBack(stackOfFood);
-					Actor *pallet = new Actor(x, y, 243, "An empty pallet.", TCODColor::white);
+					Actor *pallet = new Actor(x, y, 243, "A pallet.", TCODColor::white);
 					//engine.mapconDec->setChar(x,y, 32);//
 					engine.map->tiles[x+y*engine.map->width].decoration = 32;
 					engine.actors.push(pallet);
@@ -2173,7 +2173,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 						Actor *stackOfFood = createFood(x,y);
 						engine.actors.push(stackOfFood);
 						engine.sendToBack(stackOfFood);
-						Actor *pallet = new Actor(x, y, 243, "An empty pallet.", TCODColor::white);
+						Actor *pallet = new Actor(x, y, 243, "A pallet.", TCODColor::white);
 						//engine.mapconDec->setChar(x,y, 32);//
 						engine.map->tiles[x+y*engine.map->width].decoration = 32;
 						engine.actors.push(pallet);
@@ -2202,7 +2202,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 						Actor *MLR = createMLR(x,y, false);
 						engine.actors.push(MLR);
 						engine.sendToBack(MLR);
-						Actor *pallet = new Actor(x, y, 243, "An empty pallet.", TCODColor::white);
+						Actor *pallet = new Actor(x, y, 243, "A pallet.", TCODColor::white);
 						//engine.mapconDec->setChar(x,y, 32);//
 						engine.map->tiles[x+y*engine.map->width].decoration = 32;
 						engine.actors.push(pallet);
