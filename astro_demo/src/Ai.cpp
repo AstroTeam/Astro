@@ -61,7 +61,7 @@ Actor *Ai::choseFromInventory(Actor *owner,int type, bool isVend) {
 				if(isVend){
 					inventoryScreen->print(22, y, "Pbc: %d Ink: %d",actor->pickable->value,actor->pickable->inkValue);
 				}else{
-					inventoryScreen->print(17, y, "(%d)",actor->pickable->stackSize);
+					inventoryScreen->print(24, y, "(%d)",actor->pickable->stackSize);
 				}
 			}else if(isVend){
 				inventoryScreen->print(22, y, "Pbc:%d Ink:%d",actor->pickable->value,actor->pickable->inkValue);
@@ -629,7 +629,7 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type, bool isVend) {
 					if(strcmp(actor->name,"Medkit") == 0){
 						inventoryScreen->print(17, y, "(%dHp)",(int)owner->getHealValue());
 					}
-					inventoryScreen->print(24, y, "(%d)",actor->pickable->stackSize);
+					inventoryScreen->print(34, y, "(%d)",actor->pickable->stackSize);
 				}
 			}else if(isVend){
 				inventoryScreen->print(17, y, "Pbc: %d Ink: %d",actor->pickable->value,actor->pickable->inkValue);
@@ -2320,9 +2320,13 @@ void VendingAi::populate(Actor *owner){
 	engine.actors.push(myBoots);
 	myBoots->pickable->pick(myBoots,owner);
 	
-	Actor *titanMail = engine.map->createTitanMail(0,0);
+	Actor *titanMail = engine.map->createTitanMail(0,0,true);
 	engine.actors.push(titanMail);
 	titanMail->pickable->pick(titanMail,owner);
+	
+	Actor *titanBoots = engine.map->createTitanBoots(0,0,true);
+	engine.actors.push(titanBoots);
+	titanBoots->pickable->pick(titanBoots,owner);
 	
 	Actor *medKit = engine.map->createHealthPotion(0,0);
 	engine.actors.push(medKit);
