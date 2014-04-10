@@ -111,7 +111,9 @@ public:
 	Actor *createFireBomb(int x, int y);
 	Actor *createTeleporter(int x, int y);
 	Actor *createEMP(int x,int y);
-	Actor *createTitanMail(int x, int y);
+	Actor *createTitanMail(int x, int y, bool isVend);
+	Actor *createTitanGreaves(int x, int y, bool isVend);
+	Actor *createTitanBoots(int x,int y, bool isVend);
 	Actor *createMylarCap(int x, int y, bool isVend);
 	Actor *createMylarVest(int x, int y, bool isVend);
 	Actor *createMylarGreaves(int x, int y, bool isVend);

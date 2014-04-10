@@ -1341,7 +1341,7 @@ Actor* Map::createConsole(int x, int y)
 void Map::addItem(int x, int y, RoomType roomType) {
 
 	TCODRandom *rng = TCODRandom::getInstance();
-	int dice = rng->getInt(0,515);
+	int dice = rng->getInt(0,545);
 	if (dice < 40) {
 		//create a health potion
 		Actor *healthPotion = createHealthPotion(x,y);
@@ -1369,30 +1369,35 @@ void Map::addItem(int x, int y, RoomType roomType) {
 		engine.sendToBack(MLR);
 	}else if(dice < 40+40+40+15+15+5){
 		//create Titanium Micro Chain-mail
-		Actor *chainMail = createTitanMail(x,y);
+		Actor *chainMail = createTitanMail(x,y,false);
 		engine.actors.push(chainMail);
 		engine.sendToBack(chainMail);
-	}else if(dice < 40+40+40+15+15+5+40){
+	}else if(dice < 40+40+40+15+15+5+10){
+		//create Titanium Micro Chain-mail
+		Actor *titanBoots = createTitanBoots(x,y,false);
+		engine.actors.push(titanBoots);
+		engine.sendToBack(titanBoots);
+	}else if(dice < 40+40+40+15+15+5+10+40){
 		//create a battery pack
 		Actor *batteryPack = createBatteryPack(x,y);
 		engine.actors.push(batteryPack);
 		engine.sendToBack(batteryPack);
-	}else if(dice< 40+40+40+15+15+5+40+40){
+	}else if(dice< 40+40+40+15+15+5+10+40+40){
 		//create a scroll of confusion
 		Actor *scrollOfConfusion = createFlashBang(x,y);
 		engine.actors.push(scrollOfConfusion);
 		engine.sendToBack(scrollOfConfusion);
-	}else if(dice< 40+40+40+15+15+5+40+40+40){
+	}else if(dice< 40+40+40+15+15+5+10+40+40+40){
 		//create a scroll of fragging
 		Actor *scrollOfFragging = createFrag(x,y);
 		engine.actors.push(scrollOfFragging);
 		engine.sendToBack(scrollOfFragging);
-	}else if(dice< 40+40+40+15+15+5+40+40+40+40){
+	}else if(dice< 40+40+40+15+15+5+10+40+40+40+40){
 		//create a scroll of drunkeness
 		Actor *scrollOfDrunkeness = createAlcohol(x,y);
 		engine.actors.push(scrollOfDrunkeness);
 		engine.sendToBack(scrollOfDrunkeness);
-	}else if(dice<40+40+40+15+15+5+40+40+40+40+100) {
+	}else if(dice<40+40+40+15+15+5+10+40+40+40+40+100) {
 		Actor *stackOfFood = createFood(x,y);
 		engine.actors.push(stackOfFood);
 		engine.sendToBack(stackOfFood);
@@ -2743,7 +2748,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 				engine.actors.push(flare);
 				flare->pickable->pick(flare,owner);
 			}else if(random < 30+20){
-				Actor *chainMail = createTitanMail(0,0);
+				Actor *chainMail = createTitanMail(0,0,false);
 				engine.actors.push(chainMail);
 				chainMail->pickable->pick(chainMail,owner);
 			}else if(random < 30+20+40){
@@ -2932,7 +2937,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 						scrollOfFireball->pickable->pick(scrollOfFireball,owner);
 					}else if(rnd < 10+30+20+10){
 						//create Titanium Micro Chain-mail
-						Actor *chainMail = createTitanMail(0,0);
+						Actor *chainMail = createTitanMail(0,0,false);
 						engine.actors.push(chainMail);
 						chainMail->pickable->pick(chainMail,owner);
 					}else{
@@ -3436,16 +3441,353 @@ Actor *Map::createEMP(int x, int y){
 	scrollOfLightningBolt->pickable->inkValue = 10;
 	return scrollOfLightningBolt;
 }
-Actor *Map::createTitanMail(int x, int y){
-	Actor *chainMail = new Actor(x,y,185,"Titan-mail",TCODColor::white);
-	chainMail->blocks = false;
+Actor *Map::createTitanMail(int x, int y, bool isVend){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *titanMail = new Actor(x,y,185,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
+	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,5);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,7);
+	
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Dented ");
+						bonus = new ItemBonus(ItemBonus::DR,3);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 2:
+						strcat(nameBuf,"Rusty ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 3:
+						strcat(nameBuf,"Corroded ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,20);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					default:break;
+				}
+				//bad Mylar Boots
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Standard ");
+						break;
+					case 1:
+						strcat(nameBuf,"Quality ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,5);
+						requirement = new ItemReq(ItemReq::STRENGTH,7);
+						break;
+					case 2:
+						strcat(nameBuf,"Economy ");
+						bonus = new ItemBonus(ItemBonus::DR,4);
+						requirement = new ItemReq(ItemReq::STRENGTH,6);
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,7);
+						requirement = new ItemReq(ItemReq::STRENGTH,8);
+						break;
+					case 2:
+						strcat(nameBuf,"Double Plated ");
+						bonus = new ItemBonus(ItemBonus::DR,7);
+						requirement = new ItemReq(ItemReq::STRENGTH,8);
+						break;
+					case 3:
+						strcat(nameBuf,"Mechanized ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,7);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,8);
+						break;
+					case 4:
+						strcat(nameBuf,"Pristine ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,100);
+						requirement = new ItemReq(ItemReq::STRENGTH,7);
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"Titanmail");
+
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	titanMail->blocks = false;
+	titanMail->name = nameBuf;
+	
+	titanMail->pickable = new Equipment(0,Equipment::CHEST,bonus,requirement);
+	titanMail->sort = 3;
+	titanMail->pickable->value = 1000;
+	titanMail->pickable->inkValue = 50;
+	titanMail->col = col;
+	return titanMail;
+}
+Actor *Map::createTitanBoots(int x, int y, bool isVend){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *titanBoots = new Actor(x,y,185,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
 	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,3);
-	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,8);
-	chainMail->pickable = new Equipment(0,Equipment::CHEST,bonus,requirement);
-	chainMail->sort = 3;
-	chainMail->pickable->value = 1600;
-	chainMail->pickable->inkValue = 50;
-	return chainMail;
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,4);
+	
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Dented ");
+						bonus = new ItemBonus(ItemBonus::DR,1);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 2:
+						strcat(nameBuf,"Rusty ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 3:
+						strcat(nameBuf,"Corroded ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,10);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					default:break;
+				}
+				//bad Mylar Boots
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Standard ");
+						break;
+					case 1:
+						strcat(nameBuf,"Quality ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,3);
+						requirement = new ItemReq(ItemReq::STRENGTH,5);
+						break;
+					case 2:
+						strcat(nameBuf,"Economy ");
+						bonus = new ItemBonus(ItemBonus::DR,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,3);
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,5);
+						requirement = new ItemReq(ItemReq::STRENGTH,6);
+						break;
+					case 2:
+						strcat(nameBuf,"Double Plated ");
+						bonus = new ItemBonus(ItemBonus::DR,5);
+						requirement = new ItemReq(ItemReq::STRENGTH,6);
+						break;
+					case 3:
+						strcat(nameBuf,"Mechanized ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,5);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,6);
+						break;
+					case 4:
+						strcat(nameBuf,"Pristine ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,50);
+						requirement = new ItemReq(ItemReq::STRENGTH,5);
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"TitanBoots");
+
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	titanBoots->blocks = false;
+	titanBoots->name = nameBuf;
+	
+	titanBoots->pickable = new Equipment(0,Equipment::FEET,bonus,requirement);
+	titanBoots->sort = 3;
+	titanBoots->pickable->value = 600;
+	titanBoots->pickable->inkValue = 30;
+	titanBoots->col = col;
+	return titanBoots;
+}
+Actor *Map::createTitanGreaves(int x, int y, bool isVend){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *titanGreaves = new Actor(x,y,185,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
+	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,4);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,5);
+	
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Dented ");
+						bonus = new ItemBonus(ItemBonus::DR,2);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 2:
+						strcat(nameBuf,"Rusty ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 3:
+						strcat(nameBuf,"Corroded ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,20);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					default:break;
+				}
+				//bad Mylar Boots
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Standard ");
+						break;
+					case 1:
+						strcat(nameBuf,"Quality ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,4);
+						requirement = new ItemReq(ItemReq::STRENGTH,6);
+						break;
+					case 2:
+						strcat(nameBuf,"Economy ");
+						bonus = new ItemBonus(ItemBonus::DR,3);
+						requirement = new ItemReq(ItemReq::STRENGTH,4);
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,6);
+						requirement = new ItemReq(ItemReq::STRENGTH,7);
+						break;
+					case 2:
+						strcat(nameBuf,"Double Plated ");
+						bonus = new ItemBonus(ItemBonus::DR,6);
+						requirement = new ItemReq(ItemReq::STRENGTH,7);
+						break;
+					case 3:
+						strcat(nameBuf,"Mechanized ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,6);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,7);
+						break;
+					case 4:
+						strcat(nameBuf,"Pristine ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,70);
+						requirement = new ItemReq(ItemReq::STRENGTH,6);
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"TitanGreaves");
+
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	titanGreaves->blocks = false;
+	titanGreaves->name = nameBuf;
+	
+	titanGreaves->pickable = new Equipment(0,Equipment::LEGS,bonus,requirement);
+	titanGreaves->sort = 3;
+	titanGreaves->pickable->value = 600;
+	titanGreaves->pickable->inkValue = 30;
+	titanGreaves->col = col;
+	return titanGreaves;
 }
 Actor *Map::createMylarGreaves(int x, int y, bool isVend){
 	char* nameBuf = new char[80]; 
