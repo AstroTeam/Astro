@@ -20,9 +20,9 @@ public:
 	Map *map;
 	//Map *mapCpy;
 	//Renderer *rend;
-	bool valTer[13];        //SAVE ME GARRETT
-	int ctrTer;            //SAVE ME GARRETT
-	int numTer;
+	bool valTer[13];
+	int ctrTer;
+	int numTer;           
 	
 	
 	int invState;

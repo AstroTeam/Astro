@@ -28,7 +28,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case LOCKER: ai = new LockerAi(); break;
 		case GARDNER: ai = new GardnerAi(); break;
 		case FRUIT: ai = new FruitAi(NULL,0); break;
-		//
+		case ZED: ai = new ZedAi(); break;
 		
 	}
 	ai->load(zip);
@@ -61,7 +61,7 @@ Actor *Ai::choseFromInventory(Actor *owner,int type, bool isVend) {
 				if(isVend){
 					inventoryScreen->print(22, y, "Pbc: %d Ink: %d",actor->pickable->value,actor->pickable->inkValue);
 				}else{
-					inventoryScreen->print(17, y, "(%d)",actor->pickable->stackSize);
+					inventoryScreen->print(24, y, "(%d)",actor->pickable->stackSize);
 				}
 			}else if(isVend){
 				inventoryScreen->print(22, y, "Pbc:%d Ink:%d",actor->pickable->value,actor->pickable->inkValue);
@@ -242,7 +242,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 		Actor *actor = *iterator;
 		if (actor->blocks && actor->x == targetx &&actor->y == targety) {
 			if (actor->destructible && !actor->destructible->isDead() ) {
-				if (actor->hostile||owner->hostile){
+				if (actor->hostile|| (owner->hostile && engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration != 56)){
 					owner->attacker->attack(owner, actor);
 					if(!actor->hostile && actor->ch == 129) //currently this only applies to security bots, if the player attacks a nonhostile enemy, should that actor generally become hostile?
 					{
@@ -251,7 +251,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 					}else if(!actor->hostile && actor->ch == 'G') //gardner become hostile
 						actor->hostile = true;
 					engine.damageDone += owner->attacker->totalPower - actor->destructible->totalDodge;
-				}else if(actor->interact && !owner->hostile)
+				}else if(actor->interact && (!owner->hostile || engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration == 56))
 					((InteractibleAi*)actor->ai)->interaction(actor, owner);
 				else if(!owner->hostile && !actor->hostile && actor->ch == 129)
 					engine.gui->message(TCODColor::grey, "The %s seems to be inactive", actor->name);
@@ -488,7 +488,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		} else {
 			engine.gui->message(TCODColor::lightGrey, "There are no stairs here. Perhaps you are disoriented?");
 		} break;
-		case 'v':
+		/*case 'v':
 		int w, h;
 		if (!TCODConsole::isFullscreen()){
 			TCODSystem::getCurrentResolution(&w,&h);
@@ -496,7 +496,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		} else {
 			engine.gui->message(TCODColor::darkerPink,"minimizing");
 			TCODConsole::initRoot(engine.screenWidth,engine.screenHeight, "Astro", false);
-		}
+		}*/
 		break;
 		case 'f':
 			//shooty shooty bang bang -Mitchell
@@ -629,7 +629,7 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type, bool isVend) {
 					if(strcmp(actor->name,"Medkit") == 0){
 						inventoryScreen->print(17, y, "(%dHp)",(int)owner->getHealValue());
 					}
-					inventoryScreen->print(24, y, "(%d)",actor->pickable->stackSize);
+					inventoryScreen->print(34, y, "(%d)",actor->pickable->stackSize);
 				}
 			}else if(isVend){
 				inventoryScreen->print(17, y, "Pbc: %d Ink: %d",actor->pickable->value,actor->pickable->inkValue);
@@ -809,9 +809,10 @@ void MonsterAi::update(Actor *owner) {
 		moveCount--;
 	}
 	
-	if (moveCount > 0) {
+	if (moveCount > 0) 
+	{
 		moveOrAttack(owner, engine.player->x, engine.player->y);
-	} else {
+	} else{
 		moveCount = 0;
 	}
 	owner->destructible->takeFireDamage(owner, 3.0);
@@ -823,7 +824,13 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
 	float distance = sqrtf(dx*dx+dy*dy);
-
+	
+	if(owner->ch == '_' && distance >= 2 && engine.turnCount % 2 == 0)
+	{
+		//crawlers can only move every other turn
+		return;
+	}
+	
 	if (distance >= 2) {
 		dx = (int) (round(dx / distance));
 		dy = (int)(round(dy / distance));
@@ -2304,13 +2311,29 @@ void VendingAi::populate(Actor *owner){
 	engine.actors.push(mlr);
 	mlr->pickable->pick(mlr,owner);
 	
+	Actor* myCap = engine.map->createMylarCap(0,0,true);
+	engine.actors.push(myCap);
+	myCap->pickable->pick(myCap,owner);
+	
+	Actor* myVest = engine.map->createMylarVest(0,0,true);
+	engine.actors.push(myVest);
+	myVest->pickable->pick(myVest,owner);
+	
+	Actor *myGreaves = engine.map->createMylarGreaves(0,0,true);
+	engine.actors.push(myGreaves);
+	myGreaves->pickable->pick(myGreaves,owner);
+	
 	Actor *myBoots = engine.map->createMylarBoots(0,0,true);
 	engine.actors.push(myBoots);
 	myBoots->pickable->pick(myBoots,owner);
 	
-	Actor *titanMail = engine.map->createTitanMail(0,0);
+	Actor *titanMail = engine.map->createTitanMail(0,0,true);
 	engine.actors.push(titanMail);
 	titanMail->pickable->pick(titanMail,owner);
+	
+	Actor *titanBoots = engine.map->createTitanBoots(0,0,true);
+	engine.actors.push(titanBoots);
+	titanBoots->pickable->pick(titanBoots,owner);
 	
 	Actor *medKit = engine.map->createHealthPotion(0,0);
 	engine.actors.push(medKit);
@@ -2502,37 +2525,105 @@ void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
 
 
 LockerAi::LockerAi(){
+locked = false;
 }
 void LockerAi::save(TCODZip &zip){
 zip.putInt(LOCKER);
+zip.putInt(locked);
+
 }
 void LockerAi::load(TCODZip &zip){
+locked = zip.getInt();
 }
 void LockerAi::interaction(Actor *owner, Actor *target){
 
+	//this line of code causes the locker dropping flavor text to never be printed, is that intentional?
 	if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
 	}
 	//owner->ch = 243;
-	if(!owner->container->inventory.isEmpty()){
+	if(!owner->container->inventory.isEmpty())
+	{
 		if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
 			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
 		} else if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 44){
-			engine.gui->message(TCODColor::lightGrey,"The PCMU beeps and spits out a brick of foodstuffs");
+			engine.gui->message(TCODColor::lightGrey,"The PCMU beeps and spits out a brick of foodstuffs.");
 		}
-		Actor **iterator=owner->container->inventory.begin();
-		for(int i = 0; i < owner->container->size; i++){
-			if(owner->container->inventory.isEmpty()){
-				break;
+		else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 56)
+		{
+		
+		
+			bool choice_made = false, first = true;
+			bool hasKey = false;
+			Actor *key;
+			//check if the player has a key
+			for (Actor **it = engine.player->container->inventory.begin(); it != engine.player->container->inventory.end(); it++) 
+			{
+				Actor *actor = *it;
+				if(actor->ch == 'K')
+				{
+					hasKey = true;
+					key = actor;
+					break;
+				}
 			}
-		Actor *actor = *iterator;
-		if(actor){
-			actor->pickable->drop(actor,owner,true);
-		}				
-		if(iterator != owner->container->inventory.end()){
-			++iterator;
+			if(!hasKey)
+				engine.gui->message(TCODColor::blue, "The %s appears to be locked, perhaps a key is needed.", owner->name);
+			while (!choice_made && locked && hasKey) 
+			{
+				if (first) {
+					TCODConsole::flush();
+				}
+				engine.gui->menu.clear();
+				engine.gui->menu.addItem(Menu::UNLOCK_VAULT, "Unlock weapon vault with a single use key");
+				engine.gui->menu.addItem(Menu::EXIT, "Exit");
+				Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::KEY_MENU);
+				switch (menuItem) {
+					case Menu::UNLOCK_VAULT:
+						locked = false;
+						((Key*)key->pickable)->used = true;
+						if(key->pickable->use(key, engine.player))
+						{
+							engine.gui->message(TCODColor::blue, "The %s opens!", owner->name);
+							locked = false;
+						}
+						choice_made = true;
+						break;
+					case Menu::EXIT :
+						choice_made = true;
+						break;
+					case Menu::NO_CHOICE:
+						first = false;
+						break;
+					default: break;
+				}
 			}
 		}
+		if(!locked)
+		{
+			Actor **iterator=owner->container->inventory.begin();
+			for(int i = 0; i < owner->container->size; i++)
+			{
+				if(owner->container->inventory.isEmpty())
+				{
+					break;
+				}
+				Actor *actor = *iterator;
+				if(actor)
+				{
+					actor->pickable->drop(actor,owner,true);
+				}				
+				if(iterator != owner->container->inventory.end())
+				{
+					++iterator;
+				}
+			}
+		}
+	}
+	else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 56)
+	{
+		if(!locked)
+				engine.gui->message(TCODColor::blue,"The %s has been opened and is now empty.", owner->name);
 	}
 }
 
@@ -2632,6 +2723,7 @@ void FruitAi::load(TCODZip &zip){
 	keeper = act;
 }
 
+
 void FruitAi::interaction(Actor *owner, Actor *target){
 	
 	if ( !((FruitAi*)owner->ai)->keeper->destructible->isDead() && ((FruitAi*)owner->ai)->keeper->hostile != true){
@@ -2656,5 +2748,78 @@ void FruitAi::interaction(Actor *owner, Actor *target){
 		} else {
 			engine.gui->message(TCODColor::grey,"Inventory is full.");
 		}
+		if (((FruitAi*)owner->ai)->limit == 0){
+			engine.actors.remove(owner);
+			delete owner;
+		}
+		
+	}
+}
+
+ZedAi::ZedAi() : moveCount(0), range(3){
+}
+
+void ZedAi::load(TCODZip &zip) {
+	moveCount = zip.getInt();
+	range = zip.getInt();
+}
+
+void ZedAi::save(TCODZip &zip) {
+	zip.putInt(RANGED);
+	zip.putInt(moveCount);
+	zip.putInt(range);
+}
+
+void ZedAi::update(Actor *owner) {
+
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	
+	if (engine.map->isInFov(owner->x,owner->y)) {
+		//can see the palyer, move towards him
+		moveCount = TRACKING_TURNS + 2; //give ranged characters longer tracking
+	} else {
+		moveCount--;
+	}
+	if (moveCount > 0) {
+		moveOrAttack(owner, engine.player->x, engine.player->y);
+	} else {
+		moveCount = 0;
+	}
+	owner->destructible->takeFireDamage(owner, 3.0);
+}
+void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
+{
+	int dx = targetx - owner->x;
+	int dy = targety - owner->y;
+	int stepdx = (dx > 0 ? 1:-1);
+	int stepdy = (dy > 0 ? 1:-1);
+	float distance = sqrtf(dx*dx+dy*dy);
+	//If the distance > range, then the rangedAi will move towards the player
+	//If the distance <= range, then the rangedAi will shoot the player unless the player is right next the rangedAi
+
+	if (distance > range) {
+
+		dx = (int) (round(dx / distance));
+		dy = (int)(round(dy / distance));
+		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+			owner->x+=dx;
+			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
+			owner->x += stepdx;
+		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
+			owner->y += stepdy;
+		}
+		if (owner->oozing) {
+			engine.map->infectFloor(owner->x, owner->y);
+		}
+	} else if (distance !=1 && owner->attacker) {
+		owner->attacker->shoot(owner,engine.player);
+		engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDodge);
+	}
+	else if (owner->attacker) {
+		owner->attacker->attack(owner,engine.player);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
 }

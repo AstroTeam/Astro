@@ -124,3 +124,4 @@ mapcondec:
 
 75 is tequila
 
+76 is sandbag wall LR

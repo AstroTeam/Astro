@@ -49,7 +49,8 @@ float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 		VendingAi* va = (VendingAi*) owner->ai;
 		va->deployedSecurity = true;
 	}
-	
+	if(owner->ch == 243 && engine.map->tiles[owner->x+owner->y*engine.map->width].decoration == 56) //weapon vault
+		return 0; //can't damage vaults
 	if (damage > 0){
 	
 		hp -= damage;
