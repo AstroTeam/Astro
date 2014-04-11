@@ -29,6 +29,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case GARDNER: ai = new GardnerAi(); break;
 		case FRUIT: ai = new FruitAi(NULL,0); break;
 		case ZED: ai = new ZedAi(); break;
+		case COMPANION: ai = new CompanionAi(NULL,0); break;
 		
 	}
 	ai->load(zip);
@@ -2548,6 +2549,8 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
 		} else if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 44){
 			engine.gui->message(TCODColor::lightGrey,"The PCMU beeps and spits out a brick of foodstuffs.");
+			owner->col = TCODColor::red;
+			owner->name = "Used PCMU Food Processor";
 		}
 		else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 56)
 		{
@@ -2823,3 +2826,72 @@ void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
 }
+
+CompanionAi::CompanionAi(Actor *tamer, int rangeLimit, Command command):tamer(tamer),rangeLimit(rangeLimit),assignedX(tamer->x),assignedY(tamer->y),command(command){
+}
+
+void CompanionAi::save(TCODZip &zip){
+	tamer->save(zip);
+	zip.putInt(edible);
+	zip.putInt(rangeLimit);
+	zip.putInt(assignedX);
+	zip.putInt(assignedY);
+	zip.putInt(command);
+}
+
+void CompanionAi::load(TCODZip &zip){
+	Actor *act = new Actor(0,0,0,NULL,TCODColor::white);
+	act->load(zip);
+	tamer = act;
+	
+	edible = zip.getInt();
+	rangeLimit = zip.getInt();
+	assignedX = zip.getInt();
+	assignedY = zip.getInt();
+	command = (Command)zip.getInt();
+}
+
+void CompanionAi::update(Actor *owner){
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	
+	if (command == STAY){
+		return;
+	}
+	
+	if (command == GUARD_POINT ){
+		if(owner->getDistance(assignedX,assignedY) != 0){
+			int dx = assignedX - owner->x;
+			int dy = assignedY - owner->y;
+			int stepdx = (dx > 0 ? 1:-1);
+			int stepdy = (dy > 0 ? 1:-1);
+			float distance = sqrtf(dx*dx+dy*dy);
+
+			dx = (int) (round(dx / distance));
+			dy = (int)(round(dy / distance));
+			if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+				owner->x+=dx;
+				owner->y+=dy;
+			} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
+				owner->x += stepdx;
+			} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
+				owner->y += stepdy;
+			}
+			if (owner->oozing) {
+				engine.map->infectFloor(owner->x, owner->y);
+			}
+		}else{
+			Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y, 1);
+			if (!closestMonster){
+				return;
+			}
+			if (owner->attacker) {
+				owner->attacker->attack(owner,closestMonster);
+			}
+		}
+	
+	}
+	
+}
+
