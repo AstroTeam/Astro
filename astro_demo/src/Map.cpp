@@ -2345,6 +2345,10 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					second = !second;
 				}
 				
+				
+				
+				
+				
 			}	
 		}
 	}
@@ -4693,7 +4697,7 @@ Actor *Map::createCombatKnife(int x, int y){
 					strcat(nameBuf,"Machete(H2)");
 					break;
 				case 5:
-					strcat(nameBuf,"KaBar(H2)");
+					strcat(nameBuf,"Ka-Bar(H2)");
 					break;
 				default:break;
 			}
