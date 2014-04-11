@@ -2345,68 +2345,41 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					second = !second;
 				}
 				static bool frst = true;
+				
 				if (frst)
 				{
+					int dx1 = 1;
+					int dx2 = 1;
+					int dy1 = 1;
+					int dy2 = 1;
 					switch (wall)
 					{
 						case 1:
-							for (int xx = x1+5; xx <= x2-1; xx++)
-							{
-								for (int yy = y1+1; yy <= y2-1; yy++)
-								{
-									Actor *barstool = new Actor(xx, yy, 'P', "3D Pool Table.", TCODColor::white);
-									//engine.map->tiles[x+y*engine.map->width].decoration = 32;
-									engine.actors.push(barstool);
-									barstool->blocks = false;
-									engine.sendToBack(barstool);
-								}
-							}
-							frst = false;
+							dx1 = 5;
 							break;//left wall
 						case 2:
-							for (int xx = x1+1; xx <= x2-1; xx++)
-							{
-								for (int yy = y1+5; yy <= y2-1; yy++)
-								{
-									Actor *barstool = new Actor(xx, yy, 'P', "3D Pool Table.", TCODColor::white);
-									//engine.map->tiles[x+y*engine.map->width].decoration = 32;
-									engine.actors.push(barstool);
-									barstool->blocks = false;
-									engine.sendToBack(barstool);
-								}
-							}
-							frst = false;
+							dy1 = 5;
 							break;//top wall
 						case 3:
-							for (int xx = x1+1; xx <= x2-5; xx++)
-							{
-								for (int yy = y1+1; yy <= y2-1; yy++)
-								{
-									Actor *barstool = new Actor(xx, yy, 'P', "3D Pool Table.", TCODColor::white);
-									//engine.map->tiles[x+y*engine.map->width].decoration = 32;
-									engine.actors.push(barstool);
-									barstool->blocks = false;
-									engine.sendToBack(barstool);
-								}
-							}
-							frst = false;
+							dx2 = 5;
 							break;//right wall
 						case 4:
-							for (int xx = x1+1; xx <= x2-1; xx++)
-							{
-								for (int yy = y1+1; yy <= y2-5; yy++)
-								{
-									Actor *barstool = new Actor(xx, yy, 'P', "3D Pool Table.", TCODColor::white);
-									//engine.map->tiles[x+y*engine.map->width].decoration = 32;
-									engine.actors.push(barstool);
-									barstool->blocks = false;
-									engine.sendToBack(barstool);
-								}
-							}
-							frst = false;
+							dy2 = 5;
 							break;//bottom wall
 						default:break;
 					}
+					for (int xx = x1+dx1; xx <= x2-dx2; xx++)
+					{
+						for (int yy = y1+dy1; yy <= y2-dy2; yy++)
+						{
+							Actor *barstool = new Actor(xx, yy, 'P', "3D Pool Table.", TCODColor::white);
+							//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+							engine.actors.push(barstool);
+							barstool->blocks = false;
+							engine.sendToBack(barstool);
+						}
+					}
+					frst = false;
 				}
 				
 			}	
