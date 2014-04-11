@@ -2321,6 +2321,9 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					engine.actors.push(display);
 					display->blocks = false;
 					engine.sendToBack(display);
+					Actor *booze = createAlcohol(x,y);
+					engine.actors.push(booze);
+					
 				}
 				if (((wall == 1 || wall == 3) && x == bar) || ((wall == 2 || wall == 4) && y == bar))
 				{
