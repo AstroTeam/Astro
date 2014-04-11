@@ -861,8 +861,9 @@ void Engine::update() {
 		//std::cout << "number of actors " << actors.size() - 1 << std::endl;
 		for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 			Actor *actor = *iterator;
-			if ( actor != player) {
+			if (actor != player){// && actor->ch != 'l') {
 				//std::cout << "updating " << actor->name << std::endl;
+				
 				actor->update();
 			}
 		}

@@ -1107,29 +1107,33 @@ void LightAi::update(Actor * owner)
 		
 		if (moving)
 		{
+			//cout << "moving light updating" << endl;
 			//engine.gui->message(TCODColor::yellow, "changed light!");
-			for (int x=lstX-6; x <= lstX+6; x++) {
-				for (int y=lstY-6; y <= lstY+6; y++) {
-					
-					if (engine.map->tiles[x+y*engine.map->width].drty)
-					{
-						if (engine.map->tiles[x+y*engine.map->width].num == 1)//player's FOV
+				if (lstX != 0 && lstY != 0)
+				{
+				for (int x=lstX-6; x <= lstX+6; x++) {
+					for (int y=lstY-6; y <= lstY+6; y++) {
+						//cout << "checking tile (" << x << "," << y << ")" << endl;
+						if (engine.map->tiles[x+y*engine.map->width].drty)
 						{
-							engine.map->tiles[x+y*engine.map->width].lit = false;//problem-> the player's flashlight is the only one that needs to move
-							engine.map->tiles[x+y*engine.map->width].num--;      //all else never comes here, just add one and be done
-							frst = true;				                         //everytime you move, decrement by 1, then add the new shit back
-							engine.map->tiles[x+y*engine.map->width].drty = false;
+							if (engine.map->tiles[x+y*engine.map->width].num == 1)//player's FOV
+							{
+								engine.map->tiles[x+y*engine.map->width].lit = false;//problem-> the player's flashlight is the only one that needs to move
+								engine.map->tiles[x+y*engine.map->width].num--;      //all else never comes here, just add one and be done
+								frst = true;				                         //everytime you move, decrement by 1, then add the new shit back
+								engine.map->tiles[x+y*engine.map->width].drty = false;
+							}
+							else if (engine.map->tiles[x+y*engine.map->width].num > 1)
+							{
+								engine.map->tiles[x+y*engine.map->width].num--;
+								frst = true;
+								engine.map->tiles[x+y*engine.map->width].drty = false;
+							}
+							//lmap->setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
 						}
-						else if (engine.map->tiles[x+y*engine.map->width].num > 1)
-						{
-							engine.map->tiles[x+y*engine.map->width].num--;
-							frst = true;
-							engine.map->tiles[x+y*engine.map->width].drty = false;
-						}
-						//lmap->setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
 					}
 				}
-			}
+				}
 		}
 		//only do this once for flares!
 		for (int x=minx; x <= maxx; x++) {
