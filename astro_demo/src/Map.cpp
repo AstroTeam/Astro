@@ -2344,10 +2344,62 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					}
 					second = !second;
 				}
-				
-				
-				
-				
+				switch (wall)
+				{
+					case 1:
+						for (int xx = x1+5; xx <= x2-1; xx++)
+						{
+							for (int yy = y1+1; yy <= y2-1; yy++)
+							{
+								Actor *barstool = new Actor(xx, yy, 'P', "3D Pool Table.", TCODColor::white);
+								//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+								engine.actors.push(barstool);
+								barstool->blocks = false;
+								engine.sendToBack(barstool);
+							}
+						}
+						break;//left wall
+					case 2:
+						for (int xx = x1+1; xx <= x2-1; xx++)
+						{
+							for (int yy = y1+5; yy <= y2-1; yy++)
+							{
+								Actor *barstool = new Actor(xx, yy, 'P', "3D Pool Table.", TCODColor::white);
+								//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+								engine.actors.push(barstool);
+								barstool->blocks = false;
+								engine.sendToBack(barstool);
+							}
+						}
+						break;//top wall
+					case 3:
+						for (int xx = x1+1; xx <= x2-5; xx++)
+						{
+							for (int yy = y1+1; yy <= y2-1; yy++)
+							{
+								Actor *barstool = new Actor(xx, yy, 'P', "3D Pool Table.", TCODColor::white);
+								//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+								engine.actors.push(barstool);
+								barstool->blocks = false;
+								engine.sendToBack(barstool);
+							}
+						}
+						break;//right wall
+					case 4:
+						for (int xx = x1+1; xx <= x2-1; xx++)
+						{
+							for (int yy = y1+1; yy <= y2-5; yy++)
+							{
+								Actor *barstool = new Actor(xx, yy, 'P', "3D Pool Table.", TCODColor::white);
+								//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+								engine.actors.push(barstool);
+								barstool->blocks = false;
+								engine.sendToBack(barstool);
+							}
+						}
+						break;//bottom wall
+					default:break;
+				}
 				
 			}	
 		}
