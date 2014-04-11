@@ -1308,7 +1308,7 @@ Actor* Map::createCrawler(int x, int y)
 	int level = engine.level;
 	float scale = 1 + .1*(level - 1);
 	float crawlerHp = 15*scale;
-	float crawlerDodge = 10*scale;
+	float crawlerDodge = 3*scale;
 	float crawlerDR = 0*scale;
 	float crawlerStr = 3*scale;
 	float crawlerDex = 0*scale;
