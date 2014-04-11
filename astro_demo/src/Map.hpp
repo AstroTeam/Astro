@@ -3,7 +3,8 @@ namespace Param {
 		GENERIC,
 		OFFICE_FLOOR,
 		TUTORIAL,
-		DEFENDED
+		DEFENDED,
+		DRUNK
 	};
 
 	enum RoomType {
@@ -112,6 +113,7 @@ public:
 	Actor *createFireBomb(int x, int y);
 	Actor *createTeleporter(int x, int y);
 	Actor *createEMP(int x,int y);
+	Actor *createTitanHelm(int x, int y, bool isVend);
 	Actor *createTitanMail(int x, int y, bool isVend);
 	Actor *createTitanGreaves(int x, int y, bool isVend);
 	Actor *createTitanBoots(int x,int y, bool isVend);

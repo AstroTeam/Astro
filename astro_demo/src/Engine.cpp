@@ -857,12 +857,12 @@ void Engine::update() {
 		if(player->destructible->maxHp > player->destructible->hp && player->hunger > 0 && engine.turnCount%10 == 1)
 			player->destructible->hp++;
 		player->updateAuras();
-		std::cout << "updating actors " <<std::endl;
-		std::cout << "number of actors " << actors.size() - 1 << std::endl;
+		//std::cout << "updating actors " <<std::endl;
+		//std::cout << "number of actors " << actors.size() - 1 << std::endl;
 		for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 			Actor *actor = *iterator;
 			if ( actor != player) {
-				std::cout << "updating " << actor->name << std::endl;
+				//std::cout << "updating " << actor->name << std::endl;
 				actor->update();
 			}
 		}

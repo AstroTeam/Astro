@@ -131,6 +131,7 @@ public:
 	};
 	
 	bool equipped;
+	int armorArt; //1 = Mylar Helm, 2 = Mylar Vest, 3 = Mylar Greaves, 4 = Mylar Boots, 5 = Titanium Helm, 6 = TitanMail, 7 = TitanGreaves, 8 = TitanBoots, 9 = Kevlar Helm, 10 = Kevlar Vest, 11 = Kevlar KneePads, 12 = Kevlar Boots
 	
 	SlotType slot;
 	ItemBonus *bonus;
