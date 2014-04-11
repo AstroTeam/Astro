@@ -140,7 +140,7 @@ void Map::init(bool withActors, LevelType levelType) {
 				//creating the final boss
 				int level = engine.level;
 				float scale = 1 + .1*(level - 1);
-				float zHp = 40*scale;
+				float zHp = 60*scale;
 				float zDodge = 1*scale;
 				float zDR = .5*scale;
 				float zStr = 20*scale;
