@@ -4724,6 +4724,7 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 	//1 = min damage, 6 = max damage, 2 is crit mult, RANGED, 0 = not equipped,RANGED, bonus, req
 	MLR->pickable = new Weapon(minDmg,maxDmg,critMult,Weapon::RANGED,0,Equipment::RANGED,bonus,requirement);
 	MLR->sort = 4;
+	((Equipment*)(MLR->pickable))->armorArt = 13;
 	MLR->pickable->value = 200;
 	MLR->pickable->inkValue = 30;
 	//col = TCODColor::white;

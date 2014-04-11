@@ -127,6 +127,8 @@ void Destructible::die(Actor *owner, Actor *killer) {
 		}
 		owner->ch = 161;
 		owner->blocks = false;
+	}else if(owner->ch == 243){
+		owner->col = TCODColor::darkGrey;
 	}//else generic blood whale
 	else
 	{
