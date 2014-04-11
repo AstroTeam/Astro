@@ -2291,8 +2291,62 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			}
 		}
 	}
-	if (room->type == BAR) {
-
+	if (room->type == BAR) 
+	{
+		int wall = rng->getInt(1,4);
+		int disp = 0;
+		int bar = 0;
+		switch (wall)
+		{
+			case 1:bar = x1+2;disp = x1;break;//left wall
+			case 2:bar = y1+2;disp = y1;break;//top wall
+			case 3:bar = x2-2;disp = x2;break;//right wall
+			case 4:bar = y2-2;disp = y2;break;//bottom wall
+			default:break;
+		}
+		for (int x = x1; x <= x2; x++)
+		{
+			for (int y = y1; y <= y2; y++)
+			{
+				if (((wall == 1 || wall == 3) && x == disp) || ((wall == 2 || wall == 4) && y == disp))
+				{
+					Actor *display = new Actor(x, y, 'D', "Liquor Display.", TCODColor::white);
+					//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+					engine.actors.push(display);
+					display->blocks = false;
+					engine.sendToBack(display);
+				}
+				if (((wall == 1 || wall == 3) && x == bar) || ((wall == 2 || wall == 4) && y == bar))
+				{
+					Actor *bar = new Actor(x, y, 'B', "Bar.", TCODColor::white);
+					//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+					engine.actors.push(bar);
+					bar->blocks = false;
+					engine.sendToBack(bar);
+					static bool second = true;
+					if (second)
+					{
+						int xx = x;
+						int yy = y;
+						switch (wall)
+						{
+							case 1:xx = xx+1;break;//left wall
+							case 2:yy = yy+1;break;//top wall
+							case 3:xx = xx-1;break;//right wall
+							case 4:yy = yy-1;break;//bottom wall
+							default:break;
+						}
+						Actor *barstool = new Actor(xx, yy, 's', "Barstool.", TCODColor::white);
+						//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+						engine.actors.push(barstool);
+						//bar->blocks = false;
+						engine.sendToBack(barstool);
+					}
+					second = !second;
+				}
+				
+			}	
+		}
 	}
 
 	if (room->type == INFECTED_ROOM) 
@@ -4600,19 +4654,19 @@ Actor *Map::createCombatKnife(int x, int y){
 			switch (name)
 			{
 				case 1:
-					strcat(nameBuf,"Knife");
+					strcat(nameBuf,"Knife(H1)");
 					break;
 				case 2:
-					strcat(nameBuf,"Dagger");
+					strcat(nameBuf,"Dagger(H1)");
 					break;
 				case 3:
-					strcat(nameBuf,"Shank");
+					strcat(nameBuf,"Shank(H1)");
 					break;
 				case 4:
-					strcat(nameBuf,"Pipe");
+					strcat(nameBuf,"Pipe(H1)");
 					break;
 				case 5:
-					strcat(nameBuf,"Crowbar");
+					strcat(nameBuf,"Crowbar(H1)");
 					break;
 				default:break;
 			}
@@ -4653,19 +4707,19 @@ Actor *Map::createCombatKnife(int x, int y){
 			switch (name)
 			{
 				case 1:
-					strcat(nameBuf,"Sword");
+					strcat(nameBuf,"Sword(2 HANDS)");
 					break;
 				case 2:
-					strcat(nameBuf,"Fire-Axe");
+					strcat(nameBuf,"Fire-Axe(2 HANDS)");
 					break;
 				case 3:
-					strcat(nameBuf,"Large Pipe");
+					strcat(nameBuf,"Large Pipe(2 HANDS)");
 					break;
 				case 4:
-					strcat(nameBuf,"Auto-Saw");
+					strcat(nameBuf,"Auto-Saw(2 HANDS)");
 					break;
 				case 5:
-					strcat(nameBuf,"Makeshift Morningstar");
+					strcat(nameBuf,"Makeshift Morningstar(2 HANDS)");
 					break;
 				default:break;
 			}
