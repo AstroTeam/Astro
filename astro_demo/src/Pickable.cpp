@@ -418,7 +418,8 @@ bool Flare::use(Actor *owner, Actor *wearer) {
 	return Pickable::use(owner,wearer);
 }
 
-
+//owner is the item
+//wearer is the locker (thing with the container)
 void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 	if (wearer->container) {
 		if ((owner->pickable->type == EQUIPMENT || owner->pickable->type == WEAPON ) && ((Equipment*)(owner->pickable))->equipped) {
@@ -428,8 +429,15 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 		if(isNPC && wearer->container){
 			wearer->container->remove(owner);
 			owner->x = wearer->x;
-			if(wearer->ch == 243){
-				owner->y = wearer->y + 1;
+			if(wearer->ch == 243)
+			{ //locker case, note that locker == if(
+				if(engine.map->tiles[wearer->x+wearer->y*engine.map->width].decoration != 56)
+					owner->y = wearer->y + 1;
+				else //weapon vault case
+				{
+					owner->x = wearer->x - 1;
+					owner->y = wearer->y;
+				}
 			}else{
 				owner->y = wearer->y;
 			}
@@ -894,6 +902,7 @@ bool Food::use(Actor *owner, Actor *wearer) {
 
 Key::Key(int keyType, bool stacks, int stackSize, PickableType type) 
 : Pickable(stacks, stackSize,type), keyType(keyType) {
+	used = false;
 
 }
 
@@ -903,6 +912,7 @@ void Key::load(TCODZip &zip) {
 	value = zip.getInt();
 	inkValue = zip.getInt();
 	keyType = zip.getInt();
+	used = zip.getInt();
 }
 
 void Key::save(TCODZip &zip) {
@@ -912,13 +922,20 @@ void Key::save(TCODZip &zip) {
 	zip.putInt(value);
 	zip.putInt(inkValue);
 	zip.putInt(keyType);
+	zip.putInt(used);
 }
 
 bool Key::use(Actor *owner, Actor *wearer)
 {
-	if(wearer == engine.player && keyType == 0)
+	if(wearer == engine.player && keyType == 0 && !used)
+	{
 		engine.gui->message(TCODColor::blue, "This key seems to go to some sort of vault, possibly found in an armory");
-	return false;
+		return false;
+	}
+	else
+	{
+		return Pickable::use(owner,wearer);
+	}
 }
 
 Alcohol::Alcohol(int str, int qual)

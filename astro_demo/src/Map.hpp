@@ -2,7 +2,8 @@ namespace Param {
 	enum LevelType {
 		GENERIC,
 		OFFICE_FLOOR,
-		TUTORIAL
+		TUTORIAL,
+		DEFENDED
 	};
 
 	enum RoomType {
@@ -12,16 +13,19 @@ namespace Param {
 		GENERATOR, //done - can turn on power, not yet though
 		SERVER,    //done - can look at a map of deck, not yet though
 		KITCHEN,   //done - drops food from food processors, can go into refrigerators, not yet though, steal items, frozen people come for you
-		MESSHALL,  //to-do - add tables and trash cans that drop items maybe?
-		ARMORY,    //to-do - add gun racks and security bots and glass cases, locked door?  need to kill security bot to get in?
-		OBSERVATORY, //to-do - breakable floor, no oxygen
-		HYDROPONICS, //to-do - grass, spawns food in garden
+		MESSHALL,  //done - add tables and trash cans that drop items maybe?
+		ARMORY,    //done* - add gun racks and security bots and glass cases, locked door?  need to kill security bot to get in?
+				   //need to finish vaults
+		OBSERVATORY, //done - breakable floor, no oxygen
+		HYDROPONICS, //done - grass, spawns food in garden
+		DEFENDED_ROOM, // to-do - spawns companions
+		BAR, //to-do - spawns alcohol/drugs
+		INFECTED_ROOM //to-do spawns lot of infection.  infected equipment?
+		
+		
 		//lobby - stair room with seating
 		//cult rooms - blood everywhere, crazy cult enemies that have high str, low hp
-		//defended rooms - friendly marines inside, give you a gun and ammo, have a medic who will help you? scientist give you tech
 		//THE BRIDGE - the win room, has a blackbox
-		//laboratory - experiment with spores, infected scientists, 
-		//infected room - all floor is infected level 6, epicenters in middle
 	};
 };
 
@@ -95,6 +99,7 @@ public:
 	Actor *createSecurityBot(int x, int y);
 	Actor *createInfectedEngineer(int x, int y);
 	Actor *createGardner(int x, int y);
+	Actor *createCrawler(int x, int y);
 	
 	Actor *createCurrencyStack(int x, int y);
 	Actor *createHealthPotion(int x, int y);
@@ -107,7 +112,9 @@ public:
 	Actor *createFireBomb(int x, int y);
 	Actor *createTeleporter(int x, int y);
 	Actor *createEMP(int x,int y);
-	Actor *createTitanMail(int x, int y);
+	Actor *createTitanMail(int x, int y, bool isVend);
+	Actor *createTitanGreaves(int x, int y, bool isVend);
+	Actor *createTitanBoots(int x,int y, bool isVend);
 	Actor *createMylarCap(int x, int y, bool isVend);
 	Actor *createMylarVest(int x, int y, bool isVend);
 	Actor *createMylarGreaves(int x, int y, bool isVend);
@@ -117,8 +124,7 @@ public:
 	Actor *createFrag(int x, int y);
 	Actor *createFood(int x, int y);
 	Actor *createArtifact(int x, int y);
-	void generateRandom(Actor *owner, int ascii);
-	Tile *tiles;
+	void generateRandom(Actor *owner, int ascii); Tile *tiles;
 
 	
 protected:
@@ -127,6 +133,7 @@ protected:
 	TCODRandom *rng;
 	friend class BspListener;
 	short epicenterAmount;
+	LevelType type;
 	
 	void dig(int x1, int y1, int x2, int y2);
 	void createRoom(int roomNum, bool withActors, Room * room);
