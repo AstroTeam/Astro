@@ -136,13 +136,13 @@ void Map::init(bool withActors, LevelType levelType) {
 
 		//Create boss, for now it is a simple security bot
 		if (withActors) {
-			if (engine.level == 5) {
+			if (engine.level == 2) {
 				//creating the final boss
 				int level = engine.level;
 				float scale = 1 + .1*(level - 1);
-				float zHp = 40*scale;
+				float zHp = 60*scale;
 				float zDodge = 1*scale;
-				float zDR = 1*scale;
+				float zDR = .5*scale;
 				float zStr = 20*scale;
 				float zDex = 20*scale;
 				float zXp = 100*scale;
@@ -4724,6 +4724,7 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 	//1 = min damage, 6 = max damage, 2 is crit mult, RANGED, 0 = not equipped,RANGED, bonus, req
 	MLR->pickable = new Weapon(minDmg,maxDmg,critMult,Weapon::RANGED,0,Equipment::RANGED,bonus,requirement);
 	MLR->sort = 4;
+	((Equipment*)(MLR->pickable))->armorArt = 13;
 	MLR->pickable->value = 200;
 	MLR->pickable->inkValue = 30;
 	//col = TCODColor::white;

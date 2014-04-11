@@ -1427,8 +1427,8 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 
 
 GrenadierAi::GrenadierAi() : moveCount(0), range(3){
-numGrenades = 5;
-berserk = false;
+	numGrenades = 5;
+	berserk = false;
 }
 
 void GrenadierAi::load(TCODZip &zip) {
@@ -2768,18 +2768,20 @@ void FruitAi::interaction(Actor *owner, Actor *target){
 	}
 }
 
-ZedAi::ZedAi() : moveCount(0), range(3){
+ZedAi::ZedAi() : moveCount(0), range(3), berserk (false){
 }
 
 void ZedAi::load(TCODZip &zip) {
 	moveCount = zip.getInt();
 	range = zip.getInt();
+	berserk = zip.getInt();
 }
 
 void ZedAi::save(TCODZip &zip) {
 	zip.putInt(RANGED);
 	zip.putInt(moveCount);
 	zip.putInt(range);
+	zip.putInt(berserk);
 }
 
 void ZedAi::update(Actor *owner) {
@@ -2787,18 +2789,28 @@ void ZedAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
-	
+	//if really hurt go berserk
+	if (owner->destructible->hp < owner->destructible->maxHp/3) {
+		berserk = true;
+		engine.gui->message(TCODColor::darkPurple, "<Zed> Muh Ha! Now you'll witness my true power.");
+		owner->destructible->maxHp = owner->destructible->maxHp*2;
+		owner->destructible->hp = owner->destructible->maxHp;
+		engine.gui->message(TCODColor::red, "Zed Umber is going berserk!");
+	}
 	if (engine.map->isInFov(owner->x,owner->y)) {
-		//can see the palyer, move towards him
-		moveCount = TRACKING_TURNS + 2; //give ranged characters longer tracking
-	} else {
+		//can see the player, move towards him
+		moveCount = TRACKING_TURNS + 4; //give zed much longer tracking
+	}
+	else {
 		moveCount--;
 	}
 	if (moveCount > 0) {
 		moveOrAttack(owner, engine.player->x, engine.player->y);
-	} else {
+	} 
+	else {
 		moveCount = 0;
 	}
+	//does a check if the floor is on fire
 	owner->destructible->takeFireDamage(owner, 3.0);
 }
 void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
@@ -2810,9 +2822,7 @@ void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	float distance = sqrtf(dx*dx+dy*dy);
 	//If the distance > range, then the rangedAi will move towards the player
 	//If the distance <= range, then the rangedAi will shoot the player unless the player is right next the rangedAi
-
 	if (distance > range) {
-
 		dx = (int) (round(dx / distance));
 		dy = (int)(round(dy / distance));
 		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
@@ -2826,9 +2836,33 @@ void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		if (owner->oozing) {
 			engine.map->infectFloor(owner->x, owner->y);
 		}
-	} else if (distance !=1 && owner->attacker) {
-		owner->attacker->shoot(owner,engine.player);
-		engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDodge);
+		//not next to the player
+	} 
+
+	else if (!berserk && distance !=1 && owner->attacker) {
+		TCODRandom *rng = TCODRandom::getInstance();
+		int dice = rng->getInt(0,99);
+		if (dice < 50) {
+			owner->attacker->shoot(owner,engine.player);
+			engine.damageReceived += (owner->totalDex-engine.player->destructible->totalDodge);
+		}
+		//taunting
+		else  {
+			int tauntDice = rng->getInt(0,4);
+			switch (tauntDice) {
+				case 0:
+					engine.gui->message(TCODColor::darkPurple, "<Zed> Muh Ha Ha!"); break;
+				case 1:
+					engine.gui->message(TCODColor::darkPurple, "<Zed> I'm Zed Umber. Muh Ha Ha..."); break;
+				case 2:
+					engine.gui->message(TCODColor::darkPurple, "<Zed> Muh Ha..."); break;
+				case 3:
+					engine.gui->message(TCODColor::darkPurple, "<Zed> Cough, cough..."); break;
+				case 4:
+					engine.gui->message(TCODColor::darkPurple, "<Zed> Hold on... Gotta light this e-cig."); break;
+			}
+		}
+		//standing next to the player
 	}
 	else if (owner->attacker) {
 		owner->attacker->attack(owner,engine.player);
