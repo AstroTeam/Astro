@@ -809,9 +809,10 @@ void MonsterAi::update(Actor *owner) {
 		moveCount--;
 	}
 	
-	if (moveCount > 0) {
+	if (moveCount > 0) 
+	{
 		moveOrAttack(owner, engine.player->x, engine.player->y);
-	} else {
+	} else{
 		moveCount = 0;
 	}
 	owner->destructible->takeFireDamage(owner, 3.0);
@@ -823,7 +824,13 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
 	float distance = sqrtf(dx*dx+dy*dy);
-
+	
+	if(owner->ch == '_' && distance >= 2 && engine.turnCount % 2 == 0)
+	{
+		//crawlers can only move every other turn
+		return;
+	}
+	
 	if (distance >= 2) {
 		dx = (int) (round(dx / distance));
 		dy = (int)(round(dy / distance));

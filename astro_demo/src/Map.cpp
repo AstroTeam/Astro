@@ -878,8 +878,6 @@ void Map::addMonster(int x, int y, bool isHorde) {
 	else if attackRoll >= target->destructible->totalDodge, damage = totalStr
 	*/
 	
-	
-	
 	float cleanerChance = 80;
 	float infectedCrewMemChance = 350;
 	float infectedMarineChance = 160;
@@ -889,10 +887,11 @@ void Map::addMonster(int x, int y, bool isHorde) {
 	float miniSporeCreatureChance = 100; 
 	float sporeCreatureChance = 10;
 	float infectedEngineerChance = 60; //infected engineers have a 5% chance of spawning in rooms other than generators rooms
+	float crawlerChance = 100;
 //	float turretChance = 50;
 //	float vendorChance = 100;
 
-	int uB = 1100;
+	int uB = 1200;
 	
 	if(isHorde) //since engineers and cleaners don't spawn in hordes, adjust uppber bounded accordingly
 		uB =- (infectedEngineerChance+cleanerChance);
@@ -954,6 +953,10 @@ void Map::addMonster(int x, int y, bool isHorde) {
 		createInfectedEngineer(x,y);
 		//createTurret(x,y);
 		//create turrets during room creation
+	}
+	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + infectedEngineerChance +  miniSporeCreatureChance + crawlerChance)
+	{
+		createCrawler(x,y);
 	}
 	/*
 	else if(dice < infectedCrewMemChance + infectedNCOChance + infectedOfficerChance + sporeCreatureChance + infectedMarineChance + infectedGrenadierChance + cleanerChance + turretChance + miniSporeCreatureChance && !isHorde)
@@ -1295,6 +1298,32 @@ Actor* Map::createGardner(int x, int y)
 	engine.actors.push(gardner);
 	
 	return gardner;
+}
+
+Actor* Map::createCrawler(int x, int y)
+{
+	int level = engine.level;
+	float scale = 1 + .1*(level - 1);
+	float crawlerHp = 15*scale;
+	float crawlerDodge = 10*scale;
+	float crawlerDR = 0*scale;
+	float crawlerStr = 3*scale;
+	float crawlerDex = 0*scale;
+	float crawlerXp = 25*scale;
+	int crawlerAscii = '_';
+	
+	Actor *crawler = new Actor(x,y,crawlerAscii,"Infected Legless Crewman",TCODColor::white);
+	crawler->hostile = true;
+	crawler->totalDex = crawlerDex;
+	crawler->destructible = new MonsterDestructible(crawlerHp,crawlerDodge,crawlerDR,crawlerXp);
+	crawler->totalStr = crawlerStr;
+	crawler->attacker = new Attacker(crawlerStr);
+	crawler->ai = new MonsterAi();
+	crawler->container = new Container(2);
+	generateRandom(crawler, crawlerAscii);
+	engine.actors.push(crawler);
+	
+	return crawler;
 }
 Actor* Map::createVendor(int x, int y)
 {

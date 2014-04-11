@@ -99,6 +99,7 @@ public:
 	Actor *createSecurityBot(int x, int y);
 	Actor *createInfectedEngineer(int x, int y);
 	Actor *createGardner(int x, int y);
+	Actor *createCrawler(int x, int y);
 	
 	Actor *createCurrencyStack(int x, int y);
 	Actor *createHealthPotion(int x, int y);
