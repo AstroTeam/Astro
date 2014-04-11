@@ -242,7 +242,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 		Actor *actor = *iterator;
 		if (actor->blocks && actor->x == targetx &&actor->y == targety) {
 			if (actor->destructible && !actor->destructible->isDead() ) {
-				if (actor->hostile|| (owner->hostile && engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration != 56)){
+				if (actor->hostile|| (owner->hostile)){
 					owner->attacker->attack(owner, actor);
 					if(!actor->hostile && actor->ch == 129) //currently this only applies to security bots, if the player attacks a nonhostile enemy, should that actor generally become hostile?
 					{
@@ -251,7 +251,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 					}else if(!actor->hostile && actor->ch == 'G') //gardner become hostile
 						actor->hostile = true;
 					engine.damageDone += owner->attacker->totalPower - actor->destructible->totalDodge;
-				}else if(actor->interact && (!owner->hostile || engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration == 56))
+				}else if(actor->interact && (!owner->hostile))
 					((InteractibleAi*)actor->ai)->interaction(actor, owner);
 				else if(!owner->hostile && !actor->hostile && actor->ch == 129)
 					engine.gui->message(TCODColor::grey, "The %s seems to be inactive", actor->name);
@@ -1511,7 +1511,7 @@ void GrenadierAi::useFirebomb(Actor *owner, int targetx, int targety)
 			&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
 			//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 			float damageTaken = 1;
-			actor->destructible->takeDamage(actor, owner, 1);
+			damageTaken = actor->destructible->takeDamage(actor, owner, 1);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
 				if(actor == engine.player)
@@ -1550,7 +1550,7 @@ void GrenadierAi::useFrag(Actor *owner, int targetx, int targety)
 			&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
 		{
 			float damageTaken = 2 * owner->totalIntel;
-			actor->destructible->takeDamage(actor, owner, damageTaken);
+			damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) 
 			{	if(actor == engine.player)
@@ -1594,7 +1594,7 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
 			{
 				float damageTaken = 2 * owner->totalIntel;
-				actor->destructible->takeDamage(actor, owner, damageTaken);
+				damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);
 				//engine.damageDone +=  2 * wearer->totalIntel;
 				if (!actor->destructible->isDead()) 
 				{	if(actor == engine.player)
@@ -1624,7 +1624,7 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
 				//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 				float damageTaken = 1;
-				actor->destructible->takeDamage(actor, owner, damageTaken);
+				damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);
 				//engine.damageDone +=  2 * wearer->totalIntel;
 				if (!actor->destructible->isDead()) {
 					if(actor == engine.player)
