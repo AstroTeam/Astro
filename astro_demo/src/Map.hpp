@@ -3,7 +3,8 @@ namespace Param {
 		GENERIC,
 		OFFICE_FLOOR,
 		TUTORIAL,
-		DEFENDED
+		DEFENDED,
+		DRUNK
 	};
 
 	enum RoomType {
