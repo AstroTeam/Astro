@@ -43,7 +43,6 @@ margin-left:135px;
 h1
 {
 color:green;
-text-decoration: none;
 text-align:center;
 font-family: 'Roboto', sans-serif;
 font-size:40px;
@@ -108,6 +107,8 @@ nav a:active
 {
 color:Black;
 }  /* selected link */
-a{
+
+h1 a
+{
 	text-decoration: none;
 }
