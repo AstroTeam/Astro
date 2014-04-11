@@ -1833,7 +1833,7 @@ void TurretAi::attack(Actor *owner, Actor *target)
 
 CleanerAi::CleanerAi() : moveCount(0){
 	active = false;
-	cleanPower = 3;
+	cleanPower = 1.1;
 }
 
 void CleanerAi::load(TCODZip &zip) {
