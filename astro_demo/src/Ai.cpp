@@ -2549,6 +2549,10 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 		} else if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 44){
 			engine.gui->message(TCODColor::lightGrey,"The PCMU beeps and spits out a brick of foodstuffs.");
 		}
+		else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 57) //open vault
+		{
+			engine.gui->message(TCODColor::blue,"The %s has been opened and is now empty.", owner->name);
+		}
 		else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 56)
 		{
 		
@@ -2618,12 +2622,8 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 					++iterator;
 				}
 			}
+			engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration = 57;
 		}
-	}
-	else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 56)
-	{
-		if(!locked)
-				engine.gui->message(TCODColor::blue,"The %s has been opened and is now empty.", owner->name);
 	}
 }
 
