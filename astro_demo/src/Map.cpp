@@ -136,13 +136,13 @@ void Map::init(bool withActors, LevelType levelType) {
 
 		//Create boss, for now it is a simple security bot
 		if (withActors) {
-			if (engine.level == 5) {
+			if (engine.level == 2) {
 				//creating the final boss
 				int level = engine.level;
 				float scale = 1 + .1*(level - 1);
 				float zHp = 40*scale;
 				float zDodge = 1*scale;
-				float zDR = 1*scale;
+				float zDR = .5*scale;
 				float zStr = 20*scale;
 				float zDex = 20*scale;
 				float zXp = 100*scale;

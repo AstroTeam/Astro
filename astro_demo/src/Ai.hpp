@@ -318,5 +318,6 @@ class ZedAi : public Ai
 	protected:
 		int moveCount;
 		int range; //range
+	 	bool berserk;
 		void moveOrAttack(Actor *owner, int targetx, int targety);
 };
