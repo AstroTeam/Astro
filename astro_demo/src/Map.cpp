@@ -77,7 +77,7 @@ public:
 	}
 };
 
-Map::Map(int width, int height, int artifacts, short epicenterAmount): width(width),height(height),artifacts(artifacts),epicenterAmount(epicenterAmount) {
+Map::Map(int width, int height,int artifacts, short epicenterAmount): width(width),height(height),artifacts(artifacts),epicenterAmount(epicenterAmount) {
 	seed = TCODRandom::getInstance()->getInt(0,0x7FFFFFFF);
 	cout<< "seed " << seed << endl;
 }
@@ -125,13 +125,14 @@ void Map::init(bool withActors, LevelType levelType) {
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
+	type = levelType;
 	cout << width << " , " << height << endl;
 	if (levelType != TUTORIAL) {
 		TCODBsp bsp(0,0,width,height);
 		bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
 		BspListener listener(*this);
 		listener.bspActors = withActors;
-		listener.roomList = getRoomTypes(levelType); bsp.traverseInvertedLevelOrder(&listener, (void *)withActors); 
+		listener.roomList = getRoomTypes(type); bsp.traverseInvertedLevelOrder(&listener, (void *)withActors); 
 
 		//Create boss, for now it is a simple security bot
 		if (withActors) {
@@ -190,6 +191,7 @@ void Map::init(bool withActors, LevelType levelType) {
 
 void Map::save(TCODZip &zip) {
 	zip.putInt(seed);
+	zip.putInt(type);
 	cout << "saved seed " << seed << endl;
 	for (int i = 0; i < width*height; i++) {
 		zip.putInt(tiles[i].explored);
@@ -207,8 +209,9 @@ void Map::save(TCODZip &zip) {
 
 void Map::load(TCODZip &zip) {
 	seed = zip.getInt();
+	type = (LevelType)zip.getInt();
 	cout << "loaded seed " << seed << endl;
-	init(false);
+	init(false,type);
 	for (int i = 0; i <width*height; i++) {
 		tiles[i].explored = zip.getInt();
 		tiles[i].infection = zip.getFloat();

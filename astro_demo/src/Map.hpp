@@ -133,6 +133,7 @@ protected:
 	TCODRandom *rng;
 	friend class BspListener;
 	short epicenterAmount;
+	LevelType type;
 	
 	void dig(int x1, int y1, int x2, int y2);
 	void createRoom(int roomNum, bool withActors, Room * room);
