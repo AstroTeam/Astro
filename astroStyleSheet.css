@@ -67,7 +67,18 @@ padding:6px;
 margin:2px;
 }
 
-
+h a:link 
+{
+color:ForestGreen;
+}      /* unvisited link */
+h a:visited 
+{
+color:GoldenRod;
+}  /* visited link */
+h a:hover 
+{
+color:white;
+}  /* mouse over link */
 p a:link 
 {
 color:ForestGreen;
