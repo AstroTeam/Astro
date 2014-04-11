@@ -68,11 +68,21 @@ margin:2px;
 }
 
 
-
+p a:link 
+{
+color:ForestGreen;
+}      /* unvisited link */
+p a:visited 
+{
+color:GoldenRod;
+}  /* visited link */
+p a:hover 
+{
+color:white;
+}  /* mouse over link */
 /*Ordering of these 4 matters*/
 nav a:link 
 {
-
 color:ForestGreen;
 }      /* unvisited link */
 nav a:visited 
