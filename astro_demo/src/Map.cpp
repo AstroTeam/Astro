@@ -1308,7 +1308,7 @@ Actor* Map::createCrawler(int x, int y)
 	int level = engine.level;
 	float scale = 1 + .1*(level - 1);
 	float crawlerHp = 15*scale;
-	float crawlerDodge = 10*scale;
+	float crawlerDodge = 3*scale;
 	float crawlerDR = 0*scale;
 	float crawlerStr = 3*scale;
 	float crawlerDex = 0*scale;
@@ -1481,6 +1481,11 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 			case DEFENDED:
 				for (int i = 0; i <= 40; i++) {
 					roomList->push(DEFENDED_ROOM);
+				}
+				break;
+			case DRUNK:
+				for (int i = 0; i <= 40; i++) {
+					roomList->push(BAR);
 				}
 				break;
 			case TUTORIAL:
@@ -2291,8 +2296,106 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			}
 		}
 	}
-	if (room->type == BAR) {
-
+	if (room->type == BAR) 
+	{
+		bool frst = true;
+		int wall = rng->getInt(1,4);
+		int disp = 0;
+		int bar = 0;
+		switch (wall)
+		{
+			case 1:bar = x1+2;disp = x1;break;//left wall
+			case 2:bar = y1+2;disp = y1;break;//top wall
+			case 3:bar = x2-2;disp = x2;break;//right wall
+			case 4:bar = y2-2;disp = y2;break;//bottom wall
+			default:break;
+		}
+		for (int x = x1; x <= x2; x++)
+		{
+			for (int y = y1; y <= y2; y++)
+			{
+				if (((wall == 1 || wall == 3) && x == disp) || ((wall == 2 || wall == 4) && y == disp))
+				{
+					Actor *display = new Actor(x, y, 'D', "Liquor Display.", TCODColor::white);
+					//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+					engine.actors.push(display);
+					display->blocks = false;
+					engine.sendToBack(display);
+					Actor *booze = createAlcohol(x,y);
+					engine.actors.push(booze);
+					
+				}
+				if (((wall == 1 || wall == 3) && x == bar) || ((wall == 2 || wall == 4) && y == bar))
+				{
+					Actor *bar = new Actor(x, y, 'B', "Bar.", TCODColor::white);
+					//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+					engine.actors.push(bar);
+					bar->blocks = false;
+					engine.sendToBack(bar);
+					static bool second = true;
+					if (second)
+					{
+						int xx = x;
+						int yy = y;
+						switch (wall)
+						{
+							case 1:xx = xx+1;break;//left wall
+							case 2:yy = yy+1;break;//top wall
+							case 3:xx = xx-1;break;//right wall
+							case 4:yy = yy-1;break;//bottom wall
+							default:break;
+						}
+						Actor *barstool = new Actor(xx, yy, 's', "Barstool.", TCODColor::white);
+						//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+						engine.actors.push(barstool);
+						barstool->blocks = false;
+						engine.sendToBack(barstool);
+					}
+					second = !second;
+				}
+				
+				
+				if (frst)
+				{
+					int dx1 = 1;
+					int dx2 = 1;
+					int dy1 = 1;
+					int dy2 = 1;
+					switch (wall)
+					{
+						case 1:
+							dx1 = 5;
+							break;//left wall
+						case 2:
+							dy1 = 5;
+							break;//top wall
+						case 3:
+							dx2 = 5;
+							break;//right wall
+						case 4:
+							dy2 = 5;
+							break;//bottom wall
+						default:break;
+					}
+					for (int xx = x1+dx1; xx <= x2-dx2; xx++)
+					{
+						for (int yy = y1+dy1; yy <= y2-dy2; yy++)
+						{
+							if (((xx-(x1+dx1))%3 != 0) && ((yy-(y1+dy1))%4 != 0))
+							{
+								Actor *barstool = new Actor(xx, yy, 'P', "3D Pool Table.", TCODColor::white);
+								//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+								engine.actors.push(barstool);
+								barstool->blocks = false;
+								engine.sendToBack(barstool);
+							}
+						}
+					}
+					frst = false;
+				}
+				
+			}	
+		}
 	}
 
 	if (room->type == INFECTED_ROOM) 
@@ -2798,12 +2901,8 @@ void Map::generateRandom(Actor *owner, int ascii){
 		artifact->pickable->pick(artifact, owner);
 		return;
 	}
-	
-	if(dice <= 40 && !(ascii == 129 || ascii == 130 || ascii == 146)){ //security bots should always drop keys
-			return;
-	}else{
-		if(ascii == 243){//locker, this might be a problem if we want multiple decors to drop different things
-			int random = rng->getInt(0,230);
+	if(ascii == 243){//locker, this might be a problem if we want multiple decors to drop different things
+			int random = rng->getInt(0,300);
 			if(random < 30){
 				Actor *flare = createFlare(0,0);
 				engine.actors.push(flare);
@@ -2828,12 +2927,33 @@ void Map::generateRandom(Actor *owner, int ascii){
 				Actor *myCap = createMylarCap(0,0,false);
 				engine.actors.push(myCap);
 				myCap->pickable->pick(myCap,owner);
+			}else if(random < 30+20+40+30+30+40+10){
+				Actor *titanHelm = createTitanHelm(0,0,false);
+				engine.actors.push(titanHelm);
+				titanHelm->pickable->pick(titanHelm,owner);
+			}else if(random < 30+20+40+30+30+40+10){
+				Actor *titanMail = createTitanMail(0,0,false);
+				engine.actors.push(titanMail);
+				titanMail->pickable->pick(titanMail,owner);
+			}else if(random < 30+20+40+30+30+40+10){
+				Actor *titanGreaves = createTitanGreaves(0,0,false);
+				engine.actors.push(titanGreaves);
+				titanGreaves->pickable->pick(titanGreaves,owner);
+			}else if(random < 30+20+40+30+30+40+10){
+				Actor *titanBoots = createTitanBoots(0,0,false);
+				engine.actors.push(titanBoots);
+				titanBoots->pickable->pick(titanBoots,owner);
 			}else{
 				Actor *batt = createBatteryPack(0,0);
 				engine.actors.push(batt);
 				batt->pickable->pick(batt,owner);
 			}
-		}else if(ascii == 133) //infected grenadier
+		}
+	
+	if(dice <= 40 && !(ascii == 129 || ascii == 130 || ascii == 146)){ //security bots should always drop keys
+			return;
+	}else{
+		if(ascii == 133) //infected grenadier
 		{
 			for(int i = 0; i < owner->container->size/4; i++)
 			{
@@ -3502,6 +3622,123 @@ Actor *Map::createEMP(int x, int y){
 	scrollOfLightningBolt->pickable->inkValue = 10;
 	return scrollOfLightningBolt;
 }
+Actor *Map::createTitanHelm(int x, int y, bool isVend){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *titanHelm = new Actor(x,y,185,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
+	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,3);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,5);
+	
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Dented ");
+						bonus = new ItemBonus(ItemBonus::DR,1);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 2:
+						strcat(nameBuf,"Rusty ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 3:
+						strcat(nameBuf,"Corroded ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,10);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					default:break;
+				}
+				//bad Mylar Boots
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Standard ");
+						break;
+					case 1:
+						strcat(nameBuf,"Quality ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,4);
+						requirement = new ItemReq(ItemReq::STRENGTH,6);
+						break;
+					case 2:
+						strcat(nameBuf,"Economy ");
+						bonus = new ItemBonus(ItemBonus::DR,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,4);
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						bonus = new ItemBonus(ItemBonus::STRENGTH,5);
+						requirement = new ItemReq(ItemReq::STRENGTH,6);
+						break;
+					case 2:
+						strcat(nameBuf,"Double Plated ");
+						bonus = new ItemBonus(ItemBonus::DR,5);
+						requirement = new ItemReq(ItemReq::STRENGTH,7);
+						break;
+					case 3:
+						strcat(nameBuf,"High Tech ");
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,5);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,6);
+						break;
+					case 4:
+						strcat(nameBuf,"Pristine ");
+						bonus = new ItemBonus(ItemBonus::HEALTH,50);
+						requirement = new ItemReq(ItemReq::STRENGTH,6);
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"Titanium Helmet");
+
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	titanHelm->blocks = false;
+	titanHelm->name = nameBuf;
+	
+	titanHelm->pickable = new Equipment(0,Equipment::CHEST,bonus,requirement);
+	titanHelm->sort = 3;
+	((Equipment*)(titanHelm->pickable))->armorArt = 5;
+	titanHelm->pickable->value = 500;
+	titanHelm->pickable->inkValue = 35;
+	titanHelm->col = col;
+	return titanHelm;
+}
 Actor *Map::createTitanMail(int x, int y, bool isVend){
 	char* nameBuf = new char[80]; 
 	memset(nameBuf,0,80);
@@ -3613,6 +3850,7 @@ Actor *Map::createTitanMail(int x, int y, bool isVend){
 	
 	titanMail->pickable = new Equipment(0,Equipment::CHEST,bonus,requirement);
 	titanMail->sort = 3;
+	((Equipment*)(titanMail->pickable))->armorArt = 6;
 	titanMail->pickable->value = 1000;
 	titanMail->pickable->inkValue = 50;
 	titanMail->col = col;
@@ -3729,8 +3967,9 @@ Actor *Map::createTitanBoots(int x, int y, bool isVend){
 	
 	titanBoots->pickable = new Equipment(0,Equipment::FEET,bonus,requirement);
 	titanBoots->sort = 3;
-	titanBoots->pickable->value = 600;
-	titanBoots->pickable->inkValue = 30;
+	((Equipment*)(titanBoots->pickable))->armorArt = 8;
+	titanBoots->pickable->value = 400;
+	titanBoots->pickable->inkValue = 35;
 	titanBoots->col = col;
 	return titanBoots;
 }
@@ -3845,6 +4084,7 @@ Actor *Map::createTitanGreaves(int x, int y, bool isVend){
 	
 	titanGreaves->pickable = new Equipment(0,Equipment::LEGS,bonus,requirement);
 	titanGreaves->sort = 3;
+	((Equipment*)(titanGreaves->pickable))->armorArt = 7;
 	titanGreaves->pickable->value = 600;
 	titanGreaves->pickable->inkValue = 30;
 	titanGreaves->col = col;
@@ -3953,6 +4193,7 @@ Actor *Map::createMylarGreaves(int x, int y, bool isVend){
 	
 	myGreaves->pickable = new Equipment(0,Equipment::LEGS,bonus,requirement);
 	myGreaves->sort = 3;
+	((Equipment*)(myGreaves->pickable))->armorArt = 3;
 	myGreaves->pickable->value = 200;
 	myGreaves->pickable->inkValue = 30;
 	myGreaves->col = col;
@@ -4071,6 +4312,7 @@ Actor *Map::createMylarVest(int x, int y, bool isVend){
 	
 	myVest->pickable = new Equipment(0,Equipment::CHEST,bonus,requirement);
 	myVest->sort = 3;
+	((Equipment*)(myVest->pickable))->armorArt = 2;
 	myVest->pickable->value = 300;
 	myVest->pickable->inkValue = 40;
 	myVest->col = col;
@@ -4188,6 +4430,7 @@ Actor *Map::createMylarCap(int x, int y, bool isVend){
 	//ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,1);
 	myCap->pickable = new Equipment(0,Equipment::HEAD,bonus,requirement);
 	myCap->sort = 3;
+	((Equipment*)(myCap->pickable))->armorArt = 1;
 	myCap->pickable->value = 100;
 	myCap->pickable->inkValue = 20;
 	myCap->col = col;
@@ -4296,6 +4539,7 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 	
 	myBoots->pickable = new Equipment(0,Equipment::FEET,bonus,requirement);
 	myBoots->sort = 3;
+	((Equipment*)(myBoots->pickable))->armorArt = 4;
 	myBoots->pickable->value = 100;
 	myBoots->pickable->inkValue = 20;
 	myBoots->col = col;
@@ -4600,19 +4844,19 @@ Actor *Map::createCombatKnife(int x, int y){
 			switch (name)
 			{
 				case 1:
-					strcat(nameBuf,"Knife");
+					strcat(nameBuf,"Knife(H1)");
 					break;
 				case 2:
-					strcat(nameBuf,"Dagger");
+					strcat(nameBuf,"Dagger(H1)");
 					break;
 				case 3:
-					strcat(nameBuf,"Shank");
+					strcat(nameBuf,"Shank(H1)");
 					break;
 				case 4:
-					strcat(nameBuf,"Pipe");
+					strcat(nameBuf,"Pipe(H1)");
 					break;
 				case 5:
-					strcat(nameBuf,"Crowbar");
+					strcat(nameBuf,"Crowbar(H1)");
 					break;
 				default:break;
 			}
@@ -4639,7 +4883,7 @@ Actor *Map::createCombatKnife(int x, int y){
 					strcat(nameBuf,"Machete(H2)");
 					break;
 				case 5:
-					strcat(nameBuf,"KaBar(H2)");
+					strcat(nameBuf,"Ka-Bar(H2)");
 					break;
 				default:break;
 			}
@@ -4653,19 +4897,19 @@ Actor *Map::createCombatKnife(int x, int y){
 			switch (name)
 			{
 				case 1:
-					strcat(nameBuf,"Sword");
+					strcat(nameBuf,"Sword(2 HANDS)");
 					break;
 				case 2:
-					strcat(nameBuf,"Fire-Axe");
+					strcat(nameBuf,"Fire-Axe(2 HANDS)");
 					break;
 				case 3:
-					strcat(nameBuf,"Large Pipe");
+					strcat(nameBuf,"Large Pipe(2 HANDS)");
 					break;
 				case 4:
-					strcat(nameBuf,"Auto-Saw");
+					strcat(nameBuf,"Auto-Saw(2 HANDS)");
 					break;
 				case 5:
-					strcat(nameBuf,"Makeshift Morningstar");
+					strcat(nameBuf,"Makeshift Morningstar(2 HANDS)");
 					break;
 				default:break;
 			}

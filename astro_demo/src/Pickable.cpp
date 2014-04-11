@@ -214,7 +214,7 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 			&&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) {
 			//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 			float damageTaken = 1;
-			actor->destructible->takeDamage(actor,wearer, 1);
+			damageTaken = actor->destructible->takeDamage(actor,wearer, 1);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
 				engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damageTaken);
@@ -288,7 +288,7 @@ bool Fragment::use(Actor *owner, Actor *wearer) {
 		if (actor->destructible && !actor->destructible->isDead()
 			&&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) {
 			float damageTaken = 2 * wearer->totalIntel;
-			actor->destructible->takeDamage(actor,wearer, damageTaken);
+			damageTaken = actor->destructible->takeDamage(actor,wearer, damageTaken);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
 				engine.gui->message(TCODColor::orange,"The %s gets wounded from the blast for %g hit points.",actor->name,damageTaken);

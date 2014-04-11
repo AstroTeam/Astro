@@ -29,6 +29,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case GARDNER: ai = new GardnerAi(); break;
 		case FRUIT: ai = new FruitAi(NULL,0); break;
 		case ZED: ai = new ZedAi(); break;
+		case COMPANION: ai = new CompanionAi(NULL,0); break;
 		
 	}
 	ai->load(zip);
@@ -242,7 +243,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 		Actor *actor = *iterator;
 		if (actor->blocks && actor->x == targetx &&actor->y == targety) {
 			if (actor->destructible && !actor->destructible->isDead() ) {
-				if (actor->hostile|| (owner->hostile && engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration != 56)){
+				if (actor->hostile|| (owner->hostile)){
 					owner->attacker->attack(owner, actor);
 					if(!actor->hostile && actor->ch == 129) //currently this only applies to security bots, if the player attacks a nonhostile enemy, should that actor generally become hostile?
 					{
@@ -251,7 +252,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 					}else if(!actor->hostile && actor->ch == 'G') //gardner become hostile
 						actor->hostile = true;
 					engine.damageDone += owner->attacker->totalPower - actor->destructible->totalDodge;
-				}else if(actor->interact && (!owner->hostile || engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration == 56))
+				}else if(actor->interact && (!owner->hostile))
 					((InteractibleAi*)actor->ai)->interaction(actor, owner);
 				else if(!owner->hostile && !actor->hostile && actor->ch == 129)
 					engine.gui->message(TCODColor::grey, "The %s seems to be inactive", actor->name);
@@ -1511,7 +1512,7 @@ void GrenadierAi::useFirebomb(Actor *owner, int targetx, int targety)
 			&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
 			//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 			float damageTaken = 1;
-			actor->destructible->takeDamage(actor, owner, 1);
+			damageTaken = actor->destructible->takeDamage(actor, owner, 1);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
 				if(actor == engine.player)
@@ -1550,7 +1551,7 @@ void GrenadierAi::useFrag(Actor *owner, int targetx, int targety)
 			&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
 		{
 			float damageTaken = 2 * owner->totalIntel;
-			actor->destructible->takeDamage(actor, owner, damageTaken);
+			damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) 
 			{	if(actor == engine.player)
@@ -1594,7 +1595,7 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
 			{
 				float damageTaken = 2 * owner->totalIntel;
-				actor->destructible->takeDamage(actor, owner, damageTaken);
+				damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);
 				//engine.damageDone +=  2 * wearer->totalIntel;
 				if (!actor->destructible->isDead()) 
 				{	if(actor == engine.player)
@@ -1624,7 +1625,7 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
 				//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 				float damageTaken = 1;
-				actor->destructible->takeDamage(actor, owner, damageTaken);
+				damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);
 				//engine.damageDone +=  2 * wearer->totalIntel;
 				if (!actor->destructible->isDead()) {
 					if(actor == engine.player)
@@ -2327,9 +2328,17 @@ void VendingAi::populate(Actor *owner){
 	engine.actors.push(myBoots);
 	myBoots->pickable->pick(myBoots,owner);
 	
+	Actor *titanHelm = engine.map->createTitanHelm(0,0,true);
+	engine.actors.push(titanHelm);
+	titanHelm->pickable->pick(titanHelm,owner);
+	
 	Actor *titanMail = engine.map->createTitanMail(0,0,true);
 	engine.actors.push(titanMail);
 	titanMail->pickable->pick(titanMail,owner);
+	
+	Actor *titanGreaves = engine.map->createTitanGreaves(0,0,true);
+	engine.actors.push(titanGreaves);
+	titanGreaves->pickable->pick(titanGreaves,owner);
 	
 	Actor *titanBoots = engine.map->createTitanBoots(0,0,true);
 	engine.actors.push(titanBoots);
@@ -2548,6 +2557,8 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
 		} else if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 44){
 			engine.gui->message(TCODColor::lightGrey,"The PCMU beeps and spits out a brick of foodstuffs.");
+			owner->col = TCODColor::red;
+			owner->name = "Used PCMU Food Processor";
 		}
 		else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 56)
 		{
@@ -2618,12 +2629,12 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 					++iterator;
 				}
 			}
+			engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration = 57;
 		}
 	}
-	else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 56)
+	else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 57) //open vault
 	{
-		if(!locked)
-				engine.gui->message(TCODColor::blue,"The %s has been opened and is now empty.", owner->name);
+			engine.gui->message(TCODColor::blue,"The %s has been opened and is now empty.", owner->name);
 	}
 }
 
@@ -2857,3 +2868,72 @@ void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
 }
+
+CompanionAi::CompanionAi(Actor *tamer, int rangeLimit, Command command):tamer(tamer),rangeLimit(rangeLimit),assignedX(tamer->x),assignedY(tamer->y),command(command){
+}
+
+void CompanionAi::save(TCODZip &zip){
+	tamer->save(zip);
+	zip.putInt(edible);
+	zip.putInt(rangeLimit);
+	zip.putInt(assignedX);
+	zip.putInt(assignedY);
+	zip.putInt(command);
+}
+
+void CompanionAi::load(TCODZip &zip){
+	Actor *act = new Actor(0,0,0,NULL,TCODColor::white);
+	act->load(zip);
+	tamer = act;
+	
+	edible = zip.getInt();
+	rangeLimit = zip.getInt();
+	assignedX = zip.getInt();
+	assignedY = zip.getInt();
+	command = (Command)zip.getInt();
+}
+
+void CompanionAi::update(Actor *owner){
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	
+	if (command == STAY){
+		return;
+	}
+	
+	if (command == GUARD_POINT ){
+		if(owner->getDistance(assignedX,assignedY) != 0){
+			int dx = assignedX - owner->x;
+			int dy = assignedY - owner->y;
+			int stepdx = (dx > 0 ? 1:-1);
+			int stepdy = (dy > 0 ? 1:-1);
+			float distance = sqrtf(dx*dx+dy*dy);
+
+			dx = (int) (round(dx / distance));
+			dy = (int)(round(dy / distance));
+			if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+				owner->x+=dx;
+				owner->y+=dy;
+			} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
+				owner->x += stepdx;
+			} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
+				owner->y += stepdy;
+			}
+			if (owner->oozing) {
+				engine.map->infectFloor(owner->x, owner->y);
+			}
+		}else{
+			Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y, 1);
+			if (!closestMonster){
+				return;
+			}
+			if (owner->attacker) {
+				owner->attacker->attack(owner,closestMonster);
+			}
+		}
+	
+	}
+	
+}
+

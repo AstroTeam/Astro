@@ -418,7 +418,7 @@ void Renderer::render(void *sdlSurface){
 			//cout << (engine.map->tiles[19+110*engine.map->width].decoration != 0) << endl;
 			//cout << "decor NOT rendering at ( "<< xM << "," << yM << ")" << endl;
 			if((engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN) && 
-			(engine.map->tiles[xM+yM*engine.map->width].decoration != 0) && (engine.map->tiles[xM+yM*engine.map->width].explored))
+			(engine.map->tiles[xM+yM*engine.map->width].decoration != 0) && (engine.map->tiles[xM+yM*engine.map->width].explored) && engine.mapcon->getChar(xM,yM) != 15)
 			{
 				//cout << "decor rendering at ( "<< xM << "," << yM << ")" << endl;
 				//if (xM <= 100 && yM <= 100)
@@ -523,7 +523,7 @@ void Renderer::render(void *sdlSurface){
 					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 				}
 				////////////////////////////////////////////////////////////////////BARRACKS
-				if (engine.map->tileType(xM,yM) == 3)
+				else if (engine.map->tileType(xM,yM) == 3)
 				{
 					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
 					{
@@ -599,7 +599,7 @@ void Renderer::render(void *sdlSurface){
 					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 				}
 				////////////////////////////////////////////////////////////////////GENERATORS
-				if (engine.map->tileType(xM,yM) == 4)
+				else if (engine.map->tileType(xM,yM) == 4)
 				{
 					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
 						//light
@@ -653,7 +653,7 @@ void Renderer::render(void *sdlSurface){
 					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 				}
 				////////////////////////////////////////////////////////////////////KITCHEN
-				if (engine.map->tileType(xM,yM) == 5)
+				else if (engine.map->tileType(xM,yM) == 5)
 				{
 					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
 						//light
@@ -707,7 +707,7 @@ void Renderer::render(void *sdlSurface){
 					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 				}
 				////////////////////////////////////////////////////////////////////SERVER
-				if (engine.map->tileType(xM,yM) == 6)//|| engine.map->tileType(xM,yM) == 1)
+				else if (engine.map->tileType(xM,yM) == 6)//|| engine.map->tileType(xM,yM) == 1)
 				{
 					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
 						//light
@@ -760,7 +760,7 @@ void Renderer::render(void *sdlSurface){
 					
 				}
 				//////////////////////////////////////////////////////////////////////MESSHALL
-				if (engine.map->tileType(xM,yM) == 7)//|| engine.map->tileType(xM,yM) == 1)
+				else if (engine.map->tileType(xM,yM) == 7)//|| engine.map->tileType(xM,yM) == 1)
 				{
 					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
 						//light
@@ -802,7 +802,7 @@ void Renderer::render(void *sdlSurface){
 					SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 				}
 				////////////////////////////////////////////////////////////////////ARMORY
-				if (engine.map->tileType(xM,yM) == 8)//|| engine.map->tileType(xM,yM) == 1)
+				else if (engine.map->tileType(xM,yM) == 8)//|| engine.map->tileType(xM,yM) == 1)
 				{
 					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
 						//light
@@ -829,6 +829,13 @@ void Renderer::render(void *sdlSurface){
 						srcRect.y = 7*16;
 						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 57)//vault (open)
+					{
+						
+						srcRect.y = 8*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					
 					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
 						//light
 						srcRect.x=32;
@@ -857,7 +864,7 @@ void Renderer::render(void *sdlSurface){
 					
 				}
 				////////////////////////////////////////////////////////////////////HYDROPONICS
-				if (engine.map->tileType(xM,yM) == 10)//|| engine.map->tileType(xM,yM) == 1)
+				else if (engine.map->tileType(xM,yM) == 10)//|| engine.map->tileType(xM,yM) == 1)
 				{
 					if (engine.map->isInFov(xM,yM)){
 						//light
@@ -876,7 +883,7 @@ void Renderer::render(void *sdlSurface){
 				//}
 				}
 				////////////////////////////////////////////////////////////////////DEFENDED_ROOM
-				if (engine.map->tileType(xM,yM) == 11)//|| engine.map->tileType(xM,yM) == 1)
+				else if (engine.map->tileType(xM,yM) == 11)//|| engine.map->tileType(xM,yM) == 1)
 				{
 					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
 						//light
