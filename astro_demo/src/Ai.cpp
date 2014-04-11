@@ -2630,6 +2630,7 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 				}
 			}
 			engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration = 57;
+			engine.save();
 		}
 	}
 	else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 57) //open vault
