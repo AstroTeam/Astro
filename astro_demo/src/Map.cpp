@@ -2295,9 +2295,20 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 
 	}
 
-	if (room->type == INFECTED_ROOM) {
-
-
+	if (room->type == INFECTED_ROOM) 
+	{
+		for (int x = x1; x <= x2; x++)
+		{
+			for (int y = y1; y <= y2; y++)
+			{
+				if (x != x1 && x != x2 && y != y1 && y != y2)
+				engine.map->tiles[x+y*engine.map->width].infection = 6.1;
+				else
+				engine.map->tiles[x+y*engine.map->width].infection = 5.1;
+				int fl = rng->getInt(8,15);
+				engine.map->tiles[x+y*engine.map->width].flower = fl;
+			}
+		}
 	}
 	/*
 	 *
