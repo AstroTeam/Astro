@@ -1483,6 +1483,11 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 					roomList->push(DEFENDED_ROOM);
 				}
 				break;
+			case DRUNK:
+				for (int i = 0; i <= 40; i++) {
+					roomList->push(BAR);
+				}
+				break;
 			case TUTORIAL:
 				//TUTORIALS ONLY HAVE GENERIC ROOMS
 				break;
@@ -2293,6 +2298,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	}
 	if (room->type == BAR) 
 	{
+		bool frst = true;
 		int wall = rng->getInt(1,4);
 		int disp = 0;
 		int bar = 0;
@@ -2339,12 +2345,12 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 						Actor *barstool = new Actor(xx, yy, 's', "Barstool.", TCODColor::white);
 						//engine.map->tiles[x+y*engine.map->width].decoration = 32;
 						engine.actors.push(barstool);
-						//bar->blocks = false;
+						barstool->blocks = false;
 						engine.sendToBack(barstool);
 					}
 					second = !second;
 				}
-				static bool frst = true;
+				
 				
 				if (frst)
 				{
@@ -2372,11 +2378,14 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					{
 						for (int yy = y1+dy1; yy <= y2-dy2; yy++)
 						{
-							Actor *barstool = new Actor(xx, yy, 'P', "3D Pool Table.", TCODColor::white);
-							//engine.map->tiles[x+y*engine.map->width].decoration = 32;
-							engine.actors.push(barstool);
-							barstool->blocks = false;
-							engine.sendToBack(barstool);
+							if (((xx-(x1+dx1))%3 != 0) && ((yy-(y1+dy1))%4 != 0))
+							{
+								Actor *barstool = new Actor(xx, yy, 'P', "3D Pool Table.", TCODColor::white);
+								//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+								engine.actors.push(barstool);
+								barstool->blocks = false;
+								engine.sendToBack(barstool);
+							}
 						}
 					}
 					frst = false;
