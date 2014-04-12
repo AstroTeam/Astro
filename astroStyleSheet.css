@@ -7,57 +7,34 @@ body
 background-color:black;
 font-family: 'Roboto', sans-serif;
 position: relative;
+top: 100;
 }
 
-h
+/* Fixed Header */
+
+header
 {
 margin-top: -8px;
 margin-left: -8px;
-color:green;
+height: 120px;
 background-color:#000000;
-text-align:center;
-font-family: 'Roboto', sans-serif;
-font-size:20px;
-width:100%;
+width: 100%;
 position: fixed;
 z-index: 999;
 }
 
+
+/* Navigation Bar */
 nav
 {
-color:green;
-text-align:center;
-background-color:#000000;
-font-family: 'Roboto', sans-serif;
-font-size:20px;
-width:100%;
-padding-bottom:10px;
-position: relative;
-z-index: 999;
+color:ForestGreen;
+font-size: 20px;
 }
+
 nav img
 {
-margin-left:135px;
-}
-
-h1
-{
-color:green;
-text-align:center;
-font-family: 'Roboto', sans-serif;
-font-size:40px;
-position: relative;
-}
-
-p
-{
-color:white;
-text-align:justify;
-font-size:20px;
-display:  block;
-margin-left: 400px;
-margin-right: 400px;
-position: relative;
+margin-left:50px;
+margin-right:50px;
 }
 
 nav a
@@ -66,31 +43,6 @@ padding:6px;
 margin:2px;
 }
 
-h a:link 
-{
-color:ForestGreen;
-}      /* unvisited link */
-h a:visited 
-{
-color:GoldenRod;
-}  /* visited link */
-h a:hover 
-{
-color:white;
-}  /* mouse over link */
-p a:link 
-{
-color:ForestGreen;
-}      /* unvisited link */
-p a:visited 
-{
-color:GoldenRod;
-}  /* visited link */
-p a:hover 
-{
-color:white;
-}  /* mouse over link */
-/*Ordering of these 4 matters*/
 nav a:link 
 {
 color:ForestGreen;
@@ -108,7 +60,44 @@ nav a:active
 color:Black;
 }  /* selected link */
 
-h1 a
+
+/* Section Headers */
+h1
+{
+color:green;
+text-align:left;
+font-size:50px;
+margin-left: 400px;
+position: relative;
+}
+
+a
 {
 	text-decoration: none;
 }
+
+
+/* Paragraph */
+p
+{
+color:white;
+text-align:justify;
+font-size:20px;
+display:  block;
+margin-left: 400px;
+margin-right: 400px;
+position: relative;
+}
+
+p a:link 
+{
+color:ForestGreen;
+}      /* unvisited link */
+p a:visited 
+{
+color:GoldenRod;
+}  /* visited link */
+p a:hover 
+{
+color:white;
+}  /* mouse over link */
