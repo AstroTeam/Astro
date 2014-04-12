@@ -142,7 +142,7 @@ void Map::init(bool withActors, LevelType levelType) {
 				float scale = 1 + .1*(level - 1);
 				float zHp = 60*scale;
 				float zDodge = 1*scale;
-				float zDR = .5*scale;
+				float zDR = .25*scale;
 				float zStr = 20*scale;
 				float zDex = 20*scale;
 				float zXp = 100*scale;

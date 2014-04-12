@@ -664,6 +664,20 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 		TCODConsole::blit(&termwindow,0,0,KEY_MENU_WIDTH,KEY_MENU_HEIGHT,TCODConsole::root,menux+4,menuy-4);
 		TCODConsole::flush();
 	}
+	else if(mode == GAME_END)
+	{
+		menux = engine.screenWidth / 2 - KEY_MENU_WIDTH / 2;
+		menuy = engine.screenHeight / 2 - KEY_MENU_HEIGHT / 2;
+		char c[] = {'\0'};
+		TCODConsole termwindow(KEY_MENU_WIDTH,KEY_MENU_HEIGHT);
+			//make me red
+		termwindow.setDefaultForeground(TCODColor(67,199,50));
+		termwindow.setDefaultBackground(TCODColor(0,0,0));
+		termwindow.printFrame(0,0,KEY_MENU_WIDTH,KEY_MENU_HEIGHT,true,TCOD_BKGND_ALPHA(50),"UMBERRR");
+		termwindow.printRect(1,1,KEY_MENU_WIDTH-2,KEY_MENU_HEIGHT,c);
+		TCODConsole::blit(&termwindow,0,0,KEY_MENU_WIDTH,KEY_MENU_HEIGHT,TCODConsole::root,menux+4,menuy-4);
+		TCODConsole::flush();
+	}
 	else{
 		static TCODImage img("wesleyPIXEL.png");
 		img.blit2x(TCODConsole::root,0,6);
@@ -881,7 +895,43 @@ Menu::MenuItemCode Menu::pick(DisplayMode mode) {
 			}
 		}
 	}
-	
+	else if (mode == GAME_END)
+	{
+			while (!TCODConsole::isWindowClosed()) {
+		
+			int currentItem = 0;
+			for (MenuItem **it = items.begin(); it != items.end(); it++) {
+				if (currentItem == selectedItem) {
+					TCODConsole::root->setDefaultForeground(TCODColor::orange);
+				} else {
+					TCODConsole::root->setDefaultForeground(TCODColor::lightBlue);
+				}
+				TCODConsole::root->print(menux+5+1,menuy+4+currentItem*3-4,(*it)->label);
+				currentItem++;
+			}
+			TCODConsole::flush();
+			
+			//check key presses
+			TCOD_key_t key;
+			TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
+			switch(key.vk) {
+				case TCODK_UP:
+					selectedItem--;
+					if(selectedItem < 0) {
+						selectedItem = items.size()-1;
+					}
+				break;
+				case TCODK_DOWN:
+					selectedItem = (selectedItem +1) % items.size();
+				break;
+				case TCODK_ENTER: return items.get(selectedItem)->code;
+				case TCODK_ESCAPE: if (mode == PAUSE){
+							return NO_CHOICE;
+						    }
+				default: break;
+			}
+		}
+	}
 	{
 		while (!TCODConsole::isWindowClosed()) {
 		
