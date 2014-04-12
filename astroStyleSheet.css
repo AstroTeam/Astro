@@ -7,7 +7,7 @@ body
 background-color:black;
 font-family: 'Roboto', sans-serif;
 position: relative;
-top: 100;
+top: 120px;
 }
 
 /* Fixed Header */
@@ -22,7 +22,6 @@ width: 100%;
 position: fixed;
 z-index: 999;
 }
-
 
 /* Navigation Bar */
 nav
@@ -68,6 +67,27 @@ color:green;
 text-align:left;
 font-size:50px;
 margin-left: 400px;
+margin-right: 400px;
+position: relative;
+}
+
+h2
+{
+color:green;
+text-align:left;
+font-size:30px;
+margin-left: 400px;
+margin-right: 400px;
+position: relative;
+}
+
+h3
+{
+color:green;
+text-align:left;
+font-size:20px;
+margin-left: 400px;
+margin-right: 400px;
 position: relative;
 }
 
@@ -98,6 +118,28 @@ p a:visited
 color:GoldenRod;
 }  /* visited link */
 p a:hover 
+{
+color:white;
+}  /* mouse over link */
+
+pin
+{
+color:white;
+text-align:justify;
+font-size:20px;
+display:  block;
+position: relative;
+}
+
+pin a:link 
+{
+color:ForestGreen;
+}      /* unvisited link */
+pin a:visited 
+{
+color:GoldenRod;
+}  /* visited link */
+pin a:hover 
 {
 color:white;
 }  /* mouse over link */
