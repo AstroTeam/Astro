@@ -898,12 +898,38 @@ void Renderer::render(void *sdlSurface){
 						srcRect.y = 6*16;
 						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 					}
-					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 76)//sandbag wall LR
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 76)//sandbag wall LR
 					{
 						srcRect.x += 32;
 						srcRect.y = 6*16;
 						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 					}
+					else if (engine.map->tiles[xM+yM*engine.map->width].decoration == 77)//TL corner
+					{
+						srcRect.x += 32+32;
+						srcRect.y = 5*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					else if (engine.map->tiles[xM+yM*engine.map->width].decoration == 78)//TR corner
+					{
+						srcRect.x += 32+32;
+						srcRect.y = 6*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					else if (engine.map->tiles[xM+yM*engine.map->width].decoration == 79)//BL corner
+					{
+						srcRect.x += 32+32;
+						srcRect.y = 7*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					else if (engine.map->tiles[xM+yM*engine.map->width].decoration == 80)//BR corner
+					{
+						srcRect.x += 32+32;
+						srcRect.y = 8*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					
+					
 					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
 						//light
 						srcRect.x=0;

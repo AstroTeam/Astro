@@ -125,3 +125,11 @@ mapcondec:
 75 is tequila
 
 76 is sandbag wall LR
+
+77 is sandbag corner TL
+
+78 is sandbag corner TR
+
+79 is sandbag corner BL
+
+80 is sandbag corner BR

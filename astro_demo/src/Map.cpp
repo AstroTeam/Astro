@@ -2227,6 +2227,40 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					pcmu->blocks = false;
 					engine.sendToBack(pcmu);
 				}
+				//add corners
+				if (x == x1 && y == y1)//TL
+				{
+					Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
+					engine.map->tiles[x+y*engine.map->width].decoration = 77;
+					engine.actors.push(pcmu);
+					pcmu->blocks = false;
+					engine.sendToBack(pcmu);
+				}
+				else if (x == x2 && y == y1)//TR
+				{
+					Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
+					engine.map->tiles[x+y*engine.map->width].decoration = 78;
+					engine.actors.push(pcmu);
+					pcmu->blocks = false;
+					engine.sendToBack(pcmu);
+				}
+				else if (x == x1 && y == y2)//BL
+				{
+					Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
+					engine.map->tiles[x+y*engine.map->width].decoration = 79;
+					engine.actors.push(pcmu);
+					pcmu->blocks = false;
+					engine.sendToBack(pcmu);
+				}
+				else if (x == x2 && y == y2)//BR
+				{
+					Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
+					engine.map->tiles[x+y*engine.map->width].decoration = 80;
+					engine.actors.push(pcmu);
+					pcmu->blocks = false;
+					engine.sendToBack(pcmu);
+				}
+				
 				//add the top left pallets+foodStuffs
 				if ((x == x1+2 && (y == y1+2 || y == y1+3)) || (x == x1+3 && (y == y1+2 || y ==y1+3)))
 				{
@@ -2279,6 +2313,42 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 						pcmu->blocks = false;
 						engine.sendToBack(pcmu);
 					}
+					//sandbag corners!
+					if (x == x1+2 && y == y1+4)//TL
+					{
+						Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
+						engine.map->tiles[x+y*engine.map->width].decoration = 77;
+						engine.actors.push(pcmu);
+						pcmu->blocks = false;
+						engine.sendToBack(pcmu);
+					}
+					else if (x == x1+2 && y == y2-4)//BL
+					{
+						Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
+						engine.map->tiles[x+y*engine.map->width].decoration = 79;
+						engine.actors.push(pcmu);
+						pcmu->blocks = false;
+						engine.sendToBack(pcmu);
+					}
+					else if (x == x2-2 && y == y2-4)//BR
+					{
+						Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
+						engine.map->tiles[x+y*engine.map->width].decoration = 80;
+						engine.actors.push(pcmu);
+						pcmu->blocks = false;
+						engine.sendToBack(pcmu);
+					}
+					else if (x == x2-2 && y == y1+4)//TR
+					{
+						Actor * pcmu = new Actor(x, y, 243, "Sandbag Wall", TCODColor::white);
+						engine.map->tiles[x+y*engine.map->width].decoration = 78;
+						engine.actors.push(pcmu);
+						pcmu->blocks = false;
+						engine.sendToBack(pcmu);
+					}
+					
+					
+					
 					if ((x == x2-3 && y == y1+5) || (x == x1+3 && y == y2-5))
 					{
 						Actor *MLR = createMLR(x,y, false);
