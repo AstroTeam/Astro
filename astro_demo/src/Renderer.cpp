@@ -168,6 +168,10 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 176+16+16+16;
 				}
+				else if(r == 12)//8 is bar
+				{
+					srcRect.x = 240;
+				}
 				else //else is regular floors
 				{
 					srcRect.x = 0;
@@ -289,6 +293,10 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 176+16+16+16;
 				}
+				else if(r == 12)//8 is bar
+				{
+					srcRect.x = 240;
+				}
 				else
 				{
 					srcRect.x = 0;
@@ -397,19 +405,26 @@ void Renderer::render(void *sdlSurface){
 			//render BOOZE
 			if (engine.mapcon->getChar(xM,yM) == 15)  
 			{
+				srcRect.y = 0;
+				srcRect.x = 0;
+				if (engine.map->tileType(xM,yM) == 12)
+				{
+					srcRect.y += 32;
+				}
 				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
 					{
 						//light
-						srcRect.y = 0;
+						srcRect.y += 0;
 					}
 					else
 					{
 						//dark
-						srcRect.y = 16;
+						srcRect.y += 16;
 					}
 					int inc = engine.map->tiles[xM+yM*engine.map->width].decoration - 61; //61 because 0 indexed
 					srcRect.x = inc*16;
 					SDL_BlitSurface(alcohol,&srcRect,floorMap,&dstRect);
+					
 			}
 			
 			//render all decorations
@@ -941,6 +956,53 @@ void Renderer::render(void *sdlSurface){
 					{
 						srcRect.x +=240;
 						srcRect.y = 48;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+				}
+				////////////////////////////////////////////////////////////////////BAR
+				else if (engine.map->tileType(xM,yM) == 12)//|| engine.map->tileType(xM,yM) == 1)
+				{
+					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+						//light
+						srcRect.x=8*16;
+					}else{
+						//dark/*commet*/
+						srcRect.x=9*16;
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 81 || engine.mapcon->getChar(xM,yM) == 15)//display
+					{
+						//srcRect.x +=240;
+						srcRect.y = 5*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 82)//bar
+					{
+						//srcRect.x +=240;
+						srcRect.y = 6*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 83)//bar
+					{
+						//srcRect.x +=240;
+						srcRect.y = 7*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					else if(engine.map->tiles[xM+yM*engine.map->width].decoration == 84)//bar
+					{
+						//srcRect.x +=240;
+						srcRect.y = 8*16;
+						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
+					}
+					if(engine.map->tiles[xM+yM*engine.map->width].decoration == 49)//chair
+					{
+						if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+							//light
+							srcRect.y=0;
+						}else{
+							//dark/*commet*/
+							srcRect.y=16;
+						}
+						srcRect.x = 18*16;
 						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 					}
 				}

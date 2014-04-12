@@ -133,3 +133,7 @@ mapcondec:
 79 is sandbag corner BL
 
 80 is sandbag corner BR
+
+81 is display case
+
+82, 83, 84 is bar

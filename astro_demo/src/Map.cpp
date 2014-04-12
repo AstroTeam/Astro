@@ -2386,8 +2386,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			{
 				if (((wall == 1 || wall == 3) && x == disp) || ((wall == 2 || wall == 4) && y == disp))
 				{
-					Actor *display = new Actor(x, y, 'D', "Liquor Display.", TCODColor::white);
-					//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+					Actor *display = new Actor(x, y, 243, "Liquor Display.", TCODColor::white);
+					engine.map->tiles[x+y*engine.map->width].decoration = 81;
 					engine.actors.push(display);
 					display->blocks = false;
 					engine.sendToBack(display);
@@ -2397,8 +2397,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				}
 				if (((wall == 1 || wall == 3) && x == bar) || ((wall == 2 || wall == 4) && y == bar))
 				{
-					Actor *bar = new Actor(x, y, 'B', "Bar.", TCODColor::white);
-					//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+					Actor *bar = new Actor(x, y, 243, "Bar.", TCODColor::white);
+					engine.map->tiles[x+y*engine.map->width].decoration = rng->getInt(82,84);
 					engine.actors.push(bar);
 					bar->blocks = false;
 					engine.sendToBack(bar);
@@ -2415,8 +2415,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 							case 4:yy = yy-1;break;//bottom wall
 							default:break;
 						}
-						Actor *barstool = new Actor(xx, yy, 's', "Barstool.", TCODColor::white);
-						//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+						Actor *barstool = new Actor(xx, yy, 243, "Barstool.", TCODColor::white);
+						engine.map->tiles[xx+yy*engine.map->width].decoration = 49;
 						engine.actors.push(barstool);
 						barstool->blocks = false;
 						engine.sendToBack(barstool);
