@@ -11,7 +11,7 @@ protected:
 	enum AiType {
 		MONSTER, SECURITY, CONFUSED_ACTOR, PLAYER, TRIGGER, RANGED, LIGHT, 
 		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, CONSOLE, VENDING, ENGINEER, EPICENTER, TURRETCONTROL, LOCKER, GARDNER,
-		FRUIT, ZED
+		FRUIT, ZED,COMPANION
 
 	};
 };
@@ -298,14 +298,22 @@ public:
 class CompanionAi : public Ai {
 public:
 	enum Command{
-		STAY, FOLLOW, ATTACK
+		STAY, FOLLOW, ATTACK, GUARD_POINT
 	};
 	
 	Actor *tamer;
-	int range_limit; //
+	bool edible;
 	
-	
-	
+	CompanionAi(Actor *tamer, int rangeLimit, Command command = FOLLOW);
+	void update(Actor *owner);
+	void save(TCODZip &zip);
+	void load(TCODZip &zip);
+
+protected:
+	int rangeLimit; 
+	int assignedX, assignedY;
+	Command command;
+	void moveOrAttack(Actor *owner, int targetx, int targety);
 };
 
 class ZedAi : public Ai
@@ -315,8 +323,10 @@ class ZedAi : public Ai
 		void update(Actor *owner);
 		void load(TCODZip &zip);
 		void save(TCODZip &zip);
+	
 	protected:
 		int moveCount;
 		int range; //range
+	 	bool berserk;
 		void moveOrAttack(Actor *owner, int targetx, int targety);
 };
