@@ -2874,7 +2874,7 @@ void ZedAi::load(TCODZip &zip) {
 }
 
 void ZedAi::save(TCODZip &zip) {
-	zip.putInt(RANGED);
+	zip.putInt(ZED);
 	zip.putInt(moveCount);
 	zip.putInt(range);
 	zip.putInt(berserk);

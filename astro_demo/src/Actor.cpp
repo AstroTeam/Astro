@@ -24,6 +24,8 @@ Actor::~Actor() {
 void Actor::save(TCODZip &zip) {
 	zip.putInt(x);
 	zip.putInt(y);
+	zip.putInt(lastX);
+	zip.putInt(lastY);
 	zip.putInt(ch);
 	zip.putInt(str);
 	zip.putInt(dex);
@@ -74,6 +76,8 @@ void Actor::save(TCODZip &zip) {
 void Actor::load(TCODZip &zip) {
 	x = zip.getInt();
 	y = zip.getInt();
+	lastX = zip.getInt();
+	lastY = zip.getInt();
 	ch = zip.getInt();
 	str = zip.getInt();
 	dex = zip.getInt();

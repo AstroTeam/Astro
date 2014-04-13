@@ -665,13 +665,16 @@ void Engine::save() {
 		zip.putInt(map->height);
 		map->save(zip);
 		//then the player
+		std::cout << "saving player " << std::endl;
 		player->save(zip);
+		std::cout << "done saving player " << std::endl;
 		//then the stairs
 		stairs->save(zip);
 		playerLight->save(zip);
 		//save the boss
-		std::cout << "got to boss " << std::endl;
+		std::cout << "saving boss " << std::endl;
 		boss->save(zip);
+		std::cout << "done saving boss " << std::endl;
 		//then all the other actors
 		zip.putInt(actors.size() - 4); //minus another one for boss actor?
 		std::cout << "saving other actors " << std::endl;
@@ -685,9 +688,11 @@ void Engine::save() {
 		//finally the message log
 		std::cout << "saving gui " <<std::endl;
 		gui->save(zip);
+		std::cout << "Done saving gui " <<std::endl;
 		zip.putInt(numTer);
 		zip.putInt(ctrTer);
 		zip.putInt(bonusTer);
+		std::cout << "saving numTerminals, ctrTer: "<<numTer<<", " <<ctrTer<<std::endl;
 		for (int i = 0; i < numTer; i++) {
 			zip.putInt(valTer[i]);
 			std::cout << "valTer " << valTer[i] << std::endl;
@@ -807,6 +812,7 @@ void Engine::load(bool pause) {
 		playerLight->load(zip);
 		//load the boss
 		boss = new Actor(0,0,0, NULL, TCODColor::white);
+		std::cout << "loading boss " << std::endl;
 		boss->load(zip);
 		actors.push(player);
 		actors.push(stairs);
@@ -820,6 +826,7 @@ void Engine::load(bool pause) {
 		while (nbActors > 0) {
 			Actor *actor = new Actor(0,0,0,NULL, TCODColor::white);
 			actor->load(zip);
+			if(actor != boss && actor != playerLight && actor != stairs && actor != player)
 			actors.push(actor);
 			std::cout << "loaded " << actor->name << std::endl;
 			nbActors--;
@@ -827,14 +834,16 @@ void Engine::load(bool pause) {
 		//finally, the message log
 		std::cout << "got to gui " << std::endl;
 		gui->load(zip);
+		std::cout << "loaded gui " << std::endl;
 		numTer = zip.getInt();
 		ctrTer = zip.getInt();
 		bonusTer = zip.getInt();
+		std::cout << "About to load terminals. numTer, ctrTer = "<<numTer<<", "<<ctrTer << std::endl;
 		for (int i = 0; i < numTer; i++) {
 			valTer[i] = zip.getInt();
 			std::cout << "valTer " << valTer[i] << std::endl;
 		}
-		std::cout << "got past gui " <<std::endl;
+		std::cout << "got past terminals " <<std::endl;
 		gui->message(TCODColor::pink,"loaded");
 		gameStatus = STARTUP;
 	}

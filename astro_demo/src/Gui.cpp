@@ -50,16 +50,20 @@ void Gui::clear() {
 
 void Gui::save(TCODZip &zip) {
 	zip.putInt(log.size());
+	cout << "messages to save: "<<log.size()<<endl;
 	for (Message **it = log.begin(); it != log.end(); it++) {
 		zip.putString((*it)->text);
+		cout << "logging message: "<<(*it)->text<<endl;		
 		zip.putColor(&(*it)->col);
 	}
 }
 
 void Gui::load(TCODZip &zip) {
 	int nbMessages = zip.getInt();
+	cout << "messages to load: "<<nbMessages<<endl;
 	while (nbMessages > 0) {
 		const char *text = zip.getString();
+		cout << "loading message: "<<text<<endl;
 		TCODColor col = zip.getColor();
 		message(col,text);
 		nbMessages--;
