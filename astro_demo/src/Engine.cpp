@@ -1003,7 +1003,7 @@ void Engine::nextLevel() {
 		int temp = updateRng->getInt(0,2);
 		
 		//find food near teleporter
-		player->hunger = player->maxHunger > player->hunger + 50? player->hunger + 50 : player->maxHunger;
+		player->hunger += (player->maxHunger - player->hunger)*.5;
 		
 		//infantry find grenades
 		if(player->job[0] == 'I'){ 
