@@ -122,6 +122,12 @@ p a:hover
 color:white;
 }  /* mouse over link */
 
+developer p{
+text-align:left;
+}
+
+
+
 pin
 {
 color:white;
