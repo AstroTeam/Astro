@@ -2555,10 +2555,9 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			pet->ai = new CompanionAi(engine.player,5,CompanionAi::FOLLOW);
 			break;
 			
-			default:
-			
-			pet->totalStr = 2;
-			pet->attacker = new Attacker(2);
+			case 1:
+			pet->totalStr = -1;
+			pet->attacker = new Attacker(-1);
 			pet->ai = new CompanionAi(engine.player,5,CompanionAi::FOLLOW);
 			((CompanionAi*)pet->ai)->edible = true;
 			break;
