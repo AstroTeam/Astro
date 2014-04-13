@@ -837,6 +837,13 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	int dy = targety - owner->y;
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
+	
+	int dxL = engine.player->lastX - owner->x;
+	int dyL = engine.player->lastY - owner->y;
+	int stepdxL = (dxL > 0 ? 1:-1);
+	int stepdyL = (dyL > 0 ? 1:-1);
+	stepdxL = (dxL == 0 ? 0:stepdxL);
+	stepdyL = (dyL == 0 ? 0:stepdyL);
 	float distance = sqrtf(dx*dx+dy*dy);
 	
 	if(owner->ch == '_' && distance >= 2 && engine.turnCount % 2 == 0)
@@ -847,10 +854,13 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	
 	if (distance >= 2) {
 		dx = (int) (round(dx / distance));
-		dy = (int)(round(dy / distance));
+		dy = (int) (round(dy / distance));
 		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
 			owner->x+=dx;
 			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdxL,owner->y+stepdyL)) {
+			owner->x+=stepdxL;
+			owner->y+=stepdyL;
 		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
 			owner->x += stepdx;
 		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
@@ -1416,7 +1426,14 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	int dy = targety - owner->y;
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
-	float distance = sqrtf(dx*dx+dy*dy);
+	
+	int dxL = engine.player->lastX - owner->x;
+	int dyL = engine.player->lastY - owner->y;
+	int stepdxL = (dxL > 0 ? 1:-1);
+	int stepdyL = (dyL > 0 ? 1:-1);
+	stepdxL = (dxL == 0 ? 0:stepdxL);
+	stepdyL = (dyL == 0 ? 0:stepdyL);
+	float distance = sqrtf(dx*dx+dy*dy);	
 	//If the distance > range, then the rangedAi will move towards the player
 	//If the distance <= range, then the rangedAi will shoot the player unless the player is right next the rangedAi
 
@@ -1427,6 +1444,9 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
 			owner->x+=dx;
 			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdxL,owner->y+stepdyL)) {
+			owner->x+=stepdxL;
+			owner->y+=stepdyL;
 		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
 			owner->x += stepdx;
 		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
@@ -1682,15 +1702,25 @@ void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	int dy = targety - owner->y;
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
+	
+	int dxL = engine.player->lastX - owner->x;
+	int dyL = engine.player->lastY - owner->y;
+	int stepdxL = (dxL > 0 ? 1:-1);
+	int stepdyL = (dyL > 0 ? 1:-1);
+	stepdxL = (dxL == 0 ? 0:stepdxL);
+	stepdyL = (dyL == 0 ? 0:stepdyL);
 	float distance = sqrtf(dx*dx+dy*dy);
 	
 	//I want the grenadier to move towards if it is out of range or it is out of grenades but not right
 	if (distance > range || (distance > 1 && numGrenades <= 0 )) {
 		dx = (int) (round(dx / distance));
 		dy = (int)(round(dy / distance));
-		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+			if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
 			owner->x+=dx;
 			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdxL,owner->y+stepdyL)) {
+			owner->x+=stepdxL;
+			owner->y+=stepdyL;
 		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
 			owner->x += stepdx;
 		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
@@ -2839,15 +2869,27 @@ void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	int dy = targety - owner->y;
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
+	
+	int dxL = engine.player->lastX - owner->x;
+	int dyL = engine.player->lastY - owner->y;
+	int stepdxL = (dxL > 0 ? 1:-1);
+	int stepdyL = (dyL > 0 ? 1:-1);
+	stepdxL = (dxL == 0 ? 0:stepdxL);
+	stepdyL = (dyL == 0 ? 0:stepdyL);
 	float distance = sqrtf(dx*dx+dy*dy);
+	
 	//If the distance > range, then the rangedAi will move towards the player
 	//If the distance <= range, then the rangedAi will shoot the player unless the player is right next the rangedAi
 	if (distance > range) {
 		dx = (int) (round(dx / distance));
-		dy = (int)(round(dy / distance));
+		dy = (int) (round(dy / distance));
 		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
 			owner->x+=dx;
 			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdxL,owner->y+stepdyL)) {
+			//engine.gui->message(TCODColor::red,"Companion chasing last known location");
+			owner->x+=stepdxL;
+			owner->y+=stepdyL;
 		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
 			owner->x += stepdx;
 		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
@@ -2871,7 +2913,7 @@ void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 			int tauntDice = rng->getInt(0,4);
 			switch (tauntDice) {
 				case 0:
-					engine.gui->message(TCODColor::darkPurple, "<Zed> Muh Ha Ha!"); break;
+					engine.gui->message(TCODColor::darkPurple, "<Zed> Prepare for your doom!"); break;
 				case 1:
 					engine.gui->message(TCODColor::darkPurple, "<Zed> I'm Zed Umber. Muh Ha Ha..."); break;
 				case 2:
@@ -2934,9 +2976,11 @@ void CompanionAi::update(Actor *owner){
 			engine.gui->message(TCODColor::violet, "<%s> You look very hungry... You can take a bite out of me with 'u', you know.",owner->name);
 		}
 	}
-	
-	if (!edible && engine.turnCount % 50 == 0){
+	else if (owner->name[0] == 'C' && engine.turnCount % 50 == 0){
 		engine.gui->message(TCODColor::violet, "<%s> I am a cute fluffball. I will try to protect you!",owner->name);
+	}
+	else if (owner->name[0] == 'A' && engine.turnCount % 50 == 0){
+		engine.gui->message(TCODColor::violet, "<%s> I am hunting your enemies. Beep. Boop.",owner->name);
 	}
 	
 	if (command == STAY){
@@ -2979,7 +3023,7 @@ void CompanionAi::update(Actor *owner){
 		if (tamer->attacker->lastTarget != NULL && !tamer->attacker->lastTarget->destructible->isDead()){
 			if (owner->attacker && tamer->attacker->lastTarget != owner && tamer->attacker->lastTarget != tamer){
 				owner->attacker->lastTarget = tamer->attacker->lastTarget;
-				engine.gui->message(TCODColor::grey,"The last target is %s",owner->attacker->lastTarget->name);
+				//engine.gui->message(TCODColor::violet,"<%s> I will protect you from that %s!",owner->name,owner->attacker->lastTarget->name);
 				if (tamer->getDistance(owner->attacker->lastTarget->x,owner->attacker->lastTarget->y) <= rangeLimit){
 					targeting = true;
 					moveOrAttack(owner,owner->attacker->lastTarget->x,owner->attacker->lastTarget->y);

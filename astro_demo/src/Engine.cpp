@@ -91,29 +91,21 @@ void Engine::init() {
 	
 	
 	switch(engine.gui->raceSelection){
-		case 1:
-			player->race="Human";
-			plyrAscii = 143;
-			player->hunger = 200;
-			player->maxHunger = 200;
-			break;
 		case 2:
 			player->race="Robot";
 			plyrAscii = 159;
-			player->hunger = 100;
-			player->maxHunger = 100;			
+			player->hunger = 200;
+			player->maxHunger = 200;			
 			break;
 		case 3:
 			player->race="Alien";
 			plyrAscii = 175;
-			player->hunger = 40000;
-			player->maxHunger = 40000;			
+			player->hunger = 600;
+			player->maxHunger = 600;			
 			break;
 		default:
 			player->race="Human";
-			plyrAscii = 143;
-			player->destructible->hp = 200;			
-			player->destructible->maxHp = 200;			
+			plyrAscii = 143;	
 			player->hunger = 200;
 			player->maxHunger = 200;
 			break;

@@ -2544,21 +2544,30 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		pet->blocks = false;
 		pet->container = new Container(2);
 		pet->flashable = true;
-		TCODRandom *companionChoice = TCODRandom::getInstance();
-		switch(companionChoice->getInt(0,1)){
+		switch(engine.player->race[0]){
 			
-			case 0:
-			pet->name = "Poro";
-			pet->ch = 'p';
+			case 'A':		//Alien
+			pet->name = "Capybara";
+			pet->destructible->maxHp = 35;
+			pet->destructible->hp = 35;
+			pet->totalStr = 2;
+			pet->attacker = new Attacker(2);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			break;
+
+			case 'R':		//Robot
+			pet->name = "Armored RC Helicopter";
+			pet->destructible->maxHp = 350;
+			pet->destructible->hp = 350;
 			pet->totalStr = 0;
 			pet->attacker = new Attacker(0);
-			pet->ai = new CompanionAi(engine.player,5,CompanionAi::FOLLOW);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
 			break;
 			
-			case 1:
+			default:		//Human
 			pet->totalStr = -1;
 			pet->attacker = new Attacker(-1);
-			pet->ai = new CompanionAi(engine.player,5,CompanionAi::FOLLOW);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
 			((CompanionAi*)pet->ai)->edible = true;
 			break;
 		}
