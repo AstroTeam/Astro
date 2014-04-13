@@ -2545,7 +2545,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		pet->container = new Container(2);
 		pet->flashable = true;
 		switch(engine.player->race[0]){
-			
+			 
 			case 'A':		//Alien
 			pet->name = "Capybara";
 			pet->destructible->maxHp = 35;
