@@ -1033,7 +1033,53 @@ void TriggerAi::update(Actor *owner) {
 		TCOD_key_t key;
 		TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
 		engine.armorState = 0;
+		engine.ctrTer += 1;
 	}
+	if (engine.ctrTer == 3 && !engine.bonusTer && engine.level != 0)
+	{
+		engine.bonusTer = true;
+		cout << "ctr == 3" << endl;
+		TCODRandom *random = TCODRandom::getInstance();
+		int rng = random->getInt(0,4);
+		switch (rng) {
+			case 0	:
+				engine.player->destructible->maxHp += engine.player->getHpUp();
+				engine.player->destructible->hp += engine.player->getHpUp();
+				engine.player->vit += engine.player->getHpUp();;
+				//choice_made = true;
+				engine.gui->message(TCODColor::yellow,"Finding all of the recordings in this deck you feel more HEALTHY and ready to advance.(+1 VIT)");
+				break;
+			case 1 :
+				engine.player->attacker->basePower += 1;
+				engine.player->attacker->totalPower += 1;
+				engine.player->str += 1;
+				engine.player->totalStr += 1;
+				//choice_made = true;
+				engine.gui->message(TCODColor::yellow,"Having found all the recordings on this deck you use the knowledge to become STRONGER.(+1 STR)");
+				break;
+			case 2 :
+				engine.player->dex += 1;
+				engine.player->totalDex += 1;
+				//choice_made = true;
+				engine.gui->message(TCODColor::yellow,"All the recordings have been found in this deck making you quicker and more DEXTEROUS.(+1 DEX)");
+				break;
+			case 3 :
+				engine.player->intel += 1;
+				engine.player->totalIntel += 1;
+				//choice_made = true;
+				engine.gui->message(TCODColor::yellow,"Finding the recordings in this deck have made more SMARTER and more aware of the infection.(+1 INT)");
+				break;
+			case 4:
+				engine.player->destructible->baseDodge += 1;
+				engine.player->destructible->totalDodge += 1;
+				engine.gui->message(TCODColor::yellow,"All the recordings you have found have made you able to DODGE better.(+1 DODGE)");
+				break;
+			default: break;
+		}
+		
+		
+	}
+	
 	
 }
 

@@ -624,11 +624,13 @@ void Engine::init() {
 	map = new Map(mapWidth, mapHeight);
 	if (startTutorial) {
 		ctrTer = 0;//13 is size
+		bonusTer = false;
 		cout << "number of terminals in this level " << ctrTer << endl;
 		map->init(true, Param::TUTORIAL);
 	}
 	else {
 		ctrTer = 3;//13 is size
+		bonusTer = false;
 		cout << "number of terminals in this level " << ctrTer << endl;
 		map->init(true, Param::GENERIC);
 	}
@@ -685,6 +687,7 @@ void Engine::save() {
 		gui->save(zip);
 		zip.putInt(numTer);
 		zip.putInt(ctrTer);
+		zip.putInt(bonusTer);
 		for (int i = 0; i < numTer; i++) {
 			zip.putInt(valTer[i]);
 			std::cout << "valTer " << valTer[i] << std::endl;
@@ -826,6 +829,7 @@ void Engine::load(bool pause) {
 		gui->load(zip);
 		numTer = zip.getInt();
 		ctrTer = zip.getInt();
+		bonusTer = zip.getInt();
 		for (int i = 0; i < numTer; i++) {
 			valTer[i] = zip.getInt();
 			std::cout << "valTer " << valTer[i] << std::endl;
@@ -1115,6 +1119,7 @@ void Engine::nextLevel() {
 	if (engine.level != 5)
 	{
 		ctrTer = 3;                                                  ////set ctrTer
+		bonusTer = false;
 	}
 	cout << "number of terminals this level " << ctrTer << endl;
 	TCODRandom * levelRng = TCODRandom::getInstance();

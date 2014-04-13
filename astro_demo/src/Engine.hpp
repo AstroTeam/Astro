@@ -23,7 +23,7 @@ public:
 	bool valTer[13];
 	int ctrTer;
 	int numTer;           
-	
+	bool bonusTer;
 	
 	int invState;
 	int invFrames;
