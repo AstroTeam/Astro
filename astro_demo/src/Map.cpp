@@ -2538,18 +2538,32 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//playerLight->ai->moving = true;
 		engine.sendToBack(engine.playerLight);
 		
-	
 		Actor *pet = new Actor(engine.player->x,engine.player->y,'o',"Jelly Donut Fairy",TCODColor::red);
 		pet->hostile = false;
 		pet->destructible = new MonsterDestructible(10,0,0,10);
 		pet->blocks = false;
 		pet->container = new Container(2);
 		pet->flashable = true;
-		pet->totalStr = 5;
-		pet->attacker = new Attacker(5);
-		pet->ai = new CompanionAi(engine.player,5,CompanionAi::FOLLOW);
-		//pet->ai = new MonsterAi();
-		((CompanionAi*)pet->ai)->edible = true;
+		TCODRandom *companionChoice = TCODRandom::getInstance();
+		switch(companionChoice->getInt(0,1)){
+			
+			case 0:
+			pet->name = "Poro";
+			pet->ch = 'p';
+			pet->totalStr = 0;
+			pet->attacker = new Attacker(0);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			
+			break;
+			
+			default:
+			
+			pet->totalStr = 5;
+			pet->attacker = new Attacker(5);
+			pet->ai = new CompanionAi(engine.player,5,CompanionAi::FOLLOW);
+			((CompanionAi*)pet->ai)->edible = true;
+			break;
+		}
 		engine.player->companion = pet;
 		engine.actors.push(pet);
 	

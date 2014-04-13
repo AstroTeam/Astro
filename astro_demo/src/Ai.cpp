@@ -2933,6 +2933,10 @@ void CompanionAi::update(Actor *owner){
 		}
 	}
 	
+	if (!edible && engine.turnCount % 50 == 0){
+		engine.gui->message(TCODColor::violet, "<%s> I am a cute fluffball. I will try to protect you!",owner->name);
+	}
+	
 	if (command == STAY){
 		return;
 	}
@@ -2980,7 +2984,7 @@ void CompanionAi::update(Actor *owner){
 				}
 			}
 		} 
-		if(targeting==false && owner->getDistance(tamer->x,tamer->y) >= 3){
+		if(targeting==false && owner->getDistance(tamer->x,tamer->y) >= 2){
 			moveOrAttack(owner,tamer->x,tamer->y);
 		}
 	} else if (command == ATTACK) {
@@ -2995,6 +2999,8 @@ void CompanionAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	int dy = targety - owner->y;
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
+	stepdx = (dx == 0 ? 0:stepdx);
+	stepdy = (dy == 0 ? 0:stepdy);
 	float distance = sqrtf(dx*dx+dy*dy);
 	
 	if(owner->ch == '_' && distance >= 2 && engine.turnCount % 2 == 0)
@@ -3006,9 +3012,9 @@ void CompanionAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	if (distance >= 2) {
 		dx = (int) (round(dx / distance));
 		dy = (int)(round(dy / distance));
-		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
-			owner->x+=dx;
-			owner->y+=dy;
+		if (engine.map->canWalk(owner->x+stepdx,owner->y+stepdy)) {
+			owner->x+=stepdx;
+			owner->y+=stepdy;
 		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
 			owner->x += stepdx;
 		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
