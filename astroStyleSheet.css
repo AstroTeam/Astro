@@ -65,7 +65,7 @@ h1
 {
 color:green;
 text-align:left;
-font-size:50px;
+font-size:40px;
 margin-left: 400px;
 margin-right: 400px;
 position: relative;
@@ -102,7 +102,7 @@ p
 {
 color:white;
 text-align:justify;
-font-size:20px;
+font-size:16px;
 display:  block;
 margin-left: 400px;
 margin-right: 400px;
@@ -132,7 +132,7 @@ pin
 {
 color:white;
 text-align:justify;
-font-size:20px;
+font-size:16px;
 display:  block;
 position: relative;
 }
