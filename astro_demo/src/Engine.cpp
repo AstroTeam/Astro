@@ -47,7 +47,9 @@ Engine::~Engine() {
 }
 
 void Engine::term() {
+	std::cout << "got here bterm" << std::endl;
 	actors.clearAndDelete();
+	std::cout << "got here aterm" << std::endl;
 	if (map) delete map;
 	gui->clear();
 	engine.turnCount = 0;
@@ -110,6 +112,8 @@ void Engine::init() {
 		default:
 			player->race="Human";
 			plyrAscii = 143;
+			player->destructible->hp = 20000;			
+			player->destructible->maxHp = 20000;			
 			player->hunger = 200;
 			player->maxHunger = 200;
 			break;
@@ -693,7 +697,9 @@ void Engine::save() {
 			zip.putInt(valTer[i]);
 			std::cout << "valTer " << valTer[i] << std::endl;
 		}
+		std::cout << "almost done saving" << std::endl;
 		zip.saveToFile("game.sav");
+		std::cout << "done saving" << std::endl;
 	}
 }
 
@@ -782,7 +788,7 @@ void Engine::load(bool pause) {
 		invState = zip.getInt();
 		menuState = zip.getInt();
 		armorState = zip.getInt();
-		
+		std::cout << "got here" << std::endl;
 		invFrames = zip.getInt();
 		selX = zip.getInt();
 		selY = zip.getInt();
@@ -794,8 +800,10 @@ void Engine::load(bool pause) {
 		map = new Map(width,height);
 		map->load(zip);
 		//then the player
+		std::cout << "loading player" << std::endl;
 		player = new Actor(0,0,0,NULL,TCODColor::white);
 		player->load(zip);
+		std::cout << "loaded player" << std::endl;
 		//the stairs
 		stairs = new Actor(0,0,0,NULL,TCODColor::white);
 		stairs->load(zip);

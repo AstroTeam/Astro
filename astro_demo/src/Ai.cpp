@@ -4,6 +4,7 @@
 
 Ai *Ai::create(TCODZip &zip) {
 	AiType type = (AiType)zip.getInt();
+	std::cout << "got AITYPE" << type << std::endl;
 	Ai *ai = NULL;
 	switch(type) {
 		case PLAYER: ai = new PlayerAi(); break;
@@ -29,9 +30,10 @@ Ai *Ai::create(TCODZip &zip) {
 		case GARDNER: ai = new GardnerAi(); break;
 		case FRUIT: ai = new FruitAi(NULL,0); break;
 		case ZED: ai = new ZedAi(); break;
-		case COMPANION: ai = new CompanionAi(NULL,0); break;
+		case COMPANION: std::cout<<"got here"<<std::endl; ai = new CompanionAi(NULL,0); break;
 		
 	}
+	std::cout << "got past switch " << std::endl;
 	ai->load(zip);
 	return ai;
 }
@@ -595,6 +597,15 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			else
 			{
 				engine.gui->message(TCODColor::yellow,"You have found no maps yet.");
+			}
+		break;
+		case 'u':
+			if (engine.player->companion){
+				if (engine.player->getDistance(engine.player->companion->x,engine.player->companion->y) < 2){
+					((CompanionAi*)engine.player->companion->ai)->feedMaster(engine.player->companion,engine.player);
+				} else {
+					engine.gui->message(TCODColor::grey,"You are too far away to reach your companion.");
+				}
 			}
 		break;
 	}
@@ -2775,15 +2786,13 @@ void FruitAi::interaction(Actor *owner, Actor *target){
 	}
 }
 
-ZedAi::ZedAi() : moveCount(0), range(3), berserk (false), menuPopped(false){
+ZedAi::ZedAi() : moveCount(0), range(3), berserk (false){
 }
 
 void ZedAi::load(TCODZip &zip) {
 	moveCount = zip.getInt();
 	range = zip.getInt();
 	berserk = zip.getInt();
-	menuPopped = zip.getInt();
-
 }
 
 void ZedAi::save(TCODZip &zip) {
@@ -2791,20 +2800,15 @@ void ZedAi::save(TCODZip &zip) {
 	zip.putInt(moveCount);
 	zip.putInt(range);
 	zip.putInt(berserk);
-	zip.putInt(menuPopped);
 }
 
 void ZedAi::update(Actor *owner) {
 
 	if (owner->destructible && owner->destructible->isDead()) {
-		if (!menuPopped) {
-			deathMenu();
-			menuPopped = true;
-		}
 		return;
 	}
 	//if really hurt go berserk
-	if (!berserk && owner->destructible->hp < owner->destructible->maxHp/3) {
+	if (owner->destructible->hp < owner->destructible->maxHp/3) {
 		berserk = true;
 		engine.gui->message(TCODColor::darkPurple, "<Zed> Muh Ha! Now you'll witness my true power.");
 		owner->destructible->maxHp = owner->destructible->maxHp*2;
@@ -2813,7 +2817,7 @@ void ZedAi::update(Actor *owner) {
 	}
 	if (engine.map->isInFov(owner->x,owner->y)) {
 		//can see the player, move towards him
-		moveCount = TRACKING_TURNS + 10; //give zed much longer tracking
+		moveCount = TRACKING_TURNS + 4; //give zed much longer tracking
 	}
 	else {
 		moveCount--;
@@ -2878,73 +2882,42 @@ void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		}
 		//standing next to the player
 	}
-	else if (owner->attacker && berserk) {
-		dx = (int) (round(dx / distance));
-		dy = (int)(round(dy / distance));
-		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
-			owner->x+=dx;
-			owner->y+=dy;
-		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
-			owner->x += stepdx;
-		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
-			owner->y += stepdy;
-		}
-		if (owner->oozing) {
-			engine.map->infectFloor(owner->x, owner->y);
-		}
-		if (distance == 1) {
-			owner->attacker->attack(owner,engine.player);
-			engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
-		}
+	else if (owner->attacker) {
+		owner->attacker->attack(owner,engine.player);
+		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
 }
 
-void ZedAi::deathMenu() {
-	bool choice_made = false;
-	while (!choice_made) 
-	{
-		engine.gui->menu.clear();
-		engine.gui->menu.addItem(Menu::END_GAME, "Escape the spacestation.");
-		engine.gui->menu.addItem(Menu::CONTINUE_GAME, "Continue to explore.");
-		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::GAME_END);
-		switch (menuItem) {
-			case Menu::END_GAME:
-					engine.gui->message(TCODColor::orange, "Game Over: You win!");
-				choice_made = true;
-				break;
-			case Menu::CONTINUE_GAME:
-					engine.gui->message(TCODColor::orange, "The adventure never ends!");
-				choice_made = true;
-				break;
-			case Menu::NO_CHOICE:
-				break;
-			default: break;
-		}
-	}
-}
-
-CompanionAi::CompanionAi(Actor *tamer, int rangeLimit, Command command):tamer(tamer),rangeLimit(rangeLimit),assignedX(tamer->x),assignedY(tamer->y),command(command){
+CompanionAi::CompanionAi(Actor *tamer, int rangeLimit, Command command):tamer(tamer),edible(false),rangeLimit(rangeLimit),assignedX(0),assignedY(0),command(command){
 }
 
 void CompanionAi::save(TCODZip &zip){
-	tamer->save(zip);
+	zip.putInt(COMPANION);
 	zip.putInt(edible);
+	std::cout<<"AI put edible" << edible << std::endl;
 	zip.putInt(rangeLimit);
+	std::cout<<"AI put limit" << rangeLimit << std::endl;
 	zip.putInt(assignedX);
+	std::cout<<"AI put X" << assignedX << std::endl;
 	zip.putInt(assignedY);
+	std::cout<<"AI put Y" << assignedY << std::endl;
 	zip.putInt(command);
+	std::cout<<"AI put command" << command << std::endl;
 }
 
 void CompanionAi::load(TCODZip &zip){
-	Actor *act = new Actor(0,0,0,NULL,TCODColor::white);
-	act->load(zip);
-	tamer = act;
-	
 	edible = zip.getInt();
+	std::cout<<"AI got edible" << edible << std::endl;
 	rangeLimit = zip.getInt();
+	std::cout<<"AI got limit" << rangeLimit << std::endl;
 	assignedX = zip.getInt();
+	std::cout<<"AI got X" << assignedX << std::endl;
 	assignedY = zip.getInt();
+	std::cout<<"AI got Y" << assignedY << std::endl;
 	command = (Command)zip.getInt();
+	std::cout<<"AI got command" << command << std::endl;
+
+	tamer = engine.player;
 }
 
 void CompanionAi::update(Actor *owner){
@@ -2952,11 +2925,18 @@ void CompanionAi::update(Actor *owner){
 		return;
 	}
 	
+	if (edible && engine.turnCount % 5 == 0){
+		if (tamer->hunger > 0){
+			engine.gui->message(TCODColor::violet,"<%s> on a scale from 1 to 100, your hunger is %d",owner->name,tamer->hunger*100/tamer->maxHunger);
+		} else {
+			engine.gui->message(TCODColor::violet, "<%s> You look very hungry... You can take a bite out of me with 'u', you know.",owner->name);
+		}
+	}
+	
 	if (command == STAY){
 		return;
 	}
-	
-	if (command == GUARD_POINT ){
+	else if (command == GUARD_POINT ){
 		if(owner->getDistance(assignedX,assignedY) != 0){
 			int dx = assignedX - owner->x;
 			int dy = assignedY - owner->y;
@@ -2978,7 +2958,7 @@ void CompanionAi::update(Actor *owner){
 				engine.map->infectFloor(owner->x, owner->y);
 			}
 		}else{
-			Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y, 1);
+			Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y, 1.5);
 			if (!closestMonster){
 				return;
 			}
@@ -2988,6 +2968,75 @@ void CompanionAi::update(Actor *owner){
 		}
 	
 	}
+	else if (command == FOLLOW){
+		bool targeting = false;
+		if (tamer->attacker->lastTarget != NULL && !tamer->attacker->lastTarget->destructible->isDead()){
+			if (owner->attacker && tamer->attacker->lastTarget != owner && tamer->attacker->lastTarget != tamer){
+				owner->attacker->lastTarget = tamer->attacker->lastTarget;
+				engine.gui->message(TCODColor::grey,"The last target is %s",owner->attacker->lastTarget->name);
+				if (owner->getDistance(owner->attacker->lastTarget->x,owner->attacker->lastTarget->y) <= rangeLimit){
+					targeting = true;
+					moveOrAttack(owner,owner->attacker->lastTarget->x,owner->attacker->lastTarget->y);
+				}
+			}
+		} 
+		if(targeting==false && owner->getDistance(tamer->x,tamer->y) >= 3){
+			moveOrAttack(owner,tamer->x,tamer->y);
+		}
+	} else if (command == ATTACK) {
+		if (owner->attacker->lastTarget && !owner->attacker->lastTarget->destructible->isDead()){
+			moveOrAttack(owner,owner->attacker->lastTarget->x,owner->attacker->lastTarget->y);
+		}
+	}
+}
+
+void CompanionAi::moveOrAttack(Actor *owner, int targetx, int targety){
+	int dx = targetx - owner->x;
+	int dy = targety - owner->y;
+	int stepdx = (dx > 0 ? 1:-1);
+	int stepdy = (dy > 0 ? 1:-1);
+	float distance = sqrtf(dx*dx+dy*dy);
 	
+	if(owner->ch == '_' && distance >= 2 && engine.turnCount % 2 == 0)
+	{
+		//crawlers can only move every other turn
+		return;
+	}
+	
+	if (distance >= 2) {
+		dx = (int) (round(dx / distance));
+		dy = (int)(round(dy / distance));
+		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+			owner->x+=dx;
+			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
+			owner->x += stepdx;
+		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
+			owner->y += stepdy;
+		}
+		if (owner->oozing) {
+			engine.map->infectFloor(owner->x, owner->y);
+		}
+	} else if (owner->attacker) {
+		std::cout <<"attacking"<< std::endl;
+		owner->attacker->attack(owner,owner->attacker->lastTarget);
+	}
+}
+
+float CompanionAi::feedMaster(Actor *owner, Actor *master){
+
+	if(edible){
+		if (owner->destructible == NULL || owner->destructible->isDead()) {
+			return 0;
+		}
+		
+		owner->destructible->takeDamage(owner,master,owner->destructible->maxHp*0.2);
+		engine.gui->message(TCODColor::violet,"<%s> AAAAAAAAUUUUGGGGGGHH!!!",owner->name);
+		return master->feed(master->maxHunger);
+	} else{
+		owner->destructible->takeDamage(owner,master,owner->destructible->maxHp*0.2);
+		engine.gui->message(TCODColor::violet,"<%s> AAAAAAAAUUUUGGGGGGHH!!!",owner->name);
+		return 0;
+	}
 }
 

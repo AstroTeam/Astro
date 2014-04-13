@@ -44,6 +44,10 @@ Destructible *Destructible::create(TCODZip &zip) {
 
 float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 	//take a second Actor pointer here, such as attacker, also pass it into the die method
+	if (owner->attacker && (owner->attacker->lastTarget == NULL || owner->attacker->lastTarget->destructible->isDead())) {
+		owner->attacker->lastTarget = attacker;
+	}
+	
 	if(owner->ch == 225) //meaning you're attacking a Vending machine
 	{
 		VendingAi* va = (VendingAi*) owner->ai;

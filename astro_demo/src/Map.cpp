@@ -142,7 +142,7 @@ void Map::init(bool withActors, LevelType levelType) {
 				float scale = 1 + .1*(level - 1);
 				float zHp = 60*scale;
 				float zDodge = 1*scale;
-				float zDR = .25*scale;
+				float zDR = .5*scale;
 				float zStr = 20*scale;
 				float zDex = 20*scale;
 				float zXp = 100*scale;
@@ -2538,6 +2538,21 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//playerLight->ai->moving = true;
 		engine.sendToBack(engine.playerLight);
 		
+	
+		Actor *pet = new Actor(engine.player->x,engine.player->y,'o',"Jelly Donut Fairy",TCODColor::red);
+		pet->hostile = false;
+		pet->destructible = new MonsterDestructible(10,0,0,10);
+		pet->blocks = false;
+		pet->container = new Container(2);
+		pet->flashable = true;
+		pet->totalStr = 5;
+		pet->attacker = new Attacker(5);
+		pet->ai = new CompanionAi(engine.player,5,CompanionAi::FOLLOW);
+		//pet->ai = new MonsterAi();
+		((CompanionAi*)pet->ai)->edible = true;
+		engine.player->companion = pet;
+		engine.actors.push(pet);
+	
 		//Actor *r4 = createRecord(engine.player->x, engine.player->y-1);
 		//engine.actors.push(r4);
 		/*if (true)

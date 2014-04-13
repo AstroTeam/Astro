@@ -19,6 +19,7 @@ public:
 	int hunger;
 	int maxHunger;
 	int hungerCount;
+	Actor *companion;
 	//bool fovOnly; //only display when in FOV (maybe add this later)
 	Attacker *attacker; //something that deals damage
 	Destructible *destructible; //something that can take damage

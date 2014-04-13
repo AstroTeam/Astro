@@ -308,7 +308,8 @@ public:
 	void update(Actor *owner);
 	void save(TCODZip &zip);
 	void load(TCODZip &zip);
-
+	float feedMaster(Actor *owner, Actor *master);
+	
 protected:
 	int rangeLimit; 
 	int assignedX, assignedY;
@@ -328,7 +329,5 @@ class ZedAi : public Ai
 		int moveCount;
 		int range; //range
 	 	bool berserk;
-		bool menuPopped;
 		void moveOrAttack(Actor *owner, int targetx, int targety);
-		void deathMenu();
 };
