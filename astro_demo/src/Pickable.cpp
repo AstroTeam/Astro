@@ -163,7 +163,7 @@ bool LightningBolt::use(Actor *owner, Actor *wearer) {
 		return false;
 	}
 	//hit the closest monster for <damage> hit points;
-	float damageTaken = closestMonster->destructible->takeDamage(closestMonster,wearer, -3 + 3 * wearer->totalIntel);
+	float damageTaken = closestMonster->destructible->takeDamage(closestMonster,wearer, -3 + 3 * wearer->totalIntel, false);
 	engine.damageDone += 3 * wearer->totalIntel - 3;
 	if (!closestMonster->destructible->isDead()) {
 		engine.gui->message(TCODColor::orange,"Taking %g damage, the %s crackles with electricity, crying out in rage.",damageTaken,closestMonster->name);
@@ -214,7 +214,7 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 			&&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) {
 			//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 			float damageTaken = 1;
-			damageTaken = actor->destructible->takeDamage(actor,wearer, 1);
+			damageTaken = actor->destructible->takeDamage(actor,wearer, 1, false);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
 				engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damageTaken);
@@ -288,7 +288,7 @@ bool Fragment::use(Actor *owner, Actor *wearer) {
 		if (actor->destructible && !actor->destructible->isDead()
 			&&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) {
 			float damageTaken = 2 * wearer->totalIntel;
-			damageTaken = actor->destructible->takeDamage(actor,wearer, damageTaken);
+			damageTaken = actor->destructible->takeDamage(actor,wearer, damageTaken, false);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
 				engine.gui->message(TCODColor::orange,"The %s gets wounded from the blast for %g hit points.",actor->name,damageTaken);

@@ -110,14 +110,7 @@ void Attacker::shoot(Actor *owner, Actor *target) {
 			damageTaken += damageRoll + owner->totalDex - target->destructible->totalDR; //save for damage roll
 		}
 		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
-			if (owner->oozing && target->susceptible) {
-				damageTaken = target->destructible->takeDamage(target,owner,damageTaken+1);
-				engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hit points!",owner->name, target->name,damageTaken);
-			}
-			else {
-				damageTaken = target->destructible->takeDamage(target,owner,damageTaken);
-				engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hit points!",owner->name, target->name,damageTaken);
-			}
+			damageTaken = target->destructible->takeDamage(target,owner,damageTaken, true);
 		} else {
 			engine.gui->message(TCODColor::lightGrey,"The %s shoots the %s but it has no effect...",owner->name, target->name);
 		}

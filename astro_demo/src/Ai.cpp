@@ -1580,7 +1580,7 @@ void GrenadierAi::update(Actor *owner) {
 }
 void GrenadierAi::useEmpGrenade(Actor *owner, int targetx, int targety)
 {
-	float damageTaken = engine.player->destructible->takeDamage(engine.player, owner,-3 + 3 * owner->totalIntel);
+	float damageTaken = engine.player->destructible->takeDamage(engine.player, owner,-3 + 3 * owner->totalIntel, false);
 	numGrenades--;
 	engine.gui->message(TCODColor::red,"The %s uses an EMP Grenade on the player for %g hit points!",owner->name, damageTaken);
 	engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
@@ -1598,7 +1598,7 @@ void GrenadierAi::useFirebomb(Actor *owner, int targetx, int targety)
 			&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
 			//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 			float damageTaken = 1;
-			damageTaken = actor->destructible->takeDamage(actor, owner, 1);
+			damageTaken = actor->destructible->takeDamage(actor, owner, 1, false);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) {
 				if(actor == engine.player)
@@ -1637,11 +1637,10 @@ void GrenadierAi::useFrag(Actor *owner, int targetx, int targety)
 			&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
 		{
 			float damageTaken = 2 * owner->totalIntel;
-			damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);
+			damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken, false);
 			//engine.damageDone +=  2 * wearer->totalIntel;
 			if (!actor->destructible->isDead()) 
 			{	if(actor == engine.player)
-					engine.damageReceived += damageTaken;
 				engine.gui->message(TCODColor::red,"The %s gets wounded from the blast for %g hit points.",actor->name,damageTaken);
 			} else {
 				engine.gui->message(TCODColor::red,"The %s's guts explode outward after taking %g damage.",actor->name,damageTaken);
@@ -1661,11 +1660,8 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 	if(dice <= 15)
 	{
 		//emp grenade
-		float damageTaken = target->destructible->takeDamage(target, owner, -1*numGrenades*(-3 + 3 * owner->totalIntel));
-		engine.gui->message(TCODColor::red, "The %s kamikazes with an EMP Grenade on the %s for %g hit points!",owner->name,name, damageTaken);
-		if(target == engine.player)
-			engine.damageReceived += -1*numGrenades*(3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
-		
+		float damageTaken = target->destructible->takeDamage(target, owner, -1*numGrenades*(-3 + 3 * owner->totalIntel), false);
+		engine.gui->message(TCODColor::red, "The %s kamikazes with an EMP Grenade on the %s for %g hit points!",owner->name,name, damageTaken);		
 	}
 	else if(dice <= 25)
 	{

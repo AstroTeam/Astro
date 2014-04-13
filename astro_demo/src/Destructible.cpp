@@ -81,6 +81,45 @@ float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 	return damage;
 }
 
+float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage, bool printMessage) {
+	//take a second Actor pointer here, such as attacker, also pass it into the die method
+	if (owner->attacker && (owner->attacker->lastTarget == NULL || owner->attacker->lastTarget->destructible->isDead())) {
+		owner->attacker->lastTarget = attacker;
+	}
+	
+	if(owner->ch == 225) //meaning you're attacking a Vending machine
+	{
+		VendingAi* va = (VendingAi*) owner->ai;
+		va->deployedSecurity = true;
+	}
+	if(owner->ch == 243 && (engine.map->tiles[owner->x+owner->y*engine.map->width].decoration == 56 || engine.map->tiles[owner->x+owner->y*engine.map->width].decoration == 57)) //weapon vault
+		return 0; //can't damage vaults
+	if (damage > 0){
+		damage = (int) damage;		
+		if (attacker->oozing && owner->susceptible) {
+			damage++;
+			if(printMessage) engine.gui->message(TCODColor::red,"The %s shoots the %s for %d hit points!",attacker->name, owner->name,damage);
+		}
+		else if(strcmp(owner->name,"A Government Issue Locker") == 0)//locker code exception
+		{
+			if(printMessage) engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
+		}
+		else {
+			if(printMessage) engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hit points!",attacker->name, owner->name,damage);
+			if(strcmp(owner->name,"player") == 0)
+				engine.damageReceived += damage;
+		}
+		hp -= damage;
+		if (hp <= 0) {
+			die(owner, attacker);
+		}
+	} else {
+		damage = 0;
+	}
+	
+	return damage;
+}
+
 float Destructible::takeFireDamage(Actor *owner, float damage) {
 	if(engine.map->tiles[(owner->x)+(owner->y)*engine.map->width].temperature > 0 && !owner->destructible->isDead())
 	{

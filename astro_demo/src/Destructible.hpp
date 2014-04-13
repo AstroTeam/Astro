@@ -13,6 +13,7 @@ public:
 	~Destructible();
 	inline bool isDead() {return hp <= 0;}
 	float takeDamage(Actor *owner, Actor *attacker, float damage);
+	float takeDamage(Actor *owner, Actor *attacker, float damage, bool printMessage);
 	float takeFireDamage(Actor *owner, float damage);
 	virtual void die(Actor *owner, Actor *killer);
 	void load(TCODZip &zip);
