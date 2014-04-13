@@ -112,8 +112,8 @@ void Engine::init() {
 		default:
 			player->race="Human";
 			plyrAscii = 143;
-			player->destructible->hp = 20000;			
-			player->destructible->maxHp = 20000;			
+			player->destructible->hp = 200;			
+			player->destructible->maxHp = 200;			
 			player->hunger = 200;
 			player->maxHunger = 200;
 			break;

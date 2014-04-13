@@ -2925,7 +2925,7 @@ void CompanionAi::update(Actor *owner){
 		return;
 	}
 	
-	if (edible && engine.turnCount % 5 == 0){
+	if (edible && engine.turnCount % 20 == 0){
 		if (tamer->hunger > 0){
 			engine.gui->message(TCODColor::violet,"<%s> on a scale from 1 to 100, your hunger is %d",owner->name,tamer->hunger*100/tamer->maxHunger);
 		} else {
