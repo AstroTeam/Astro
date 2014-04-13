@@ -108,6 +108,8 @@ void Gui::render() {
 	sidebar->setDefaultForeground(TCODColor::white);
 	sidebar->print(3,27,"Dungeon level %d", engine.level);
 	sidebar->print(3,13,"Turn count: %d",engine.turnCount);
+	
+	
 	//sidebar->print(3,15,"Kill Count: %d",engine.killCount);
 	
 	//display the armor slots

@@ -44,12 +44,16 @@ Destructible *Destructible::create(TCODZip &zip) {
 
 float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 	//take a second Actor pointer here, such as attacker, also pass it into the die method
+	if (owner->attacker && (owner->attacker->lastTarget == NULL || owner->attacker->lastTarget->destructible->isDead())) {
+		owner->attacker->lastTarget = attacker;
+	}
+	
 	if(owner->ch == 225) //meaning you're attacking a Vending machine
 	{
 		VendingAi* va = (VendingAi*) owner->ai;
 		va->deployedSecurity = true;
 	}
-	if(owner->ch == 243 && engine.map->tiles[owner->x+owner->y*engine.map->width].decoration == 56) //weapon vault
+	if(owner->ch == 243 && (engine.map->tiles[owner->x+owner->y*engine.map->width].decoration == 56 || engine.map->tiles[owner->x+owner->y*engine.map->width].decoration == 57)) //weapon vault
 		return 0; //can't damage vaults
 	if (damage > 0){
 	
@@ -127,6 +131,8 @@ void Destructible::die(Actor *owner, Actor *killer) {
 		}
 		owner->ch = 161;
 		owner->blocks = false;
+	}else if(owner->ch == 243){
+		owner->col = TCODColor::darkGrey;
 	}//else generic blood whale
 	else
 	{
