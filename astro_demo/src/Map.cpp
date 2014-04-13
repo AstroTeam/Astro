@@ -2553,13 +2553,12 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			pet->totalStr = 0;
 			pet->attacker = new Attacker(0);
 			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
-			
 			break;
 			
 			default:
 			
-			pet->totalStr = 5;
-			pet->attacker = new Attacker(5);
+			pet->totalStr = 2;
+			pet->attacker = new Attacker(2);
 			pet->ai = new CompanionAi(engine.player,5,CompanionAi::FOLLOW);
 			((CompanionAi*)pet->ai)->edible = true;
 			break;
