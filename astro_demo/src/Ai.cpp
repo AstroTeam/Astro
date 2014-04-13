@@ -2642,12 +2642,13 @@ locked = zip.getInt();
 }
 void LockerAi::interaction(Actor *owner, Actor *target){
 
+	std::cout << "got to interact" << std::endl;
 	//this line of code causes the locker dropping flavor text to never be printed, is that intentional?
 	if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
 	}
 	//owner->ch = 243;
-	if(!owner->container->inventory.isEmpty())
+	if(owner->container && !owner->container->inventory.isEmpty())
 	{
 		if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
 			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
@@ -2695,6 +2696,8 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 							locked = false;
 						}
 						choice_made = true;
+						engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration = 57;
+						engine.save();
 						break;
 					case Menu::EXIT :
 						choice_made = true;
@@ -2708,6 +2711,7 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 		}
 		if(!locked)
 		{
+			std::cout << "got here" << std::endl;
 			Actor **iterator=owner->container->inventory.begin();
 			for(int i = 0; i < owner->container->size; i++)
 			{
@@ -2725,8 +2729,7 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 					++iterator;
 				}
 			}
-			engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration = 57;
-			engine.save();
+			
 		}
 	}
 	else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 57) //open vault
