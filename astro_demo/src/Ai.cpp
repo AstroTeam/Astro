@@ -2974,7 +2974,7 @@ void CompanionAi::update(Actor *owner){
 			if (owner->attacker && tamer->attacker->lastTarget != owner && tamer->attacker->lastTarget != tamer){
 				owner->attacker->lastTarget = tamer->attacker->lastTarget;
 				engine.gui->message(TCODColor::grey,"The last target is %s",owner->attacker->lastTarget->name);
-				if (owner->getDistance(owner->attacker->lastTarget->x,owner->attacker->lastTarget->y) <= rangeLimit){
+				if (tamer->getDistance(owner->attacker->lastTarget->x,owner->attacker->lastTarget->y) <= rangeLimit){
 					targeting = true;
 					moveOrAttack(owner,owner->attacker->lastTarget->x,owner->attacker->lastTarget->y);
 				}
@@ -3018,7 +3018,6 @@ void CompanionAi::moveOrAttack(Actor *owner, int targetx, int targety){
 			engine.map->infectFloor(owner->x, owner->y);
 		}
 	} else if (owner->attacker) {
-		std::cout <<"attacking"<< std::endl;
 		owner->attacker->attack(owner,owner->attacker->lastTarget);
 	}
 }
