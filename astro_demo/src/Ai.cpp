@@ -187,6 +187,8 @@ void PlayerAi::update(Actor *owner) {
 		}
 		}
 	}
+	engine.player->lastX = engine.player->x;
+	engine.player->lastY = engine.player->y;
 	int dx =0, dy =0;
 	switch (engine.lastKey.vk) {
 	case TCODK_UP: case TCODK_KP8: dy = -1; break;
@@ -2999,8 +3001,13 @@ void CompanionAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	int dy = targety - owner->y;
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
-	stepdx = (dx == 0 ? 0:stepdx);
-	stepdy = (dy == 0 ? 0:stepdy);
+	
+	int dxL = engine.player->lastX - owner->x;
+	int dyL = engine.player->lastY - owner->y;
+	int stepdxL = (dxL > 0 ? 1:-1);
+	int stepdyL = (dyL > 0 ? 1:-1);
+	stepdxL = (dxL == 0 ? 0:stepdxL);
+	stepdyL = (dyL == 0 ? 0:stepdyL);
 	float distance = sqrtf(dx*dx+dy*dy);
 	
 	if(owner->ch == '_' && distance >= 2 && engine.turnCount % 2 == 0)
@@ -3011,10 +3018,15 @@ void CompanionAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	
 	if (distance >= 2) {
 		dx = (int) (round(dx / distance));
-		dy = (int)(round(dy / distance));
-		if (engine.map->canWalk(owner->x+stepdx,owner->y+stepdy)) {
-			owner->x+=stepdx;
-			owner->y+=stepdy;
+		dy = (int) (round(dy / distance));
+		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+			//engine.gui->message(TCODColor::red,"Companion chasing known location");
+			owner->x+=dx;
+			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdxL,owner->y+stepdyL)) {
+			//engine.gui->message(TCODColor::red,"Companion chasing last known location");
+			owner->x+=stepdxL;
+			owner->y+=stepdyL;
 		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
 			owner->x += stepdx;
 		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
