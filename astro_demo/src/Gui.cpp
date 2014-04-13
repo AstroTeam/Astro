@@ -109,9 +109,6 @@ void Gui::render() {
 	sidebar->print(3,27,"Dungeon level %d", engine.level);
 	sidebar->print(3,13,"Turn count: %d",engine.turnCount);
 	
-	if (engine.player->companion){
-		sidebar->print(3,29,"%s",engine.player->companion->name);
-	}
 	
 	//sidebar->print(3,15,"Kill Count: %d",engine.killCount);
 	

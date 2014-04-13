@@ -3025,17 +3025,25 @@ void CompanionAi::moveOrAttack(Actor *owner, int targetx, int targety){
 
 float CompanionAi::feedMaster(Actor *owner, Actor *master){
 
+	TCODRandom *spagoo = TCODRandom::getInstance();
+	int switcher = spagoo->getInt(0,5);
+	switch(switcher){
+		case 0:	engine.gui->message(TCODColor::violet,"<%s> WWWWAAAAAAAAUUUUGGGGGGHH!!!",owner->name); break;
+		case 1:	engine.gui->message(TCODColor::violet,"<%s> AAAAAAAAaaaaaGGGGGGHH!!!",owner->name); break;
+		case 2:	engine.gui->message(TCODColor::violet,"<%s> WHYYY!?!?",owner->name); break;
+		case 3:	engine.gui->message(TCODColor::violet,"<%s> GEEEYAAAAGGGHH!!!",owner->name); break;
+		case 4:	engine.gui->message(TCODColor::violet,"<%s> EEEEYAAAAGH",owner->name); break;
+		case 5: engine.gui->message(TCODColor::violet,"<%s> AAAAAAAAUUUUGGGGGGHH!!!",owner->name); break;
+	}
+	
 	if(edible){
 		if (owner->destructible == NULL || owner->destructible->isDead()) {
 			return 0;
 		}
-		
 		owner->destructible->takeDamage(owner,master,owner->destructible->maxHp*0.2);
-		engine.gui->message(TCODColor::violet,"<%s> AAAAAAAAUUUUGGGGGGHH!!!",owner->name);
 		return master->feed(master->maxHunger);
 	} else{
 		owner->destructible->takeDamage(owner,master,owner->destructible->maxHp*0.2);
-		engine.gui->message(TCODColor::violet,"<%s> AAAAAAAAUUUUGGGGGGHH!!!",owner->name);
 		return 0;
 	}
 }
