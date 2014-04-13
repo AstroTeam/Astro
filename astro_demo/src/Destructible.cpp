@@ -57,7 +57,7 @@ float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 		return 0; //can't damage vaults
 	if (damage > 0){
 	
-		hp -= damage;
+		hp -= (int) damage;
 		if (hp <= 0) {
 			die(owner, attacker);
 		}
