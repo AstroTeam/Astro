@@ -56,10 +56,9 @@ float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 	if(owner->ch == 243 && (engine.map->tiles[owner->x+owner->y*engine.map->width].decoration == 56 || engine.map->tiles[owner->x+owner->y*engine.map->width].decoration == 57)) //weapon vault
 		return 0; //can't damage vaults
 	if (damage > 0){
-		damage = (int) damage;
-		hp -= damage;
-		
+		damage = (int) damage;		
 		if (attacker->oozing && owner->susceptible) {
+			damage++;
 			engine.gui->message(TCODColor::red,"The %s attacks the %s for %d hit points!",attacker->name, owner->name,damage);
 		}
 		else if(strcmp(owner->name,"A Government Issue Locker") == 0)//locker code exception
@@ -71,7 +70,7 @@ float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 			if(strcmp(owner->name,"player") == 0)
 				engine.damageReceived += damage;
 		}
-		
+		hp -= damage;
 		if (hp <= 0) {
 			die(owner, attacker);
 		}
