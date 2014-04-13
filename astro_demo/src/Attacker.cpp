@@ -74,23 +74,7 @@ void Attacker::attack(Actor *owner, Actor *target) {
 			}
 		}//end of HAND2 stuff!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
-			if (owner->oozing && target->susceptible) {
-				damageTaken = target->destructible->takeDamage(target,owner, damageTaken+1);
-				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name,damageTaken);
-				
-			}
-			else if(strcmp(target->name,"A Government Issue Locker") == 0)//locker code exception
-			{
-				damageTaken = target->destructible->takeDamage(target,owner,damageTaken);
-				engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
-				
-			}
-			else {
-				damageTaken = target->destructible->takeDamage(target,owner,damageTaken);
-				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name,damageTaken);
-				if(strcmp(target->name,"player") == 0)
-					engine.damageReceived += damageTaken;
-			}
+			damageTaken = target->destructible->takeDamage(target,owner, damageTaken+1);
 		} else {
 			engine.gui->message(TCODColor::lightGrey,"The %s attacks the %s but it has no effect...",owner->name, target->name);
 		}

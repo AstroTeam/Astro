@@ -56,8 +56,22 @@ float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 	if(owner->ch == 243 && (engine.map->tiles[owner->x+owner->y*engine.map->width].decoration == 56 || engine.map->tiles[owner->x+owner->y*engine.map->width].decoration == 57)) //weapon vault
 		return 0; //can't damage vaults
 	if (damage > 0){
-	
-		hp -= (int) damage;
+		damage = (int) damage;
+		hp -= damage;
+		
+		if (attacker->oozing && owner->susceptible) {
+			engine.gui->message(TCODColor::red,"The %s attacks the %s for %d hit points!",attacker->name, owner->name,damage);
+		}
+		else if(strcmp(owner->name,"A Government Issue Locker") == 0)//locker code exception
+		{
+			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
+		}
+		else {
+			engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",attacker->name, owner->name,damage);
+			if(strcmp(owner->name,"player") == 0)
+				engine.damageReceived += damage;
+		}
+		
 		if (hp <= 0) {
 			die(owner, attacker);
 		}
@@ -166,7 +180,7 @@ void MonsterDestructible::die(Actor *owner, Actor *killer) {
 	int dummyAscii = 145;
 	if(owner->ch != 243 && owner->ch != 131 && owner->ch != 147 && owner->ch != 225 && owner->ch != 130 && owner->ch != 129 && owner->ch != 146 && owner->ch != dummyAscii){
 		engine.killCount++;
-		engine.gui->message(TCODColor::lightGrey,"The %s is dead! You feel a rush as it sputters its last breath.", owner->name);
+		engine.gui->message(TCODColor::lightGrey,"The %s is dead!" ,owner->name);
 	}
 	else if(owner->ch == 131) //Ascii for Cleaner bot
 	{
