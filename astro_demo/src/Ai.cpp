@@ -1526,8 +1526,26 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 			engine.map->infectFloor(owner->x, owner->y);
 		}
 	} else if (distance !=1 && owner->attacker) {
-		owner->attacker->shoot(owner,engine.player);
-		engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDodge);
+		if(engine.player->companion && !engine.player->companion->destructible->isDead())
+		{
+			float d1 = engine.player->getDistance(owner->x,owner->y);
+			float d2 = engine.player->companion->getDistance(owner->x, owner->y);
+			
+			if(d1 <= d2)
+			{
+				owner->attacker->shoot(owner, engine.player);
+				engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDodge);
+			}
+			else
+			{
+				owner->attacker->shoot(owner, engine.player->companion);
+			}
+		}
+		else
+		{
+			owner->attacker->shoot(owner, engine.player);
+			engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDodge);
+		}
 	}
 	else if (owner->attacker) {
 		owner->attacker->attack(owner,engine.player);
@@ -1878,7 +1896,19 @@ void TurretAi::update(Actor *owner)
 			}
 			else if (tc && ai && ai->attackMode == 1) //attack only the player mode
 			{
-				attack(owner, engine.player);
+				//compute the distance between the player and their companion then determine who to attack
+				if(engine.player->companion && !engine.player->companion->destructible->isDead())
+				{
+					float d1 = engine.player->getDistance(owner->x,owner->y);
+					float d2 = engine.player->companion->getDistance(owner->x, owner->y);
+					
+					if(d1 <= d2)
+						attack(owner, engine.player);
+					else
+						attack(owner, engine.player->companion);
+				}
+				else
+					attack(owner, engine.player);
 			}
 			else if(tc && ai && ai->attackMode == 2) //frenzy mode, turrets attack any nearby NPC, including the player
 			{
@@ -1911,7 +1941,7 @@ void TurretAi::update(Actor *owner)
 				{
 					Actor *actor = *iterator;
 					const char* name = actor->name;
-					if (actor->destructible && actor != engine.player && actor != tc && !actor->destructible->isDead() && strcmp(name, "infected corpse") != 0 && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24 && actor->ch != 225 && actor->ch != 226) //243 = locker
+					if (actor->destructible && actor != engine.player && actor != tc && !actor->destructible->isDead() && strcmp(name, "infected corpse") != 0 && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24 && actor->ch != 225 && actor->ch != 226 && actor != engine.player->companion) //243 = locker
 					{
 						float distance = actor->getDistance(owner->x,owner->y);
 						if (distance < bestDistance && (distance <= range || range ==0.0f)) 
@@ -1927,7 +1957,20 @@ void TurretAi::update(Actor *owner)
 			}		
 		}
 		else
-			attack(owner, engine.player);
+		{
+			if(engine.player->companion && !engine.player->companion->destructible->isDead())
+			{
+				float d1 = engine.player->getDistance(owner->x,owner->y);
+				float d2 = engine.player->companion->getDistance(owner->x, owner->y);
+				
+				if(d1 <= d2)
+					attack(owner, engine.player);
+				else
+					attack(owner, engine.player->companion);
+			}
+			else
+				attack(owner, engine.player);
+		}
 	}
 }
 
