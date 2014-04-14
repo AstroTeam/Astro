@@ -136,7 +136,7 @@ void Map::init(bool withActors, LevelType levelType) {
 
 		//Create boss, for now it is a simple security bot
 		if (withActors) {
-			if (engine.level == 2) {
+			if (engine.level == 5) {
 				//creating the final boss
 				int level = engine.level;
 				float scale = 1 + .1*(level - 1);
@@ -5076,6 +5076,7 @@ Actor *Map::createFood(int x, int y){
 	scrollOfFeeding->blocks = false;
 	scrollOfFeeding->pickable = new Food(1);//this is the stack size. Food should feed for a static amount
 	scrollOfFeeding->pickable->value = 25;
+	scrollOfFeeding->hunger = 60;
 	scrollOfFeeding->pickable->inkValue = 10;
 	return scrollOfFeeding;
 }

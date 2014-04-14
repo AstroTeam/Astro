@@ -298,20 +298,22 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 	
 	int level = engine.map->infectionState(owner->x, owner->y); 
 
-	if (level > 1) {
+	if (level > 2) {
 		Aura *aura1 = new Aura(2,Aura::HEALTH,Aura::CONTINUOUS,-1);
 		aura1->apply(owner);
 		owner->auras.push(aura1);
 
-		if (level > 2) {
+		if (level > 3) {
 			Aura *aura2 = new Aura(2,Aura::TOTALINTEL,Aura::CONTINUOUS,-3);
 			aura2->apply(owner);
 			owner->auras.push(aura2);
 
-			if (level > 3) {
+			engine.gui->message(TCODColor::green, "You have a headache.");
+			if (level > 4) {
 				Aura *aura3 = new Aura(2,Aura::TOTALDEX,Aura::CONTINUOUS,-3);
 				aura3->apply(owner);
 				owner->auras.push(aura3);
+				engine.gui->message(TCODColor::green, "Its hard to move.");
 			}
 		}
 
