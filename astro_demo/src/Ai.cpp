@@ -126,6 +126,11 @@ void PlayerAi::save(TCODZip &zip) {
 }
 
 void PlayerAi::update(Actor *owner) {
+
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
+
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
@@ -822,7 +827,9 @@ void MonsterAi::save(TCODZip &zip) {
 
 void MonsterAi::update(Actor *owner) {
 	
-	
+		if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
 	
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
@@ -920,6 +927,9 @@ void SecurityBotAi::save(TCODZip &zip) {
 }
 
 void SecurityBotAi::update(Actor *owner) {
+		if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
 
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
@@ -1420,6 +1430,9 @@ void ConfusedActorAi::save(TCODZip &zip) {
 }
 
 void ConfusedActorAi::update(Actor *owner) {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
 
 	if (owner->destructible && !owner->destructible->isDead() ) {
 		TCODRandom *rng = TCODRandom::getInstance();
@@ -1472,6 +1485,8 @@ void RangedAi::save(TCODZip &zip) {
 }
 
 void RangedAi::update(Actor *owner) {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
 
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
@@ -1575,6 +1590,9 @@ void GrenadierAi::save(TCODZip &zip) {
 }
 
 void GrenadierAi::update(Actor *owner) {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
 
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
@@ -1877,6 +1895,9 @@ void TurretAi::save(TCODZip &zip) {
 }
 void TurretAi::update(Actor *owner)
 {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+		owner->destructible->die(owner, NULL); //need to move xp given to takeDamage method and don't call die in their, same with takeFireDamage
+
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
@@ -2010,6 +2031,9 @@ void CleanerAi::save(TCODZip &zip) {
 }
 
 void CleanerAi::update(Actor *owner) {
+
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
@@ -2153,6 +2177,8 @@ void InteractibleAi::load(TCODZip &zip){
 }
 
 void InteractibleAi::update(Actor *owner){
+if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+		owner->destructible->die(owner, NULL);
 }
 
 void InteractibleAi::interaction(Actor *owner, Actor *target){
@@ -2179,6 +2205,8 @@ void TurretControlAi::load(TCODZip &zip)
 
 void TurretControlAi::update(Actor *owner)
 {
+if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+		owner->destructible->die(owner, NULL);
 }
 
 void TurretControlAi::interaction(Actor *owner, Actor *target)
@@ -2561,6 +2589,8 @@ void EngineerAi::load(TCODZip &zip){
 
 void EngineerAi::update(Actor *owner)
 {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
 	
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
@@ -2948,6 +2978,9 @@ void ZedAi::save(TCODZip &zip) {
 }
 
 void ZedAi::update(Actor *owner) {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
 
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
@@ -3078,6 +3111,11 @@ void CompanionAi::load(TCODZip &zip){
 }
 
 void CompanionAi::update(Actor *owner){
+
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+		owner->destructible->die(owner, NULL);
+
+
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
