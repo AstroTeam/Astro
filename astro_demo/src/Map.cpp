@@ -1313,7 +1313,7 @@ Actor* Map::createCrawler(int x, int y)
 	float crawlerStr = 3*scale;
 	float crawlerDex = 0*scale;
 	float crawlerXp = 25*scale;
-	int crawlerAscii = '_';
+	int crawlerAscii = 150;
 	
 	Actor *crawler = new Actor(x,y,crawlerAscii,"Infected Legless Crewman",TCODColor::white);
 	crawler->hostile = true;
