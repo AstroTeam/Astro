@@ -63,7 +63,7 @@ float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 		}
 		else if(strcmp(owner->name,"A Government Issue Locker") == 0)//locker code exception
 		{
-			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
+			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills its forgotten contents.");
 		}
 		else {
 			engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",attacker->name, owner->name,damage);
@@ -102,7 +102,7 @@ float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage, bool
 		}
 		else if(strcmp(owner->name,"A Government Issue Locker") == 0)//locker code exception
 		{
-			if(printMessage) engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
+			if(printMessage) engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills its forgotten contents.");
 		}
 		else {
 			if(printMessage) engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hit points!",attacker->name, owner->name,damage);

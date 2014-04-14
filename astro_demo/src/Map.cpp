@@ -4835,7 +4835,7 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 						strcat(nameBuf,"High-Voltage MLR");
 						break;
 					case 4:
-						strcat(nameBuf,"Spec-Op's MLR");
+						strcat(nameBuf,"Spec-Ops MLR");
 						break;
 					case 5:
 						strcat(nameBuf,"Swiss Made MLR");

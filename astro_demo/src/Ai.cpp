@@ -313,7 +313,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 				Aura *aura3 = new Aura(2,Aura::TOTALDEX,Aura::CONTINUOUS,-3);
 				aura3->apply(owner);
 				owner->auras.push(aura3);
-				engine.gui->message(TCODColor::green, "Its hard to move.");
+				engine.gui->message(TCODColor::green, "It's hard to move.");
 			}
 		}
 
@@ -1379,7 +1379,7 @@ void FlareAi::update(Actor * owner)
 	if (i < turns)
 	{
 		i++;
-		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of it's phosphorus remains.",turns-i+1,turns);
+		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of its phosphorus remains.",turns-i+1,turns);
 	}
 	else
 	{
@@ -2673,7 +2673,7 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 	if(owner->container && !owner->container->inventory.isEmpty())
 	{
 		if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
-			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
+			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills its forgotten contents.");
 		} else if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 44){
 			engine.gui->message(TCODColor::lightGrey,"The PCMU beeps and spits out a brick of foodstuffs.");
 			owner->col = TCODColor::red;
