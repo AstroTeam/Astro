@@ -168,7 +168,7 @@ bool LightningBolt::use(Actor *owner, Actor *wearer) {
 	if (!closestMonster->destructible->isDead()) {
 		engine.gui->message(TCODColor::orange,"Taking %g damage, the %s crackles with electricity, crying out in rage.",damageTaken,closestMonster->name);
 	} else {
-		engine.gui->message(TCODColor::orange,"Taking %g damage, the %s crackles with electricity, twitching slightly.",damageTaken,closestMonster->name);
+		engine.gui->message(TCODColor::orange,"Taking %g damage, the %s crackle with electricity, twitching slightly.",damageTaken,closestMonster->name);
 	}
 	return Pickable::use(owner,wearer);
 }
