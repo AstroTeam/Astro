@@ -212,7 +212,7 @@ void MonsterDestructible::die(Actor *owner, Actor *killer) {
 		//cout << "target dummy killed!" << endl;
 	}
 	//cout << "done testing" << endl;
-	if(killer && killer == engine.player) //only increase XP if the player is the killer
+	if(killer && (killer == engine.player || killer == engine.player->companion)) //only increase XP if the player is the killer
 		engine.player->destructible->xp += xp;
 	
 	//Makes Vending UI appear upon monster death (For Testing Purposes Only)
