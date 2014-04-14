@@ -56,13 +56,24 @@ float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 	if(owner->ch == 243 && (engine.map->tiles[owner->x+owner->y*engine.map->width].decoration == 56 || engine.map->tiles[owner->x+owner->y*engine.map->width].decoration == 57)) //weapon vault
 		return 0; //can't damage vaults
 	if (damage > 0){
-	
 		hp -= (int) damage;
+
+		if(engine.map->isVisible(owner->x, owner->y))
+		{
+			if(attacker)
+				engine.gui->message(TCODColor::red, "The %s does %d hit points of damage to the %s.", attacker->name, (int)damage, owner->name);
+		}
 		if (hp <= 0) {
 			die(owner, attacker);
 		}
 	} else {
 		damage = 0;
+		if(engine.map->isVisible(owner->x, owner->y))
+		{
+			if(attacker)
+				engine.gui->message(TCODColor::red, "The %s does %d hit points of damage to the %s.", attacker->name, (int)damage, owner->name);
+		}
+		
 	}
 	
 	return damage;
@@ -81,7 +92,8 @@ float Destructible::takeFireDamage(Actor *owner, float damage) {
 		
 		if (damage > 0){
 			hp -= damage;
-			engine.gui->message(TCODColor::red, "%s takes %g fire damage.",owner->name,damage);
+			if(engine.map->isVisible(owner->x, owner->y))
+				engine.gui->message(TCODColor::red, "%s takes %g fire damage.",owner->name,damage);
 			if (hp <= 0) {
 				die(owner, NULL);
 			}
@@ -166,31 +178,37 @@ void MonsterDestructible::die(Actor *owner, Actor *killer) {
 	int dummyAscii = 145;
 	if(owner->ch != 243 && owner->ch != 131 && owner->ch != 147 && owner->ch != 225 && owner->ch != 130 && owner->ch != 129 && owner->ch != 146 && owner->ch != dummyAscii){
 		engine.killCount++;
-		engine.gui->message(TCODColor::lightGrey,"The %s is dead! You feel a rush as it sputters its last breath.", owner->name);
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s is dead!", owner->name);
 	}
 	else if(owner->ch == 131) //Ascii for Cleaner bot
 	{
 		engine.killCount++;
-		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
 	}
 	else if(owner->ch == 147 || owner->ch == 'C') //Ascii for Sentry Turret
 	{
 		engine.killCount++;
-		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
 	}else if(owner->ch == 130 || owner->ch == 129 || owner->ch == 146) //ascii for security bot
 	{
 		engine.killCount++;
-		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
 	}
 	else if(owner->ch == 225) //Vending machine, change when needed
 	{
 		engine.killCount++;
-		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
 	}
 	else if(owner->ch == dummyAscii) //change to target dummy
 	{
 		//engine.killCount++;
-		engine.gui->message(TCODColor::lightGrey,"The %s crumples into a useless pile of metal!", owner->name);
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s crumples into a useless pile of metal!", owner->name);
 		//cout << "target dummy killed!" << endl;
 	}
 	//cout << "done testing" << endl;

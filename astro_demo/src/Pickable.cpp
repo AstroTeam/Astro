@@ -163,13 +163,13 @@ bool LightningBolt::use(Actor *owner, Actor *wearer) {
 		return false;
 	}
 	//hit the closest monster for <damage> hit points;
-	float damageTaken = closestMonster->destructible->takeDamage(closestMonster,wearer, -3 + 3 * wearer->totalIntel);
+	if(engine.map->isVisible(closestMonster->x, closestMonster->y) || engine.map->isVisible(wearer->x, wearer->y))
+		engine.gui->message(TCODColor::orange,"The %s crackles with electricity!",closestMonster->name);
+	
+	float damageTaken = -3 + 3 * wearer->totalIntel;
+	damageTaken = closestMonster->destructible->takeDamage(closestMonster,wearer,damageTaken );
 	engine.damageDone += 3 * wearer->totalIntel - 3;
-	if (!closestMonster->destructible->isDead()) {
-		engine.gui->message(TCODColor::orange,"Taking %g damage, the %s crackles with electricity, crying out in rage.",damageTaken,closestMonster->name);
-	} else {
-		engine.gui->message(TCODColor::orange,"Taking %g damage, the %s crackles with electricity, twitching slightly.",damageTaken,closestMonster->name);
-	}
+
 	return Pickable::use(owner,wearer);
 }
 
@@ -214,14 +214,9 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 			&&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) {
 			//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 			float damageTaken = 1;
-			damageTaken = actor->destructible->takeDamage(actor,wearer, 1);
-			//engine.damageDone +=  2 * wearer->totalIntel;
-			if (!actor->destructible->isDead()) {
-				engine.gui->message(TCODColor::orange,"The %s gets burned for %g hit points.",actor->name,damageTaken);
-			} else {
-				engine.gui->message(TCODColor::orange,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",actor->name, damageTaken);
-			}
-			//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
+			if(engine.map->isVisible(wearer->x, wearer->y) || engine.map->isVisible(actor->x, actor->y))
+				engine.gui->message(TCODColor::orange,"The %s gets burned!",actor->name);	
+			damageTaken = actor->destructible->takeDamage(actor,wearer, damageTaken);
 		}
 	}
 	
@@ -288,14 +283,11 @@ bool Fragment::use(Actor *owner, Actor *wearer) {
 		if (actor->destructible && !actor->destructible->isDead()
 			&&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) {
 			float damageTaken = 2 * wearer->totalIntel;
-			damageTaken = actor->destructible->takeDamage(actor,wearer, damageTaken);
-			//engine.damageDone +=  2 * wearer->totalIntel;
-			if (!actor->destructible->isDead()) {
-				engine.gui->message(TCODColor::orange,"The %s gets wounded from the blast for %g hit points.",actor->name,damageTaken);
-			} else {
-				engine.gui->message(TCODColor::orange,"The %s's guts explode outward after taking %g damage.",actor->name, damageTaken);
+			if(engine.map->isVisible(wearer->x, wearer->y) || engine.map->isVisible(actor->x, actor->y))
+			{
+				engine.gui->message(TCODColor::orange,"The %s gets caught in the blast.",actor->name);
 			}
-			//engine.map->tiles[x+y*engine.map->width].envSta = 2;	
+			damageTaken = actor->destructible->takeDamage(actor,wearer, damageTaken);	
 		}
 	}
 	
@@ -362,12 +354,12 @@ bool Confuser::use(Actor *owner, Actor *wearer) {
 	{
 		Ai *confusedAi = new ConfusedActorAi(wearer->totalIntel + 5, actor->ai);
 		actor->ai = confusedAi;
-		engine.gui->message(TCODColor::lightGreen, "The flash of light confuses the %s, and they start to stumble around!",
-		actor->name);
+		if(engine.map->isVisible(wearer->x, wearer->y) || engine.map->isVisible(actor->x, actor->y))
+			engine.gui->message(TCODColor::lightGreen, "The flash of light confuses the %s, and they start to stumble around!",actor->name);
 	}else
 	{
-		engine.gui->message(TCODColor::lightGreen, "The flash bang is not effective against a %s.",
-		actor->name);
+		if(engine.map->isVisible(wearer->x, wearer->y) || engine.map->isVisible(actor->x, actor->y))
+			engine.gui->message(TCODColor::lightGreen, "The flash bang is not effective against a %s.",actor->name);
 	}
 	return Pickable::use(owner,wearer);
 }
@@ -479,7 +471,10 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 		if (wearer == engine.player){
 			engine.gui->message(TCODColor::lightGrey,"You drop %d %s",numberDropped,owner->name);
 		}else {
-			engine.gui->message(TCODColor::lightGrey,"%s drops %d %s",wearer->name,owner->pickable->stackSize,owner->name);
+			if(engine.map->isVisible(wearer->x, wearer->y))
+			{
+				engine.gui->message(TCODColor::lightGrey,"%s drops %d %s",wearer->name,owner->pickable->stackSize,owner->name);
+			}
 		}
 	}
 }
