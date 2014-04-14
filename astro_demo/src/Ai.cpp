@@ -126,6 +126,11 @@ void PlayerAi::save(TCODZip &zip) {
 }
 
 void PlayerAi::update(Actor *owner) {
+
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
+
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
@@ -247,7 +252,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 		Actor *actor = *iterator;
 		if (actor->blocks && actor->x == targetx &&actor->y == targety) {
 			if (actor->destructible && !actor->destructible->isDead() ) {
-				if (actor->hostile|| (owner->hostile)){
+				if ((actor->hostile || owner->hostile) && (engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration != 56 && engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration != 57 )){
 					owner->attacker->attack(owner, actor);
 					if(!actor->hostile && actor->ch == 129) //currently this only applies to security bots, if the player attacks a nonhostile enemy, should that actor generally become hostile?
 					{
@@ -256,7 +261,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 					}else if(!actor->hostile && actor->ch == 'G') //gardner become hostile
 						actor->hostile = true;
 					engine.damageDone += owner->attacker->totalPower - actor->destructible->totalDodge;
-				}else if(actor->interact && (!owner->hostile))
+				}else if(actor->interact && ((!owner->hostile) || (engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration == 56 || engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration == 57 )))
 					((InteractibleAi*)actor->ai)->interaction(actor, owner);
 				else if(!owner->hostile && !actor->hostile && actor->ch == 129)
 					engine.gui->message(TCODColor::grey, "The %s seems to be inactive", actor->name);
@@ -295,7 +300,6 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 	owner->destructible->takeFireDamage(owner, 3.0);
 
 	//engine.gui->message(TCODColor::white,"fireDmg");
-	
 	int level = engine.map->infectionState(owner->x, owner->y); 
 
 	if (level > 2) {
@@ -824,7 +828,9 @@ void MonsterAi::save(TCODZip &zip) {
 
 void MonsterAi::update(Actor *owner) {
 	
-	
+		if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
 	
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
@@ -922,6 +928,9 @@ void SecurityBotAi::save(TCODZip &zip) {
 }
 
 void SecurityBotAi::update(Actor *owner) {
+		if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
 
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
@@ -1422,6 +1431,9 @@ void ConfusedActorAi::save(TCODZip &zip) {
 }
 
 void ConfusedActorAi::update(Actor *owner) {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
 
 	if (owner->destructible && !owner->destructible->isDead() ) {
 		TCODRandom *rng = TCODRandom::getInstance();
@@ -1474,6 +1486,8 @@ void RangedAi::save(TCODZip &zip) {
 }
 
 void RangedAi::update(Actor *owner) {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
 
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
@@ -1577,6 +1591,9 @@ void GrenadierAi::save(TCODZip &zip) {
 }
 
 void GrenadierAi::update(Actor *owner) {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
 
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
@@ -1642,16 +1659,25 @@ void GrenadierAi::useFirebomb(Actor *owner, int targetx, int targety)
 	}
 	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
 		Actor *actor = *it;
-		if (actor && actor->destructible && !actor->destructible->isDead() && actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
+		if (actor && actor->destructible && !actor->destructible->isDead() && actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
+		{
 			//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 			float damageTaken = 1;
-			if(engine.map->isVisible(actor->x, actor->y))
-				engine.gui->message(TCODColor::red,"The %s is immersed in the fire from the s's firebomb!",actor->name, owner->name);
-			
-			damageTaken = actor->destructible->takeDamage(actor, owner, 1);
-			
-			if(actor == engine.player)
+			damageTaken = actor->destructible->takeDamage(actor, owner, 1); //problematic since the actor will die before the following "flavor" text is printed
+			if (!actor->destructible->isDead()) 
+			{
+				if(actor == engine.player)
 					engine.damageReceived += damageTaken;
+				if(engine.map->isVisible(actor->x, actor->y))
+					engine.gui->message(TCODColor::red,"The %s gets burned for %g hit points.",actor->name, damageTaken);
+
+			} else 
+			{
+				if(engine.map->isVisible(actor->x, actor->y))
+					engine.gui->message(TCODColor::red,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",actor->name, damageTaken);
+
+ 			}
+			
 		}
 	}
 	
@@ -1681,14 +1707,20 @@ void GrenadierAi::useFrag(Actor *owner, int targetx, int targety)
 			&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
 		{
 			float damageTaken = 2 * owner->totalIntel;
-			if(engine.map->isVisible(actor->x, actor->y) || engine.map->isVisible(owner->x, owner->y))
-			engine.gui->message(TCODColor::red,"The %s gets wounded from the blast!",actor->name);
-				damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);
-			//engine.damageDone +=  2 * wearer->totalIntel;
-			if(actor == engine.player)
-				engine.damageReceived += damageTaken;
-			
-			//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
+			damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);
+			if (!actor->destructible->isDead()) 
+			{	
+				if(actor == engine.player)
+					engine.damageReceived += damageTaken;
+				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(actor->x, actor->y))
+					engine.gui->message(TCODColor::red,"The %s gets wounded from the blast for %g hit points.",actor->name,damageTaken);
+
+			} else 
+			{
+				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(actor->x, actor->y))
+					engine.gui->message(TCODColor::red,"The %s's guts explode outward after taking %g damage.",actor->name,damageTaken);
+
+			}
 		}
 	}
 	
@@ -1720,17 +1752,24 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 		for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) 
 		{
 			Actor *actor = *it;
-			if (actor && actor->destructible && !actor->destructible->isDead() && actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
+			if (actor->destructible && !actor->destructible->isDead()
+				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
 			{
 				float damageTaken = 2 * owner->totalIntel;
-				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(actor->x, actor->y))
-					engine.gui->message(TCODColor::red,"The %s is caught in the blast from the %s's frag grenade!",actor->name, owner->name);
-					
 				damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);
-				
-				if(actor == engine.player)
+				if (!actor->destructible->isDead()) 
+				{	
+					if(actor == engine.player)
 						engine.damageReceived += damageTaken;
-				//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
+					if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(actor->x, actor->y))
+						engine.gui->message(TCODColor::red,"The %s gets wounded from the blast for %g hit points.",actor->name,damageTaken);
+
+				} else 
+				{
+					if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(actor->x, actor->y))
+						engine.gui->message(TCODColor::red,"The %s's guts explode outward after taking %g damage.",actor->name,damageTaken);
+
+				}
 			}
 		}
 	
@@ -1747,18 +1786,25 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 		for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
 			Actor *actor = *it;
 			if (actor->destructible && !actor->destructible->isDead()
-				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
+				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
+			{
 				//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 				float damageTaken = 1;
-				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(actor->x, actor->y))
-					engine.gui->message(TCODColor::red,"The %s gets burned from the %s's firebomb.",actor->name,owner->name);
-					
 				damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);
 				
-				if(actor == engine.player)
-					engine.damageReceived += damageTaken;
-					
-				
+				if (!actor->destructible->isDead()) 
+				{
+					if(actor == engine.player)
+						engine.damageReceived += damageTaken;
+					if(engine.map->isVisible(actor->x, actor->y))
+						engine.gui->message(TCODColor::red,"The %s gets burned for %g hit points.",actor->name, damageTaken);
+
+				} else 
+				{
+					if(engine.map->isVisible(actor->x, actor->y))
+						engine.gui->message(TCODColor::red,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",actor->name, damageTaken);
+
+				}	
 			}
 		}
 
@@ -1879,6 +1925,9 @@ void TurretAi::save(TCODZip &zip) {
 }
 void TurretAi::update(Actor *owner)
 {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+		owner->destructible->die(owner, NULL);
+
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
@@ -2012,6 +2061,9 @@ void CleanerAi::save(TCODZip &zip) {
 }
 
 void CleanerAi::update(Actor *owner) {
+
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
@@ -2155,6 +2207,8 @@ void InteractibleAi::load(TCODZip &zip){
 }
 
 void InteractibleAi::update(Actor *owner){
+if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+		owner->destructible->die(owner, NULL);
 }
 
 void InteractibleAi::interaction(Actor *owner, Actor *target){
@@ -2181,6 +2235,8 @@ void TurretControlAi::load(TCODZip &zip)
 
 void TurretControlAi::update(Actor *owner)
 {
+if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+		owner->destructible->die(owner, NULL);
 }
 
 void TurretControlAi::interaction(Actor *owner, Actor *target)
@@ -2563,6 +2619,8 @@ void EngineerAi::load(TCODZip &zip){
 
 void EngineerAi::update(Actor *owner)
 {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
 	
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
@@ -2831,6 +2889,9 @@ void GardnerAi::save(TCODZip &zip)
 
 void GardnerAi::update(Actor *owner)
 {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+		owner->destructible->die(owner, NULL);
+		
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
@@ -2950,6 +3011,9 @@ void ZedAi::save(TCODZip &zip) {
 }
 
 void ZedAi::update(Actor *owner) {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
 
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
@@ -3080,6 +3144,11 @@ void CompanionAi::load(TCODZip &zip){
 }
 
 void CompanionAi::update(Actor *owner){
+
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+		owner->destructible->die(owner, NULL);
+
+
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}

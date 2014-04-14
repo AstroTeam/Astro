@@ -5,6 +5,7 @@
 using namespace std;
 Destructible::Destructible(float maxHp, float dodge, float dr, int xp) :
 	maxHp(maxHp),hp(maxHp),baseDodge(dodge+10),totalDodge(dodge+10), baseDR(dr), totalDR(dr), xp(xp) {
+	hasDied = false;
 }
 
 Destructible::~Destructible() {
@@ -19,6 +20,7 @@ void Destructible::load(TCODZip &zip) {
 	baseDR = zip.getFloat();
 	totalDR = zip.getFloat();
 	xp = zip.getInt();
+	hasDied = zip.getInt();
 }
 
 void Destructible::save(TCODZip &zip) {
@@ -29,6 +31,7 @@ void Destructible::save(TCODZip &zip) {
 	zip.putFloat(baseDR);
 	zip.putFloat(totalDR);
 	zip.putInt(xp);
+	zip.putInt(hasDied);
 }
 
 Destructible *Destructible::create(TCODZip &zip) {
@@ -57,23 +60,13 @@ float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 		return 0; //can't damage vaults
 	if (damage > 0){
 		hp -= (int) damage;
-
-		if(engine.map->isVisible(owner->x, owner->y))
-		{
-			if(attacker)
-				engine.gui->message(TCODColor::red, "The %s does %d hit points of damage to the %s.", attacker->name, (int)damage, owner->name);
-		}
-		if (hp <= 0) {
-			die(owner, attacker);
+		if (hp <= 0 && !hasDied) {
+			//die(owner, attacker);
+			if(attacker && (attacker == engine.player || attacker == engine.player->companion)) //only increase XP if the player/companion is the killer
+				engine.player->destructible->xp += xp;
 		}
 	} else {
-		damage = 0;
-		if(engine.map->isVisible(owner->x, owner->y))
-		{
-			if(attacker)
-				engine.gui->message(TCODColor::red, "The %s does %d hit points of damage to the %s.", attacker->name, (int)damage, owner->name);
-		}
-		
+		damage = 0;	
 	}
 	
 	return damage;
@@ -95,7 +88,7 @@ float Destructible::takeFireDamage(Actor *owner, float damage) {
 			if(engine.map->isVisible(owner->x, owner->y))
 				engine.gui->message(TCODColor::red, "%s takes %g fire damage.",owner->name,damage);
 			if (hp <= 0) {
-				die(owner, NULL);
+				//die(owner, NULL);
 			}
 		} else {
 			damage = 0;
@@ -119,7 +112,7 @@ void Destructible::die(Actor *owner, Actor *killer) {
 	//check who owner was to decide what corpse they get
 	//if spore creature they get spore body
 	int dummyAscii = 145;
-	
+	hasDied = true;
 	
 	if (owner->ch == 165 || owner->ch == 166){ 
 		owner->ch = 162;
@@ -212,8 +205,7 @@ void MonsterDestructible::die(Actor *owner, Actor *killer) {
 		//cout << "target dummy killed!" << endl;
 	}
 	//cout << "done testing" << endl;
-	if(killer && (killer == engine.player || killer == engine.player->companion)) //only increase XP if the player is the killer
-		engine.player->destructible->xp += xp;
+	
 	
 	//Makes Vending UI appear upon monster death (For Testing Purposes Only)
 	//engine.gui->vendingMenu(owner);
