@@ -2599,22 +2599,25 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	/* monster section */
 
 	//horde chance
-	int nbMonsters;
-	if (roomNum >0 && rng->getInt(0,19) == 0) {
-		nbMonsters = rng->getInt(10, 25);
-	}
-	else {
-		nbMonsters = rng->getInt(0, MAX_ROOM_MONSTERS);
-	}
+	if (room->type != DEFENDED_ROOM)
+	{
+		int nbMonsters;
+		if (roomNum >0 && rng->getInt(0,19) == 0) {
+			nbMonsters = rng->getInt(10, 25);
+		}
+		else {
+			nbMonsters = rng->getInt(0, MAX_ROOM_MONSTERS);
+		}
 
-	while (nbMonsters > 0) {
-		int x = rng->getInt(x1, x2);
-		int y = rng->getInt(y1, y2);
+		while (nbMonsters > 0) {
+			int x = rng->getInt(x1, x2);
+			int y = rng->getInt(y1, y2);
 
-		if(canWalk(x,y) && (x != engine.player->x && y!= engine.player->y)) {
-		
-			addMonster(x,y,nbMonsters >= MAX_ROOM_MONSTERS);
-			nbMonsters--;
+			if(canWalk(x,y) && (x != engine.player->x && y!= engine.player->y)) {
+			
+				addMonster(x,y,nbMonsters >= MAX_ROOM_MONSTERS);
+				nbMonsters--;
+			}
 		}
 	}
 	//TCODRandom *rnd = TCODRandom::getInstance();
