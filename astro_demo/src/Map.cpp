@@ -1447,30 +1447,36 @@ TCODList<RoomType> * Map::getRoomTypes(LevelType levelType) {
 				//hopefully one generator room is guarenteed
 				roomList->push(GENERATOR);
 				//small amount of office rooms
-				for (int i = 0; i <= rng->getInt(1,5); i++) {
+				for (int i = 0; i <= rng->getInt(3,7); i++) {
 					roomList->push(OFFICE);
 				}	
 				//small amount of barracks
-				for (int i = 0; i <= rng->getInt(1,3); i++) {
+				for (int i = 0; i <= rng->getInt(3,5); i++) {
 					roomList->push(BARRACKS);
 				}	
-				//roomList->push(DEFENDED_ROOM);
-				//roomList->push(DEFENDED_ROOM);
-				//roomList->push(DEFENDED_ROOM);
-				
-				roomList->push(KITCHEN);
-				roomList->push(KITCHEN);
+				for (int i = 0; i <= rng->getInt(3,6); i++) {
+					roomList->push(DEFENDED_ROOM);
+				}	
+				for (int i = 0; i <= rng->getInt(2,3); i++) {
+					roomList->push(KITCHEN);
+				}	
+				for (int i = 0; i <= rng->getInt(2,3); i++) {
+					roomList->push(MESSHALL);
+				}	
+				for (int i = 0; i <= rng->getInt(2,3); i++) {
+					roomList->push(BAR);
+				}	
+				for (int i = 0; i <= rng->getInt(2,3); i++) {
+					roomList->push(OBSERVATORY);
+				}	
+				for (int i = 0; i <= rng->getInt(2,3); i++) {
+					roomList->push(SERVER);
+				}	
+				for (int i = 0; i <= rng->getInt(1,2); i++) {
+					roomList->push(ARMORY);
+				}	
 				//need to see if end list items are less common
-				roomList->push(SERVER);
-				roomList->push(SERVER);
-				roomList->push(ARMORY);
-				roomList->push(MESSHALL);
-				roomList->push(MESSHALL);
 				roomList->push(HYDROPONICS);
-				roomList->push(OBSERVATORY);
-				roomList->push(BAR);
-				roomList->push(BAR);
-				roomList->push(DEFENDED_ROOM);
 				roomList->push(INFECTED_ROOM);
 				break;
 			case OFFICE_FLOOR:
