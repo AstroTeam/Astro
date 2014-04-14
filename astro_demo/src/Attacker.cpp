@@ -79,9 +79,11 @@ void Attacker::attack(Actor *owner, Actor *target) {
 		}//end of HAND2 stuff!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
 			if (owner->oozing && target->susceptible) {
-				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
-					engine.gui->message(TCODColor::red,"The %s attacks the %s!",owner->name, target->name);
+				
 				damageTaken = target->destructible->takeDamage(target,owner, damageTaken+1);
+
+				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+					engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hitpoints!",owner->name, target->name, damageTaken);
 				
 			}
 			else if(strcmp(target->name,"A Government Issue Locker") == 0)//locker code exception
@@ -93,10 +95,10 @@ void Attacker::attack(Actor *owner, Actor *target) {
 				
 			}
 			else {
-				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
-					engine.gui->message(TCODColor::red,"The %s attacks the %s!",owner->name, target->name);
-					
+			
 				damageTaken = target->destructible->takeDamage(target,owner,damageTaken);
+				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+					engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hitpoints!",owner->name, target->name, damageTaken);
 				if(strcmp(target->name,"player") == 0)
 					engine.damageReceived += damageTaken;
 			}
@@ -141,15 +143,18 @@ void Attacker::shoot(Actor *owner, Actor *target) {
 		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
 			if (owner->oozing && target->susceptible) {
 				
-				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
-					engine.gui->message(TCODColor::red,"The %s shoots the %s!",owner->name, target->name);
 				damageTaken = target->destructible->takeDamage(target,owner,damageTaken+1);
+				
+				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+					engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hitpoints!",owner->name, target->name, damageTaken);
+				
 				
 			}
 			else {
-				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
-					engine.gui->message(TCODColor::red,"The %s shoots the %s!",owner->name, target->name);
 				damageTaken = target->destructible->takeDamage(target,owner,damageTaken);
+				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+					engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hitpoints!",owner->name, target->name, damageTaken);
+				
 			}
 		} else {
 			if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))

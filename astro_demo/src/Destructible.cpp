@@ -60,25 +60,13 @@ float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 		return 0; //can't damage vaults
 	if (damage > 0){
 		hp -= (int) damage;
-
-		if(engine.map->isVisible(owner->x, owner->y))
-		{
-			if(attacker)
-				engine.gui->message(TCODColor::red, "The %s does %d hit points of damage to the %s.", attacker->name, (int)damage, owner->name);
-		}
 		if (hp <= 0 && !hasDied) {
 			//die(owner, attacker);
-			if(attacker && (attacker == engine.player || attacker == engine.player->companion)) //only increase XP if the player is the killer
+			if(attacker && (attacker == engine.player || attacker == engine.player->companion)) //only increase XP if the player/companion is the killer
 				engine.player->destructible->xp += xp;
 		}
 	} else {
-		damage = 0;
-		if(engine.map->isVisible(owner->x, owner->y))
-		{
-			if(attacker)
-				engine.gui->message(TCODColor::red, "The %s does %d hit points of damage to the %s.", attacker->name, (int)damage, owner->name);
-		}
-		
+		damage = 0;	
 	}
 	
 	return damage;
@@ -100,7 +88,7 @@ float Destructible::takeFireDamage(Actor *owner, float damage) {
 			if(engine.map->isVisible(owner->x, owner->y))
 				engine.gui->message(TCODColor::red, "%s takes %g fire damage.",owner->name,damage);
 			if (hp <= 0) {
-				die(owner, NULL);
+				//die(owner, NULL);
 			}
 		} else {
 			damage = 0;
