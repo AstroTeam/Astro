@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "main.hpp"
-
+#include <string>
 Ai *Ai::create(TCODZip &zip) {
 	AiType type = (AiType)zip.getInt();
 	std::cout << "got AITYPE" << type << std::endl;
@@ -293,9 +293,33 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 	engine.playerLight->y = targety;
 	
 	owner->destructible->takeFireDamage(owner, 3.0);
+
 	//engine.gui->message(TCODColor::white,"fireDmg");
+	
+	int level = engine.map->infectionState(owner->x, owner->y); 
+
+	if (level > 1) {
+		Aura *aura1 = new Aura(2,Aura::HEALTH,Aura::CONTINUOUS,-1);
+		aura1->apply(owner);
+		owner->auras.push(aura1);
+
+		if (level > 2) {
+			Aura *aura2 = new Aura(2,Aura::TOTALINTEL,Aura::CONTINUOUS,-3);
+			aura2->apply(owner);
+			owner->auras.push(aura2);
+
+			if (level > 3) {
+				Aura *aura3 = new Aura(2,Aura::TOTALDEX,Aura::CONTINUOUS,-3);
+				aura3->apply(owner);
+				owner->auras.push(aura3);
+			}
+		}
+
+		engine.gui->message(TCODColor::green, "The moss saps your health.");
+	}
 	return true;
 }
+
 
 void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 	//bool first = true;
@@ -1033,7 +1057,53 @@ void TriggerAi::update(Actor *owner) {
 		TCOD_key_t key;
 		TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
 		engine.armorState = 0;
+		engine.ctrTer += 1;
 	}
+	if (engine.ctrTer == 3 && !engine.bonusTer && engine.level != 0)
+	{
+		engine.bonusTer = true;
+		cout << "ctr == 3" << endl;
+		TCODRandom *random = TCODRandom::getInstance();
+		int rng = random->getInt(0,4);
+		switch (rng) {
+			case 0	:
+				engine.player->destructible->maxHp += engine.player->getHpUp();
+				engine.player->destructible->hp += engine.player->getHpUp();
+				engine.player->vit += engine.player->getHpUp();;
+				//choice_made = true;
+				engine.gui->message(TCODColor::yellow,"Finding all of the recordings in this deck you feel more HEALTHY and ready to advance.(+1 VIT)");
+				break;
+			case 1 :
+				engine.player->attacker->basePower += 1;
+				engine.player->attacker->totalPower += 1;
+				engine.player->str += 1;
+				engine.player->totalStr += 1;
+				//choice_made = true;
+				engine.gui->message(TCODColor::yellow,"Having found all the recordings on this deck you use the knowledge to become STRONGER.(+1 STR)");
+				break;
+			case 2 :
+				engine.player->dex += 1;
+				engine.player->totalDex += 1;
+				//choice_made = true;
+				engine.gui->message(TCODColor::yellow,"All the recordings have been found in this deck making you quicker and more DEXTEROUS.(+1 DEX)");
+				break;
+			case 3 :
+				engine.player->intel += 1;
+				engine.player->totalIntel += 1;
+				//choice_made = true;
+				engine.gui->message(TCODColor::yellow,"Finding the recordings in this deck have made more SMARTER and more aware of the infection.(+1 INT)");
+				break;
+			case 4:
+				engine.player->destructible->baseDodge += 1;
+				engine.player->destructible->totalDodge += 1;
+				engine.gui->message(TCODColor::yellow,"All the recordings you have found have made you able to DODGE better.(+1 DODGE)");
+				break;
+			default: break;
+		}
+		
+		
+	}
+	
 	
 }
 
@@ -1619,7 +1689,6 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 		damageTaken = target->destructible->takeDamage(target, owner,damageTaken );
 		if(target == engine.player)
 			engine.damageReceived += -1*numGrenades*(3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
-		
 	}
 	else if(dice <= 25)
 	{
@@ -2594,12 +2663,13 @@ locked = zip.getInt();
 }
 void LockerAi::interaction(Actor *owner, Actor *target){
 
+	std::cout << "got to interact" << std::endl;
 	//this line of code causes the locker dropping flavor text to never be printed, is that intentional?
 	if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
 	}
 	//owner->ch = 243;
-	if(!owner->container->inventory.isEmpty())
+	if(owner->container && !owner->container->inventory.isEmpty())
 	{
 		if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
 			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
@@ -2647,6 +2717,8 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 							locked = false;
 						}
 						choice_made = true;
+						engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration = 57;
+						engine.save();
 						break;
 					case Menu::EXIT :
 						choice_made = true;
@@ -2660,6 +2732,7 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 		}
 		if(!locked)
 		{
+			std::cout << "got here" << std::endl;
 			Actor **iterator=owner->container->inventory.begin();
 			for(int i = 0; i < owner->container->size; i++)
 			{
@@ -2677,8 +2750,7 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 					++iterator;
 				}
 			}
-			engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration = 57;
-			engine.save();
+			
 		}
 	}
 	else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 57) //open vault

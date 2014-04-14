@@ -169,7 +169,7 @@ bool LightningBolt::use(Actor *owner, Actor *wearer) {
 	float damageTaken = -3 + 3 * wearer->totalIntel;
 	damageTaken = closestMonster->destructible->takeDamage(closestMonster,wearer,damageTaken );
 	engine.damageDone += 3 * wearer->totalIntel - 3;
-
+	
 	return Pickable::use(owner,wearer);
 }
 
