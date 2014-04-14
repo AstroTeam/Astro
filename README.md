@@ -3,7 +3,7 @@ Astro
 
 Basic premise:  A classified military space station has gone dark and the mission is to retrieve information, including the ship’s black box as well as other info, about why and what they were doing.
 
-Upon investing you find that there are weird aliens all over the ship.  These aliens manifest themselves as their own entities but also have spores which can control both people and robots.  This allows there to be multiple enemy types: Aliens, infected human crew, infected robot crew, infected ship systems, malfunctioning robots, and more.
+Upon investigating, you find that there are weird aliens all over the ship.  These aliens manifest themselves as their own entities but also have spores which can control both people and robots.  This allows there to be multiple enemy types: Aliens, infected human crew, infected robot crew, infected ship systems, malfunctioning robots, and more.
 
 
 Stats
