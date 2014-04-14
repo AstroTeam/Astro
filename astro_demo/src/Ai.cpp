@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "main.hpp"
-
+#include <string>
 Ai *Ai::create(TCODZip &zip) {
 	AiType type = (AiType)zip.getInt();
 	std::cout << "got AITYPE" << type << std::endl;
@@ -293,9 +293,33 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 	engine.playerLight->y = targety;
 	
 	owner->destructible->takeFireDamage(owner, 3.0);
+
 	//engine.gui->message(TCODColor::white,"fireDmg");
+	
+	int level = engine.map->infectionState(owner->x, owner->y); 
+
+	if (level > 1) {
+		Aura *aura1 = new Aura(2,Aura::HEALTH,Aura::CONTINUOUS,-1);
+		aura1->apply(owner);
+		owner->auras.push(aura1);
+
+		if (level > 2) {
+			Aura *aura2 = new Aura(2,Aura::TOTALINTEL,Aura::CONTINUOUS,-3);
+			aura2->apply(owner);
+			owner->auras.push(aura2);
+
+			if (level > 3) {
+				Aura *aura3 = new Aura(2,Aura::TOTALDEX,Aura::CONTINUOUS,-3);
+				aura3->apply(owner);
+				owner->auras.push(aura3);
+			}
+		}
+
+		engine.gui->message(TCODColor::green, "The moss sapps your health.");
+	}
 	return true;
 }
+
 
 void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 	//bool first = true;
