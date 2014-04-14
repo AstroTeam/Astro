@@ -1132,7 +1132,7 @@ void Engine::nextLevel() {
 	}
 	cout << "number of terminals this level " << ctrTer << endl;
 	TCODRandom * levelRng = TCODRandom::getInstance();
-	if (0 == levelRng->getInt(0,8)) {
+	if (0 == levelRng->getInt(0,30)) {
 		map->init(true, Param::OFFICE_FLOOR);
 	}
 	else

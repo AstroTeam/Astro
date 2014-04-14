@@ -2599,22 +2599,25 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	/* monster section */
 
 	//horde chance
-	int nbMonsters;
-	if (roomNum >0 && rng->getInt(0,19) == 0) {
-		nbMonsters = rng->getInt(10, 25);
-	}
-	else {
-		nbMonsters = rng->getInt(0, MAX_ROOM_MONSTERS);
-	}
+	if (room->type != DEFENDED_ROOM)
+	{
+		int nbMonsters;
+		if (roomNum >0 && rng->getInt(0,19) == 0) {
+			nbMonsters = rng->getInt(10, 25);
+		}
+		else {
+			nbMonsters = rng->getInt(0, MAX_ROOM_MONSTERS);
+		}
 
-	while (nbMonsters > 0) {
-		int x = rng->getInt(x1, x2);
-		int y = rng->getInt(y1, y2);
+		while (nbMonsters > 0) {
+			int x = rng->getInt(x1, x2);
+			int y = rng->getInt(y1, y2);
 
-		if(canWalk(x,y) && (x != engine.player->x && y!= engine.player->y)) {
-		
-			addMonster(x,y,nbMonsters >= MAX_ROOM_MONSTERS);
-			nbMonsters--;
+			if(canWalk(x,y) && (x != engine.player->x && y!= engine.player->y)) {
+			
+				addMonster(x,y,nbMonsters >= MAX_ROOM_MONSTERS);
+				nbMonsters--;
+			}
 		}
 	}
 	//TCODRandom *rnd = TCODRandom::getInstance();
@@ -4240,14 +4243,17 @@ Actor *Map::createMylarGreaves(int x, int y, bool isVend){
 					case 1:
 						strcat(nameBuf,"Tattered ");
 						bonus = new ItemBonus(ItemBonus::HEALTH,20);
+						requirement = new ItemReq(ItemReq::DEXTERITY,1);
 						break;
 					case 2:
 						strcat(nameBuf,"Worn ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,25);
+						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						requirement = new ItemReq(ItemReq::DEXTERITY,2);
 						break;
 					case 3:
 						strcat(nameBuf,"Ruined ");
 						bonus = new ItemBonus(ItemBonus::NOBONUS,0);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					default:break;
 				}
@@ -4263,15 +4269,16 @@ Actor *Map::createMylarGreaves(int x, int y, bool isVend){
 					case 0:
 						strcat(nameBuf,"Durable ");
 						bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+						requirement = new ItemReq(ItemReq::STRENGTH,3);
 						break;
 					case 1:
 						strcat(nameBuf,"Useful ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,30);
-						requirement = new ItemReq(ItemReq::DEXTERITY,3);
+						bonus = new ItemBonus(ItemBonus::HEALTH,40);
+						requirement = new ItemReq(ItemReq::DEXTERITY,4);
 						break;
 					case 2:
 						strcat(nameBuf,"Cheap ");
-						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						bonus = new ItemBonus(ItemBonus::DEXTERITY,2);
 						break;
 					default:break;
 				}
@@ -4284,18 +4291,22 @@ Actor *Map::createMylarGreaves(int x, int y, bool isVend){
 					case 1:
 						strcat(nameBuf,"Reinforced ");
 						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,4);
 						break;
 					case 2:
 						strcat(nameBuf,"Tough ");
 						bonus = new ItemBonus(ItemBonus::DR,3);
+						requirement = new ItemReq(ItemReq::DEXTERITY,5);
 						break;
 					case 3:
 						strcat(nameBuf,"High Tech ");
 						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,2);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,4);
 						break;
 					case 4:
 						strcat(nameBuf,"Reliable ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,40);
+						bonus = new ItemBonus(ItemBonus::HEALTH,50);
+						requirement = new ItemReq(ItemReq::DEXTERITY,4);
 						break;
 					default:break;
 				}
@@ -4567,8 +4578,8 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 	//ItemBonus *bonus = NULL;
 	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
 	//min damage, max damage, critMult, 
-	ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,20);
-	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,2);
+	ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,18 + (2*engine.level));
+	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,2 + (engine.level - 1));
 	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
 	//random 1-3, 1 is worse, 2 is average, 3 is good
 	int choices = random->getInt(1,3);
@@ -4585,15 +4596,18 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Tattered ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,5);
+						bonus = new ItemBonus(ItemBonus::HEALTH,8 + (2*engine.level));
+						requirement = new ItemReq(ItemReq::DEXTERITY,1 + (engine.level - 1));
 						break;
 					case 2:
 						strcat(nameBuf,"Worn ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,10);
+						bonus = new ItemBonus(ItemBonus::HEALTH,15);
+						requirement = new ItemReq(ItemReq::DEXTERITY,1 + (engine.level - 1));
 						break;
 					case 3:
 						strcat(nameBuf,"Destroyed ");
 						bonus = new ItemBonus(ItemBonus::NOBONUS,0);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					default:break;
 				}
@@ -4608,16 +4622,18 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 				{
 					case 0:
 						strcat(nameBuf,"Durable ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,25);
+						bonus = new ItemBonus(ItemBonus::HEALTH,25 + (5*engine.level));
+						requirement = new ItemReq(ItemReq::DEXTERITY,3 + (engine.level - 1));
 						break;
 					case 1:
 						strcat(nameBuf,"Useful ");
-						bonus = new ItemBonus(ItemBonus::DR,1);
-						requirement = new ItemReq(ItemReq::DEXTERITY,2);
+						bonus = new ItemBonus(ItemBonus::DR,1 + (engine.level - 1));
+						requirement = new ItemReq(ItemReq::DEXTERITY,2 + (engine.level - 1));
 						break;
 					case 2:
 						strcat(nameBuf,"Cheap ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,15);
+						bonus = new ItemBonus(ItemBonus::STRENGTH,1 + (engine.level - 1));
+						requirement = new ItemReq(ItemReq::STRENGTH,2 + (engine.level - 1));
 						break;
 					default:break;
 				}
@@ -4629,19 +4645,23 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Reinforced ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+						bonus = new ItemBonus(ItemBonus::STRENGTH,2 + (engine.level - 1));
+						requirement = new ItemReq(ItemReq::STRENGTH,3 + (engine.level - 1));
 						break;
 					case 2:
 						strcat(nameBuf,"Tough ");
-						bonus = new ItemBonus(ItemBonus::DR,1);
+						bonus = new ItemBonus(ItemBonus::DR,2 + (engine.level - 1));
+						requirement = new ItemReq(ItemReq::DEXTERITY,4 + (engine.level - 1));
 						break;
 					case 3:
 						strcat(nameBuf,"High Tech ");
-						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,2 + (engine.level - 1));
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,4 + (engine.level - 1));
 						break;
 					case 4:
 						strcat(nameBuf,"Reliable ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,30);
+						bonus = new ItemBonus(ItemBonus::HEALTH,30 + (10*engine.level));
+						requirement = new ItemReq(ItemReq::DEXTERITY,3 + (engine.level - 1));
 						break;
 					default:break;
 				}
@@ -4659,8 +4679,8 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 	myBoots->pickable = new Equipment(0,Equipment::FEET,bonus,requirement);
 	myBoots->sort = 3;
 	((Equipment*)(myBoots->pickable))->armorArt = 4;
-	myBoots->pickable->value = 100;
-	myBoots->pickable->inkValue = 20;
+	myBoots->pickable->value = 80 + (20*engine.level);
+	myBoots->pickable->inkValue = 15 + (5*engine.level);
 	myBoots->col = col;
 	return myBoots;
 }
@@ -4822,7 +4842,7 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 						strcat(nameBuf,"High-Voltage MLR");
 						break;
 					case 4:
-						strcat(nameBuf,"Spec-Op's MLR");
+						strcat(nameBuf,"Spec-Ops MLR");
 						break;
 					case 5:
 						strcat(nameBuf,"Swiss Made MLR");

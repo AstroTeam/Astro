@@ -317,7 +317,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 				Aura *aura3 = new Aura(2,Aura::TOTALDEX,Aura::CONTINUOUS,-3);
 				aura3->apply(owner);
 				owner->auras.push(aura3);
-				engine.gui->message(TCODColor::green, "Its hard to move.");
+				engine.gui->message(TCODColor::green, "It's hard to move.");
 			}
 		}
 
@@ -1388,7 +1388,7 @@ void FlareAi::update(Actor * owner)
 	if (i < turns)
 	{
 		i++;
-		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of it's phosphorus remains.",turns-i+1,turns);
+		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of its phosphorus remains.",turns-i+1,turns);
 	}
 	else
 	{
@@ -2775,7 +2775,7 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 	if(owner->container && !owner->container->inventory.isEmpty())
 	{
 		if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
-			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
+			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills its forgotten contents.");
 		} else if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 44){
 			engine.gui->message(TCODColor::lightGrey,"The PCMU beeps and spits out a brick of foodstuffs.");
 			owner->col = TCODColor::red;
@@ -2994,13 +2994,15 @@ void FruitAi::interaction(Actor *owner, Actor *target){
 	}
 }
 
-ZedAi::ZedAi() : moveCount(0), range(3), berserk (false){
+ZedAi::ZedAi() : moveCount(0), range(3), berserk (false), menuPopped(false){
 }
 
 void ZedAi::load(TCODZip &zip) {
 	moveCount = zip.getInt();
 	range = zip.getInt();
 	berserk = zip.getInt();
+	menuPopped = zip.getInt();
+
 }
 
 void ZedAi::save(TCODZip &zip) {
@@ -3008,6 +3010,7 @@ void ZedAi::save(TCODZip &zip) {
 	zip.putInt(moveCount);
 	zip.putInt(range);
 	zip.putInt(berserk);
+	zip.putInt(menuPopped);
 }
 
 void ZedAi::update(Actor *owner) {
@@ -3016,10 +3019,14 @@ void ZedAi::update(Actor *owner) {
 
 
 	if (owner->destructible && owner->destructible->isDead()) {
+		if (!menuPopped) {
+			deathMenu();
+			menuPopped = true;
+		}
 		return;
 	}
 	//if really hurt go berserk
-	if (owner->destructible->hp < owner->destructible->maxHp/3) {
+	if (!berserk && owner->destructible->hp < owner->destructible->maxHp/3) {
 		berserk = true;
 		engine.gui->message(TCODColor::darkPurple, "<Zed> Muh Ha! Now you'll witness my true power.");
 		owner->destructible->maxHp = owner->destructible->maxHp*2;
@@ -3028,7 +3035,7 @@ void ZedAi::update(Actor *owner) {
 	}
 	if (engine.map->isInFov(owner->x,owner->y)) {
 		//can see the player, move towards him
-		moveCount = TRACKING_TURNS + 4; //give zed much longer tracking
+		moveCount = TRACKING_TURNS + 10; //give zed much longer tracking
 	}
 	else {
 		moveCount--;
@@ -3061,7 +3068,7 @@ void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	//If the distance <= range, then the rangedAi will shoot the player unless the player is right next the rangedAi
 	if (distance > range) {
 		dx = (int) (round(dx / distance));
-		dy = (int) (round(dy / distance));
+		dy = (int)(round(dy / distance));
 		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
 			owner->x+=dx;
 			owner->y+=dy;
@@ -3083,7 +3090,7 @@ void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	else if (!berserk && distance !=1 && owner->attacker) {
 		TCODRandom *rng = TCODRandom::getInstance();
 		int dice = rng->getInt(0,99);
-		if (dice < 50) {
+		if (dice < 70) {
 			owner->attacker->shoot(owner,engine.player);
 			engine.damageReceived += (owner->totalDex-engine.player->destructible->totalDodge);
 		}
@@ -3101,13 +3108,60 @@ void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 					engine.gui->message(TCODColor::darkPurple, "<Zed> Cough, cough..."); break;
 				case 4:
 					engine.gui->message(TCODColor::darkPurple, "<Zed> Hold on... Gotta light this e-cig."); break;
+				case 5:
+					engine.gui->message(TCODColor::darkPurple, "<Zed> Mu Ha Hah!"); break;
+				case 6:
+					engine.gui->message(TCODColor::darkPurple, "<Zed> Ha! You are already dead! "); break;
 			}
 		}
 		//standing next to the player
 	}
 	else if (owner->attacker) {
-		owner->attacker->attack(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+		if (berserk) {
+		dx = (int) (round(dx / distance));
+		dy = (int)(round(dy / distance));
+		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+			owner->x+=dx;
+			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
+			owner->x += stepdx;
+		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
+			owner->y += stepdy;
+		}
+		if (owner->oozing) {
+			engine.map->infectFloor(owner->x, owner->y);
+		}
+		}
+		if (distance == 1) {
+			owner->attacker->attack(owner,engine.player);
+			engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+		}
+	}
+}
+
+void ZedAi::deathMenu() {
+	bool choice_made = false;
+	while (!choice_made) 
+	{
+		engine.gui->menu.clear();
+		engine.gui->menu.addItem(Menu::END_GAME, "Escape the spacestation.");
+		engine.gui->menu.addItem(Menu::CONTINUE_GAME, "Continue to explore.");
+		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::GAME_END);
+		switch (menuItem) {
+			case Menu::END_GAME:
+				engine.gui->message(TCODColor::orange, "Game Over: You win!");
+				choice_made = true;
+				TCODSystem::deleteFile("game.sav");
+				exit(0);
+				break;
+			case Menu::CONTINUE_GAME:
+					engine.gui->message(TCODColor::orange, "The adventure never ends!");
+				choice_made = true;
+				break;
+			case Menu::NO_CHOICE:
+				break;
+			default: break;
+		}
 	}
 }
 
