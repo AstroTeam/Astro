@@ -136,7 +136,7 @@ void Map::init(bool withActors, LevelType levelType) {
 
 		//Create boss, for now it is a simple security bot
 		if (withActors) {
-			if (engine.level == 2) {
+			if (engine.level == 5) {
 				//creating the final boss
 				int level = engine.level;
 				float scale = 1 + .1*(level - 1);
