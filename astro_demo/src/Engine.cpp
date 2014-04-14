@@ -1154,7 +1154,7 @@ Actor *Engine::getClosestMonster(int x, int y, float range) const {
 	
 	for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 		Actor *actor = *iterator;
-		if (actor != player && actor->destructible 
+		if (actor != player && actor != player->companion && actor->destructible 
 			&& !actor->destructible->isDead()) {
 			float distance = actor->getDistance(x,y);
 			if (distance < bestDistance && (distance <= range || range ==0.0f)) {
