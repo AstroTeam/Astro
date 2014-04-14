@@ -315,7 +315,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 			}
 		}
 
-		engine.gui->message(TCODColor::green, "The moss sapps your health.");
+		engine.gui->message(TCODColor::green, "The moss saps your health.");
 	}
 	return true;
 }
