@@ -5069,6 +5069,7 @@ Actor *Map::createFood(int x, int y){
 	scrollOfFeeding->blocks = false;
 	scrollOfFeeding->pickable = new Food(1);//this is the stack size. Food should feed for a static amount
 	scrollOfFeeding->pickable->value = 25;
+	scrollOfFeeding->hunger = 60;
 	scrollOfFeeding->pickable->inkValue = 10;
 	return scrollOfFeeding;
 }
