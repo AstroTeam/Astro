@@ -2703,7 +2703,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	int rand = rng->getInt(0,100);
 	//Vending Machines spawn in corners of standard rooms at random
 	
-	if(rand <= 20 && room->type == STANDARD) //a room has a 30% chance of having a vending machine (provided it has rooms)
+	if(rand <= 50 && room->type == MESSHALL) //a mess hall has a 50% chance of having a vending machine (provided it has rooms), increased since standard rooms are less likely
 	{
 		int c = rng->getInt(0,3);
 		bool x1y1 = canWalk(x1,y1) && engine.getAnyActor(x1,y1) == NULL && ( (canWalk(x1,y1 + 1) && engine.getAnyActor(x1,y1 + 1) == NULL)  && (canWalk(x1+1,y1 + 1) && engine.getAnyActor(x1+1,y1)==NULL) ) ;
@@ -2760,8 +2760,8 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		}
 
 	}
-	//15% chance of spawning turrets in the corners of standard rooms
-	if(((rand >= 15 && rand <= 30) && room->type == STANDARD) || room->type == ARMORY)
+	//85 chance of spawning turrets in the corners of standard rooms, increased since there are less STANDARD rooms
+	if(((rand >= 0 && rand <= 70) && room->type == STANDARD) || room->type == ARMORY)
 	{
 		int cx = (x1 + x2)/2.0;
 		int cy = (y1 + y2)/2.0;
@@ -2774,8 +2774,15 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		if(console || room->type == ARMORY)
 		{
 			Actor * turret, *turretControl = NULL;
-			if(room->type == STANDARD)
+			if(room->type == ARMORY)
+			{ //place turret contorls in
+				cx = x1;
+				cy = y1;
+				x1y1 = false;
+			}
+			if(room->type == STANDARD || true)
 				turretControl = createTurretControl(cx,cy);
+			
 			for(int i = 0; i < 4; i++)
 			{
 				c = rng->getInt(0,3);
