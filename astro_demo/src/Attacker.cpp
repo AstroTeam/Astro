@@ -83,7 +83,7 @@ void Attacker::attack(Actor *owner, Actor *target) {
 				damageTaken = target->destructible->takeDamage(target,owner, damageTaken+1);
 
 				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
-					engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hitpoints!",owner->name, target->name, damageTaken);
+					engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name, damageTaken);
 				
 			}
 			else if(strcmp(target->name,"A Government Issue Locker") == 0)//locker code exception
@@ -98,7 +98,7 @@ void Attacker::attack(Actor *owner, Actor *target) {
 			
 				damageTaken = target->destructible->takeDamage(target,owner,damageTaken);
 				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
-					engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hitpoints!",owner->name, target->name, damageTaken);
+					engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name, damageTaken);
 				if(strcmp(target->name,"player") == 0)
 					engine.damageReceived += damageTaken;
 			}
@@ -146,14 +146,14 @@ void Attacker::shoot(Actor *owner, Actor *target) {
 				damageTaken = target->destructible->takeDamage(target,owner,damageTaken+1);
 				
 				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
-					engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hitpoints!",owner->name, target->name, damageTaken);
+					engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hit points!",owner->name, target->name, damageTaken);
 				
 				
 			}
 			else {
 				damageTaken = target->destructible->takeDamage(target,owner,damageTaken);
 				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
-					engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hitpoints!",owner->name, target->name, damageTaken);
+					engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hit points!",owner->name, target->name, damageTaken);
 				
 			}
 		} else {
