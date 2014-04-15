@@ -1934,7 +1934,7 @@ void TurretAi::update(Actor *owner)
 	
 	
 	
-	if (engine.map->isInFov(owner->x,owner->y)) 
+	if (engine.map->isVisible(owner->x,owner->y)) 
 	{
 		if(controlX != -1 && controlY != -1)
 		{
@@ -2257,8 +2257,8 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 		}
 		engine.gui->menu.clear();
 		engine.gui->menu.addItem(Menu::DISABLE_TURRETS, "Disable all turrets in this room.");
-		engine.gui->menu.addItem(Menu::DISABLE_IFF, "Disable IFF for all turrets in this room.");
-		engine.gui->menu.addItem(Menu::IDENTIFY_FRIENDLY, "Disable IFF except identify yourself \n as friendly for all turrets in this room");
+		engine.gui->menu.addItem(Menu::DISABLE_IFF, "Make turrets hostile to all in this room.");
+		engine.gui->menu.addItem(Menu::IDENTIFY_FRIENDLY, "Make turrets hostile to all except \n yourself and allies in this room");
 		engine.gui->menu.addItem(Menu::EXIT, "Exit");
 		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::TURRET_CONTROL);
 		switch (menuItem) {
@@ -2266,7 +2266,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				if(dice <= 25 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 0;
-					engine.gui->message(TCODColor::orange, "Turrets in this room have been disabled.");
+					engine.gui->message(TCODColor::orange, "Success. Turrets in this room have been disabled.");
 				}
 				else
 				{
@@ -2280,7 +2280,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				if(dice <= 50 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 2;
-					engine.gui->message(TCODColor::orange, "Turrets in this room have become hostile to all.");
+					engine.gui->message(TCODColor::orange, "Success. Turrets in this room have become hostile to all.");
 				}
 				else
 				{
@@ -2294,7 +2294,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				if(dice <= 15 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 3;
-					engine.gui->message(TCODColor::orange, "Turrets in this room have become hostile to all except you.");
+					engine.gui->message(TCODColor::orange, "Success. Turrets in this room have become hostile to all except you.");
 				}
 				else
 				{
