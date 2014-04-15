@@ -2834,6 +2834,26 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					}
 					x2y1 = false;
 				}
+				if(room->type == ARMORY)
+				{	
+					int mid = (y1+y2)/2;
+					turret = engine.getAnyActor(x2-1,mid+2);
+					if(turret && turretControl)
+					{
+						TurretAi *ai = (TurretAi*)turret->ai;
+						ai->controlX = cx;
+						ai->controlY = cy;
+						
+					}
+					turret = engine.getAnyActor(x2-1,mid-2);
+					if(turret && turretControl)
+					{
+						TurretAi *ai = (TurretAi*)turret->ai;
+						ai->controlX = cx;
+						ai->controlY = cy;
+					}
+	
+				}
 			}
 			
 				
