@@ -2944,7 +2944,7 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 			for (Actor **it = engine.player->container->inventory.begin(); it != engine.player->container->inventory.end(); it++) 
 			{
 				Actor *actor = *it;
-				if(actor->ch == 'K')
+				if(actor->ch == 190)
 				{
 					hasKey = true;
 					key = actor;

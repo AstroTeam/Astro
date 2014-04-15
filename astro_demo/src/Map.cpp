@@ -1261,7 +1261,7 @@ Actor* Map::createTurretControl(int x, int y)
 	float controlDodge = 0;
 	float controlDR = 0;
 	float controlXp = 0;
-	int controlAscii = 'C';
+	int controlAscii = 189;
 	
 	Actor *control = new Actor(x,y,controlAscii,"Turret Room Control",TCODColor::white);
 	control->destructible = new MonsterDestructible(controlHp,controlDodge,controlDR,controlXp);
@@ -5099,9 +5099,9 @@ Actor* Map::createKey(int x, int y, int keyType)
 {
 	Actor *key;
 	if(keyType == 0)
-		key = new Actor(x,y, 'K', "Vault Key", TCODColor::white);
+		key = new Actor(x,y, 190, "Cardkey", TCODColor::white);
 	else
-		key = new Actor(x,y, 'K', "Key", TCODColor::white);
+		key = new Actor(x,y, 190, "Key", TCODColor::white);
 	key->sort = 1;
 	key->blocks = false;
 	key->pickable = new Key(keyType);

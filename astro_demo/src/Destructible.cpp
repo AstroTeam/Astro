@@ -123,9 +123,9 @@ void Destructible::die(Actor *owner, Actor *killer) {
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
 		owner->ch = 243;
 	}
-	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 225 || owner->ch == 130 || owner->ch == 129 || owner->ch == 146 || owner->ch == 'C' || owner->ch == dummyAscii) //roomba, vendors, and turrets, 
+	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 225 || owner->ch == 130 || owner->ch == 129 || owner->ch == 146 || owner->ch == 189 || owner->ch == dummyAscii) //roomba, vendors, and turrets, 
 	{
-		if(owner->ch == 'C')
+		if(owner->ch == 189)
 		{
 			TurretControlAi *tc = (TurretControlAi*) owner->ai;
 			if(tc && tc->attackMode == 1) //only make turrets go into frenzy mode if they were originally in default state
@@ -180,7 +180,7 @@ void MonsterDestructible::die(Actor *owner, Actor *killer) {
 		if(engine.map->isVisible(owner->x, owner->y))
 			engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
 	}
-	else if(owner->ch == 147 || owner->ch == 'C') //Ascii for Sentry Turret
+	else if(owner->ch == 147 || owner->ch == 189) //Ascii for Sentry Turret
 	{
 		engine.killCount++;
 		if(engine.map->isVisible(owner->x, owner->y))
