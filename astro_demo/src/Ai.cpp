@@ -848,8 +848,12 @@ void MonsterAi::update(Actor *owner) {
 		owner->destructible->xp = 25*(1 + .1*(engine.level - 1));
 		owner->ch = 165;
 	}
-	if (engine.map->isInFov(owner->x,owner->y)) {
-		//can see the palyer, move towards him
+		Actor *comp = engine.player->companion;
+		int compFov = 2;
+		bool compTest =  comp && comp->destructible && !comp->destructible->isDead() && comp->getDistance(owner->x, owner->y) <= compFov;
+		
+	if (engine.map->isInFov(owner->x,owner->y) || compTest) {
+		//can see the player//companion, move towards him
 		moveCount = TRACKING_TURNS;
 	} else {
 		moveCount--;
@@ -857,13 +861,30 @@ void MonsterAi::update(Actor *owner) {
 	
 	if (moveCount > 0) 
 	{
-		moveOrAttack(owner, engine.player->x, engine.player->y);
+		float d1 = 0;
+		float d2 = 100;
+		
+		if(compTest)
+		{
+			d1 = engine.player->getDistance(owner->x,owner->y);
+			d2 = engine.player->companion->getDistance(owner->x, owner->y);
+		}
+		
+		if(d1 <= d2)
+		{
+			moveOrAttack(owner, engine.player, engine.player->x, engine.player->y);
+		}
+		else
+		{
+			moveOrAttack(owner, comp,comp->x, comp->y);
+		}
+	
+		
 	} else{
 		moveCount = 0;
 	}
 	owner->destructible->takeFireDamage(owner, 3.0);
 }
-
 void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	int dx = targetx - owner->x;
 	int dy = targety - owner->y;
@@ -878,7 +899,7 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	stepdyL = (dyL == 0 ? 0:stepdyL);
 	float distance = sqrtf(dx*dx+dy*dy);
 	
-	if(owner->ch == '_' && distance >= 2 && engine.turnCount % 2 == 0)
+	if(owner->ch == 150 && distance >= 2 && engine.turnCount % 2 == 0)
 	{
 		//crawlers can only move every other turn
 		return;
@@ -902,8 +923,56 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 			engine.map->infectFloor(owner->x, owner->y);
 		}
 	} else if (owner->attacker) {
-		owner->attacker->attack(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+			owner->attacker->attack(owner,engine.player);
+			engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+	}
+	
+}
+
+void MonsterAi::moveOrAttack(Actor *owner, Actor *target, int targetx, int targety){
+	int dx = targetx - owner->x;
+	int dy = targety - owner->y;
+	int stepdx = (dx > 0 ? 1:-1);
+	int stepdy = (dy > 0 ? 1:-1);
+	
+	int dxL = target->lastX - owner->x;
+	int dyL = target->lastY - owner->y;
+	int stepdxL = (dxL > 0 ? 1:-1);
+	int stepdyL = (dyL > 0 ? 1:-1);
+	stepdxL = (dxL == 0 ? 0:stepdxL);
+	stepdyL = (dyL == 0 ? 0:stepdyL);
+	float distance = sqrtf(dx*dx+dy*dy);
+	
+	if(owner->ch == 150 && distance >= 2 && engine.turnCount % 2 == 0)
+	{
+		//crawlers can only move every other turn
+		return;
+	}
+	
+	if (distance >= 2) {
+		dx = (int) (round(dx / distance));
+		dy = (int) (round(dy / distance));
+		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+			owner->x+=dx;
+			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdxL,owner->y+stepdyL)) {
+			owner->x+=stepdxL;
+			owner->y+=stepdyL;
+		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
+			owner->x += stepdx;
+		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
+			owner->y += stepdy;
+		}
+		if (owner->oozing) {
+			engine.map->infectFloor(owner->x, owner->y);
+		}
+	} else if (owner->attacker) 
+	{
+		if(target)
+			owner->attacker->attack(owner,target);
+
+		if(target == engine.player)
+			engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
 	
 }
@@ -935,20 +1004,41 @@ void SecurityBotAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
-	if (engine.map->isInFov(owner->x,owner->y)) {
+	Actor *comp = engine.player->companion;
+		int compFov = 2;
+		bool compTest =  comp && comp->destructible && !comp->destructible->isDead() && comp->getDistance(owner->x, owner->y) <= compFov;
+	if (engine.map->isInFov(owner->x,owner->y) || compTest) {
 		//can see the palyer, move towards him
 		moveCount = TRACKING_TURNS;
 	} else {
 		moveCount--;
 	}
-	if (moveCount > 0) {
-		moveOrAttack(owner, engine.player->x, engine.player->y);
-	} else {
+	if (moveCount > 0) 
+	{
+		float d1 = 0;
+		float d2 = 100;
+		
+		if(compTest)
+		{
+			d1 = engine.player->getDistance(owner->x,owner->y);
+			d2 = engine.player->companion->getDistance(owner->x, owner->y);
+		}
+		
+		if(d1 <= d2)
+		{
+			moveOrAttack(owner, engine.player, engine.player->x, engine.player->y);
+		}
+		else
+		{
+			moveOrAttack(owner, comp,comp->x, comp->y);
+		}
+	} else 
+	{
 		moveCount = 0;
 	}
 }
 
-void SecurityBotAi::moveOrAttack(Actor *owner, int targetx, int targety){
+void SecurityBotAi::moveOrAttack(Actor *owner, Actor *target, int targetx, int targety){
 	//Cases
 	//1. Security Bot does not have any vending machine (isHostile = false ending machine x = -1, vendingmachine y = -1), function as a monster Ai normally
 	//2. If vending machinex != -1 and vendingmachiney != -1, then make an instance of vendingmachine ai using x and y. and check if it security deployed
@@ -956,7 +1046,7 @@ void SecurityBotAi::moveOrAttack(Actor *owner, int targetx, int targety){
 		//3a else nothing
 	
 	if((vendingX == -1 && vendingY == -1) || owner->hostile)
-		MonsterAi::moveOrAttack(owner,targetx,targety);
+		MonsterAi::moveOrAttack(owner,target,targetx,targety);
 	else
 	{
 		Actor* vending = engine.getAnyActor(vendingX, vendingY);
@@ -1492,29 +1582,48 @@ void RangedAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
-	
-	if (engine.map->isInFov(owner->x,owner->y)) {
-		//can see the palyer, move towards him
+	Actor *comp = engine.player->companion;
+	int compFov = 2;
+	bool compTest =  comp && comp->destructible && !comp->destructible->isDead() && comp->getDistance(owner->x, owner->y) <= compFov;	
+	if (engine.map->isInFov(owner->x,owner->y) || compTest) {
+		//can see the player/companion, move towards him
 		moveCount = TRACKING_TURNS + 2; //give ranged characters longer tracking
 	} else {
 		moveCount--;
 	}
-	if (moveCount > 0) {
-		moveOrAttack(owner, engine.player->x, engine.player->y);
+	if (moveCount > 0) 
+	{
+		float d1 = 0;
+		float d2 = 100;
+		
+		if(compTest)
+		{
+			d1 = engine.player->getDistance(owner->x,owner->y);
+			d2 = engine.player->companion->getDistance(owner->x, owner->y);
+		}
+		
+		if(d1 <= d2)
+		{
+			moveOrAttack(owner, engine.player, engine.player->x, engine.player->y);
+		}
+		else
+		{
+			moveOrAttack(owner, comp,comp->x, comp->y);
+		}
 	} else {
 		moveCount = 0;
 	}
 	owner->destructible->takeFireDamage(owner, 3.0);
 }
-void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
+void RangedAi::moveOrAttack(Actor *owner, Actor *target, int targetx, int targety)
 {
 	int dx = targetx - owner->x;
 	int dy = targety - owner->y;
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
 	
-	int dxL = engine.player->lastX - owner->x;
-	int dyL = engine.player->lastY - owner->y;
+	int dxL = target->lastX - owner->x;
+	int dyL = target->lastY - owner->y;
 	int stepdxL = (dxL > 0 ? 1:-1);
 	int stepdyL = (dyL > 0 ? 1:-1);
 	stepdxL = (dxL == 0 ? 0:stepdxL);
@@ -1541,31 +1650,18 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		if (owner->oozing) {
 			engine.map->infectFloor(owner->x, owner->y);
 		}
-	} else if (distance !=1 && owner->attacker) {
-		if(engine.player->companion && !engine.player->companion->destructible->isDead())
-		{
-			float d1 = engine.player->getDistance(owner->x,owner->y);
-			float d2 = engine.player->companion->getDistance(owner->x, owner->y);
-			
-			if(d1 <= d2)
-			{
-				owner->attacker->shoot(owner, engine.player);
-				engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDodge);
-			}
-			else
-			{
-				owner->attacker->shoot(owner, engine.player->companion);
-			}
-		}
-		else
-		{
-			owner->attacker->shoot(owner, engine.player);
+	} else if (distance !=1 && owner->attacker) 
+	{
+		owner->attacker->shoot(owner, target);
+		if(target == engine.player)
 			engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDodge);
-		}
+
 	}
-	else if (owner->attacker) {
-		owner->attacker->attack(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+	else if (owner->attacker) 
+	{
+		owner->attacker->attack(owner,target);
+		if(target == engine.player)
+			engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
 }
 
@@ -1598,9 +1694,11 @@ void GrenadierAi::update(Actor *owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	Actor *comp = engine.player->companion;
+	int compFov = 2;
+	bool compTest =  comp && comp->destructible && !comp->destructible->isDead() &&  comp->getDistance(owner->x, owner->y) <= compFov;
 	
-	
-	if (engine.map->isInFov(owner->x,owner->y)) {
+	if (engine.map->isInFov(owner->x,owner->y) || compTest) {
 		//can see the palyer, move towards him
 		moveCount = TRACKING_TURNS + 2; //give tech characters longer tracking
 	} else {
@@ -1608,47 +1706,69 @@ void GrenadierAi::update(Actor *owner) {
 	}
 	if (moveCount > 0) 
 	{	
-			if(!berserk)
-				moveOrAttack(owner, engine.player->x, engine.player->y);
-			else //berserk case, so you need to get the closest monster/player
+	
+		if(!berserk)
+		{
+			float d1 = 0;
+			float d2 = 100;
+			
+			if(compTest)
 			{
-				Actor *closest = NULL;
-				float bestDistance = 1E6f;
-				for (Actor **iterator = engine.actors.begin(); iterator != engine.actors.end(); iterator++) 
+				d1 = engine.player->getDistance(owner->x,owner->y);
+				d2 = engine.player->companion->getDistance(owner->x, owner->y);
+			}
+			
+			if(d1 <= d2)
+			{
+				moveOrAttack(owner, engine.player, engine.player->x, engine.player->y);
+			}
+			else
+			{
+				moveOrAttack(owner, comp,comp->x, comp->y);
+			}
+		}
+		else //berserk case, so you need to get the closest monster/player
+		{
+			Actor *closest = NULL;
+			float bestDistance = 1E6f;
+			for (Actor **iterator = engine.actors.begin(); iterator != engine.actors.end(); iterator++) 
+			{
+				Actor *actor = *iterator;
+				const char* name = actor->name;
+				if (actor->destructible && !actor->destructible->isDead() && strcmp(name, "infected corpse") != 0 && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24) //243 = locker
 				{
-					Actor *actor = *iterator;
-					const char* name = actor->name;
-					if (actor->destructible && !actor->destructible->isDead() && strcmp(name, "infected corpse") != 0 && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24) //243 = locker
+					float distance = actor->getDistance(owner->x,owner->y);
+					if (distance < bestDistance && (distance <= range || range ==0.0f)) 
 					{
-						float distance = actor->getDistance(owner->x,owner->y);
-						if (distance < bestDistance && (distance <= range || range ==0.0f)) 
-						{
-							bestDistance = distance;
-							closest = actor;
-						}
+						bestDistance = distance;
+						closest = actor;
 					}
 				}
-				
-				if(closest)
-					moveOrAttack(owner, closest->x, closest->y);
 			}
-				
-		} 
-		else 
-			moveCount = 0;
+			
+			if(closest)
+				moveOrAttack(owner, closest,closest->x, closest->y);
+		}
+			
+	} 
+	else 
+		moveCount = 0;
 		
 		owner->destructible->takeFireDamage(owner, 3.0);
 }
-void GrenadierAi::useEmpGrenade(Actor *owner, int targetx, int targety)
+void GrenadierAi::useEmpGrenade(Actor *owner, Actor *target, int targetx, int targety)
 {
-	engine.gui->message(TCODColor::red,"The %s uses an EMP Grenade on the player!",owner->name);
+	if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+	engine.gui->message(TCODColor::red,"The %s uses an EMP Grenade on the %s!",owner->name, target->name);
 	float damageTaken = -3 + 3 * owner->totalIntel;
-	damageTaken = engine.player->destructible->takeDamage(engine.player, owner, damageTaken);
+	if(target->destructible)
+		damageTaken = target->destructible->takeDamage(target, owner, damageTaken);
 	numGrenades--;
-	engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
+	if(engine.player == target)
+		engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
 	
 }
-void GrenadierAi::useFirebomb(Actor *owner, int targetx, int targety)
+void GrenadierAi::useFirebomb(Actor *owner, Actor *target, int targetx, int targety)
 {
 	int x = targetx;
 	int y = targety;
@@ -1695,7 +1815,7 @@ void GrenadierAi::useFirebomb(Actor *owner, int targetx, int targety)
 	}
 	numGrenades--;
 }
-void GrenadierAi::useFrag(Actor *owner, int targetx, int targety)
+void GrenadierAi::useFrag(Actor *owner, Actor *target, int targetx, int targety)
 {
 	int x = targetx;
 	int y = targety;
@@ -1712,12 +1832,12 @@ void GrenadierAi::useFrag(Actor *owner, int targetx, int targety)
 			{	
 				if(actor == engine.player)
 					engine.damageReceived += damageTaken;
-				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(actor->x, actor->y))
+				if(engine.map->isVisible(actor->x, actor->y))
 					engine.gui->message(TCODColor::red,"The %s gets wounded from the blast for %g hit points.",actor->name,damageTaken);
 
 			} else 
 			{
-				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(actor->x, actor->y))
+				if(engine.map->isVisible(actor->x, actor->y))
 					engine.gui->message(TCODColor::red,"The %s's guts explode outward after taking %g damage.",actor->name,damageTaken);
 
 			}
@@ -1826,15 +1946,15 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 	md->suicide(owner);
 
 }
-void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
+void GrenadierAi::moveOrAttack(Actor *owner, Actor *target, int targetx, int targety)
 {
 	int dx = targetx - owner->x;
 	int dy = targety - owner->y;
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
 	
-	int dxL = engine.player->lastX - owner->x;
-	int dyL = engine.player->lastY - owner->y;
+	int dxL = target->lastX - owner->x;
+	int dyL = target->lastY - owner->y;
 	int stepdxL = (dxL > 0 ? 1:-1);
 	int stepdyL = (dyL > 0 ? 1:-1);
 	stepdxL = (dxL == 0 ? 0:stepdxL);
@@ -1876,18 +1996,19 @@ void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		{
 			int dice = rng->getInt(0,30);
 			if(dice <= 15)
-				useEmpGrenade(owner, engine.player->x, engine.player->y);
+				useEmpGrenade(owner,target, target->x, target->y);
 			else if(dice <= 25)
-				useFrag(owner, engine.player->x, engine.player->y);
+				useFrag(owner, target, target->x, target->y);
 			else
-				useFirebomb(owner, engine.player->x, engine.player->y);
+				useFirebomb(owner, target, target->x, target->y);
 		}
 
 		
 	}else if (owner->attacker && !berserk) 
 	{ //grenadier will melee attack if up close
-		owner->attacker->attack(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+		owner->attacker->attack(owner,target);
+		if(target == engine.player)
+			engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}else if(owner->attacker && berserk)
 	{
 		//kamkaze on the actor closetest to you, given by targetx, targety
@@ -1992,7 +2113,7 @@ void TurretAi::update(Actor *owner)
 				{
 					Actor *actor = *iterator;
 					const char* name = actor->name;
-					if (actor->destructible && actor != engine.player && actor != tc && !actor->destructible->isDead() && strcmp(name, "infected corpse") != 0 && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24 && actor->ch != 225 && actor->ch != 226 && actor != engine.player->companion) //243 = locker
+					if (actor->destructible && actor != engine.player && actor != tc && !actor->destructible->isDead() && strcmp(name, "infected corpse") != 0 && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24 && actor->ch != 147 && actor->ch != 225 && actor->ch != 226 && actor != engine.player->companion) //243 = locker
 					{
 						float distance = actor->getDistance(owner->x,owner->y);
 						if (distance < bestDistance && (distance <= range || range ==0.0f)) 
@@ -2280,7 +2401,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				if(dice <= 50 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 2;
-					engine.gui->message(TCODColor::orange, "Success. Turrets in this room have become hostile to all.");
+					engine.gui->message(TCODColor::orange, "Success. Turrets in this room have become hostile to all");
 				}
 				else
 				{
@@ -2294,7 +2415,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				if(dice <= 15 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 3;
-					engine.gui->message(TCODColor::orange, "Success. Turrets in this room have become hostile to all except you.");
+					engine.gui->message(TCODColor::orange, "Success. Turrets in this room have become hostile to all except you and allies.");
 				}
 				else
 				{
@@ -2625,28 +2746,58 @@ void EngineerAi::update(Actor *owner)
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	Actor *comp = engine.player->companion;
+	int compFov = 2;
+	bool compTest =  comp && comp->destructible && !comp->destructible->isDead() && comp->getDistance(owner->x, owner->y) <= compFov;
 	
-	if (engine.map->isInFov(owner->x,owner->y)) {
+	if (engine.map->isInFov(owner->x,owner->y) || compTest) {
 		//can see the palyer, move towards him
 		moveCount = TRACKING_TURNS;
 	} else {
 		moveCount--;
 	}
-	if (moveCount > 0) {
-		moveOrBuild(owner, engine.player->x, engine.player->y);
+	if (moveCount > 0) 
+	{
+		float d1 = 0;
+		float d2 = 100;
+		
+		if(compTest)
+		{
+			d1 = engine.player->getDistance(owner->x,owner->y);
+			d2 = engine.player->companion->getDistance(owner->x, owner->y);
+		}
+		
+		if(d1 <= d2)
+		{
+			moveOrBuild(owner, engine.player, engine.player->x, engine.player->y);
+		}
+		else
+		{
+			moveOrBuild(owner, comp,comp->x, comp->y);
+		}
 	} else {
 		moveCount = 0;
 	}
 	owner->destructible->takeFireDamage(owner, 3.0);
 }
 
-void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
+void EngineerAi::moveOrBuild(Actor *owner, Actor *target, int targetx, int targety)
 {
 	int x = owner->x, y = owner->y;
 	int dx = targetx - owner->x;
 	int dy = targety - owner->y;
 	float distance = sqrtf(dx*dx+dy*dy);
-	if(engine.map->isInFov(owner->x, owner->y) && !turretDeployed && distance <= deployRange) //and deployed range
+	bool viewTest = false;
+	
+	if(target == engine.player)
+		viewTest = engine.map->isInFov(owner->x,owner->y);
+	else if(target && target == engine.player->companion)
+	{
+		int compFov = 2;
+		float dComp = target->getDistance(owner->x, owner->y);
+		viewTest =  dComp <= compFov;
+	}
+	if(viewTest && !turretDeployed && distance <= deployRange) //and deployed range
 	{//try to deploy turret
 	
 	
@@ -2744,8 +2895,9 @@ void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
 				}
 				
 			} else if (owner->attacker) {
-				owner->attacker->attack(owner,engine.player);
-				engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+				owner->attacker->attack(owner,target);
+				if(target == engine.player)
+					engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 			}
 		}
 	}
@@ -2900,15 +3052,33 @@ void GardnerAi::update(Actor *owner)
 		moveOrAttack(owner, 0,0);
 		return;
 	}
-	if (engine.map->isInFov(owner->x,owner->y)) {
-		//can see the palyer, move towards him
+	Actor *comp = engine.player->companion;
+	int compFov = 2;
+	bool compTest =  comp && comp->destructible && !comp->destructible->isDead() && comp->getDistance(owner->x, owner->y) <= 	compFov;
+	
+	if (engine.map->isInFov(owner->x,owner->y) || compTest) {
+		//can see the palyer/companion, move towards him
 		moveCount = TRACKING_TURNS;
 	} else {
 		moveCount--;
 	}
-	//the Gardner will move towards the player if he is in the garden and is hostile
-	if (moveCount > 0 ||(engine.player->x <= initX2 && engine.player->x >= initX1 && engine.player->y >= initY1 && engine.player->y <= initY2)) {
-		MonsterAi::moveOrAttack(owner, engine.player->x, engine.player->y);
+	float d1 = 0;
+	float d2 = 100;
+	
+	if(compTest)
+	{
+		d1 = engine.player->getDistance(owner->x,owner->y);
+		d2 = engine.player->companion->getDistance(owner->x, owner->y);
+	}
+	Actor *target = engine.player;
+	if(d1 > d2)
+	{
+		target = comp;
+	}
+	
+	//the Gardner will move towards the player/companion if he is in the garden and is hostile
+	if (moveCount > 0 ||(target->x <= initX2 && target->x >= initX1 && target->y >= initY1 && target->y <= initY2)) {
+		MonsterAi::moveOrAttack(owner, target, target->x, target->y);
 	} else {
 		moveCount = 0;
 	}
@@ -3292,7 +3462,7 @@ void CompanionAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	stepdyL = (dyL == 0 ? 0:stepdyL);
 	float distance = sqrtf(dx*dx+dy*dy);
 	
-	if(owner->ch == '_' && distance >= 2 && engine.turnCount % 2 == 0)
+	if(owner->ch == 150 && distance >= 2 && engine.turnCount % 2 == 0)
 	{
 		//crawlers can only move every other turn
 		return;
