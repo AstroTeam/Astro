@@ -411,7 +411,7 @@ void Renderer::render(void *sdlSurface){
 				SDL_BlitSurface(shadows,&srcRect,floorMap,&dstRect);
 			}
 			//render BOOZE
-			if (engine.mapcon->getChar(xM,yM) == 15)  
+			else if (engine.mapcon->getChar(xM,yM) == 15)  
 			{
 				srcRect.y = 0;
 				srcRect.x = 0;
@@ -434,6 +434,7 @@ void Renderer::render(void *sdlSurface){
 					SDL_BlitSurface(alcohol,&srcRect,floorMap,&dstRect);
 					
 			}
+			
 			
 			//render all decorations
 			//cout << "decor start" << endl;
@@ -1020,7 +1021,43 @@ void Renderer::render(void *sdlSurface){
 						SDL_BlitSurface(decor,&srcRect,floorMap,&dstRect);
 					}
 				}
+				
+				
 			}
+			if (engine.mapcon->getChar(xM,yM) == 157)
+			{
+				static int altitude = 0;
+				SDL_Rect srcRectTemp={9*16,13*16,16,16};
+				SDL_Rect dstRectTemp = dstRect;
+				dstRectTemp.y+=altitude;
+				SDL_BlitSurface(terminal,&srcRectTemp,floorMap,&dstRectTemp);
+				static bool DownW = true;
+				static int slows = 0;
+				int amt = 2;
+				if (slows%8 == 0)
+				{
+					if (altitude > -amt && DownW)
+					{
+						altitude--;
+						if (altitude < -amt)
+							altitude = -amt;
+					}
+					else if (altitude == -amt && DownW)
+					{
+						DownW = false;
+					}
+					else if (altitude < amt)
+					{
+						altitude++;;
+					}
+					else if (altitude >= amt)
+					{
+						DownW = true;
+					}
+				}	
+				slows++;
+			}
+			
 			
 			//cout << "decor end" << endl;
 			//TCODRandom *rng = TCODRandom::getInstance();
