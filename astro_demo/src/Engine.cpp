@@ -400,11 +400,11 @@ void Engine::init() {
 			player->job="Assassin";
 			
 			//get Blink Grenades
-			for(int i=0; i<3; i++){
+			for(int i=0; i<2; i++){
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -454,11 +454,11 @@ void Engine::init() {
 			player->job="Brute";
 			
 			//get Blink Grenades
-			for(int i=0; i<3; i++){
+			for(int i=0; i<2; i++){
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -494,7 +494,7 @@ void Engine::init() {
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -1100,11 +1100,11 @@ void Engine::nextLevel() {
 			else
 				gui->message(TCODColor::white,"Blink Grenades fall from the ceiling and land on your head! You add them to your inventory.");
 			//get Blink Grenades
-			for(int i=0; i<5; i++){
+			for(int i=0; i<2; i++){
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
