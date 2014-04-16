@@ -43,7 +43,9 @@ public:
 	DISABLE_TURRETS,
 	DISABLE_IFF,
 	IDENTIFY_FRIENDLY,
-	UNLOCK_VAULT
+	UNLOCK_VAULT,
+	CONTINUE_GAME,
+	END_GAME
 	};
 	enum DisplayMode {
 		MAIN,
@@ -54,7 +56,8 @@ public:
 		CLASS_MENU,
 		CLASS_SELECT,
 		TURRET_CONTROL,
-		KEY_MENU
+		KEY_MENU,
+		GAME_END
 	};
 	~Menu();
 	void clear();

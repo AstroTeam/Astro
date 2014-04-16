@@ -7,6 +7,7 @@ public:
 	float baseDR; //base damage mitigated
 	float totalDR; //base damage mitigated
 	int xp; //xp gained when killing this monster, or player xp
+	bool hasDied;
 	
 	float heal(float amount);
 	Destructible(float maxHp, float dodge, float dr, int xp);

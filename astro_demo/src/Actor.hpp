@@ -1,6 +1,7 @@
 class Actor : public Persistent {
 public: 
 	int x, y;	//map position
+	int lastX, lastY; //for AI improvement
 	int ch;		//ascii code for character representation 
 	int str, dex, intel, vit, totalStr, totalDex, totalIntel; //strength, dexterity, intelligence, vitality
 	TCODColor col; //color for representation
@@ -19,6 +20,7 @@ public:
 	int hunger;
 	int maxHunger;
 	int hungerCount;
+	Actor *companion;
 	//bool fovOnly; //only display when in FOV (maybe add this later)
 	Attacker *attacker; //something that deals damage
 	Destructible *destructible; //something that can take damage

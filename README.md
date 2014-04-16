@@ -3,7 +3,7 @@ Astro
 
 Basic premise:  A classified military space station has gone dark and the mission is to retrieve information, including the ship’s black box as well as other info, about why and what they were doing.
 
-Upon investing you find that there are weird aliens all over the ship.  These aliens manifest themselves as their own entities but also have spores which can control both people and robots.  This allows there to be multiple enemy types: Aliens, infected human crew, infected robot crew, infected ship systems, malfunctioning robots, and more.
+Upon investigating, you find that there are weird aliens all over the ship.  These aliens manifest themselves as their own entities but also have spores which can control both people and robots.  This allows there to be multiple enemy types: Aliens, infected human crew, infected robot crew, infected ship systems, malfunctioning robots, and more.
 
 
 Stats
@@ -27,11 +27,11 @@ Races
 -----
 The player upon startup can choose between a certain race+class combo, each class has 3 “specialty” tech trees that have powerups, skills, etc.  So you pick 1 race, 1 role, and 1 job.
 
-● Human - Base class. Flat starting stats with no innate specialization. Adequate at everything. 
+● Human - Base class. Flat starting stats with no innate specialization. Adequate at everything. Gets an edible companion.
 
-● Robot - High starting vitality, strength, and intelligence. Runs on an internal chemical converter that turns human food into a small amount of power.
+● Robot - High starting vitality, strength, and intelligence. Runs on an internal chemical converter that turns human food into a small amount of power. Gets a heavily-armored companion.
 
-● Alien - Low base stats. Absorbs teleporter energy and can store insane amounts of food to prevent hunger for weeks.
+● Alien - Low base stats. Can store insane amounts of food to prevent hunger for weeks. Gets a strong beastly companion.
 
 
 Classes & Subclasses 

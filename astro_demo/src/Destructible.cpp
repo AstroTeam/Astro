@@ -5,6 +5,7 @@
 using namespace std;
 Destructible::Destructible(float maxHp, float dodge, float dr, int xp) :
 	maxHp(maxHp),hp(maxHp),baseDodge(dodge+10),totalDodge(dodge+10), baseDR(dr), totalDR(dr), xp(xp) {
+	hasDied = false;
 }
 
 Destructible::~Destructible() {
@@ -19,6 +20,7 @@ void Destructible::load(TCODZip &zip) {
 	baseDR = zip.getFloat();
 	totalDR = zip.getFloat();
 	xp = zip.getInt();
+	hasDied = zip.getInt();
 }
 
 void Destructible::save(TCODZip &zip) {
@@ -29,6 +31,7 @@ void Destructible::save(TCODZip &zip) {
 	zip.putFloat(baseDR);
 	zip.putFloat(totalDR);
 	zip.putInt(xp);
+	zip.putInt(hasDied);
 }
 
 Destructible *Destructible::create(TCODZip &zip) {
@@ -44,6 +47,10 @@ Destructible *Destructible::create(TCODZip &zip) {
 
 float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 	//take a second Actor pointer here, such as attacker, also pass it into the die method
+	if (owner->attacker && (owner->attacker->lastTarget == NULL || owner->attacker->lastTarget->destructible->isDead())) {
+		owner->attacker->lastTarget = attacker;
+	}
+	
 	if(owner->ch == 225) //meaning you're attacking a Vending machine
 	{
 		VendingAi* va = (VendingAi*) owner->ai;
@@ -52,13 +59,14 @@ float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 	if(owner->ch == 243 && (engine.map->tiles[owner->x+owner->y*engine.map->width].decoration == 56 || engine.map->tiles[owner->x+owner->y*engine.map->width].decoration == 57)) //weapon vault
 		return 0; //can't damage vaults
 	if (damage > 0){
-	
-		hp -= damage;
-		if (hp <= 0) {
-			die(owner, attacker);
+		hp -= (int) damage;
+		if (hp <= 0 && !hasDied) {
+			//die(owner, attacker);
+			if(attacker && (attacker == engine.player || attacker == engine.player->companion)) //only increase XP if the player/companion is the killer
+				engine.player->destructible->xp += xp;
 		}
 	} else {
-		damage = 0;
+		damage = 0;	
 	}
 	
 	return damage;
@@ -77,9 +85,10 @@ float Destructible::takeFireDamage(Actor *owner, float damage) {
 		
 		if (damage > 0){
 			hp -= damage;
-			engine.gui->message(TCODColor::red, "%s takes %g fire damage.",owner->name,damage);
+			if(engine.map->isVisible(owner->x, owner->y))
+				engine.gui->message(TCODColor::red, "%s takes %g fire damage.",owner->name,damage);
 			if (hp <= 0) {
-				die(owner, NULL);
+				//die(owner, NULL);
 			}
 		} else {
 			damage = 0;
@@ -103,7 +112,7 @@ void Destructible::die(Actor *owner, Actor *killer) {
 	//check who owner was to decide what corpse they get
 	//if spore creature they get spore body
 	int dummyAscii = 145;
-	
+	hasDied = true;
 	
 	if (owner->ch == 165 || owner->ch == 166){ 
 		owner->ch = 162;
@@ -114,9 +123,9 @@ void Destructible::die(Actor *owner, Actor *killer) {
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
 		owner->ch = 243;
 	}
-	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 225 || owner->ch == 130 || owner->ch == 129 || owner->ch == 146 || owner->ch == 'C' || owner->ch == dummyAscii) //roomba, vendors, and turrets, 
+	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 225 || owner->ch == 130 || owner->ch == 129 || owner->ch == 146 || owner->ch == 189 || owner->ch == dummyAscii || owner->ch == 157) //roomba, vendors, and turrets, 
 	{
-		if(owner->ch == 'C')
+		if(owner->ch == 189)
 		{
 			TurretControlAi *tc = (TurretControlAi*) owner->ai;
 			if(tc && tc->attackMode == 1) //only make turrets go into frenzy mode if they were originally in default state
@@ -160,38 +169,48 @@ void MonsterDestructible::die(Actor *owner, Actor *killer) {
 	//cout << owner->ch << endl;
 	//cout << "the char to test" << endl;
 	int dummyAscii = 145;
-	if(owner->ch != 243 && owner->ch != 131 && owner->ch != 147 && owner->ch != 225 && owner->ch != 130 && owner->ch != 129 && owner->ch != 146 && owner->ch != dummyAscii){
+	if((owner->ch != 243 && owner->ch != 131 && owner->ch != 147 && owner->ch != 225 && owner->ch != 130 && owner->ch != 129 && owner->ch != 146 && owner->ch != dummyAscii) && owner->ch != 157){
 		engine.killCount++;
-		engine.gui->message(TCODColor::lightGrey,"The %s is dead! You feel a rush as it sputters its last breath.", owner->name);
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s is dead!", owner->name);
 	}
 	else if(owner->ch == 131) //Ascii for Cleaner bot
 	{
 		engine.killCount++;
-		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
 	}
-	else if(owner->ch == 147 || owner->ch == 'C') //Ascii for Sentry Turret
+	else if(owner->ch == 147 || owner->ch == 189) //Ascii for Sentry Turret
 	{
 		engine.killCount++;
-		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
 	}else if(owner->ch == 130 || owner->ch == 129 || owner->ch == 146) //ascii for security bot
 	{
 		engine.killCount++;
-		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
 	}
 	else if(owner->ch == 225) //Vending machine, change when needed
 	{
 		engine.killCount++;
-		engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
 	}
 	else if(owner->ch == dummyAscii) //change to target dummy
 	{
 		//engine.killCount++;
-		engine.gui->message(TCODColor::lightGrey,"The %s crumples into a useless pile of metal!", owner->name);
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s crumples into a useless pile of metal!", owner->name);
 		//cout << "target dummy killed!" << endl;
 	}
+	else if(owner->ch == 157) //scout drone
+	{
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
+	}
 	//cout << "done testing" << endl;
-	if(killer && killer == engine.player) //only increase XP if the player is the killer
-		engine.player->destructible->xp += xp;
+	
 	
 	//Makes Vending UI appear upon monster death (For Testing Purposes Only)
 	//engine.gui->vendingMenu(owner);
