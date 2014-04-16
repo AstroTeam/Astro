@@ -2544,7 +2544,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//playerLight->ai->moving = true;
 		engine.sendToBack(engine.playerLight);
 		
-		Actor *pet = new Actor(engine.player->x,engine.player->y,141,"Jelly Donut Fairy",TCODColor::white);
+		Actor *pet = new Actor(engine.player->x,engine.player->y,141,"Hyperdonut",TCODColor::white);
 		pet->hostile = false;
 		pet->destructible = new MonsterDestructible(10,0,0,10);
 		pet->blocks = false;
@@ -2563,7 +2563,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			break;
 
 			case 'R':		//Robot
-			pet->name = "Armored RC Helicopter";
+			pet->name = "Scout Drone";
 			pet->ch = 157;
 			pet->destructible->maxHp = 350;
 			pet->destructible->hp = 350;
