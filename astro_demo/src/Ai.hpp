@@ -331,6 +331,6 @@ class ZedAi : public Ai
 		int range; //range
 	 	bool berserk;
 		bool menuPopped;
-		void moveOrAttack(Actor *owner, int targetx, int targety);
+		void moveOrAttack(Actor *owner, Actor *target, int targetx, int targety);
 		void deathMenu();
 };
