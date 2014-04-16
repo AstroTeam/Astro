@@ -211,9 +211,9 @@ void PlayerAi::update(Actor *owner) {
 		engine.player->x = engine.stairs->x;
 		engine.playerLight->x = engine.stairs->x;
 		engine.player->y = engine.stairs->y;
-		engine.playerLight->y = engine.stairs->y; */
+		engine.playerLight->y = engine.stairs->y; 
 		
-		engine.map->computeFov(); break;
+		engine.map->computeFov(); break;*/
 		
 	case TCODK_PRINTSCREEN:
 		TCODSystem::saveScreenshot(NULL);
