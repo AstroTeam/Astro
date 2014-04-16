@@ -170,6 +170,7 @@ void Map::init(bool withActors, LevelType levelType) {
 
 				engine.actors.push(z);
 				engine.boss = boss;
+
 			}
 			else {
 				Actor *boss = createSecurityBot(engine.stairs->x+1, engine.stairs->y);
@@ -186,7 +187,15 @@ void Map::init(bool withActors, LevelType levelType) {
 		}
 	}
 	else {
-		engine.boss = NULL;
+		//dummy boss
+		Actor *boss = createInfectedCrewMember(engine.stairs->x+1, engine.stairs->y);
+		boss->name = "Jim";
+		boss->ch = 146;
+		boss->destructible->hp = 1;
+		boss->destructible->maxHp = boss->destructible->hp;
+		boss->totalStr = 1;
+		engine.boss = boss;
+
 		spawnTutorial();
 	}
 }
@@ -365,6 +374,7 @@ void Map::spawnTutorial() {
 	triggerTileI->ai = new TriggerAi(  
 	"INTERACTION BASICS\n\n"
 	"Most items can be interacted with by simply moving into them by pressing the corresponding movement key whilst being adjacent to it. (Like these automated terminals)");
+
 	triggerTileI->blocks = false; 
 	engine.actors.push(triggerTileI);
 	cout << "got past first terminal" << endl;
@@ -860,6 +870,9 @@ void Map::spawnTutorial() {
 	engine.stairs->y = y1;
 	engine.player->x = startX;
 	engine.player->y = startY;
+	//place dummy boss near stairs
+	//engine.boss->x = engine.stairs->x;
+	//engine.boss->y = engine.stairs->y;
 	//make a message tile infront the player
 
 	Actor *triggerTile = new Actor(startX, startY-1, 227, "Intercom Terminal", TCODColor::white);

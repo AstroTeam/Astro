@@ -754,7 +754,7 @@ void Engine::load(bool pause) {
 	//else if (level > 0){
 	
 	//if (pause && level>0) {
-	if (pause && level >0){		
+	if (pause){		
 		engine.gui->menu.addItem(Menu::SAVE, "SAVE");
 	}
 	if(TCODSystem::fileExists("game.sav")) {
