@@ -113,6 +113,8 @@ int Map::tileType(int x, int y) {
 	{return 12;}
 	else if (tiles[i].tileType == Param::INFECTED_ROOM)//
 	{return 13;}
+	else if (tiles[i].tileType == Param::DISPLAY)//
+	{return 14;}
 	else
 	{return 1;}
 	//return tiles[x*y].tileType;
@@ -2412,13 +2414,15 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			{
 				if (((wall == 1 || wall == 3) && x == disp) || ((wall == 2 || wall == 4) && y == disp))
 				{
-					Actor *display = new Actor(x, y, 243, "Liquor Display.", TCODColor::white);
-					engine.map->tiles[x+y*engine.map->width].decoration = 81;
-					engine.actors.push(display);
-					display->blocks = false;
-					engine.sendToBack(display);
+					//Actor *display = new Actor(x, y, 243, "Liquor Display.", TCODColor::white);
+					//engine.map->tiles[x+y*engine.map->width].decoration = 81;
+					//engine.actors.push(display);
+					//display->blocks = false;
+					//engine.sendToBack(display);
 					Actor *booze = createAlcohol(x,y);
 					engine.actors.push(booze);
+					//engine.map->tileType(x,y) = 14;
+					tiles[x+y*engine.map->width].tileType = Param::DISPLAY;
 					
 				}
 				if (((wall == 1 || wall == 3) && x == bar) || ((wall == 2 || wall == 4) && y == bar))
@@ -2479,8 +2483,9 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 						{
 							if (((xx-(x1+dx1))%3 != 0) && ((yy-(y1+dy1))%4 != 0))
 							{
-								Actor *barstool = new Actor(xx, yy, 'P', "3D Pool Table.", TCODColor::white);
+								Actor *barstool = new Actor(xx, yy, 243, "Standing Table.", TCODColor::white);
 								//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+								engine.map->tiles[xx+yy*engine.map->width].decoration = rng->getInt(82,84);
 								engine.actors.push(barstool);
 								barstool->blocks = false;
 								engine.sendToBack(barstool);

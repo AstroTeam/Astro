@@ -21,8 +21,8 @@ namespace Param {
 		HYDROPONICS, //done - grass, spawns food in garden
 		DEFENDED_ROOM, // to-do - spawns companions
 		BAR, //to-do - spawns alcohol/drugs
-		INFECTED_ROOM //to-do spawns lot of infection.  infected equipment?
-		
+		INFECTED_ROOM, //to-do spawns lot of infection.  infected equipment?
+		DISPLAY //bar displays
 		
 		//lobby - stair room with seating
 		//cult rooms - blood everywhere, crazy cult enemies that have high str, low hp

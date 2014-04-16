@@ -168,9 +168,13 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 176+16+16+16;
 				}
-				else if(r == 12)//8 is bar
+				else if(r == 12)//12 is bar
 				{
 					srcRect.x = 240;
+				}
+				else if(r == 14)//14 is bar display
+				{
+					srcRect.x = 240+16;
 				}
 				else //else is regular floors
 				{
@@ -293,9 +297,13 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 176+16+16+16;
 				}
-				else if(r == 12)//8 is bar
+				else if(r == 12)//12 is bar
 				{
 					srcRect.x = 240;
+				}
+				else if(r == 14)//14 is bar display
+				{
+					srcRect.x = 240+16;
 				}
 				else
 				{
@@ -407,10 +415,10 @@ void Renderer::render(void *sdlSurface){
 			{
 				srcRect.y = 0;
 				srcRect.x = 0;
-				if (engine.map->tileType(xM,yM) == 12)
-				{
-					srcRect.y += 32;
-				}
+				//if (engine.map->tileType(xM,yM) == 12)
+				//{
+				//	srcRect.y += 32;
+				//}
 				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
 					{
 						//light
