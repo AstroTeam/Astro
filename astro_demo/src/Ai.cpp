@@ -359,6 +359,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					TriggerAi* t = (TriggerAi*)actor->ai;
 					t->pressed = false;
 					engine.gui->message(TCODColor::lightGrey,"The terminal replayed its message.");
+					engine.ctrTer -= 1;
 					actor->ai->update(actor);
 				}
 			}
