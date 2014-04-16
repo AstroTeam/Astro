@@ -1478,7 +1478,7 @@ void FlareAi::update(Actor * owner)
 	if (i < turns)
 	{
 		i++;
-		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of its phosphorus remains.",turns-i+1,turns);
+		//engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of its phosphorus remains.",turns-i+1,turns);
 	}
 	else
 	{
