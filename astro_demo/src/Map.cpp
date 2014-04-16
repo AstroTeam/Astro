@@ -2544,44 +2544,11 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//playerLight->ai->moving = true;
 		engine.sendToBack(engine.playerLight);
 		
-		Actor *pet = new Actor(engine.player->x,engine.player->y,141,"Jelly Donut Fairy",TCODColor::white);
-		pet->hostile = false;
-		pet->destructible = new MonsterDestructible(10,0,0,10);
-		pet->blocks = false;
-		pet->container = new Container(2);
-		pet->flashable = true;
-		switch(engine.player->race[0]){
-			 
-			case 'A':		//Alien
-			pet->name = "Capybara";
-			pet->ch = 173;
-			pet->destructible->maxHp = 35;
-			pet->destructible->hp = 35;
-			pet->totalStr = 2;
-			pet->attacker = new Attacker(2);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
-			break;
-
-			case 'R':		//Robot
-			pet->name = "Armored RC Helicopter";
-			pet->ch = 157;
-			pet->destructible->maxHp = 350;
-			pet->destructible->hp = 350;
-			pet->totalStr = 0;
-			pet->attacker = new Attacker(0);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
-			break;
-			
-			default:		//Human
-			pet->totalStr = -1;
-			pet->attacker = new Attacker(-1);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
-			((CompanionAi*)pet->ai)->edible = true;
-			break;
-		}
+		Actor *pet = createCompanion(true);
+		
 		engine.player->companion = pet;
 		engine.actors.push(pet);
-	
+		
 		//Actor *r4 = createRecord(engine.player->x, engine.player->y-1);
 		//engine.actors.push(r4);
 		/*if (true)
@@ -3894,8 +3861,13 @@ Actor *Map::createTitanMail(int x, int y, bool isVend){
 	//Equipment::SlotType slot = Equipment::NOSLOT;
 	//ItemBonus *bonus = NULL;
 	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
-	//min damage, max damage, critMult, 
-	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,5);
+	//min damage, max damage, critMult,
+	TCODList<ItemBonus *> bonus;
+	ItemBonus *DRBonus = new ItemBonus(ItemBonus::DR,5);
+	ItemBonus *dodgeBonus = new ItemBonus(ItemBonus::DODGE,-3);
+	ItemBonus *modBonus = new ItemBonus(ItemBonus::DR,0);
+	bonus.push(DRBonus);
+	bonus.push(dodgeBonus);
 	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,7);
 	
 	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
@@ -3914,17 +3886,17 @@ Actor *Map::createTitanMail(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Dented ");
-						bonus = new ItemBonus(ItemBonus::DR,3);
+						modBonus = new ItemBonus(ItemBonus::DR,-2);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					case 2:
 						strcat(nameBuf,"Rusty ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,-2);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					case 3:
 						strcat(nameBuf,"Corroded ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,20);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-20);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					default:break;
@@ -3943,12 +3915,12 @@ Actor *Map::createTitanMail(int x, int y, bool isVend){
 						break;
 					case 1:
 						strcat(nameBuf,"Quality ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,5);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,2);
 						requirement = new ItemReq(ItemReq::STRENGTH,7);
 						break;
 					case 2:
 						strcat(nameBuf,"Economy ");
-						bonus = new ItemBonus(ItemBonus::DR,4);
+						modBonus = new ItemBonus(ItemBonus::DR,0);
 						requirement = new ItemReq(ItemReq::STRENGTH,6);
 						break;
 					default:break;
@@ -3961,22 +3933,22 @@ Actor *Map::createTitanMail(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Reinforced ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,7);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,3);
 						requirement = new ItemReq(ItemReq::STRENGTH,8);
 						break;
 					case 2:
 						strcat(nameBuf,"Double Plated ");
-						bonus = new ItemBonus(ItemBonus::DR,7);
+						modBonus = new ItemBonus(ItemBonus::DR,2);
 						requirement = new ItemReq(ItemReq::STRENGTH,8);
 						break;
 					case 3:
 						strcat(nameBuf,"Mechanized ");
-						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,7);
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,4);
 						requirement = new ItemReq(ItemReq::INTELLIGENCE,8);
 						break;
 					case 4:
 						strcat(nameBuf,"Pristine ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,100);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,100);
 						requirement = new ItemReq(ItemReq::STRENGTH,7);
 						break;
 					default:break;
@@ -3991,7 +3963,7 @@ Actor *Map::createTitanMail(int x, int y, bool isVend){
 	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	titanMail->blocks = false;
 	titanMail->name = nameBuf;
-	
+	bonus.push(modBonus);
 	titanMail->pickable = new Equipment(0,Equipment::CHEST,bonus,requirement);
 	titanMail->sort = 3;
 	((Equipment*)(titanMail->pickable))->armorArt = 6;
@@ -4012,7 +3984,12 @@ Actor *Map::createTitanBoots(int x, int y, bool isVend){
 	//ItemBonus *bonus = NULL;
 	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
 	//min damage, max damage, critMult, 
-	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,3);
+	TCODList<ItemBonus *> bonus;
+	ItemBonus *DRBonus = new ItemBonus(ItemBonus::DR,3);
+	ItemBonus *dodgeBonus = new ItemBonus(ItemBonus::DODGE,-1);
+	ItemBonus *modBonus = new ItemBonus(ItemBonus::DR,0);
+	bonus.push(DRBonus);
+	bonus.push(dodgeBonus);
 	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,4);
 	
 	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
@@ -4031,17 +4008,17 @@ Actor *Map::createTitanBoots(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Dented ");
-						bonus = new ItemBonus(ItemBonus::DR,1);
+						modBonus = new ItemBonus(ItemBonus::DR,-2);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					case 2:
 						strcat(nameBuf,"Rusty ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,-1);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					case 3:
 						strcat(nameBuf,"Corroded ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,10);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-10);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					default:break;
@@ -4060,12 +4037,12 @@ Actor *Map::createTitanBoots(int x, int y, bool isVend){
 						break;
 					case 1:
 						strcat(nameBuf,"Quality ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,3);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,2);
 						requirement = new ItemReq(ItemReq::STRENGTH,5);
 						break;
 					case 2:
 						strcat(nameBuf,"Economy ");
-						bonus = new ItemBonus(ItemBonus::DR,2);
+						modBonus = new ItemBonus(ItemBonus::DR,0);
 						requirement = new ItemReq(ItemReq::STRENGTH,3);
 						break;
 					default:break;
@@ -4078,22 +4055,22 @@ Actor *Map::createTitanBoots(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Reinforced ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,5);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,3);
 						requirement = new ItemReq(ItemReq::STRENGTH,6);
 						break;
 					case 2:
 						strcat(nameBuf,"Double Plated ");
-						bonus = new ItemBonus(ItemBonus::DR,5);
+						modBonus = new ItemBonus(ItemBonus::DR,3);
 						requirement = new ItemReq(ItemReq::STRENGTH,6);
 						break;
 					case 3:
 						strcat(nameBuf,"Mechanized ");
-						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,5);
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,3);
 						requirement = new ItemReq(ItemReq::INTELLIGENCE,6);
 						break;
 					case 4:
 						strcat(nameBuf,"Pristine ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,50);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,50);
 						requirement = new ItemReq(ItemReq::STRENGTH,5);
 						break;
 					default:break;
@@ -4108,7 +4085,7 @@ Actor *Map::createTitanBoots(int x, int y, bool isVend){
 	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	titanBoots->blocks = false;
 	titanBoots->name = nameBuf;
-	
+	bonus.push(modBonus);
 	titanBoots->pickable = new Equipment(0,Equipment::FEET,bonus,requirement);
 	titanBoots->sort = 3;
 	((Equipment*)(titanBoots->pickable))->armorArt = 8;
@@ -4129,7 +4106,12 @@ Actor *Map::createTitanGreaves(int x, int y, bool isVend){
 	//ItemBonus *bonus = NULL;
 	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
 	//min damage, max damage, critMult, 
-	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,4);
+	TCODList<ItemBonus *> bonus;
+	ItemBonus *DRBonus = new ItemBonus(ItemBonus::DR,4);
+	ItemBonus *dodgeBonus = new ItemBonus(ItemBonus::DODGE,-3);
+	ItemBonus *modBonus = new ItemBonus(ItemBonus::DR,0);
+	bonus.push(DRBonus);
+	bonus.push(dodgeBonus);
 	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,5);
 	
 	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
@@ -4148,17 +4130,17 @@ Actor *Map::createTitanGreaves(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Dented ");
-						bonus = new ItemBonus(ItemBonus::DR,2);
+						modBonus = new ItemBonus(ItemBonus::DR,-2);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					case 2:
 						strcat(nameBuf,"Rusty ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,-2);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					case 3:
 						strcat(nameBuf,"Corroded ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,20);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-20);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					default:break;
@@ -4177,12 +4159,12 @@ Actor *Map::createTitanGreaves(int x, int y, bool isVend){
 						break;
 					case 1:
 						strcat(nameBuf,"Quality ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,4);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,2);
 						requirement = new ItemReq(ItemReq::STRENGTH,6);
 						break;
 					case 2:
 						strcat(nameBuf,"Economy ");
-						bonus = new ItemBonus(ItemBonus::DR,3);
+						modBonus = new ItemBonus(ItemBonus::DR,-1);
 						requirement = new ItemReq(ItemReq::STRENGTH,4);
 						break;
 					default:break;
@@ -4195,22 +4177,22 @@ Actor *Map::createTitanGreaves(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Reinforced ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,6);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,4);
 						requirement = new ItemReq(ItemReq::STRENGTH,7);
 						break;
 					case 2:
 						strcat(nameBuf,"Double Plated ");
-						bonus = new ItemBonus(ItemBonus::DR,6);
+						modBonus = new ItemBonus(ItemBonus::DR,2);
 						requirement = new ItemReq(ItemReq::STRENGTH,7);
 						break;
 					case 3:
 						strcat(nameBuf,"Mechanized ");
-						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,6);
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,4);
 						requirement = new ItemReq(ItemReq::INTELLIGENCE,7);
 						break;
 					case 4:
 						strcat(nameBuf,"Pristine ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,70);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,70);
 						requirement = new ItemReq(ItemReq::STRENGTH,6);
 						break;
 					default:break;
@@ -4225,7 +4207,7 @@ Actor *Map::createTitanGreaves(int x, int y, bool isVend){
 	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	titanGreaves->blocks = false;
 	titanGreaves->name = nameBuf;
-	
+	bonus.push(modBonus);
 	titanGreaves->pickable = new Equipment(0,Equipment::LEGS,bonus,requirement);
 	titanGreaves->sort = 3;
 	((Equipment*)(titanGreaves->pickable))->armorArt = 7;
@@ -4246,7 +4228,10 @@ Actor *Map::createMylarGreaves(int x, int y, bool isVend){
 	//ItemBonus *bonus = NULL;
 	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
 	//min damage, max damage, critMult, 
-	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,1);
+	TCODList<ItemBonus *> bonus;
+	ItemBonus *STDBonus = new ItemBonus(ItemBonus::DR,1);
+	ItemBonus *modBonus = new ItemBonus(ItemBonus::DR,0);
+	bonus.push(STDBonus);
 	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,3);
 	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
 	//random 1-3, 1 is worse, 2 is average, 3 is good
@@ -4264,17 +4249,17 @@ Actor *Map::createMylarGreaves(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Tattered ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,20);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-10);
 						requirement = new ItemReq(ItemReq::DEXTERITY,1);
 						break;
 					case 2:
 						strcat(nameBuf,"Worn ");
-						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						modBonus = new ItemBonus(ItemBonus::DEXTERITY,-1);
 						requirement = new ItemReq(ItemReq::DEXTERITY,2);
 						break;
 					case 3:
 						strcat(nameBuf,"Ruined ");
-						bonus = new ItemBonus(ItemBonus::NOBONUS,0);
+						modBonus = new ItemBonus(ItemBonus::DR,-1);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					default:break;
@@ -4290,17 +4275,17 @@ Actor *Map::createMylarGreaves(int x, int y, bool isVend){
 				{
 					case 0:
 						strcat(nameBuf,"Durable ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,1);
 						requirement = new ItemReq(ItemReq::STRENGTH,3);
 						break;
 					case 1:
 						strcat(nameBuf,"Useful ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,40);
-						requirement = new ItemReq(ItemReq::DEXTERITY,4);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,30);
+						requirement = new ItemReq(ItemReq::DEXTERITY,3);
 						break;
 					case 2:
 						strcat(nameBuf,"Cheap ");
-						bonus = new ItemBonus(ItemBonus::DEXTERITY,2);
+						modBonus = new ItemBonus(ItemBonus::DEXTERITY,2);
 						break;
 					default:break;
 				}
@@ -4312,22 +4297,22 @@ Actor *Map::createMylarGreaves(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Reinforced ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,2);
 						requirement = new ItemReq(ItemReq::STRENGTH,4);
 						break;
 					case 2:
 						strcat(nameBuf,"Tough ");
-						bonus = new ItemBonus(ItemBonus::DR,3);
+						modBonus = new ItemBonus(ItemBonus::DR,3);
 						requirement = new ItemReq(ItemReq::DEXTERITY,5);
 						break;
 					case 3:
 						strcat(nameBuf,"High Tech ");
-						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,2);
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,2);
 						requirement = new ItemReq(ItemReq::INTELLIGENCE,4);
 						break;
 					case 4:
 						strcat(nameBuf,"Reliable ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,50);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,40);
 						requirement = new ItemReq(ItemReq::DEXTERITY,4);
 						break;
 					default:break;
@@ -4342,7 +4327,7 @@ Actor *Map::createMylarGreaves(int x, int y, bool isVend){
 	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	myGreaves->blocks = false;
 	myGreaves->name = nameBuf;
-	
+	bonus.push(modBonus);
 	myGreaves->pickable = new Equipment(0,Equipment::LEGS,bonus,requirement);
 	myGreaves->sort = 3;
 	((Equipment*)(myGreaves->pickable))->armorArt = 3;
@@ -4363,7 +4348,10 @@ Actor *Map::createMylarVest(int x, int y, bool isVend){
 	//ItemBonus *bonus = NULL;
 	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
 	//min damage, max damage, critMult, 
-	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+	TCODList<ItemBonus *> bonus;
+	ItemBonus *STDBonus = new ItemBonus(ItemBonus::STRENGTH,2);
+	ItemBonus *modBonus = new ItemBonus(ItemBonus::DR,0);
+	bonus.push(STDBonus);
 	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,3);
 	
 	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
@@ -4382,17 +4370,17 @@ Actor *Map::createMylarVest(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Tattered ");
-						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						modBonus = new ItemBonus(ItemBonus::DEXTERITY,-1);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					case 2:
 						strcat(nameBuf,"Worn ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,25);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-25);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					case 3:
 						strcat(nameBuf,"Ruined ");
-						bonus = new ItemBonus(ItemBonus::NOBONUS,0);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,-2);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					default:break;
@@ -4408,17 +4396,17 @@ Actor *Map::createMylarVest(int x, int y, bool isVend){
 				{
 					case 0:
 						strcat(nameBuf,"Durable ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,-1);
 						requirement = new ItemReq(ItemReq::STRENGTH,3);
 						break;
 					case 1:
 						strcat(nameBuf,"Useful ");
-						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						modBonus = new ItemBonus(ItemBonus::DEXTERITY,1);
 						requirement = new ItemReq(ItemReq::DEXTERITY,3);
 						break;
 					case 2:
 						strcat(nameBuf,"Cheap ");
-						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
 						requirement = new ItemReq(ItemReq::INTELLIGENCE,3);
 						break;
 					default:break;
@@ -4431,22 +4419,22 @@ Actor *Map::createMylarVest(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Reinforced ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,3);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,3);
 						requirement = new ItemReq(ItemReq::STRENGTH,5);
 						break;
 					case 2:
 						strcat(nameBuf,"Tough ");
-						bonus = new ItemBonus(ItemBonus::DR,4);
+						modBonus = new ItemBonus(ItemBonus::DR,4);
 						requirement = new ItemReq(ItemReq::DEXTERITY,5);
 						break;
 					case 3:
 						strcat(nameBuf,"High Tech ");
-						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,2);
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,3);
 						requirement = new ItemReq(ItemReq::INTELLIGENCE,5);
 						break;
 					case 4:
 						strcat(nameBuf,"Reliable ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,50);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,50);
 						requirement = new ItemReq(ItemReq::DEXTERITY,4);
 						break;
 					default:break;
@@ -4461,7 +4449,7 @@ Actor *Map::createMylarVest(int x, int y, bool isVend){
 	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	myVest->blocks = false;
 	myVest->name = nameBuf;
-	
+	bonus.push(modBonus);
 	myVest->pickable = new Equipment(0,Equipment::CHEST,bonus,requirement);
 	myVest->sort = 3;
 	((Equipment*)(myVest->pickable))->armorArt = 2;
@@ -4482,7 +4470,10 @@ Actor *Map::createMylarCap(int x, int y, bool isVend){
 	//ItemBonus *bonus = NULL;
 	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
 	//min damage, max damage, critMult, 
-	ItemBonus *bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+	TCODList<ItemBonus *> bonus;
+	ItemBonus *STDBonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+	ItemBonus *modBonus = new ItemBonus(ItemBonus::DR,0);
+	bonus.push(STDBonus);
 	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,1);
 	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
 	//random 1-3, 1 is worse, 2 is average, 3 is good
@@ -4500,17 +4491,17 @@ Actor *Map::createMylarCap(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Tattered ");
-						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						modBonus = new ItemBonus(ItemBonus::DEXTERITY,-1);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					case 2:
 						strcat(nameBuf,"Worn ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,15);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-15);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					case 3:
 						strcat(nameBuf,"Ruined ");
-						bonus = new ItemBonus(ItemBonus::NOBONUS,0);
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,-1);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					default:break;
@@ -4526,17 +4517,17 @@ Actor *Map::createMylarCap(int x, int y, bool isVend){
 				{
 					case 0:
 						strcat(nameBuf,"Durable ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,2);
 						requirement = new ItemReq(ItemReq::STRENGTH,3);
 						break;
 					case 1:
 						strcat(nameBuf,"Useful ");
-						bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+						modBonus = new ItemBonus(ItemBonus::DEXTERITY,1);
 						requirement = new ItemReq(ItemReq::DEXTERITY,3);
 						break;
 					case 2:
 						strcat(nameBuf,"Cheap ");
-						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,-1);
 						requirement = new ItemReq(ItemReq::INTELLIGENCE,3);
 						break;
 					default:break;
@@ -4549,22 +4540,22 @@ Actor *Map::createMylarCap(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Reinforced ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,2);
 						requirement = new ItemReq(ItemReq::STRENGTH,5);
 						break;
 					case 2:
 						strcat(nameBuf,"Tough ");
-						bonus = new ItemBonus(ItemBonus::DR,3);
+						modBonus = new ItemBonus(ItemBonus::DR,3);
 						requirement = new ItemReq(ItemReq::DEXTERITY,4);
 						break;
 					case 3:
 						strcat(nameBuf,"High Tech ");
-						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,3);
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,3);
 						requirement = new ItemReq(ItemReq::INTELLIGENCE,5);
 						break;
 					case 4:
 						strcat(nameBuf,"Reliable ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,30);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,30);
 						requirement = new ItemReq(ItemReq::DEXTERITY,3);
 						break;
 					default:break;
@@ -4580,6 +4571,7 @@ Actor *Map::createMylarCap(int x, int y, bool isVend){
 	myCap->blocks = false;
 	myCap->name = nameBuf;
 	//ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,1);
+	bonus.push(modBonus);
 	myCap->pickable = new Equipment(0,Equipment::HEAD,bonus,requirement);
 	myCap->sort = 3;
 	((Equipment*)(myCap->pickable))->armorArt = 1;
@@ -4600,7 +4592,10 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 	//ItemBonus *bonus = NULL;
 	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
 	//min damage, max damage, critMult, 
-	ItemBonus *bonus = new ItemBonus(ItemBonus::HEALTH,18 + (2*engine.level));
+	TCODList<ItemBonus *> bonus;
+	ItemBonus *STDBonus = new ItemBonus(ItemBonus::HEALTH,18 + (2*engine.level));
+	ItemBonus *modBonus = new ItemBonus(ItemBonus::DR,0);
+	bonus.push(STDBonus);
 	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,2 + (engine.level - 1));
 	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
 	//random 1-3, 1 is worse, 2 is average, 3 is good
@@ -4618,17 +4613,17 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Tattered ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,8 + (2*engine.level));
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-20 + 8 + (2*engine.level));
 						requirement = new ItemReq(ItemReq::DEXTERITY,1 + (engine.level - 1));
 						break;
 					case 2:
 						strcat(nameBuf,"Worn ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,15);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-5);
 						requirement = new ItemReq(ItemReq::DEXTERITY,1 + (engine.level - 1));
 						break;
 					case 3:
 						strcat(nameBuf,"Destroyed ");
-						bonus = new ItemBonus(ItemBonus::NOBONUS,0);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-20);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					default:break;
@@ -4644,17 +4639,17 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 				{
 					case 0:
 						strcat(nameBuf,"Durable ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,25 + (5*engine.level));
+						modBonus = new ItemBonus(ItemBonus::HEALTH,5 + (5*engine.level));
 						requirement = new ItemReq(ItemReq::DEXTERITY,3 + (engine.level - 1));
 						break;
 					case 1:
 						strcat(nameBuf,"Useful ");
-						bonus = new ItemBonus(ItemBonus::DR,1 + (engine.level - 1));
+						modBonus = new ItemBonus(ItemBonus::DR,1 + (engine.level - 1));
 						requirement = new ItemReq(ItemReq::DEXTERITY,2 + (engine.level - 1));
 						break;
 					case 2:
 						strcat(nameBuf,"Cheap ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,1 + (engine.level - 1));
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,1 + (engine.level - 1));
 						requirement = new ItemReq(ItemReq::STRENGTH,2 + (engine.level - 1));
 						break;
 					default:break;
@@ -4667,22 +4662,22 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Reinforced ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,2 + (engine.level - 1));
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,2 + (engine.level - 1));
 						requirement = new ItemReq(ItemReq::STRENGTH,3 + (engine.level - 1));
 						break;
 					case 2:
 						strcat(nameBuf,"Tough ");
-						bonus = new ItemBonus(ItemBonus::DR,2 + (engine.level - 1));
+						modBonus = new ItemBonus(ItemBonus::DR,2 + (engine.level - 1));
 						requirement = new ItemReq(ItemReq::DEXTERITY,4 + (engine.level - 1));
 						break;
 					case 3:
 						strcat(nameBuf,"High Tech ");
-						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,2 + (engine.level - 1));
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,2 + (engine.level - 1));
 						requirement = new ItemReq(ItemReq::INTELLIGENCE,4 + (engine.level - 1));
 						break;
 					case 4:
 						strcat(nameBuf,"Reliable ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,30 + (10*engine.level));
+						modBonus = new ItemBonus(ItemBonus::HEALTH,10 + (10*engine.level));
 						requirement = new ItemReq(ItemReq::DEXTERITY,3 + (engine.level - 1));
 						break;
 					default:break;
@@ -4697,7 +4692,7 @@ Actor *Map::createMylarBoots(int x, int y, bool isVend){
 	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	myBoots->blocks = false;
 	myBoots->name = nameBuf;
-	
+	bonus.push(modBonus);
 	myBoots->pickable = new Equipment(0,Equipment::FEET,bonus,requirement);
 	myBoots->sort = 3;
 	((Equipment*)(myBoots->pickable))->armorArt = 4;
@@ -4718,7 +4713,12 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 	//ItemBonus *bonus = NULL;
 	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
 	//min damage, max damage, critMult, 
-	ItemBonus *bonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+	TCODList<ItemBonus *> bonus;
+	ItemBonus *STDBonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+	ItemBonus *ADDBonus = new ItemBonus(ItemBonus::DODGE,-1);
+	ItemBonus *modBonus = new ItemBonus(ItemBonus::DR,0);
+	bonus.push(STDBonus);
+	bonus.push(ADDBonus);
 	ItemReq *requirement = new ItemReq(ItemReq::DEXTERITY,4);
 	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
 	int minDmg = 1;
@@ -4740,11 +4740,11 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Heavy ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,-1);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,-1);
 						break;
 					case 2:
 						strcat(nameBuf,"Overly Complex ");
-						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,-1);
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,-1);
 						break;
 					case 3:
 						strcat(nameBuf,"Low Damage ");
@@ -4756,7 +4756,7 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 						break;
 					case 5:
 						strcat(nameBuf,"Burning ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,-5);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-5);
 						break;
 					default:break;
 				}
@@ -4829,11 +4829,11 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Light ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,1);
 						break;
 					case 2:
 						strcat(nameBuf,"User Friendly ");
-						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,1);
 						break;
 					case 3:
 						strcat(nameBuf,"High Power ");
@@ -4883,6 +4883,7 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 	MLR->name = nameBuf;
 	//MLR->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
 	//1 = min damage, 6 = max damage, 2 is crit mult, RANGED, 0 = not equipped,RANGED, bonus, req
+	bonus.push(modBonus);
 	MLR->pickable = new Weapon(minDmg,maxDmg,critMult,Weapon::RANGED,0,Equipment::RANGED,bonus,requirement);
 	MLR->sort = 4;
 	((Equipment*)(MLR->pickable))->armorArt = 13;
@@ -4897,7 +4898,10 @@ Actor *Map::createCombatKnife(int x, int y){
 	memset(nameBuf,0,80);
 	Actor *combatKnife = new Actor(x,y,169,"Combat Knife",TCODColor::white);
 	combatKnife->blocks = false;
-	ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,2);
+	TCODList<ItemBonus *> bonus;
+	ItemBonus *STDBonus = new ItemBonus(ItemBonus::STRENGTH,2);
+	ItemBonus *modBonus = new ItemBonus(ItemBonus::DR,0);
+	bonus.push(STDBonus);
 	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,3);
 	TCODRandom *random = TCODRandom::getInstance();
 	TCODColor col = TCODColor::white;
@@ -4999,7 +5003,7 @@ Actor *Map::createCombatKnife(int x, int y){
 	{
 		case 1://right hand
 			minDmg += 1;//faster, so more reliable
-			bonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+1);//2 is "average"
+			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+1);//2 is "average"
 			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF);//3 is "average"
 			slot = new Equipment::SlotType(Equipment::HAND1);
 			wpn = new Weapon::WeaponType(Weapon::LIGHT);
@@ -5026,7 +5030,7 @@ Actor *Map::createCombatKnife(int x, int y){
 			break;
 		case 2://offhand
 			minDmg += 1;//faster, so more reliable
-			bonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+1);//2 is "average"
+			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+1);//2 is "average"
 			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF);//3 is "average"
 			slot = new Equipment::SlotType(Equipment::HAND2);
 			wpn = new Weapon::WeaponType(Weapon::LIGHT);
@@ -5052,7 +5056,7 @@ Actor *Map::createCombatKnife(int x, int y){
 			break;
 		case 3://TWO HANDED
 			maxDmg += 1;//heavier, so more max
-			bonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+4);//5 is "average" (1 more than 2 average 1 handers)
+			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+4);//5 is "average" (1 more than 2 average 1 handers)
 			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF+4);//7 is "average"
 			slot = new Equipment::SlotType(Equipment::HAND1);
 			wpn = new Weapon::WeaponType(Weapon::HEAVY);
@@ -5080,6 +5084,7 @@ Actor *Map::createCombatKnife(int x, int y){
 	}
 	combatKnife->name = nameBuf;
 	//combatKnife->pickable = new Equipment(0,Equipment::HAND1,bonus,requirement);
+	bonus.push(modBonus);
 	combatKnife->pickable = new Weapon(minDmg,maxDmg,3,*wpn,0,*slot,bonus,requirement);
 	combatKnife->pickable->value = 100;
 	combatKnife->pickable->inkValue = 10;
@@ -5130,7 +5135,7 @@ Actor *Map::createArtifact(int x, int y){
 	Actor *artifact = new Actor(x,y,'A',"Art",TCODColor::lighterGreen);
 	artifact->pickable = new Equipment(0);
 	Equipment::SlotType slot = Equipment::NOSLOT;
-	ItemBonus *bonus = NULL;
+	ItemBonus *modBonus = NULL;
 	ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
 	
 	int choices = random->getInt(1,13);
@@ -5182,25 +5187,27 @@ Actor *Map::createArtifact(int x, int y){
 	choices = random->getInt(1,6);
 	switch(choices) {
 		case 1: strcat(nameBuf, "of Adamantium"); 
-				bonus = new ItemBonus(ItemBonus::HEALTH,10+(2*engine.level));
+				modBonus = new ItemBonus(ItemBonus::HEALTH,10+(2*engine.level));
 				break;
 		case 2: strcat(nameBuf, "of Swiftness"); 
-				bonus = new ItemBonus(ItemBonus::DODGE,3+(2*engine.level));
+				modBonus = new ItemBonus(ItemBonus::DODGE,3+(2*engine.level));
 				break;
 		case 3: strcat(nameBuf, "of Defense"); 
-				bonus = new ItemBonus(ItemBonus::DR,(2*engine.level));
+				modBonus = new ItemBonus(ItemBonus::DR,3+(2*engine.level));
 				break;
 		case 4: strcat(nameBuf, "of the Stalwart Fighter");
-				bonus = new ItemBonus(ItemBonus::STRENGTH,2+(2*engine.level));
+				modBonus = new ItemBonus(ItemBonus::STRENGTH,3+(2*engine.level));
 				break;
 		case 5: strcat(nameBuf, "of the Bounding Lynx"); 
-				bonus = new ItemBonus(ItemBonus::DEXTERITY,2+(2*engine.level));
+				modBonus = new ItemBonus(ItemBonus::DEXTERITY,3+(2*engine.level));
 				break;
 		case 6: strcat(nameBuf, "of Vast Intellect");
-				bonus = new ItemBonus(ItemBonus::INTELLIGENCE,2+(2*engine.level));
+				modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,3+(2*engine.level));
 				break;
 		default: break;
 	}
+	TCODList<ItemBonus *> bonus = new TCODList<ItemBonus *>();
+	bonus.push(modBonus);
 	((Equipment*)(artifact->pickable))->slot = slot;
 	((Equipment*)(artifact->pickable))->bonus = bonus;
 	((Equipment*)(artifact->pickable))->requirement = req;
@@ -5211,6 +5218,92 @@ Actor *Map::createArtifact(int x, int y){
 	return artifact;
 }
 
+Actor *Map::createCompanion(bool racial){
+	Actor *pet = new Actor(engine.player->x,engine.player->y,141,"Hyperdonut",TCODColor::white);
+	pet->hostile = false;
+	pet->destructible = new MonsterDestructible(50,0,0,10);
+	pet->blocks = false;
+	pet->container = new Container(2);
+	pet->flashable = true;
+	
+	TCODRandom *tutu = TCODRandom::getInstance();
+	
+	if (racial){	
+		switch(engine.player->race[0]){
+			 
+			case 'A':		//Alien
+			pet->name = "Capybara";
+			pet->ch = 173;
+			pet->destructible->maxHp = 70;
+			pet->destructible->hp = 70;
+			pet->totalStr = 2;
+			pet->attacker = new Attacker(2);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			break;
+
+			case 'R':		//Robot
+			pet->name = "Scout Drone";
+			pet->ch = 157;
+			pet->destructible->maxHp = 350;
+			pet->destructible->hp = 350;
+			pet->totalStr = 0;
+			pet->attacker = new Attacker(0);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			break;
+			
+			default:		//Human
+			pet->totalStr = -1;
+			pet->attacker = new Attacker(-1);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			((CompanionAi*)pet->ai)->edible = true;
+			break;
+		}
+	} else{
+		int switcher = tutu->getInt(1,3);
+		switch(switcher){
+			 
+			case 1:		//Alien
+			pet->name = "Capybara";
+			pet->ch = 173;
+			pet->destructible->maxHp = 70;
+			pet->destructible->hp = 70;
+			pet->totalStr = 2;
+			pet->attacker = new Attacker(2);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			break;
+
+			case 2:		//Robot
+			pet->name = "Scout Drone";
+			pet->ch = 157;
+			pet->destructible->maxHp = 350;
+			pet->destructible->hp = 350;
+			pet->totalStr = 0;
+			pet->attacker = new Attacker(0);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			break;
+			
+			case 3:		//Robot
+			pet->name = "Scout Drone";
+			pet->ch = 157;
+			pet->destructible->maxHp = 350;
+			pet->destructible->hp = 350;
+			pet->totalStr = 0;
+			pet->attacker = new Attacker(0);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			break;
+			
+			default:		//Human
+			pet->totalStr = -1;
+			pet->attacker = new Attacker(-1);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			((CompanionAi*)pet->ai)->edible = true;
+			break;
+		}
+	}
+	return pet;
+}
+
 bool Map::isVisible(int x, int y){
 	return (engine.mapcon->getCharForeground(x,y) == TCODColor::white) && (engine.map->isExplored(x,y));
 }
+
