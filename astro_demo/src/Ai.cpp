@@ -452,11 +452,11 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			engine.map->computeFov();
 			engine.gui->menu.clear();
 			engine.invState = 1;
-			engine.gui->menu.addItem(Menu::ITEMS, "Items");
-			engine.gui->menu.addItem(Menu::TECH, "Tech");
-			engine.gui->menu.addItem(Menu::ARMOR, "Armor");
-			engine.gui->menu.addItem(Menu::WEAPONS, "Weapons");
-			engine.gui->menu.addItem(Menu::EXIT, "Exit");
+			engine.gui->menu.addItem(Menu::ITEMS, "ITEMS");
+			engine.gui->menu.addItem(Menu::TECH, "TECH");
+			engine.gui->menu.addItem(Menu::ARMOR, "ARMOR");
+			engine.gui->menu.addItem(Menu::WEAPONS, "WEAPONS");
+			engine.gui->menu.addItem(Menu::EXIT, "EXIT");
 			//Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::INVENTORY);
 			Actor *actor;
 			bool choice = true;
@@ -762,7 +762,10 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	//Diplay Character Stats
 	con.print(2,4,"STATS");
 	con.print(1,6,"LVL: %d",xpLevel);
-	con.print(1,8,"VIT: %d",owner->vit);
+	if(owner->destructible->totalDR - owner->destructible->baseDR >= 0)
+		con.print(1,8,"DR: %d(+%d)",owner->destructible->baseDR,owner->destructible->totalDR - owner->destructible->baseDR);
+	else
+		con.print(1,8,"DR: %d(%d)",owner->destructible->baseDR,owner->destructible->totalDR - owner->destructible->baseDR);
 	if(owner->totalStr - owner->str >= 0)
 		con.print(1,10,"STR: %d(+%d)",owner->str,owner->totalStr - owner->str);
 	else
