@@ -677,7 +677,7 @@ void Map::spawnTutorial() {
 		/*Actor *MLR = createMLR(x1+4,tiley,false);
 		engine.actors.push(MLR);
 		engine.sendToBack(MLR);
-
+		
 		Actor *MLR2 = createMLR(x1+5,tiley,false);
 		engine.actors.push(MLR2);
 		engine.sendToBack(MLR2);
@@ -703,7 +703,7 @@ void Map::spawnTutorial() {
 		//cout << "about to push " << record << endl;
 		engine.actors.push(record3);
 		//cout << "done with one row" << endl;*/
-		Actor *MLR = createCombatKnife(x1+4,tiley);
+		/*Actor *MLR = createCombatKnife(x1+4,tiley);
 		engine.actors.push(MLR);
 		engine.sendToBack(MLR);
 
@@ -713,7 +713,27 @@ void Map::spawnTutorial() {
 		
 		Actor *MLR3 = createCombatKnife(x1+6,tiley);
 		engine.actors.push(MLR3);
-		engine.sendToBack(MLR3);
+		engine.sendToBack(MLR3);*/
+
+		/*cout<< "create Titan Helm" << endl;
+		Actor *kevlarHelm = createTitanHelm(x1+4,tiley,false);
+		engine.actors.push(kevlarHelm);
+		cout<< "Titan Helm Made" << endl;
+		
+		cout<< "create Titan Vest" << endl;
+		Actor *kevlarVest = createTitanMail(x1+5,tiley,false);
+		engine.actors.push(kevlarVest);
+		cout<< "Titan Vest Made" << endl;
+		
+		cout<< "create Titan Greaves" << endl;
+		Actor *kevlarGreaves = createTitanGreaves(x1+6,tiley,false);
+		engine.actors.push(kevlarGreaves);
+		cout<< "Titan Greaves Made" << endl;
+		
+		cout<< "create Titan Boots" << endl;
+		Actor *kevlarBoots = createTitanBoots(x1+7,tiley,false);
+		engine.actors.push(kevlarBoots);
+		cout<< "Titan Boots Made" << endl;*/
 	}
 	//cout << "got past records creation" << endl;
 	
@@ -3013,15 +3033,15 @@ void Map::generateRandom(Actor *owner, int ascii){
 		return;
 	}
 	if(ascii == 243){//locker, this might be a problem if we want multiple decors to drop different things
-			int random = rng->getInt(0,300);
+			int random = rng->getInt(0,400);
 			if(random < 30){
 				Actor *flare = createFlare(0,0);
 				engine.actors.push(flare);
 				flare->pickable->pick(flare,owner);
 			}else if(random < 30+20){
-				Actor *chainMail = createTitanMail(0,0,false);
-				engine.actors.push(chainMail);
-				chainMail->pickable->pick(chainMail,owner);
+				Actor *kevlarVest = createKevlarVest(0,0,false);
+				engine.actors.push(kevlarVest);
+				kevlarVest->pickable->pick(kevlarVest,owner);
 			}else if(random < 30+20+40){
 				Actor *myBoots = createMylarBoots(0,0,false);
 				engine.actors.push(myBoots);
@@ -3054,6 +3074,18 @@ void Map::generateRandom(Actor *owner, int ascii){
 				Actor *titanBoots = createTitanBoots(0,0,false);
 				engine.actors.push(titanBoots);
 				titanBoots->pickable->pick(titanBoots,owner);
+			}else if(random < 30+20+40+30+30+40+10+30){
+				Actor *kevlarHelm = createKevlarHelmet(0,0,false);
+				engine.actors.push(kevlarHelm);
+				kevlarHelm->pickable->pick(kevlarHelm,owner);
+			}else if(random < 30+20+40+30+30+40+10+30+20){
+				Actor *kevlarGreaves = createKevlarGreaves(0,0,false);
+				engine.actors.push(kevlarGreaves);
+				kevlarGreaves->pickable->pick(kevlarGreaves,owner);
+			}else if(random < 30+20+40+30+30+40+10+30+20+30){
+				Actor *kevlarBoots = createKevlarBoots(0,0,false);
+				engine.actors.push(kevlarBoots);
+				kevlarBoots->pickable->pick(kevlarBoots,owner);
 			}else{
 				Actor *batt = createBatteryPack(0,0);
 				engine.actors.push(batt);
@@ -3744,8 +3776,13 @@ Actor *Map::createTitanHelm(int x, int y, bool isVend){
 	//Equipment::SlotType slot = Equipment::NOSLOT;
 	//ItemBonus *bonus = NULL;
 	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
-	//min damage, max damage, critMult, 
-	ItemBonus *bonus = new ItemBonus(ItemBonus::DR,3);
+	//min damage, max damage, critMult,
+	TCODList<ItemBonus *> bonus;
+	ItemBonus *DRBonus = new ItemBonus(ItemBonus::DR,3);
+	ItemBonus *dodgeBonus = new ItemBonus(ItemBonus::DODGE,-2);
+	ItemBonus *modBonus = new ItemBonus(ItemBonus::DR,0);
+	bonus.push(DRBonus);
+	bonus.push(dodgeBonus);
 	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,5);
 	
 	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
@@ -3764,17 +3801,17 @@ Actor *Map::createTitanHelm(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Dented ");
-						bonus = new ItemBonus(ItemBonus::DR,1);
+						modBonus = new ItemBonus(ItemBonus::DR,-2);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					case 2:
 						strcat(nameBuf,"Rusty ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,-2);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					case 3:
 						strcat(nameBuf,"Corroded ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,10);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-20);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
 						break;
 					default:break;
@@ -3793,12 +3830,12 @@ Actor *Map::createTitanHelm(int x, int y, bool isVend){
 						break;
 					case 1:
 						strcat(nameBuf,"Quality ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,4);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,1);
 						requirement = new ItemReq(ItemReq::STRENGTH,6);
 						break;
 					case 2:
 						strcat(nameBuf,"Economy ");
-						bonus = new ItemBonus(ItemBonus::DR,2);
+						modBonus = new ItemBonus(ItemBonus::DR,-1);
 						requirement = new ItemReq(ItemReq::STRENGTH,4);
 						break;
 					default:break;
@@ -3811,22 +3848,22 @@ Actor *Map::createTitanHelm(int x, int y, bool isVend){
 				{
 					case 1:
 						strcat(nameBuf,"Reinforced ");
-						bonus = new ItemBonus(ItemBonus::STRENGTH,5);
-						requirement = new ItemReq(ItemReq::STRENGTH,6);
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,7);
 						break;
 					case 2:
 						strcat(nameBuf,"Double Plated ");
-						bonus = new ItemBonus(ItemBonus::DR,5);
+						modBonus = new ItemBonus(ItemBonus::DR,2);
 						requirement = new ItemReq(ItemReq::STRENGTH,7);
 						break;
 					case 3:
-						strcat(nameBuf,"High Tech ");
-						bonus = new ItemBonus(ItemBonus::INTELLIGENCE,5);
-						requirement = new ItemReq(ItemReq::INTELLIGENCE,6);
+						strcat(nameBuf,"Mechanized ");
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,5);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,9);
 						break;
 					case 4:
 						strcat(nameBuf,"Pristine ");
-						bonus = new ItemBonus(ItemBonus::HEALTH,50);
+						modBonus = new ItemBonus(ItemBonus::HEALTH,60);
 						requirement = new ItemReq(ItemReq::STRENGTH,6);
 						break;
 					default:break;
@@ -3836,17 +3873,17 @@ Actor *Map::createTitanHelm(int x, int y, bool isVend){
 			default:break;
 		}
 	}
-	strcat(nameBuf,"Titanium Helmet");
+	strcat(nameBuf,"TitanHelm");
 
 	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	titanHelm->blocks = false;
 	titanHelm->name = nameBuf;
-	
+	bonus.push(modBonus);
 	titanHelm->pickable = new Equipment(0,Equipment::CHEST,bonus,requirement);
 	titanHelm->sort = 3;
 	((Equipment*)(titanHelm->pickable))->armorArt = 5;
-	titanHelm->pickable->value = 500;
-	titanHelm->pickable->inkValue = 35;
+	titanHelm->pickable->value = 1000;
+	titanHelm->pickable->inkValue = 50;
 	titanHelm->col = col;
 	return titanHelm;
 }
@@ -4215,6 +4252,494 @@ Actor *Map::createTitanGreaves(int x, int y, bool isVend){
 	titanGreaves->pickable->inkValue = 30;
 	titanGreaves->col = col;
 	return titanGreaves;
+}
+Actor *Map::createKevlarHelmet(int x, int y, bool isVend){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *kevlarHelm = new Actor(x,y,185,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
+	TCODList<ItemBonus *> bonus;
+	ItemBonus *DRBonus = new ItemBonus(ItemBonus::DR,1);
+	ItemBonus *dodgeBonus = new ItemBonus(ItemBonus::DODGE,-1);
+	ItemBonus *modBonus = new ItemBonus(ItemBonus::DR,0);
+	bonus.push(DRBonus);
+	bonus.push(dodgeBonus);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,3);
+	
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Thin ");
+						modBonus = new ItemBonus(ItemBonus::DR,-1);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 2:
+						strcat(nameBuf,"Constricting ");
+						modBonus = new ItemBonus(ItemBonus::DEXTERITY,-1);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 3:
+						strcat(nameBuf,"Damaged ");
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-20);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					default:break;
+				}
+				//bad Mylar Boots
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Standard ");
+						break;
+					case 1:
+						strcat(nameBuf,"Dense ");
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,1);
+						requirement = new ItemReq(ItemReq::STRENGTH,4);
+						break;
+					case 2:
+						strcat(nameBuf,"Economy ");
+						modBonus = new ItemBonus(ItemBonus::DR,1);
+						requirement = new ItemReq(ItemReq::STRENGTH,4);
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,5);
+						break;
+					case 2:
+						strcat(nameBuf,"Plated ");
+						modBonus = new ItemBonus(ItemBonus::DR,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,5);
+						break;
+					case 3:
+						strcat(nameBuf,"Scientific ");
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,4);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,7);
+						break;
+					case 4:
+						strcat(nameBuf,"Pristine ");
+						modBonus = new ItemBonus(ItemBonus::HEALTH,40);
+						requirement = new ItemReq(ItemReq::STRENGTH,4);
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"Kevlar Helmet");
+
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	kevlarHelm->blocks = false;
+	kevlarHelm->name = nameBuf;
+	bonus.push(modBonus);
+	kevlarHelm->pickable = new Equipment(0,Equipment::HEAD,bonus,requirement);
+	kevlarHelm->sort = 3;
+	((Equipment*)(kevlarHelm->pickable))->armorArt = 9;
+	kevlarHelm->pickable->value = 400;
+	kevlarHelm->pickable->inkValue = 20;
+	kevlarHelm->col = col;
+	return kevlarHelm;
+}
+Actor *Map::createKevlarVest(int x, int y, bool isVend){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *kevlarVest = new Actor(x,y,185,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
+	TCODList<ItemBonus *> bonus;
+	ItemBonus *DRBonus = new ItemBonus(ItemBonus::DR,3);
+	ItemBonus *dodgeBonus = new ItemBonus(ItemBonus::DODGE,-2);
+	ItemBonus *modBonus = new ItemBonus(ItemBonus::DR,0);
+	bonus.push(DRBonus);
+	bonus.push(dodgeBonus);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,4);
+	
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Thin ");
+						modBonus = new ItemBonus(ItemBonus::DR,-2);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 2:
+						strcat(nameBuf,"Constricting ");
+						modBonus = new ItemBonus(ItemBonus::DEXTERITY,-2);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 3:
+						strcat(nameBuf,"Damaged ");
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-20);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					default:break;
+				}
+				//bad Mylar Boots
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Standard ");
+						break;
+					case 1:
+						strcat(nameBuf,"Dense ");
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,6);
+						break;
+					case 2:
+						strcat(nameBuf,"Economy ");
+						modBonus = new ItemBonus(ItemBonus::DR,-1);
+						requirement = new ItemReq(ItemReq::STRENGTH,3);
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,4);
+						requirement = new ItemReq(ItemReq::STRENGTH,8);
+						break;
+					case 2:
+						strcat(nameBuf,"Plated ");
+						modBonus = new ItemBonus(ItemBonus::DR,3);
+						requirement = new ItemReq(ItemReq::STRENGTH,8);
+						break;
+					case 3:
+						strcat(nameBuf,"Scientific ");
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,3);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,6);
+						break;
+					case 4:
+						strcat(nameBuf,"Pristine ");
+						modBonus = new ItemBonus(ItemBonus::HEALTH,60);
+						requirement = new ItemReq(ItemReq::STRENGTH,6);
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"Kevlar Vest");
+
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	kevlarVest->blocks = false;
+	kevlarVest->name = nameBuf;
+	bonus.push(modBonus);
+	kevlarVest->pickable = new Equipment(0,Equipment::CHEST,bonus,requirement);
+	kevlarVest->sort = 3;
+	((Equipment*)(kevlarVest->pickable))->armorArt = 10;
+	kevlarVest->pickable->value = 700;
+	kevlarVest->pickable->inkValue = 35;
+	kevlarVest->col = col;
+	return kevlarVest;
+}
+Actor *Map::createKevlarGreaves(int x, int y, bool isVend){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *kevlarGreaves = new Actor(x,y,185,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
+	TCODList<ItemBonus *> bonus;
+	ItemBonus *DRBonus = new ItemBonus(ItemBonus::DR,2);
+	ItemBonus *dodgeBonus = new ItemBonus(ItemBonus::DODGE,-1);
+	ItemBonus *modBonus = new ItemBonus(ItemBonus::DR,0);
+	bonus.push(DRBonus);
+	bonus.push(dodgeBonus);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,3);
+	
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Thin ");
+						modBonus = new ItemBonus(ItemBonus::DR,-2);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 2:
+						strcat(nameBuf,"Constricting ");
+						modBonus = new ItemBonus(ItemBonus::DEXTERITY,-2);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 3:
+						strcat(nameBuf,"Damaged ");
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-20);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					default:break;
+				}
+				//bad Mylar Boots
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Standard ");
+						break;
+					case 1:
+						strcat(nameBuf,"Dense ");
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,6);
+						break;
+					case 2:
+						strcat(nameBuf,"Economy ");
+						modBonus = new ItemBonus(ItemBonus::DR,-1);
+						requirement = new ItemReq(ItemReq::STRENGTH,3);
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,4);
+						requirement = new ItemReq(ItemReq::STRENGTH,8);
+						break;
+					case 2:
+						strcat(nameBuf,"Plated ");
+						modBonus = new ItemBonus(ItemBonus::DR,3);
+						requirement = new ItemReq(ItemReq::STRENGTH,8);
+						break;
+					case 3:
+						strcat(nameBuf,"Scientific ");
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,3);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,6);
+						break;
+					case 4:
+						strcat(nameBuf,"Pristine ");
+						modBonus = new ItemBonus(ItemBonus::HEALTH,60);
+						requirement = new ItemReq(ItemReq::STRENGTH,6);
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"Kevlar KneePads");
+
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	kevlarGreaves->blocks = false;
+	kevlarGreaves->name = nameBuf;
+	bonus.push(modBonus);
+	kevlarGreaves->pickable = new Equipment(0,Equipment::LEGS,bonus,requirement);
+	kevlarGreaves->sort = 3;
+	((Equipment*)(kevlarGreaves->pickable))->armorArt = 11;
+	kevlarGreaves->pickable->value = 500;
+	kevlarGreaves->pickable->inkValue = 30;
+	kevlarGreaves->col = col;
+	return kevlarGreaves;
+}
+Actor *Map::createKevlarBoots(int x, int y, bool isVend){
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODRandom *random = TCODRandom::getInstance();
+	//Actor *MLR = new Actor(x,y,169,"Art",TCODColor::lighterGreen);
+	Actor *kevlarBoots = new Actor(x,y,185,"Art",TCODColor::white);
+	TCODColor col = TCODColor::white;
+	//artifact->pickable = new Equipment(0);
+	//Equipment::SlotType slot = Equipment::NOSLOT;
+	//ItemBonus *bonus = NULL;
+	//NOBONUS, HEALTH, DODGE, DR, STRENGTH, DEXTERITY, INTELLIGENCE
+	//min damage, max damage, critMult, 
+	TCODList<ItemBonus *> bonus;
+	ItemBonus *DRBonus = new ItemBonus(ItemBonus::DR,2);
+	ItemBonus *dodgeBonus = new ItemBonus(ItemBonus::DODGE,-1);
+	ItemBonus *modBonus = new ItemBonus(ItemBonus::DR,0);
+	bonus.push(DRBonus);
+	bonus.push(dodgeBonus);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,3);
+	
+	//ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	//random 1-3, 1 is worse, 2 is average, 3 is good
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Thin ");
+						modBonus = new ItemBonus(ItemBonus::DR,-1);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 2:
+						strcat(nameBuf,"Constricting ");
+						modBonus = new ItemBonus(ItemBonus::DEXTERITY,-1);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					case 3:
+						strcat(nameBuf,"Damaged ");
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-10);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						break;
+					default:break;
+				}
+				//bad Mylar Boots
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Standard ");
+						break;
+					case 1:
+						strcat(nameBuf,"Dense ");
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,1);
+						requirement = new ItemReq(ItemReq::STRENGTH,4);
+						break;
+					case 2:
+						strcat(nameBuf,"Economy ");
+						modBonus = new ItemBonus(ItemBonus::DR,-1);
+						requirement = new ItemReq(ItemReq::STRENGTH,2);
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,5);
+						break;
+					case 2:
+						strcat(nameBuf,"Plated ");
+						modBonus = new ItemBonus(ItemBonus::DR,2);
+						requirement = new ItemReq(ItemReq::STRENGTH,5);
+						break;
+					case 3:
+						strcat(nameBuf,"Scientific ");
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,3);
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,6);
+						break;
+					case 4:
+						strcat(nameBuf,"Pristine ");
+						modBonus = new ItemBonus(ItemBonus::HEALTH,40);
+						requirement = new ItemReq(ItemReq::STRENGTH,5);
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"Kevlar Boots");
+
+	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
+	kevlarBoots->blocks = false;
+	kevlarBoots->name = nameBuf;
+	bonus.push(modBonus);
+	kevlarBoots->pickable = new Equipment(0,Equipment::FEET,bonus,requirement);
+	kevlarBoots->sort = 3;
+	((Equipment*)(kevlarBoots->pickable))->armorArt = 12;
+	kevlarBoots->pickable->value = 400;
+	kevlarBoots->pickable->inkValue = 25;
+	kevlarBoots->col = col;
+	return kevlarBoots;
 }
 Actor *Map::createMylarGreaves(int x, int y, bool isVend){
 	char* nameBuf = new char[80]; 

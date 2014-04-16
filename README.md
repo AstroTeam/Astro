@@ -27,11 +27,11 @@ Races
 -----
 The player upon startup can choose between a certain race+class combo, each class has 3 “specialty” tech trees that have powerups, skills, etc.  So you pick 1 race, 1 role, and 1 job.
 
-● Human - Base class. Flat starting stats with no innate specialization. Adequate at everything. 
+● Human - Base class. Flat starting stats with no innate specialization. Adequate at everything. Gets an edible companion.
 
-● Robot - High starting vitality, strength, and intelligence. Runs on an internal chemical converter that turns human food into a small amount of power.
+● Robot - High starting vitality, strength, and intelligence. Runs on an internal chemical converter that turns human food into a small amount of power. Gets a heavily-armored companion.
 
-● Alien - Low base stats. Absorbs teleporter energy and can store insane amounts of food to prevent hunger for weeks.
+● Alien - Low base stats. Can store insane amounts of food to prevent hunger for weeks. Gets a strong beastly companion.
 
 
 Classes & Subclasses 

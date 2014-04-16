@@ -123,7 +123,7 @@ void Destructible::die(Actor *owner, Actor *killer) {
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
 		owner->ch = 243;
 	}
-	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 225 || owner->ch == 130 || owner->ch == 129 || owner->ch == 146 || owner->ch == 189 || owner->ch == dummyAscii) //roomba, vendors, and turrets, 
+	else if(owner->ch == 131 || owner->ch == 147 || owner->ch == 225 || owner->ch == 130 || owner->ch == 129 || owner->ch == 146 || owner->ch == 189 || owner->ch == dummyAscii || owner->ch == 157) //roomba, vendors, and turrets, 
 	{
 		if(owner->ch == 189)
 		{
@@ -169,7 +169,7 @@ void MonsterDestructible::die(Actor *owner, Actor *killer) {
 	//cout << owner->ch << endl;
 	//cout << "the char to test" << endl;
 	int dummyAscii = 145;
-	if((owner->ch != 243 && owner->ch != 131 && owner->ch != 147 && owner->ch != 225 && owner->ch != 130 && owner->ch != 129 && owner->ch != 146 && owner->ch != dummyAscii)){
+	if((owner->ch != 243 && owner->ch != 131 && owner->ch != 147 && owner->ch != 225 && owner->ch != 130 && owner->ch != 129 && owner->ch != 146 && owner->ch != dummyAscii) && owner->ch != 157){
 		engine.killCount++;
 		if(engine.map->isVisible(owner->x, owner->y))
 			engine.gui->message(TCODColor::lightGrey,"The %s is dead!", owner->name);
@@ -203,6 +203,11 @@ void MonsterDestructible::die(Actor *owner, Actor *killer) {
 		if(engine.map->isVisible(owner->x, owner->y))
 			engine.gui->message(TCODColor::lightGrey,"The %s crumples into a useless pile of metal!", owner->name);
 		//cout << "target dummy killed!" << endl;
+	}
+	else if(owner->ch == 157) //scout drone
+	{
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s is destroyed!", owner->name);
 	}
 	//cout << "done testing" << endl;
 	
