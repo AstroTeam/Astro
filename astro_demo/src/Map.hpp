@@ -126,6 +126,7 @@ public:
 	Actor *createFrag(int x, int y);
 	Actor *createFood(int x, int y);
 	Actor *createArtifact(int x, int y);
+	Actor *createCompanion(bool racial); //the racial bool determines whether or not this is a racial companion (default) being spawned. Could also be used for random companions in rooms.
 	void generateRandom(Actor *owner, int ascii); Tile *tiles;
 
 	

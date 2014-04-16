@@ -2544,44 +2544,11 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//playerLight->ai->moving = true;
 		engine.sendToBack(engine.playerLight);
 		
-		Actor *pet = new Actor(engine.player->x,engine.player->y,141,"Hyperdonut",TCODColor::white);
-		pet->hostile = false;
-		pet->destructible = new MonsterDestructible(10,0,0,10);
-		pet->blocks = false;
-		pet->container = new Container(2);
-		pet->flashable = true;
-		switch(engine.player->race[0]){
-			 
-			case 'A':		//Alien
-			pet->name = "Capybara";
-			pet->ch = 173;
-			pet->destructible->maxHp = 35;
-			pet->destructible->hp = 35;
-			pet->totalStr = 2;
-			pet->attacker = new Attacker(2);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
-			break;
-
-			case 'R':		//Robot
-			pet->name = "Scout Drone";
-			pet->ch = 157;
-			pet->destructible->maxHp = 350;
-			pet->destructible->hp = 350;
-			pet->totalStr = 0;
-			pet->attacker = new Attacker(0);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
-			break;
-			
-			default:		//Human
-			pet->totalStr = -1;
-			pet->attacker = new Attacker(-1);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
-			((CompanionAi*)pet->ai)->edible = true;
-			break;
-		}
+		Actor *pet = createCompanion(true);
+		
 		engine.player->companion = pet;
 		engine.actors.push(pet);
-	
+		
 		//Actor *r4 = createRecord(engine.player->x, engine.player->y-1);
 		//engine.actors.push(r4);
 		/*if (true)
@@ -5251,6 +5218,92 @@ Actor *Map::createArtifact(int x, int y){
 	return artifact;
 }
 
+Actor *Map::createCompanion(bool racial){
+	Actor *pet = new Actor(engine.player->x,engine.player->y,141,"Hyperdonut",TCODColor::white);
+	pet->hostile = false;
+	pet->destructible = new MonsterDestructible(50,0,0,10);
+	pet->blocks = false;
+	pet->container = new Container(2);
+	pet->flashable = true;
+	
+	TCODRandom *tutu = TCODRandom::getInstance();
+	
+	if (racial){	
+		switch(engine.player->race[0]){
+			 
+			case 'A':		//Alien
+			pet->name = "Capybara";
+			pet->ch = 173;
+			pet->destructible->maxHp = 70;
+			pet->destructible->hp = 70;
+			pet->totalStr = 2;
+			pet->attacker = new Attacker(2);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			break;
+
+			case 'R':		//Robot
+			pet->name = "Scout Drone";
+			pet->ch = 157;
+			pet->destructible->maxHp = 350;
+			pet->destructible->hp = 350;
+			pet->totalStr = 0;
+			pet->attacker = new Attacker(0);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			break;
+			
+			default:		//Human
+			pet->totalStr = -1;
+			pet->attacker = new Attacker(-1);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			((CompanionAi*)pet->ai)->edible = true;
+			break;
+		}
+	} else{
+		int switcher = tutu->getInt(1,3);
+		switch(switcher){
+			 
+			case 1:		//Alien
+			pet->name = "Capybara";
+			pet->ch = 173;
+			pet->destructible->maxHp = 70;
+			pet->destructible->hp = 70;
+			pet->totalStr = 2;
+			pet->attacker = new Attacker(2);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			break;
+
+			case 2:		//Robot
+			pet->name = "Scout Drone";
+			pet->ch = 157;
+			pet->destructible->maxHp = 350;
+			pet->destructible->hp = 350;
+			pet->totalStr = 0;
+			pet->attacker = new Attacker(0);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			break;
+			
+			case 3:		//Robot
+			pet->name = "Scout Drone";
+			pet->ch = 157;
+			pet->destructible->maxHp = 350;
+			pet->destructible->hp = 350;
+			pet->totalStr = 0;
+			pet->attacker = new Attacker(0);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			break;
+			
+			default:		//Human
+			pet->totalStr = -1;
+			pet->attacker = new Attacker(-1);
+			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			((CompanionAi*)pet->ai)->edible = true;
+			break;
+		}
+	}
+	return pet;
+}
+
 bool Map::isVisible(int x, int y){
 	return (engine.mapcon->getCharForeground(x,y) == TCODColor::white) && (engine.map->isExplored(x,y));
 }
+
