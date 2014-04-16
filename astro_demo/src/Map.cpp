@@ -113,6 +113,8 @@ int Map::tileType(int x, int y) {
 	{return 12;}
 	else if (tiles[i].tileType == Param::INFECTED_ROOM)//
 	{return 13;}
+	else if (tiles[i].tileType == Param::DISPLAY)//
+	{return 14;}
 	else
 	{return 1;}
 	//return tiles[x*y].tileType;
@@ -630,14 +632,23 @@ void Map::spawnTutorial() {
 			tiles[tilex+tiley*engine.mapWidth].tileType = Param::ARMORY;
 		}
 	}
+
 	//gun racks
-	for (int tiley = y1; tiley <= y2; tiley+=2) {
-		Actor * pcmu = new Actor(x1+1, tiley, 243, "Weapon Rack", TCODColor::white);
+	for (int tiley = y1; tiley < y2; tiley+=2) {
+		Actor * rack = new Actor(x1+1, tiley, 243, "Weapon Rack", TCODColor::white);
 		engine.map->tiles[x1+1+tiley*engine.map->width].decoration = 54;
-		engine.actors.push(pcmu);
-		Actor * pcmu2 = new Actor(x1+2, tiley, 243, "Battery Rack", TCODColor::white);
+		rack->destructible = new MonsterDestructible(1,0,0,0);
+		rack->ai = new LockerAi();
+		rack->hostile = false;
+		rack->interact = true;
+		rack->container = new Container(3);
+		generateRandom(rack,243);
+		engine.actors.push(rack);
+
+		Actor * rack2= new Actor(x1+2, tiley, 243, "Battery Rack", TCODColor::white);
 		engine.map->tiles[x1+2+tiley*engine.map->width].decoration = 55;
-		engine.actors.push(pcmu2);
+		engine.actors.push(rack2);
+
 		Actor * dummy = new Actor(x2-1, tiley, 145, "Target Dummy", TCODColor::white);
 		//engine.map->tiles[x1+2+tiley*engine.map->width].decoration = 55;
 		//engine.actors.push(dummy);
@@ -2077,9 +2088,14 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				{
 					if(gunBat == 0)
 					{
-						Actor * pcmu = new Actor(i, j, 243, "Weapon Rack", TCODColor::white);
+						Actor * rack = new Actor(i, j, 243, "Weapon Rack", TCODColor::white);
 						engine.map->tiles[i+j*engine.map->width].decoration = 54;
-						engine.actors.push(pcmu);
+						engine.actors.push(rack);
+						rack->destructible = new MonsterDestructible(1,0,0,0);
+						rack->ai = new LockerAi();
+						rack->hostile = false;
+						rack->interact = true;
+						rack->container = new Container(3);
 					}
 					else if(gunBat == 1)
 					{
@@ -2092,15 +2108,24 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				{
 					if(gunBat == 0)
 					{
-						Actor * pcmu = new Actor(i, j, 243, "Weapon Rack", TCODColor::white);
+						Actor * rack = new Actor(i, j, 243, "Weapon Rack", TCODColor::white);
 						engine.map->tiles[i+j*engine.map->width].decoration = 54;
-						engine.actors.push(pcmu);
+						engine.actors.push(rack);
+						rack->ai = new LockerAi();
+						rack->hostile = false;
+						rack->interact = true;
+						rack->container = new Container(3);
 					}
 					else if(gunBat == 1)
 					{
-						Actor * pcmu = new Actor(i, j, 243, "Battery Rack", TCODColor::white);
+						Actor * rack = new Actor(i, j, 243, "Battery Rack", TCODColor::white);
 						engine.map->tiles[i+j*engine.map->width].decoration = 55;
-						engine.actors.push(pcmu);
+						engine.actors.push(rack);
+						rack->destructible = new MonsterDestructible(1,0,0,0);
+						rack->ai = new LockerAi();
+						rack->hostile = false;
+						rack->interact = true;
+						rack->container = new Container(3);
 					}
 				}
 				
@@ -2144,11 +2169,10 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		for (int i = x1+1; i <= x2-1; i++) {
 			for (int j = y1+1; j <= y2-1; j+=2) {
 				//the floors for observatories will be blank, and will then adjust the envSta to be "glass" and "broken glass"
-
 			}
 		}
-
 	}
+
 	if (room->type == HYDROPONICS) {
 		cout << "Hydroponics made" << endl;
 
@@ -2412,13 +2436,15 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			{
 				if (((wall == 1 || wall == 3) && x == disp) || ((wall == 2 || wall == 4) && y == disp))
 				{
-					Actor *display = new Actor(x, y, 243, "Liquor Display.", TCODColor::white);
-					engine.map->tiles[x+y*engine.map->width].decoration = 81;
-					engine.actors.push(display);
-					display->blocks = false;
-					engine.sendToBack(display);
+					//Actor *display = new Actor(x, y, 243, "Liquor Display.", TCODColor::white);
+					//engine.map->tiles[x+y*engine.map->width].decoration = 81;
+					//engine.actors.push(display);
+					//display->blocks = false;
+					//engine.sendToBack(display);
 					Actor *booze = createAlcohol(x,y);
 					engine.actors.push(booze);
+					//engine.map->tileType(x,y) = 14;
+					tiles[x+y*engine.map->width].tileType = Param::DISPLAY;
 					
 				}
 				if (((wall == 1 || wall == 3) && x == bar) || ((wall == 2 || wall == 4) && y == bar))
@@ -2479,8 +2505,9 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 						{
 							if (((xx-(x1+dx1))%3 != 0) && ((yy-(y1+dy1))%4 != 0))
 							{
-								Actor *barstool = new Actor(xx, yy, 'P', "3D Pool Table.", TCODColor::white);
+								Actor *barstool = new Actor(xx, yy, 243, "Standing Table.", TCODColor::white);
 								//engine.map->tiles[x+y*engine.map->width].decoration = 32;
+								engine.map->tiles[xx+yy*engine.map->width].decoration = rng->getInt(82,84);
 								engine.actors.push(barstool);
 								barstool->blocks = false;
 								engine.sendToBack(barstool);
@@ -3013,13 +3040,10 @@ void Map::render() const {
 			{
 				engine.mapcon->setCharForeground(x,y,TCODColor::white);
 			}*/
-			
 		}
 	}
-
-
-
 }
+
 void Map::generateRandom(Actor *owner, int ascii){
 	TCODRandom *rng = TCODRandom::getInstance();
 	int dice = rng->getInt(0,100);
@@ -3032,7 +3056,20 @@ void Map::generateRandom(Actor *owner, int ascii){
 		artifact->pickable->pick(artifact, owner);
 		return;
 	}
-	if(ascii == 243){//locker, this might be a problem if we want multiple decors to drop different things
+	else if(ascii == 243 && engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 54){//weapon rack
+		int random = rng->getInt(0,100);
+		if(random < 75){
+			Actor *melee = createCombatKnife(0,0);
+			engine.actors.push(melee);
+			melee->pickable->pick(melee,owner);
+		}
+		else if (random < 100) {
+			Actor *MLR = createMLR(0,0,false);
+			engine.actors.push(MLR);
+			MLR->pickable->pick(MLR,owner);
+		}
+	}
+	else if(ascii == 243){//locker, this might be a problem if we want multiple decors to drop different things
 			int random = rng->getInt(0,400);
 			if(random < 30){
 				Actor *flare = createFlare(0,0);
