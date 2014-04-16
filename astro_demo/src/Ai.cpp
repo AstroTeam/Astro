@@ -2665,6 +2665,22 @@ void VendingAi::populate(Actor *owner){
 	engine.actors.push(myBoots);
 	myBoots->pickable->pick(myBoots,owner);
 	
+	Actor *kevlarHelm = engine.map->createKevlarHelmet(0,0,true);
+	engine.actors.push(kevlarHelm);
+	kevlarHelm->pickable->pick(kevlarHelm,owner);
+	
+	Actor *kevlarVest = engine.map->createKevlarVest(0,0,true);
+	engine.actors.push(kevlarVest);
+	kevlarVest->pickable->pick(kevlarVest,owner);
+	
+	Actor *kevlarGreaves = engine.map->createKevlarGreaves(0,0,true);
+	engine.actors.push(kevlarGreaves);
+	kevlarGreaves->pickable->pick(kevlarGreaves,owner);
+	
+	Actor *kevlarBoots = engine.map->createKevlarBoots(0,0,true);
+	engine.actors.push(kevlarBoots);
+	kevlarBoots->pickable->pick(kevlarBoots,owner);
+	
 	Actor *titanHelm = engine.map->createTitanHelm(0,0,true);
 	engine.actors.push(titanHelm);
 	titanHelm->pickable->pick(titanHelm,owner);

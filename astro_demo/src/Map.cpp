@@ -3241,7 +3241,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 			
 		}else if(ascii == 132){
 			for(int i = 0; i < owner->container->size/4; i++){
-				int rndA2 = rng->getInt(0,100);
+				int rndA2 = rng->getInt(0,170);
 				if(rndA2 > 45){
 					int rnd = rng->getInt(0,100);
 					if (rnd < 30) {
@@ -3260,10 +3260,25 @@ void Map::generateRandom(Actor *owner, int ascii){
 						engine.actors.push(scrollOfFireball);
 						scrollOfFireball->pickable->pick(scrollOfFireball,owner);
 					}else if(rnd < 10+30+20+10){
-						//create Titanium Micro Chain-mail
-						Actor *chainMail = createTitanMail(0,0,false);
-						engine.actors.push(chainMail);
-						chainMail->pickable->pick(chainMail,owner);
+						//create Kevlar Vest
+						Actor *kevlarVest = createKevlarVest(0,0,false);
+						engine.actors.push(kevlarVest);
+						kevlarVest->pickable->pick(kevlarVest,owner);
+					}else if(rnd < 10+30+20+10+10){
+						//create Kevlar Greaves
+						Actor *kevlarGreaves = createKevlarGreaves(0,0,false);
+						engine.actors.push(kevlarGreaves);
+						kevlarGreaves->pickable->pick(kevlarGreaves,owner);
+					}else if(rnd < 10+30+20+10+10+20){
+						//create Kevlar Helmet
+						Actor *kevlarHelm = createKevlarHelmet(0,0,false);
+						engine.actors.push(kevlarHelm);
+						kevlarHelm->pickable->pick(kevlarHelm,owner);
+					}else if(rnd < 10+30+20+10+10+20+20){
+						//create Kevlar Boots
+						Actor *kevlarBoots = createKevlarBoots(0,0,false);
+						engine.actors.push(kevlarBoots);
+						kevlarBoots->pickable->pick(kevlarBoots,owner);
 					}else{
 						//create a scroll of confusion
 						Actor *scrollOfConfusion = createFlashBang(0,0);
@@ -3995,7 +4010,7 @@ Actor *Map::createTitanMail(int x, int y, bool isVend){
 			default:break;
 		}
 	}
-	strcat(nameBuf,"Titanmail");
+	strcat(nameBuf,"TitanMail");
 
 	//Actor *MLR = new Actor(x,y,169,"MLR",TCODColor::white);
 	titanMail->blocks = false;
