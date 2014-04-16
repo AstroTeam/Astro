@@ -11,7 +11,7 @@ protected:
 	enum AiType {
 		MONSTER, SECURITY, CONFUSED_ACTOR, PLAYER, TRIGGER, RANGED, LIGHT, 
 		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, CONSOLE, VENDING, ENGINEER, EPICENTER, TURRETCONTROL, LOCKER, GARDNER,
-		FRUIT, ZED
+		FRUIT, ZED,COMPANION
 
 	};
 };
@@ -44,6 +44,7 @@ public:
 protected:
 	int moveCount;
 	void moveOrAttack(Actor *owner, int targetx, int targety);
+	void moveOrAttack(Actor *owner, Actor *target, int targetx, int targety);
 };
 
 class SecurityBotAi: public MonsterAi
@@ -56,7 +57,7 @@ class SecurityBotAi: public MonsterAi
 		int vendingX, vendingY; //the position of security bot's vending machine
 	protected:
 		int moveCount;
-		void moveOrAttack(Actor *owner, int targetx, int targety);
+		void moveOrAttack(Actor *owner, Actor *target, int targetx, int targety);
 	
 };
 
@@ -71,7 +72,7 @@ class RangedAi : public Ai
 	protected:
 		int moveCount;
 		int range; //range
-		void moveOrAttack(Actor *owner, int targetx, int targety);
+		void moveOrAttack(Actor *owner, Actor *target, int targetx, int targety);
 };
 
 class EpicenterAi : public Ai {
@@ -157,11 +158,11 @@ class GrenadierAi : public Ai
 		int moveCount;
 		int range; //range
 		int numGrenades;
-		void useEmpGrenade(Actor *owner, int targetx, int targety);
-		void useFirebomb(Actor *owner, int targetx, int targety);
-		void useFrag(Actor *owner, int targetx, int targety);
+		void useEmpGrenade(Actor *owner, Actor *target, int targetx, int targety);
+		void useFirebomb(Actor *owner, Actor *target, int targetx, int targety);
+		void useFrag(Actor *owner, Actor *target, int targetx, int targety);
 		void kamikaze(Actor *owner, Actor *target);
-		void moveOrAttack(Actor *owner, int targetx, int targety);
+		void moveOrAttack(Actor *owner, Actor *target, int targetx, int targety);
 };
 
 class TurretAi : public Ai
@@ -205,7 +206,7 @@ public:
 	float repairPower; //how much the engineer repairs the turret per turn
 	int deployRange; //the max distance between the player and the engineer that will allow the engineer to deploy his turret
 	int moveCount;
-	void moveOrBuild(Actor *owner, int targetx, int targety); 
+	void moveOrBuild(Actor *owner, Actor *target, int targetx, int targety); 
 	
 
 };
@@ -298,14 +299,23 @@ public:
 class CompanionAi : public Ai {
 public:
 	enum Command{
-		STAY, FOLLOW, ATTACK
+		STAY, FOLLOW, ATTACK, GUARD_POINT
 	};
 	
 	Actor *tamer;
-	int range_limit; //
+	bool edible;
 	
+	CompanionAi(Actor *tamer, int rangeLimit, Command command = FOLLOW);
+	void update(Actor *owner);
+	void save(TCODZip &zip);
+	void load(TCODZip &zip);
+	float feedMaster(Actor *owner, Actor *master);
 	
-	
+protected:
+	int rangeLimit; 
+	int assignedX, assignedY;
+	Command command;
+	void moveOrAttack(Actor *owner, int targetx, int targety);
 };
 
 class ZedAi : public Ai
@@ -315,8 +325,12 @@ class ZedAi : public Ai
 		void update(Actor *owner);
 		void load(TCODZip &zip);
 		void save(TCODZip &zip);
+	
 	protected:
 		int moveCount;
 		int range; //range
+	 	bool berserk;
+		bool menuPopped;
 		void moveOrAttack(Actor *owner, int targetx, int targety);
+		void deathMenu();
 };

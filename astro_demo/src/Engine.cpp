@@ -47,7 +47,9 @@ Engine::~Engine() {
 }
 
 void Engine::term() {
+	std::cout << "got here bterm" << std::endl;
 	actors.clearAndDelete();
+	std::cout << "got here aterm" << std::endl;
 	if (map) delete map;
 	gui->clear();
 	engine.turnCount = 0;
@@ -89,27 +91,21 @@ void Engine::init() {
 	
 	
 	switch(engine.gui->raceSelection){
-		case 1:
-			player->race="Human";
-			plyrAscii = 143;
-			player->hunger = 200;
-			player->maxHunger = 200;
-			break;
 		case 2:
 			player->race="Robot";
 			plyrAscii = 159;
-			player->hunger = 100;
-			player->maxHunger = 100;			
+			player->hunger = 200;
+			player->maxHunger = 200;			
 			break;
 		case 3:
 			player->race="Alien";
 			plyrAscii = 175;
-			player->hunger = 40000;
-			player->maxHunger = 40000;			
+			player->hunger = 600;
+			player->maxHunger = 600;			
 			break;
 		default:
 			player->race="Human";
-			plyrAscii = 143;
+			plyrAscii = 143;	
 			player->hunger = 200;
 			player->maxHunger = 200;
 			break;
@@ -664,11 +660,13 @@ void Engine::init() {
 	map = new Map(mapWidth, mapHeight);
 	if (startTutorial) {
 		ctrTer = 0;//13 is size
+		bonusTer = false;
 		cout << "number of terminals in this level " << ctrTer << endl;
 		map->init(true, Param::TUTORIAL);
 	}
 	else {
 		ctrTer = 3;//13 is size
+		bonusTer = false;
 		cout << "number of terminals in this level " << ctrTer << endl;
 		map->init(true, Param::GENERIC);
 	}
@@ -703,13 +701,16 @@ void Engine::save() {
 		zip.putInt(map->height);
 		map->save(zip);
 		//then the player
+		std::cout << "saving player " << std::endl;
 		player->save(zip);
+		std::cout << "done saving player " << std::endl;
 		//then the stairs
 		stairs->save(zip);
 		playerLight->save(zip);
 		//save the boss
-		std::cout << "got to boss " << std::endl;
+		std::cout << "saving boss " << std::endl;
 		boss->save(zip);
+		std::cout << "done saving boss " << std::endl;
 		//then all the other actors
 		zip.putInt(actors.size() - 4); //minus another one for boss actor?
 		std::cout << "saving other actors " << std::endl;
@@ -723,13 +724,18 @@ void Engine::save() {
 		//finally the message log
 		std::cout << "saving gui " <<std::endl;
 		gui->save(zip);
+		std::cout << "Done saving gui " <<std::endl;
 		zip.putInt(numTer);
 		zip.putInt(ctrTer);
+		zip.putInt(bonusTer);
+		std::cout << "saving numTerminals, ctrTer: "<<numTer<<", " <<ctrTer<<std::endl;
 		for (int i = 0; i < numTer; i++) {
 			zip.putInt(valTer[i]);
 			std::cout << "valTer " << valTer[i] << std::endl;
 		}
+		std::cout << "almost done saving" << std::endl;
 		zip.saveToFile("game.sav");
+		std::cout << "done saving" << std::endl;
 	}
 }
 
@@ -818,7 +824,7 @@ void Engine::load(bool pause) {
 		invState = zip.getInt();
 		menuState = zip.getInt();
 		armorState = zip.getInt();
-		
+		std::cout << "got here" << std::endl;
 		invFrames = zip.getInt();
 		selX = zip.getInt();
 		selY = zip.getInt();
@@ -830,8 +836,10 @@ void Engine::load(bool pause) {
 		map = new Map(width,height);
 		map->load(zip);
 		//then the player
+		std::cout << "loading player" << std::endl;
 		player = new Actor(0,0,0,NULL,TCODColor::white);
 		player->load(zip);
+		std::cout << "loaded player" << std::endl;
 		//the stairs
 		stairs = new Actor(0,0,0,NULL,TCODColor::white);
 		stairs->load(zip);
@@ -840,6 +848,7 @@ void Engine::load(bool pause) {
 		playerLight->load(zip);
 		//load the boss
 		boss = new Actor(0,0,0, NULL, TCODColor::white);
+		std::cout << "loading boss " << std::endl;
 		boss->load(zip);
 		actors.push(player);
 		actors.push(stairs);
@@ -853,6 +862,7 @@ void Engine::load(bool pause) {
 		while (nbActors > 0) {
 			Actor *actor = new Actor(0,0,0,NULL, TCODColor::white);
 			actor->load(zip);
+			if(actor != boss && actor != playerLight && actor != stairs && actor != player)
 			actors.push(actor);
 			std::cout << "loaded " << actor->name << std::endl;
 			nbActors--;
@@ -860,13 +870,16 @@ void Engine::load(bool pause) {
 		//finally, the message log
 		std::cout << "got to gui " << std::endl;
 		gui->load(zip);
+		std::cout << "loaded gui " << std::endl;
 		numTer = zip.getInt();
 		ctrTer = zip.getInt();
+		bonusTer = zip.getInt();
+		std::cout << "About to load terminals. numTer, ctrTer = "<<numTer<<", "<<ctrTer << std::endl;
 		for (int i = 0; i < numTer; i++) {
 			valTer[i] = zip.getInt();
 			std::cout << "valTer " << valTer[i] << std::endl;
 		}
-		std::cout << "got past gui " <<std::endl;
+		std::cout << "got past terminals " <<std::endl;
 		gui->message(TCODColor::pink,"loaded");
 		gameStatus = STARTUP;
 	}
@@ -893,12 +906,13 @@ void Engine::update() {
 		if(player->destructible->maxHp > player->destructible->hp && player->hunger > 0 && engine.turnCount%10 == 1)
 			player->destructible->hp++;
 		player->updateAuras();
-		std::cout << "updating actors " <<std::endl;
-		std::cout << "number of actors " << actors.size() - 1 << std::endl;
+		//std::cout << "updating actors " <<std::endl;
+		//std::cout << "number of actors " << actors.size() - 1 << std::endl;
 		for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 			Actor *actor = *iterator;
-			if ( actor != player) {
-				std::cout << "updating " << actor->name << std::endl;
+			if (actor != player){// && actor->ch != 'l') {
+				//std::cout << "updating " << actor->name << std::endl;
+				
 				actor->update();
 			}
 		}
@@ -1038,7 +1052,7 @@ void Engine::nextLevel() {
 		int temp = updateRng->getInt(0,2);
 		
 		//find food near teleporter
-		player->hunger = player->maxHunger > player->hunger + 50? player->hunger + 50 : player->maxHunger;
+		player->hunger += (player->maxHunger - player->hunger)*.5;
 		
 		//infantry find grenades
 		if(player->job[0] == 'I'){ 
@@ -1150,10 +1164,11 @@ void Engine::nextLevel() {
 	if (engine.level != 5)
 	{
 		ctrTer = 3;                                                  ////set ctrTer
+		bonusTer = false;
 	}
 	cout << "number of terminals this level " << ctrTer << endl;
 	TCODRandom * levelRng = TCODRandom::getInstance();
-	if (0 == levelRng->getInt(0,8)) {
+	if (0 == levelRng->getInt(0,30)) {
 		map->init(true, Param::OFFICE_FLOOR);
 	}
 	else
@@ -1175,7 +1190,7 @@ Actor *Engine::getClosestMonster(int x, int y, float range) const {
 	
 	for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 		Actor *actor = *iterator;
-		if (actor != player && actor->destructible 
+		if (actor != player && actor != player->companion && actor->destructible 
 			&& !actor->destructible->isDead()) {
 			float distance = actor->getDistance(x,y);
 			if (distance < bestDistance && (distance <= range || range ==0.0f)) {

@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <math.h>
 #include "main.hpp"
-
+#include <string>
 Ai *Ai::create(TCODZip &zip) {
 	AiType type = (AiType)zip.getInt();
+	std::cout << "got AITYPE" << type << std::endl;
 	Ai *ai = NULL;
 	switch(type) {
 		case PLAYER: ai = new PlayerAi(); break;
@@ -29,8 +30,10 @@ Ai *Ai::create(TCODZip &zip) {
 		case GARDNER: ai = new GardnerAi(); break;
 		case FRUIT: ai = new FruitAi(NULL,0); break;
 		case ZED: ai = new ZedAi(); break;
+		case COMPANION: std::cout<<"got here"<<std::endl; ai = new CompanionAi(NULL,0); break;
 		
 	}
+	std::cout << "got past switch " << std::endl;
 	ai->load(zip);
 	return ai;
 }
@@ -123,6 +126,11 @@ void PlayerAi::save(TCODZip &zip) {
 }
 
 void PlayerAi::update(Actor *owner) {
+
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
+
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
@@ -184,6 +192,8 @@ void PlayerAi::update(Actor *owner) {
 		}
 		}
 	}
+	engine.player->lastX = engine.player->x;
+	engine.player->lastY = engine.player->y;
 	int dx =0, dy =0;
 	switch (engine.lastKey.vk) {
 	case TCODK_UP: case TCODK_KP8: dy = -1; break;
@@ -242,7 +252,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 		Actor *actor = *iterator;
 		if (actor->blocks && actor->x == targetx &&actor->y == targety) {
 			if (actor->destructible && !actor->destructible->isDead() ) {
-				if (actor->hostile|| (owner->hostile && engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration != 56)){
+				if ((actor->hostile || owner->hostile) && (engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration != 56 && engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration != 57 )){
 					owner->attacker->attack(owner, actor);
 					if(!actor->hostile && actor->ch == 129) //currently this only applies to security bots, if the player attacks a nonhostile enemy, should that actor generally become hostile?
 					{
@@ -251,7 +261,7 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 					}else if(!actor->hostile && actor->ch == 'G') //gardner become hostile
 						actor->hostile = true;
 					engine.damageDone += owner->attacker->totalPower - actor->destructible->totalDodge;
-				}else if(actor->interact && (!owner->hostile || engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration == 56))
+				}else if(actor->interact && ((!owner->hostile) || (engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration == 56 || engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration == 57 )))
 					((InteractibleAi*)actor->ai)->interaction(actor, owner);
 				else if(!owner->hostile && !actor->hostile && actor->ch == 129)
 					engine.gui->message(TCODColor::grey, "The %s seems to be inactive", actor->name);
@@ -288,9 +298,34 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 	engine.playerLight->y = targety;
 	
 	owner->destructible->takeFireDamage(owner, 3.0);
+
 	//engine.gui->message(TCODColor::white,"fireDmg");
+	int level = engine.map->infectionState(owner->x, owner->y); 
+
+	if (level > 2) {
+		Aura *aura1 = new Aura(2,Aura::HEALTH,Aura::CONTINUOUS,-1);
+		aura1->apply(owner);
+		owner->auras.push(aura1);
+
+		if (level > 3) {
+			Aura *aura2 = new Aura(2,Aura::TOTALINTEL,Aura::CONTINUOUS,-3);
+			aura2->apply(owner);
+			owner->auras.push(aura2);
+
+			engine.gui->message(TCODColor::green, "You have a headache.");
+			if (level > 4) {
+				Aura *aura3 = new Aura(2,Aura::TOTALDEX,Aura::CONTINUOUS,-3);
+				aura3->apply(owner);
+				owner->auras.push(aura3);
+				engine.gui->message(TCODColor::green, "It's hard to move.");
+			}
+		}
+
+		engine.gui->message(TCODColor::green, "The moss saps your health.");
+	}
 	return true;
 }
+
 
 void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 	//bool first = true;
@@ -596,6 +631,15 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				engine.gui->message(TCODColor::yellow,"You have found no maps yet.");
 			}
 		break;
+		case 'u':
+			if (engine.player->companion){
+				if (engine.player->getDistance(engine.player->companion->x,engine.player->companion->y) < 2){
+					((CompanionAi*)engine.player->companion->ai)->feedMaster(engine.player->companion,engine.player);
+				} else {
+					engine.gui->message(TCODColor::grey,"You are too far away to reach your companion.");
+				}
+			}
+		break;
 	}
 }
 
@@ -784,7 +828,9 @@ void MonsterAi::save(TCODZip &zip) {
 
 void MonsterAi::update(Actor *owner) {
 	
-	
+		if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
 	
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
@@ -802,8 +848,12 @@ void MonsterAi::update(Actor *owner) {
 		owner->destructible->xp = 25*(1 + .1*(engine.level - 1));
 		owner->ch = 165;
 	}
-	if (engine.map->isInFov(owner->x,owner->y)) {
-		//can see the palyer, move towards him
+		Actor *comp = engine.player->companion;
+		int compFov = 2;
+		bool compTest =  comp && comp->destructible && !comp->destructible->isDead() && comp->getDistance(owner->x, owner->y) <= compFov;
+		
+	if (engine.map->isInFov(owner->x,owner->y) || compTest) {
+		//can see the player//companion, move towards him
 		moveCount = TRACKING_TURNS;
 	} else {
 		moveCount--;
@@ -811,21 +861,45 @@ void MonsterAi::update(Actor *owner) {
 	
 	if (moveCount > 0) 
 	{
-		moveOrAttack(owner, engine.player->x, engine.player->y);
+		float d1 = 0;
+		float d2 = 100;
+		
+		if(compTest)
+		{
+			d1 = engine.player->getDistance(owner->x,owner->y);
+			d2 = engine.player->companion->getDistance(owner->x, owner->y);
+		}
+		
+		if(d1 <= d2)
+		{
+			moveOrAttack(owner, engine.player, engine.player->x, engine.player->y);
+		}
+		else
+		{
+			moveOrAttack(owner, comp,comp->x, comp->y);
+		}
+	
+		
 	} else{
 		moveCount = 0;
 	}
 	owner->destructible->takeFireDamage(owner, 3.0);
 }
-
 void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	int dx = targetx - owner->x;
 	int dy = targety - owner->y;
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
+	
+	int dxL = engine.player->lastX - owner->x;
+	int dyL = engine.player->lastY - owner->y;
+	int stepdxL = (dxL > 0 ? 1:-1);
+	int stepdyL = (dyL > 0 ? 1:-1);
+	stepdxL = (dxL == 0 ? 0:stepdxL);
+	stepdyL = (dyL == 0 ? 0:stepdyL);
 	float distance = sqrtf(dx*dx+dy*dy);
 	
-	if(owner->ch == '_' && distance >= 2 && engine.turnCount % 2 == 0)
+	if(owner->ch == 150 && distance >= 2 && engine.turnCount % 2 == 0)
 	{
 		//crawlers can only move every other turn
 		return;
@@ -833,10 +907,13 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 	
 	if (distance >= 2) {
 		dx = (int) (round(dx / distance));
-		dy = (int)(round(dy / distance));
+		dy = (int) (round(dy / distance));
 		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
 			owner->x+=dx;
 			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdxL,owner->y+stepdyL)) {
+			owner->x+=stepdxL;
+			owner->y+=stepdyL;
 		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
 			owner->x += stepdx;
 		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
@@ -846,8 +923,56 @@ void MonsterAi::moveOrAttack(Actor *owner, int targetx, int targety){
 			engine.map->infectFloor(owner->x, owner->y);
 		}
 	} else if (owner->attacker) {
-		owner->attacker->attack(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+			owner->attacker->attack(owner,engine.player);
+			engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+	}
+	
+}
+
+void MonsterAi::moveOrAttack(Actor *owner, Actor *target, int targetx, int targety){
+	int dx = targetx - owner->x;
+	int dy = targety - owner->y;
+	int stepdx = (dx > 0 ? 1:-1);
+	int stepdy = (dy > 0 ? 1:-1);
+	
+	int dxL = target->lastX - owner->x;
+	int dyL = target->lastY - owner->y;
+	int stepdxL = (dxL > 0 ? 1:-1);
+	int stepdyL = (dyL > 0 ? 1:-1);
+	stepdxL = (dxL == 0 ? 0:stepdxL);
+	stepdyL = (dyL == 0 ? 0:stepdyL);
+	float distance = sqrtf(dx*dx+dy*dy);
+	
+	if(owner->ch == 150 && distance >= 2 && engine.turnCount % 2 == 0)
+	{
+		//crawlers can only move every other turn
+		return;
+	}
+	
+	if (distance >= 2) {
+		dx = (int) (round(dx / distance));
+		dy = (int) (round(dy / distance));
+		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+			owner->x+=dx;
+			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdxL,owner->y+stepdyL)) {
+			owner->x+=stepdxL;
+			owner->y+=stepdyL;
+		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
+			owner->x += stepdx;
+		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
+			owner->y += stepdy;
+		}
+		if (owner->oozing) {
+			engine.map->infectFloor(owner->x, owner->y);
+		}
+	} else if (owner->attacker) 
+	{
+		if(target)
+			owner->attacker->attack(owner,target);
+
+		if(target == engine.player)
+			engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
 	
 }
@@ -872,24 +997,48 @@ void SecurityBotAi::save(TCODZip &zip) {
 }
 
 void SecurityBotAi::update(Actor *owner) {
+		if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
 
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
-	if (engine.map->isInFov(owner->x,owner->y)) {
+	Actor *comp = engine.player->companion;
+		int compFov = 2;
+		bool compTest =  comp && comp->destructible && !comp->destructible->isDead() && comp->getDistance(owner->x, owner->y) <= compFov;
+	if (engine.map->isInFov(owner->x,owner->y) || compTest) {
 		//can see the palyer, move towards him
 		moveCount = TRACKING_TURNS;
 	} else {
 		moveCount--;
 	}
-	if (moveCount > 0) {
-		moveOrAttack(owner, engine.player->x, engine.player->y);
-	} else {
+	if (moveCount > 0) 
+	{
+		float d1 = 0;
+		float d2 = 100;
+		
+		if(compTest)
+		{
+			d1 = engine.player->getDistance(owner->x,owner->y);
+			d2 = engine.player->companion->getDistance(owner->x, owner->y);
+		}
+		
+		if(d1 <= d2)
+		{
+			moveOrAttack(owner, engine.player, engine.player->x, engine.player->y);
+		}
+		else
+		{
+			moveOrAttack(owner, comp,comp->x, comp->y);
+		}
+	} else 
+	{
 		moveCount = 0;
 	}
 }
 
-void SecurityBotAi::moveOrAttack(Actor *owner, int targetx, int targety){
+void SecurityBotAi::moveOrAttack(Actor *owner, Actor *target, int targetx, int targety){
 	//Cases
 	//1. Security Bot does not have any vending machine (isHostile = false ending machine x = -1, vendingmachine y = -1), function as a monster Ai normally
 	//2. If vending machinex != -1 and vendingmachiney != -1, then make an instance of vendingmachine ai using x and y. and check if it security deployed
@@ -897,7 +1046,7 @@ void SecurityBotAi::moveOrAttack(Actor *owner, int targetx, int targety){
 		//3a else nothing
 	
 	if((vendingX == -1 && vendingY == -1) || owner->hostile)
-		MonsterAi::moveOrAttack(owner,targetx,targety);
+		MonsterAi::moveOrAttack(owner,target,targetx,targety);
 	else
 	{
 		Actor* vending = engine.getAnyActor(vendingX, vendingY);
@@ -1009,7 +1158,53 @@ void TriggerAi::update(Actor *owner) {
 		TCOD_key_t key;
 		TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
 		engine.armorState = 0;
+		engine.ctrTer += 1;
 	}
+	if (engine.ctrTer == 3 && !engine.bonusTer && engine.level != 0)
+	{
+		engine.bonusTer = true;
+		cout << "ctr == 3" << endl;
+		TCODRandom *random = TCODRandom::getInstance();
+		int rng = random->getInt(0,4);
+		switch (rng) {
+			case 0	:
+				engine.player->destructible->maxHp += engine.player->getHpUp();
+				engine.player->destructible->hp += engine.player->getHpUp();
+				engine.player->vit += engine.player->getHpUp();;
+				//choice_made = true;
+				engine.gui->message(TCODColor::yellow,"Finding all of the recordings in this deck you feel more HEALTHY and ready to advance.(+1 VIT)");
+				break;
+			case 1 :
+				engine.player->attacker->basePower += 1;
+				engine.player->attacker->totalPower += 1;
+				engine.player->str += 1;
+				engine.player->totalStr += 1;
+				//choice_made = true;
+				engine.gui->message(TCODColor::yellow,"Having found all the recordings on this deck you use the knowledge to become STRONGER.(+1 STR)");
+				break;
+			case 2 :
+				engine.player->dex += 1;
+				engine.player->totalDex += 1;
+				//choice_made = true;
+				engine.gui->message(TCODColor::yellow,"All the recordings have been found in this deck making you quicker and more DEXTEROUS.(+1 DEX)");
+				break;
+			case 3 :
+				engine.player->intel += 1;
+				engine.player->totalIntel += 1;
+				//choice_made = true;
+				engine.gui->message(TCODColor::yellow,"Finding the recordings in this deck have made more SMARTER and more aware of the infection.(+1 INT)");
+				break;
+			case 4:
+				engine.player->destructible->baseDodge += 1;
+				engine.player->destructible->totalDodge += 1;
+				engine.gui->message(TCODColor::yellow,"All the recordings you have found have made you able to DODGE better.(+1 DODGE)");
+				break;
+			default: break;
+		}
+		
+		
+	}
+	
 	
 }
 
@@ -1106,29 +1301,36 @@ void LightAi::update(Actor * owner)
 		
 		if (moving)
 		{
+			//cout << "moving light updating" << endl;
 			//engine.gui->message(TCODColor::yellow, "changed light!");
-			for (int x=lstX-6; x <= lstX+6; x++) {
-				for (int y=lstY-6; y <= lstY+6; y++) {
-					
-					if (engine.map->tiles[x+y*engine.map->width].drty)
-					{
-						if (engine.map->tiles[x+y*engine.map->width].num == 1)//player's FOV
-						{
-							engine.map->tiles[x+y*engine.map->width].lit = false;//problem-> the player's flashlight is the only one that needs to move
-							engine.map->tiles[x+y*engine.map->width].num--;      //all else never comes here, just add one and be done
-							frst = true;				                         //everytime you move, decrement by 1, then add the new shit back
-							engine.map->tiles[x+y*engine.map->width].drty = false;
+				if (lstX != 0 && lstY != 0)
+				{
+					for (int x=lstX-6; x <= lstX+6; x++) {
+						for (int y=lstY-6; y <= lstY+6; y++) {
+							//cout << "checking tile (" << x << "," << y << ")" << endl;
+							if (x > 0 && y > 0)
+							{
+								if (engine.map->tiles[x+y*engine.map->width].drty)
+								{
+									if (engine.map->tiles[x+y*engine.map->width].num == 1)//player's FOV
+									{
+										engine.map->tiles[x+y*engine.map->width].lit = false;//problem-> the player's flashlight is the only one that needs to move
+										engine.map->tiles[x+y*engine.map->width].num--;      //all else never comes here, just add one and be done
+										frst = true;				                         //everytime you move, decrement by 1, then add the new shit back
+										engine.map->tiles[x+y*engine.map->width].drty = false;
+									}
+									else if (engine.map->tiles[x+y*engine.map->width].num > 1)
+									{
+										engine.map->tiles[x+y*engine.map->width].num--;
+										frst = true;
+										engine.map->tiles[x+y*engine.map->width].drty = false;
+									}
+									//lmap->setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
+								}
+							}
 						}
-						else if (engine.map->tiles[x+y*engine.map->width].num > 1)
-						{
-							engine.map->tiles[x+y*engine.map->width].num--;
-							frst = true;
-							engine.map->tiles[x+y*engine.map->width].drty = false;
-						}
-						//lmap->setProperties(x-minx,y-miny,engine.map->canWalk(maxx-(maxx-x),maxy-(maxy-y)),engine.map->isWall(maxx-(maxx-x),maxy-(maxy-y)));//engine.map->canWalk(x-owner->x,y-owner->y),engine.map->isWall(x-owner->x,y-owner->y));
 					}
 				}
-			}
 		}
 		//only do this once for flares!
 		for (int x=minx; x <= maxx; x++) {
@@ -1276,7 +1478,7 @@ void FlareAi::update(Actor * owner)
 	if (i < turns)
 	{
 		i++;
-		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of it's phosphorus remains.",turns-i+1,turns);
+		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of its phosphorus remains.",turns-i+1,turns);
 	}
 	else
 	{
@@ -1319,6 +1521,9 @@ void ConfusedActorAi::save(TCODZip &zip) {
 }
 
 void ConfusedActorAi::update(Actor *owner) {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
 
 	if (owner->destructible && !owner->destructible->isDead() ) {
 		TCODRandom *rng = TCODRandom::getInstance();
@@ -1371,31 +1576,59 @@ void RangedAi::save(TCODZip &zip) {
 }
 
 void RangedAi::update(Actor *owner) {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
 
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
-	
-	if (engine.map->isInFov(owner->x,owner->y)) {
-		//can see the palyer, move towards him
+	Actor *comp = engine.player->companion;
+	int compFov = 2;
+	bool compTest =  comp && comp->destructible && !comp->destructible->isDead() && comp->getDistance(owner->x, owner->y) <= compFov;	
+	if (engine.map->isInFov(owner->x,owner->y) || compTest) {
+		//can see the player/companion, move towards him
 		moveCount = TRACKING_TURNS + 2; //give ranged characters longer tracking
 	} else {
 		moveCount--;
 	}
-	if (moveCount > 0) {
-		moveOrAttack(owner, engine.player->x, engine.player->y);
+	if (moveCount > 0) 
+	{
+		float d1 = 0;
+		float d2 = 100;
+		
+		if(compTest)
+		{
+			d1 = engine.player->getDistance(owner->x,owner->y);
+			d2 = engine.player->companion->getDistance(owner->x, owner->y);
+		}
+		
+		if(d1 <= d2)
+		{
+			moveOrAttack(owner, engine.player, engine.player->x, engine.player->y);
+		}
+		else
+		{
+			moveOrAttack(owner, comp,comp->x, comp->y);
+		}
 	} else {
 		moveCount = 0;
 	}
 	owner->destructible->takeFireDamage(owner, 3.0);
 }
-void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
+void RangedAi::moveOrAttack(Actor *owner, Actor *target, int targetx, int targety)
 {
 	int dx = targetx - owner->x;
 	int dy = targety - owner->y;
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
-	float distance = sqrtf(dx*dx+dy*dy);
+	
+	int dxL = target->lastX - owner->x;
+	int dyL = target->lastY - owner->y;
+	int stepdxL = (dxL > 0 ? 1:-1);
+	int stepdyL = (dyL > 0 ? 1:-1);
+	stepdxL = (dxL == 0 ? 0:stepdxL);
+	stepdyL = (dyL == 0 ? 0:stepdyL);
+	float distance = sqrtf(dx*dx+dy*dy);	
 	//If the distance > range, then the rangedAi will move towards the player
 	//If the distance <= range, then the rangedAi will shoot the player unless the player is right next the rangedAi
 
@@ -1406,6 +1639,9 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
 			owner->x+=dx;
 			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdxL,owner->y+stepdyL)) {
+			owner->x+=stepdxL;
+			owner->y+=stepdyL;
 		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
 			owner->x += stepdx;
 		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
@@ -1414,20 +1650,25 @@ void RangedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		if (owner->oozing) {
 			engine.map->infectFloor(owner->x, owner->y);
 		}
-	} else if (distance !=1 && owner->attacker) {
-		owner->attacker->shoot(owner,engine.player);
-		engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDodge);
+	} else if (distance !=1 && owner->attacker) 
+	{
+		owner->attacker->shoot(owner, target);
+		if(target == engine.player)
+			engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDodge);
+
 	}
-	else if (owner->attacker) {
-		owner->attacker->attack(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+	else if (owner->attacker) 
+	{
+		owner->attacker->attack(owner,target);
+		if(target == engine.player)
+			engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}
 }
 
 
 GrenadierAi::GrenadierAi() : moveCount(0), range(3){
-numGrenades = 5;
-berserk = false;
+	numGrenades = 5;
+	berserk = false;
 }
 
 void GrenadierAi::load(TCODZip &zip) {
@@ -1446,13 +1687,18 @@ void GrenadierAi::save(TCODZip &zip) {
 }
 
 void GrenadierAi::update(Actor *owner) {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
 
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	Actor *comp = engine.player->companion;
+	int compFov = 2;
+	bool compTest =  comp && comp->destructible && !comp->destructible->isDead() &&  comp->getDistance(owner->x, owner->y) <= compFov;
 	
-	
-	if (engine.map->isInFov(owner->x,owner->y)) {
+	if (engine.map->isInFov(owner->x,owner->y) || compTest) {
 		//can see the palyer, move towards him
 		moveCount = TRACKING_TURNS + 2; //give tech characters longer tracking
 	} else {
@@ -1460,67 +1706,98 @@ void GrenadierAi::update(Actor *owner) {
 	}
 	if (moveCount > 0) 
 	{	
-			if(!berserk)
-				moveOrAttack(owner, engine.player->x, engine.player->y);
-			else //berserk case, so you need to get the closest monster/player
+	
+		if(!berserk)
+		{
+			float d1 = 0;
+			float d2 = 100;
+			
+			if(compTest)
 			{
-				Actor *closest = NULL;
-				float bestDistance = 1E6f;
-				for (Actor **iterator = engine.actors.begin(); iterator != engine.actors.end(); iterator++) 
+				d1 = engine.player->getDistance(owner->x,owner->y);
+				d2 = engine.player->companion->getDistance(owner->x, owner->y);
+			}
+			
+			if(d1 <= d2)
+			{
+				moveOrAttack(owner, engine.player, engine.player->x, engine.player->y);
+			}
+			else
+			{
+				moveOrAttack(owner, comp,comp->x, comp->y);
+			}
+		}
+		else //berserk case, so you need to get the closest monster/player
+		{
+			Actor *closest = NULL;
+			float bestDistance = 1E6f;
+			for (Actor **iterator = engine.actors.begin(); iterator != engine.actors.end(); iterator++) 
+			{
+				Actor *actor = *iterator;
+				const char* name = actor->name;
+				if (actor->destructible && !actor->destructible->isDead() && strcmp(name, "infected corpse") != 0 && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24) //243 = locker
 				{
-					Actor *actor = *iterator;
-					const char* name = actor->name;
-					if (actor->destructible && !actor->destructible->isDead() && strcmp(name, "infected corpse") != 0 && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24) //243 = locker
+					float distance = actor->getDistance(owner->x,owner->y);
+					if (distance < bestDistance && (distance <= range || range ==0.0f)) 
 					{
-						float distance = actor->getDistance(owner->x,owner->y);
-						if (distance < bestDistance && (distance <= range || range ==0.0f)) 
-						{
-							bestDistance = distance;
-							closest = actor;
-						}
+						bestDistance = distance;
+						closest = actor;
 					}
 				}
-				
-				if(closest)
-					moveOrAttack(owner, closest->x, closest->y);
 			}
-				
-		} 
-		else 
-			moveCount = 0;
+			
+			if(closest)
+				moveOrAttack(owner, closest,closest->x, closest->y);
+		}
+			
+	} 
+	else 
+		moveCount = 0;
 		
 		owner->destructible->takeFireDamage(owner, 3.0);
 }
-void GrenadierAi::useEmpGrenade(Actor *owner, int targetx, int targety)
+void GrenadierAi::useEmpGrenade(Actor *owner, Actor *target, int targetx, int targety)
 {
-	float damageTaken = engine.player->destructible->takeDamage(engine.player, owner,-3 + 3 * owner->totalIntel);
+	if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+	engine.gui->message(TCODColor::red,"The %s uses an EMP Grenade on the %s!",owner->name, target->name);
+	float damageTaken = -3 + 3 * owner->totalIntel;
+	if(target->destructible)
+		damageTaken = target->destructible->takeDamage(target, owner, damageTaken);
 	numGrenades--;
-	engine.gui->message(TCODColor::red,"The %s uses an EMP Grenade on the player for %g hit points!",owner->name, damageTaken);
-	engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
+	if(engine.player == target)
+		engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
 	
 }
-void GrenadierAi::useFirebomb(Actor *owner, int targetx, int targety)
+void GrenadierAi::useFirebomb(Actor *owner, Actor *target, int targetx, int targety)
 {
 	int x = targetx;
 	int y = targety;
 
-	engine.gui->message(TCODColor::red, "The %s throws a firebomb and it explodes, burning everything within %d tiles!",owner->name, 1 + (owner->totalIntel - 1) /3);
+	if(engine.map->isVisible(owner->x, owner->y))
+	{
+		engine.gui->message(TCODColor::red, "The %s throws a firebomb and it explodes, burning everything within %d tiles!",owner->name, 1 + (owner->totalIntel - 1) /3);
+	}
 	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
 		Actor *actor = *it;
-		if (actor->destructible && !actor->destructible->isDead()
-			&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
+		if (actor && actor->destructible && !actor->destructible->isDead() && actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
+		{
 			//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 			float damageTaken = 1;
-			actor->destructible->takeDamage(actor, owner, 1);
-			//engine.damageDone +=  2 * wearer->totalIntel;
-			if (!actor->destructible->isDead()) {
+			damageTaken = actor->destructible->takeDamage(actor, owner, 1); //problematic since the actor will die before the following "flavor" text is printed
+			if (!actor->destructible->isDead()) 
+			{
 				if(actor == engine.player)
 					engine.damageReceived += damageTaken;
-				engine.gui->message(TCODColor::red,"The %s gets burned for %g hit points.",actor->name,damageTaken);
-			} else {
-				engine.gui->message(TCODColor::red,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",actor->name, damageTaken);
-			}
-			//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
+				if(engine.map->isVisible(actor->x, actor->y))
+					engine.gui->message(TCODColor::red,"The %s gets burned for %g hit points.",actor->name, damageTaken);
+
+			} else 
+			{
+				if(engine.map->isVisible(actor->x, actor->y))
+					engine.gui->message(TCODColor::red,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",actor->name, damageTaken);
+
+ 			}
+			
 		}
 	}
 	
@@ -1538,28 +1815,32 @@ void GrenadierAi::useFirebomb(Actor *owner, int targetx, int targety)
 	}
 	numGrenades--;
 }
-void GrenadierAi::useFrag(Actor *owner, int targetx, int targety)
+void GrenadierAi::useFrag(Actor *owner, Actor *target, int targetx, int targety)
 {
 	int x = targetx;
 	int y = targety;
-	
-	engine.gui->message(TCODColor::red, "The %s throws a fragmentation grenade and it explodes, eviscerating everything within %d tiles!",owner->name, 1 + (owner->totalIntel - 1) /3);
+	if(engine.map->isVisible(owner->x, owner->y))
+		engine.gui->message(TCODColor::red, "The %s throws a fragmentation grenade and it explodes, eviscerating everything within %d tiles!",owner->name, 1 + (owner->totalIntel - 1) /3);
 	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
 		Actor *actor = *it;
 		if (actor->destructible && !actor->destructible->isDead()
 			&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
 		{
 			float damageTaken = 2 * owner->totalIntel;
-			actor->destructible->takeDamage(actor, owner, damageTaken);
-			//engine.damageDone +=  2 * wearer->totalIntel;
+			damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);
 			if (!actor->destructible->isDead()) 
-			{	if(actor == engine.player)
+			{	
+				if(actor == engine.player)
 					engine.damageReceived += damageTaken;
-				engine.gui->message(TCODColor::red,"The %s gets wounded from the blast for %g hit points.",actor->name,damageTaken);
-			} else {
-				engine.gui->message(TCODColor::red,"The %s's guts explode outward after taking %g damage.",actor->name,damageTaken);
+				if(engine.map->isVisible(actor->x, actor->y))
+					engine.gui->message(TCODColor::red,"The %s gets wounded from the blast for %g hit points.",actor->name,damageTaken);
+
+			} else 
+			{
+				if(engine.map->isVisible(actor->x, actor->y))
+					engine.gui->message(TCODColor::red,"The %s's guts explode outward after taking %g damage.",actor->name,damageTaken);
+
 			}
-			//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
 		}
 	}
 	
@@ -1574,19 +1855,20 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 	if(dice <= 15)
 	{
 		//emp grenade
-		float damageTaken = target->destructible->takeDamage(target, owner, -1*numGrenades*(-3 + 3 * owner->totalIntel));
-		engine.gui->message(TCODColor::red, "The %s kamikazes with an EMP Grenade on the %s for %g hit points!",owner->name,name, damageTaken);
+		if(engine.map->isVisible(target->x, target->y) || engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::red, "The %s kamikazes with an EMP Grenade on the %s!",owner->name,name);
+		float damageTaken = -1*numGrenades*(-3 + 3 * owner->totalIntel);
+		damageTaken = target->destructible->takeDamage(target, owner,damageTaken );
 		if(target == engine.player)
 			engine.damageReceived += -1*numGrenades*(3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
-		
 	}
 	else if(dice <= 25)
 	{
 		//frag
 		int x = owner->x;
 		int y = owner->y;
-		
-		engine.gui->message(TCODColor::red, "The %s kamikazes with a fragmentation grenade and it explodes, eviscerating everything within %d tiles!",owner->name, 1 + (owner->totalIntel - 1) /3);
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::red, "The %s kamikazes with a fragmentation grenade and it explodes, eviscerating everything within %d tiles!",owner->name, 1 + (owner->totalIntel - 1) /3);
 		for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) 
 		{
 			Actor *actor = *it;
@@ -1594,17 +1876,20 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
 			{
 				float damageTaken = 2 * owner->totalIntel;
-				actor->destructible->takeDamage(actor, owner, damageTaken);
-				//engine.damageDone +=  2 * wearer->totalIntel;
+				damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);
 				if (!actor->destructible->isDead()) 
-				{	if(actor == engine.player)
+				{	
+					if(actor == engine.player)
 						engine.damageReceived += damageTaken;
-					engine.gui->message(TCODColor::red,"The %s gets wounded from the %s for %g hit points.",name, owner->name,damageTaken);
+					if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(actor->x, actor->y))
+						engine.gui->message(TCODColor::red,"The %s gets wounded from the blast for %g hit points.",actor->name,damageTaken);
+
 				} else 
 				{
-					engine.gui->message(TCODColor::red,"The %s's guts explode outward after taking %g damage.",name,damageTaken);
+					if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(actor->x, actor->y))
+						engine.gui->message(TCODColor::red,"The %s's guts explode outward after taking %g damage.",actor->name,damageTaken);
+
 				}
-				//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
 			}
 		}
 	
@@ -1616,24 +1901,30 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 		//firebomb
 		int x =	owner->x;
 		int y = owner->y;
-
-		engine.gui->message(TCODColor::red, "The %s kamikazes with a firebomb and it explodes, burning everything within %d tiles!",owner->name, 1 + (owner->totalIntel - 1) /3);
+		if(engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::red, "The %s kamikazes with a firebomb and it explodes, burning everything within %d tiles!",owner->name, 1 + (owner->totalIntel - 1) /3);
 		for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
 			Actor *actor = *it;
 			if (actor->destructible && !actor->destructible->isDead()
-				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) {
+				&&actor->getDistance(x,y) <= 1 + (owner->totalIntel - 1) /3) 
+			{
 				//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 				float damageTaken = 1;
-				actor->destructible->takeDamage(actor, owner, damageTaken);
-				//engine.damageDone +=  2 * wearer->totalIntel;
-				if (!actor->destructible->isDead()) {
+				damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);
+				
+				if (!actor->destructible->isDead()) 
+				{
 					if(actor == engine.player)
 						engine.damageReceived += damageTaken;
-					engine.gui->message(TCODColor::red,"The %s gets burned from the %s for %g hit points.",name,owner->name, damageTaken);
-				} else {
-					engine.gui->message(TCODColor::red,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",name, damageTaken);
-				}
-				//engine.map->tiles[x+y*engine.map->width].envSta = 1;	
+					if(engine.map->isVisible(actor->x, actor->y))
+						engine.gui->message(TCODColor::red,"The %s gets burned for %g hit points.",actor->name, damageTaken);
+
+				} else 
+				{
+					if(engine.map->isVisible(actor->x, actor->y))
+						engine.gui->message(TCODColor::red,"The %s is an ashen mound from the %g damage, crumbling under its own weight.",actor->name, damageTaken);
+
+				}	
 			}
 		}
 
@@ -1655,21 +1946,31 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 	md->suicide(owner);
 
 }
-void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
+void GrenadierAi::moveOrAttack(Actor *owner, Actor *target, int targetx, int targety)
 {
 	int dx = targetx - owner->x;
 	int dy = targety - owner->y;
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
+	
+	int dxL = target->lastX - owner->x;
+	int dyL = target->lastY - owner->y;
+	int stepdxL = (dxL > 0 ? 1:-1);
+	int stepdyL = (dyL > 0 ? 1:-1);
+	stepdxL = (dxL == 0 ? 0:stepdxL);
+	stepdyL = (dyL == 0 ? 0:stepdyL);
 	float distance = sqrtf(dx*dx+dy*dy);
 	
 	//I want the grenadier to move towards if it is out of range or it is out of grenades but not right
 	if (distance > range || (distance > 1 && numGrenades <= 0 )) {
 		dx = (int) (round(dx / distance));
 		dy = (int)(round(dy / distance));
-		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+			if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
 			owner->x+=dx;
 			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdxL,owner->y+stepdyL)) {
+			owner->x+=stepdxL;
+			owner->y+=stepdyL;
 		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
 			owner->x += stepdx;
 		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
@@ -1688,24 +1989,26 @@ void GrenadierAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		{
 			berserk = true;
 			numGrenades = -1*numGrenades;
+			if(engine.map->isVisible(owner->x,owner->y))
 			engine.gui->message(TCODColor::red,"The %s is going berserk!",owner->name);
 		}
 		else
 		{
 			int dice = rng->getInt(0,30);
 			if(dice <= 15)
-				useEmpGrenade(owner, engine.player->x, engine.player->y);
+				useEmpGrenade(owner,target, target->x, target->y);
 			else if(dice <= 25)
-				useFrag(owner, engine.player->x, engine.player->y);
+				useFrag(owner, target, target->x, target->y);
 			else
-				useFirebomb(owner, engine.player->x, engine.player->y);
+				useFirebomb(owner, target, target->x, target->y);
 		}
 
 		
 	}else if (owner->attacker && !berserk) 
 	{ //grenadier will melee attack if up close
-		owner->attacker->attack(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+		owner->attacker->attack(owner,target);
+		if(target == engine.player)
+			engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 	}else if(owner->attacker && berserk)
 	{
 		//kamkaze on the actor closetest to you, given by targetx, targety
@@ -1743,13 +2046,16 @@ void TurretAi::save(TCODZip &zip) {
 }
 void TurretAi::update(Actor *owner)
 {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+		owner->destructible->die(owner, NULL);
+
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
 	
 	
 	
-	if (engine.map->isInFov(owner->x,owner->y)) 
+	if (engine.map->isVisible(owner->x,owner->y)) 
 	{
 		if(controlX != -1 && controlY != -1)
 		{
@@ -1762,7 +2068,19 @@ void TurretAi::update(Actor *owner)
 			}
 			else if (tc && ai && ai->attackMode == 1) //attack only the player mode
 			{
-				attack(owner, engine.player);
+				//compute the distance between the player and their companion then determine who to attack
+				if(engine.player->companion && !engine.player->companion->destructible->isDead())
+				{
+					float d1 = engine.player->getDistance(owner->x,owner->y);
+					float d2 = engine.player->companion->getDistance(owner->x, owner->y);
+					
+					if(d1 <= d2)
+						attack(owner, engine.player);
+					else
+						attack(owner, engine.player->companion);
+				}
+				else
+					attack(owner, engine.player);
 			}
 			else if(tc && ai && ai->attackMode == 2) //frenzy mode, turrets attack any nearby NPC, including the player
 			{
@@ -1795,7 +2113,7 @@ void TurretAi::update(Actor *owner)
 				{
 					Actor *actor = *iterator;
 					const char* name = actor->name;
-					if (actor->destructible && actor != engine.player && actor != tc && !actor->destructible->isDead() && strcmp(name, "infected corpse") != 0 && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24 && actor->ch != 225 && actor->ch != 226) //243 = locker
+					if (actor->destructible && actor != engine.player && actor != tc && !actor->destructible->isDead() && strcmp(name, "infected corpse") != 0 && actor != owner && actor->ch != 163 && actor->ch != 243 && actor->ch != 24 && actor->ch != 147 && actor->ch != 225 && actor->ch != 226 && actor != engine.player->companion) //243 = locker
 					{
 						float distance = actor->getDistance(owner->x,owner->y);
 						if (distance < bestDistance && (distance <= range || range ==0.0f)) 
@@ -1811,7 +2129,20 @@ void TurretAi::update(Actor *owner)
 			}		
 		}
 		else
-			attack(owner, engine.player);
+		{
+			if(engine.player->companion && !engine.player->companion->destructible->isDead())
+			{
+				float d1 = engine.player->getDistance(owner->x,owner->y);
+				float d2 = engine.player->companion->getDistance(owner->x, owner->y);
+				
+				if(d1 <= d2)
+					attack(owner, engine.player);
+				else
+					attack(owner, engine.player->companion);
+			}
+			else
+				attack(owner, engine.player);
+		}
 	}
 }
 
@@ -1833,7 +2164,7 @@ void TurretAi::attack(Actor *owner, Actor *target)
 
 CleanerAi::CleanerAi() : moveCount(0){
 	active = false;
-	cleanPower = 3;
+	cleanPower = 1.1;
 }
 
 void CleanerAi::load(TCODZip &zip) {
@@ -1851,6 +2182,9 @@ void CleanerAi::save(TCODZip &zip) {
 }
 
 void CleanerAi::update(Actor *owner) {
+
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
@@ -1994,6 +2328,8 @@ void InteractibleAi::load(TCODZip &zip){
 }
 
 void InteractibleAi::update(Actor *owner){
+if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+		owner->destructible->die(owner, NULL);
 }
 
 void InteractibleAi::interaction(Actor *owner, Actor *target){
@@ -2020,6 +2356,8 @@ void TurretControlAi::load(TCODZip &zip)
 
 void TurretControlAi::update(Actor *owner)
 {
+if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+		owner->destructible->die(owner, NULL);
 }
 
 void TurretControlAi::interaction(Actor *owner, Actor *target)
@@ -2040,8 +2378,8 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 		}
 		engine.gui->menu.clear();
 		engine.gui->menu.addItem(Menu::DISABLE_TURRETS, "Disable all turrets in this room.");
-		engine.gui->menu.addItem(Menu::DISABLE_IFF, "Disable IFF for all turrets in this room.");
-		engine.gui->menu.addItem(Menu::IDENTIFY_FRIENDLY, "Disable IFF except identify yourself \n as friendly for all turrets in this room");
+		engine.gui->menu.addItem(Menu::DISABLE_IFF, "Make turrets hostile to all in this room.");
+		engine.gui->menu.addItem(Menu::IDENTIFY_FRIENDLY, "Make turrets hostile to all except \n yourself and allies in this room");
 		engine.gui->menu.addItem(Menu::EXIT, "Exit");
 		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::TURRET_CONTROL);
 		switch (menuItem) {
@@ -2049,7 +2387,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				if(dice <= 25 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 0;
-					engine.gui->message(TCODColor::orange, "Turrets in this room have been disabled.");
+					engine.gui->message(TCODColor::orange, "Success. Turrets in this room have been disabled.");
 				}
 				else
 				{
@@ -2063,7 +2401,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				if(dice <= 50 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 2;
-					engine.gui->message(TCODColor::orange, "Turrets in this room have become hostile to all.");
+					engine.gui->message(TCODColor::orange, "Success. Turrets in this room have become hostile to all");
 				}
 				else
 				{
@@ -2077,7 +2415,7 @@ void TurretControlAi::interaction(Actor *owner, Actor *target)
 				if(dice <= 15 + 5*engine.player->intel || engine.player->job[0] == 'H')
 				{
 					attackMode = 3;
-					engine.gui->message(TCODColor::orange, "Turrets in this room have become hostile to all except you.");
+					engine.gui->message(TCODColor::orange, "Success. Turrets in this room have become hostile to all except you and allies.");
 				}
 				else
 				{
@@ -2327,9 +2665,17 @@ void VendingAi::populate(Actor *owner){
 	engine.actors.push(myBoots);
 	myBoots->pickable->pick(myBoots,owner);
 	
+	Actor *titanHelm = engine.map->createTitanHelm(0,0,true);
+	engine.actors.push(titanHelm);
+	titanHelm->pickable->pick(titanHelm,owner);
+	
 	Actor *titanMail = engine.map->createTitanMail(0,0,true);
 	engine.actors.push(titanMail);
 	titanMail->pickable->pick(titanMail,owner);
+	
+	Actor *titanGreaves = engine.map->createTitanGreaves(0,0,true);
+	engine.actors.push(titanGreaves);
+	titanGreaves->pickable->pick(titanGreaves,owner);
 	
 	Actor *titanBoots = engine.map->createTitanBoots(0,0,true);
 	engine.actors.push(titanBoots);
@@ -2394,32 +2740,64 @@ void EngineerAi::load(TCODZip &zip){
 
 void EngineerAi::update(Actor *owner)
 {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
 	
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	Actor *comp = engine.player->companion;
+	int compFov = 2;
+	bool compTest =  comp && comp->destructible && !comp->destructible->isDead() && comp->getDistance(owner->x, owner->y) <= compFov;
 	
-	if (engine.map->isInFov(owner->x,owner->y)) {
+	if (engine.map->isInFov(owner->x,owner->y) || compTest) {
 		//can see the palyer, move towards him
 		moveCount = TRACKING_TURNS;
 	} else {
 		moveCount--;
 	}
-	if (moveCount > 0) {
-		moveOrBuild(owner, engine.player->x, engine.player->y);
+	if (moveCount > 0) 
+	{
+		float d1 = 0;
+		float d2 = 100;
+		
+		if(compTest)
+		{
+			d1 = engine.player->getDistance(owner->x,owner->y);
+			d2 = engine.player->companion->getDistance(owner->x, owner->y);
+		}
+		
+		if(d1 <= d2)
+		{
+			moveOrBuild(owner, engine.player, engine.player->x, engine.player->y);
+		}
+		else
+		{
+			moveOrBuild(owner, comp,comp->x, comp->y);
+		}
 	} else {
 		moveCount = 0;
 	}
 	owner->destructible->takeFireDamage(owner, 3.0);
 }
 
-void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
+void EngineerAi::moveOrBuild(Actor *owner, Actor *target, int targetx, int targety)
 {
 	int x = owner->x, y = owner->y;
 	int dx = targetx - owner->x;
 	int dy = targety - owner->y;
 	float distance = sqrtf(dx*dx+dy*dy);
-	if(engine.map->isInFov(owner->x, owner->y) && !turretDeployed && distance <= deployRange) //and deployed range
+	bool viewTest = false;
+	
+	if(target == engine.player)
+		viewTest = engine.map->isInFov(owner->x,owner->y);
+	else if(target && target == engine.player->companion)
+	{
+		int compFov = 2;
+		float dComp = target->getDistance(owner->x, owner->y);
+		viewTest =  dComp <= compFov;
+	}
+	if(viewTest && !turretDeployed && distance <= deployRange) //and deployed range
 	{//try to deploy turret
 	
 	
@@ -2478,7 +2856,8 @@ void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
 		
 		if(turretDeployed)
 		{
-			engine.gui->message(TCODColor::red, "The %s is deploying a sentry turret!", owner->name);
+			if(engine.map->isVisible(owner->x, owner->y))
+				engine.gui->message(TCODColor::red, "The %s is deploying a sentry turret!", owner->name);
 			engine.map->createTurret(turretX,turretY);
 		}
 		
@@ -2488,7 +2867,8 @@ void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
 		Actor *turret = engine.getAnyActor(turretX, turretY);
 		if(!turret->destructible->isDead() && turret->destructible->hp < turret->destructible->maxHp)
 		{		//repair turret
-			engine.gui->message(TCODColor::red, "The %s is repairing their sentry turret!", owner->name);
+			if(engine.map->isVisible(owner->x, owner->y))
+				engine.gui->message(TCODColor::red, "The %s is repairing their sentry turret!", owner->name);
 			turret->destructible->heal(repairPower);
 		}	
 		else if(turret->destructible->isDead())
@@ -2515,8 +2895,9 @@ void EngineerAi::moveOrBuild(Actor *owner, int targetx, int targety)
 				}
 				
 			} else if (owner->attacker) {
-				owner->attacker->attack(owner,engine.player);
-				engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+				owner->attacker->attack(owner,target);
+				if(target == engine.player)
+					engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 			}
 		}
 	}
@@ -2537,17 +2918,20 @@ locked = zip.getInt();
 }
 void LockerAi::interaction(Actor *owner, Actor *target){
 
+	std::cout << "got to interact" << std::endl;
 	//this line of code causes the locker dropping flavor text to never be printed, is that intentional?
 	if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
 	}
 	//owner->ch = 243;
-	if(!owner->container->inventory.isEmpty())
+	if(owner->container && !owner->container->inventory.isEmpty())
 	{
 		if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
-			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
+			engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills its forgotten contents.");
 		} else if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 44){
 			engine.gui->message(TCODColor::lightGrey,"The PCMU beeps and spits out a brick of foodstuffs.");
+			owner->col = TCODColor::red;
+			owner->name = "Used PCMU Food Processor";
 		}
 		else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 56)
 		{
@@ -2560,7 +2944,7 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 			for (Actor **it = engine.player->container->inventory.begin(); it != engine.player->container->inventory.end(); it++) 
 			{
 				Actor *actor = *it;
-				if(actor->ch == 'K')
+				if(actor->ch == 190)
 				{
 					hasKey = true;
 					key = actor;
@@ -2588,6 +2972,8 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 							locked = false;
 						}
 						choice_made = true;
+						engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration = 57;
+						engine.save();
 						break;
 					case Menu::EXIT :
 						choice_made = true;
@@ -2601,6 +2987,7 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 		}
 		if(!locked)
 		{
+			std::cout << "got here" << std::endl;
 			Actor **iterator=owner->container->inventory.begin();
 			for(int i = 0; i < owner->container->size; i++)
 			{
@@ -2618,12 +3005,12 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 					++iterator;
 				}
 			}
+			
 		}
 	}
-	else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 56)
+	else if(engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 57) //open vault
 	{
-		if(!locked)
-				engine.gui->message(TCODColor::blue,"The %s has been opened and is now empty.", owner->name);
+			engine.gui->message(TCODColor::blue,"The %s has been opened and is now empty.", owner->name);
 	}
 }
 
@@ -2654,6 +3041,9 @@ void GardnerAi::save(TCODZip &zip)
 
 void GardnerAi::update(Actor *owner)
 {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+		owner->destructible->die(owner, NULL);
+		
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
@@ -2662,15 +3052,33 @@ void GardnerAi::update(Actor *owner)
 		moveOrAttack(owner, 0,0);
 		return;
 	}
-	if (engine.map->isInFov(owner->x,owner->y)) {
-		//can see the palyer, move towards him
+	Actor *comp = engine.player->companion;
+	int compFov = 2;
+	bool compTest =  comp && comp->destructible && !comp->destructible->isDead() && comp->getDistance(owner->x, owner->y) <= 	compFov;
+	
+	if (engine.map->isInFov(owner->x,owner->y) || compTest) {
+		//can see the palyer/companion, move towards him
 		moveCount = TRACKING_TURNS;
 	} else {
 		moveCount--;
 	}
-	//the Gardner will move towards the player if he is in the garden and is hostile
-	if (moveCount > 0 ||(engine.player->x <= initX2 && engine.player->x >= initX1 && engine.player->y >= initY1 && engine.player->y <= initY2)) {
-		MonsterAi::moveOrAttack(owner, engine.player->x, engine.player->y);
+	float d1 = 0;
+	float d2 = 100;
+	
+	if(compTest)
+	{
+		d1 = engine.player->getDistance(owner->x,owner->y);
+		d2 = engine.player->companion->getDistance(owner->x, owner->y);
+	}
+	Actor *target = engine.player;
+	if(d1 > d2)
+	{
+		target = comp;
+	}
+	
+	//the Gardner will move towards the player/companion if he is in the garden and is hostile
+	if (moveCount > 0 ||(target->x <= initX2 && target->x >= initX1 && target->y >= initY1 && target->y <= initY2)) {
+		MonsterAi::moveOrAttack(owner, target, target->x, target->y);
 	} else {
 		moveCount = 0;
 	}
@@ -2756,37 +3164,59 @@ void FruitAi::interaction(Actor *owner, Actor *target){
 	}
 }
 
-ZedAi::ZedAi() : moveCount(0), range(3){
+ZedAi::ZedAi() : moveCount(0), range(3), berserk (false), menuPopped(false){
 }
 
 void ZedAi::load(TCODZip &zip) {
 	moveCount = zip.getInt();
 	range = zip.getInt();
+	berserk = zip.getInt();
+	menuPopped = zip.getInt();
+
 }
 
 void ZedAi::save(TCODZip &zip) {
-	zip.putInt(RANGED);
+	zip.putInt(ZED);
 	zip.putInt(moveCount);
 	zip.putInt(range);
+	zip.putInt(berserk);
+	zip.putInt(menuPopped);
 }
 
 void ZedAi::update(Actor *owner) {
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+
 
 	if (owner->destructible && owner->destructible->isDead()) {
+		if (!menuPopped) {
+			deathMenu();
+			menuPopped = true;
+		}
 		return;
 	}
-	
+	//if really hurt go berserk
+	if (!berserk && owner->destructible->hp < owner->destructible->maxHp/3) {
+		berserk = true;
+		engine.gui->message(TCODColor::darkPurple, "<Zed> Muh Ha! Now you'll witness my true power.");
+		owner->destructible->maxHp = owner->destructible->maxHp*2;
+		owner->destructible->hp = owner->destructible->maxHp;
+		engine.gui->message(TCODColor::red, "Zed Umber is going berserk!");
+	}
 	if (engine.map->isInFov(owner->x,owner->y)) {
-		//can see the palyer, move towards him
-		moveCount = TRACKING_TURNS + 2; //give ranged characters longer tracking
-	} else {
+		//can see the player, move towards him
+		moveCount = TRACKING_TURNS + 10; //give zed much longer tracking
+	}
+	else {
 		moveCount--;
 	}
 	if (moveCount > 0) {
 		moveOrAttack(owner, engine.player->x, engine.player->y);
-	} else {
+	} 
+	else {
 		moveCount = 0;
 	}
+	//does a check if the floor is on fire
 	owner->destructible->takeFireDamage(owner, 3.0);
 }
 void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
@@ -2795,12 +3225,69 @@ void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	int dy = targety - owner->y;
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
+	
+	int dxL = engine.player->lastX - owner->x;
+	int dyL = engine.player->lastY - owner->y;
+	int stepdxL = (dxL > 0 ? 1:-1);
+	int stepdyL = (dyL > 0 ? 1:-1);
+	stepdxL = (dxL == 0 ? 0:stepdxL);
+	stepdyL = (dyL == 0 ? 0:stepdyL);
 	float distance = sqrtf(dx*dx+dy*dy);
+	
 	//If the distance > range, then the rangedAi will move towards the player
 	//If the distance <= range, then the rangedAi will shoot the player unless the player is right next the rangedAi
-
 	if (distance > range) {
+		dx = (int) (round(dx / distance));
+		dy = (int)(round(dy / distance));
+		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+			owner->x+=dx;
+			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdxL,owner->y+stepdyL)) {
+			//engine.gui->message(TCODColor::red,"Companion chasing last known location");
+			owner->x+=stepdxL;
+			owner->y+=stepdyL;
+		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
+			owner->x += stepdx;
+		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
+			owner->y += stepdy;
+		}
+		if (owner->oozing) {
+			engine.map->infectFloor(owner->x, owner->y);
+		}
+		//not next to the player
+	} 
 
+	else if (!berserk && distance !=1 && owner->attacker) {
+		TCODRandom *rng = TCODRandom::getInstance();
+		int dice = rng->getInt(0,99);
+		if (dice < 70) {
+			owner->attacker->shoot(owner,engine.player);
+			engine.damageReceived += (owner->totalDex-engine.player->destructible->totalDodge);
+		}
+		//taunting
+		else  {
+			int tauntDice = rng->getInt(0,4);
+			switch (tauntDice) {
+				case 0:
+					engine.gui->message(TCODColor::darkPurple, "<Zed> Prepare for your doom!"); break;
+				case 1:
+					engine.gui->message(TCODColor::darkPurple, "<Zed> I'm Zed Umber. Muh Ha Ha..."); break;
+				case 2:
+					engine.gui->message(TCODColor::darkPurple, "<Zed> Muh Ha..."); break;
+				case 3:
+					engine.gui->message(TCODColor::darkPurple, "<Zed> Cough, cough..."); break;
+				case 4:
+					engine.gui->message(TCODColor::darkPurple, "<Zed> Hold on... Gotta light this e-cig."); break;
+				case 5:
+					engine.gui->message(TCODColor::darkPurple, "<Zed> Mu Ha Hah!"); break;
+				case 6:
+					engine.gui->message(TCODColor::darkPurple, "<Zed> Ha! You are already dead! "); break;
+			}
+		}
+		//standing next to the player
+	}
+	else if (owner->attacker) {
+		if (berserk) {
 		dx = (int) (round(dx / distance));
 		dy = (int)(round(dy / distance));
 		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
@@ -2814,12 +3301,219 @@ void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		if (owner->oozing) {
 			engine.map->infectFloor(owner->x, owner->y);
 		}
-	} else if (distance !=1 && owner->attacker) {
-		owner->attacker->shoot(owner,engine.player);
-		engine.damageReceived += (owner->totalDex- engine.player->destructible->totalDodge);
-	}
-	else if (owner->attacker) {
-		owner->attacker->attack(owner,engine.player);
-		engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+		}
+		if (distance == 1) {
+			owner->attacker->attack(owner,engine.player);
+			engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+		}
 	}
 }
+
+void ZedAi::deathMenu() {
+	bool choice_made = false;
+	while (!choice_made) 
+	{
+		engine.gui->menu.clear();
+		engine.gui->menu.addItem(Menu::END_GAME, "Escape the spacestation.");
+		engine.gui->menu.addItem(Menu::CONTINUE_GAME, "Continue to explore.");
+		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::GAME_END);
+		switch (menuItem) {
+			case Menu::END_GAME:
+				engine.gui->message(TCODColor::orange, "Game Over: You win!");
+				choice_made = true;
+				TCODSystem::deleteFile("game.sav");
+				exit(0);
+				break;
+			case Menu::CONTINUE_GAME:
+					engine.gui->message(TCODColor::orange, "The adventure never ends!");
+				choice_made = true;
+				break;
+			case Menu::NO_CHOICE:
+				break;
+			default: break;
+		}
+	}
+}
+
+CompanionAi::CompanionAi(Actor *tamer, int rangeLimit, Command command):tamer(tamer),edible(false),rangeLimit(rangeLimit),assignedX(0),assignedY(0),command(command){
+}
+
+void CompanionAi::save(TCODZip &zip){
+	zip.putInt(COMPANION);
+	zip.putInt(edible);
+	std::cout<<"AI put edible" << edible << std::endl;
+	zip.putInt(rangeLimit);
+	std::cout<<"AI put limit" << rangeLimit << std::endl;
+	zip.putInt(assignedX);
+	std::cout<<"AI put X" << assignedX << std::endl;
+	zip.putInt(assignedY);
+	std::cout<<"AI put Y" << assignedY << std::endl;
+	zip.putInt(command);
+	std::cout<<"AI put command" << command << std::endl;
+}
+
+void CompanionAi::load(TCODZip &zip){
+	edible = zip.getInt();
+	std::cout<<"AI got edible" << edible << std::endl;
+	rangeLimit = zip.getInt();
+	std::cout<<"AI got limit" << rangeLimit << std::endl;
+	assignedX = zip.getInt();
+	std::cout<<"AI got X" << assignedX << std::endl;
+	assignedY = zip.getInt();
+	std::cout<<"AI got Y" << assignedY << std::endl;
+	command = (Command)zip.getInt();
+	std::cout<<"AI got command" << command << std::endl;
+
+	tamer = engine.player;
+}
+
+void CompanionAi::update(Actor *owner){
+
+	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+		owner->destructible->die(owner, NULL);
+
+
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	
+	if (edible && engine.turnCount % 20 == 0){
+		if (tamer->hunger > 0){
+			engine.gui->message(TCODColor::violet,"<%s> on a scale from 1 to 100, your hunger is %d",owner->name,tamer->hunger*100/tamer->maxHunger);
+		} else {
+			engine.gui->message(TCODColor::violet, "<%s> You look very hungry... You can take a bite out of me with 'u', you know.",owner->name);
+		}
+	}
+	else if (owner->name[0] == 'C' && engine.turnCount % 50 == 0){
+		engine.gui->message(TCODColor::violet, "<%s> I am a cute fluffball. I will try to protect you!",owner->name);
+	}
+	else if (owner->name[0] == 'A' && engine.turnCount % 50 == 0){
+		engine.gui->message(TCODColor::violet, "<%s> I am hunting your enemies. Beep. Boop.",owner->name);
+	}
+	
+	if (command == STAY){
+		return;
+	}
+	else if (command == GUARD_POINT ){
+		if(owner->getDistance(assignedX,assignedY) != 0){
+			int dx = assignedX - owner->x;
+			int dy = assignedY - owner->y;
+			int stepdx = (dx > 0 ? 1:-1);
+			int stepdy = (dy > 0 ? 1:-1);
+			float distance = sqrtf(dx*dx+dy*dy);
+
+			dx = (int) (round(dx / distance));
+			dy = (int)(round(dy / distance));
+			if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+				owner->x+=dx;
+				owner->y+=dy;
+			} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
+				owner->x += stepdx;
+			} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
+				owner->y += stepdy;
+			}
+			if (owner->oozing) {
+				engine.map->infectFloor(owner->x, owner->y);
+			}
+		}else{
+			Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y, 1.5);
+			if (!closestMonster){
+				return;
+			}
+			if (owner->attacker) {
+				owner->attacker->attack(owner,closestMonster);
+			}
+		}
+	
+	}
+	else if (command == FOLLOW){
+		bool targeting = false;
+		if (tamer->attacker->lastTarget != NULL && !tamer->attacker->lastTarget->destructible->isDead()){
+			if (owner->attacker && tamer->attacker->lastTarget != owner && tamer->attacker->lastTarget != tamer){
+				owner->attacker->lastTarget = tamer->attacker->lastTarget;
+				//engine.gui->message(TCODColor::violet,"<%s> I will protect you from that %s!",owner->name,owner->attacker->lastTarget->name);
+				if (tamer->getDistance(owner->attacker->lastTarget->x,owner->attacker->lastTarget->y) <= rangeLimit){
+					targeting = true;
+					moveOrAttack(owner,owner->attacker->lastTarget->x,owner->attacker->lastTarget->y);
+				}
+			}
+		} 
+		if(targeting==false && owner->getDistance(tamer->x,tamer->y) >= 2){
+			moveOrAttack(owner,tamer->x,tamer->y);
+		}
+	} else if (command == ATTACK) {
+		if (owner->attacker->lastTarget && !owner->attacker->lastTarget->destructible->isDead()){
+			moveOrAttack(owner,owner->attacker->lastTarget->x,owner->attacker->lastTarget->y);
+		}
+	}
+}
+
+void CompanionAi::moveOrAttack(Actor *owner, int targetx, int targety){
+	int dx = targetx - owner->x;
+	int dy = targety - owner->y;
+	int stepdx = (dx > 0 ? 1:-1);
+	int stepdy = (dy > 0 ? 1:-1);
+	
+	int dxL = engine.player->lastX - owner->x;
+	int dyL = engine.player->lastY - owner->y;
+	int stepdxL = (dxL > 0 ? 1:-1);
+	int stepdyL = (dyL > 0 ? 1:-1);
+	stepdxL = (dxL == 0 ? 0:stepdxL);
+	stepdyL = (dyL == 0 ? 0:stepdyL);
+	float distance = sqrtf(dx*dx+dy*dy);
+	
+	if(owner->ch == 150 && distance >= 2 && engine.turnCount % 2 == 0)
+	{
+		//crawlers can only move every other turn
+		return;
+	}
+	
+	if (distance >= 2) {
+		dx = (int) (round(dx / distance));
+		dy = (int) (round(dy / distance));
+		if (engine.map->canWalk(owner->x+dx,owner->y+dy)) {
+			//engine.gui->message(TCODColor::red,"Companion chasing known location");
+			owner->x+=dx;
+			owner->y+=dy;
+		} else if (engine.map->canWalk(owner->x+stepdxL,owner->y+stepdyL)) {
+			//engine.gui->message(TCODColor::red,"Companion chasing last known location");
+			owner->x+=stepdxL;
+			owner->y+=stepdyL;
+		} else if (engine.map->canWalk(owner->x+stepdx,owner->y)) {
+			owner->x += stepdx;
+		} else if (engine.map->canWalk(owner->x,owner->y+stepdy)) {
+			owner->y += stepdy;
+		}
+		if (owner->oozing) {
+			engine.map->infectFloor(owner->x, owner->y);
+		}
+	} else if (owner->attacker) {
+		owner->attacker->attack(owner,owner->attacker->lastTarget);
+	}
+}
+
+float CompanionAi::feedMaster(Actor *owner, Actor *master){
+
+	TCODRandom *spagoo = TCODRandom::getInstance();
+	int switcher = spagoo->getInt(0,5);
+	switch(switcher){
+		case 0:	engine.gui->message(TCODColor::violet,"<%s> WWWWAAAAAAAAUUUUGGGGGGHH!!!",owner->name); break;
+		case 1:	engine.gui->message(TCODColor::violet,"<%s> AAAAAAAAaaaaaGGGGGGHH!!!",owner->name); break;
+		case 2:	engine.gui->message(TCODColor::violet,"<%s> WHYYY!?!?",owner->name); break;
+		case 3:	engine.gui->message(TCODColor::violet,"<%s> GEEEYAAAAGGGHH!!!",owner->name); break;
+		case 4:	engine.gui->message(TCODColor::violet,"<%s> EEEEYAAAAGH",owner->name); break;
+		case 5: engine.gui->message(TCODColor::violet,"<%s> AAAAAAAAUUUUGGGGGGHH!!!",owner->name); break;
+	}
+	
+	if(edible){
+		if (owner->destructible == NULL || owner->destructible->isDead()) {
+			return 0;
+		}
+		owner->destructible->takeDamage(owner,master,owner->destructible->maxHp*0.2);
+		return master->feed(master->maxHunger);
+	} else{
+		owner->destructible->takeDamage(owner,master,owner->destructible->maxHp*0.2);
+		return 0;
+	}
+}
+
