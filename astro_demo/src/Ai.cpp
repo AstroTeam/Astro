@@ -207,13 +207,13 @@ void PlayerAi::update(Actor *owner) {
 	case TCODK_TAB: 
 		engine.save();
 		engine.gui->message(TCODColor::pink, "saved"); break;
-	case TCODK_CONTROL: 
+	/* case TCODK_CONTROL: 	//cheat mode teleport to stairs for debug
 		engine.player->x = engine.stairs->x;
 		engine.playerLight->x = engine.stairs->x;
 		engine.player->y = engine.stairs->y;
-		engine.playerLight->y = engine.stairs->y;
+		engine.playerLight->y = engine.stairs->y; 
 		
-		engine.map->computeFov(); break;
+		engine.map->computeFov(); break;*/
 		
 	case TCODK_PRINTSCREEN:
 		TCODSystem::saveScreenshot(NULL);
@@ -538,8 +538,8 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//need to figure out how to check if the user has a gun
 			if(owner->container->ranged){
 				//engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
-				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,10);
-				if ( !(owner->hostile||(closestMonster && closestMonster->hostile)) || !closestMonster || !(engine.map->isVisible(closestMonster->x, closestMonster->y))) {
+				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,20);
+				if ( !(owner->hostile||(closestMonster && closestMonster->hostile)) || !closestMonster ) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
 					return;
 				}
@@ -1478,7 +1478,7 @@ void FlareAi::update(Actor * owner)
 	if (i < turns)
 	{
 		i++;
-		engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of its phosphorus remains.",turns-i+1,turns);
+		//engine.gui->message(TCODColor::orange, "Flare is burning %d/%d of its phosphorus remains.",turns-i+1,turns);
 	}
 	else
 	{
@@ -2665,6 +2665,22 @@ void VendingAi::populate(Actor *owner){
 	engine.actors.push(myBoots);
 	myBoots->pickable->pick(myBoots,owner);
 	
+	Actor *kevlarHelm = engine.map->createKevlarHelmet(0,0,true);
+	engine.actors.push(kevlarHelm);
+	kevlarHelm->pickable->pick(kevlarHelm,owner);
+	
+	Actor *kevlarVest = engine.map->createKevlarVest(0,0,true);
+	engine.actors.push(kevlarVest);
+	kevlarVest->pickable->pick(kevlarVest,owner);
+	
+	Actor *kevlarGreaves = engine.map->createKevlarGreaves(0,0,true);
+	engine.actors.push(kevlarGreaves);
+	kevlarGreaves->pickable->pick(kevlarGreaves,owner);
+	
+	Actor *kevlarBoots = engine.map->createKevlarBoots(0,0,true);
+	engine.actors.push(kevlarBoots);
+	kevlarBoots->pickable->pick(kevlarBoots,owner);
+	
 	Actor *titanHelm = engine.map->createTitanHelm(0,0,true);
 	engine.actors.push(titanHelm);
 	titanHelm->pickable->pick(titanHelm,owner);
@@ -3195,6 +3211,7 @@ void ZedAi::update(Actor *owner) {
 		}
 		return;
 	}
+
 	//if really hurt go berserk
 	if (!berserk && owner->destructible->hp < owner->destructible->maxHp/3) {
 		berserk = true;
@@ -3203,15 +3220,35 @@ void ZedAi::update(Actor *owner) {
 		owner->destructible->hp = owner->destructible->maxHp;
 		engine.gui->message(TCODColor::red, "Zed Umber is going berserk!");
 	}
-	if (engine.map->isInFov(owner->x,owner->y)) {
+	Actor *comp = engine.player->companion;
+	int compFov = 2;
+	bool compTest =  comp && comp->destructible && !comp->destructible->isDead() && comp->getDistance(owner->x, owner->y) <= compFov;
+	if (engine.map->isInFov(owner->x,owner->y) || compTest) {
 		//can see the player, move towards him
 		moveCount = TRACKING_TURNS + 10; //give zed much longer tracking
 	}
 	else {
 		moveCount--;
 	}
-	if (moveCount > 0) {
-		moveOrAttack(owner, engine.player->x, engine.player->y);
+	if (moveCount > 0) 
+	{
+			float d1 = 0;
+			float d2 = 100;
+			
+			if(compTest)
+			{
+				d1 = engine.player->getDistance(owner->x,owner->y);
+				d2 = engine.player->companion->getDistance(owner->x, owner->y);
+			}
+			
+			if(d1 <= d2)
+			{
+				moveOrAttack(owner, engine.player, engine.player->x, engine.player->y);
+			}
+			else
+			{
+				moveOrAttack(owner, comp,comp->x, comp->y);
+			}
 	} 
 	else {
 		moveCount = 0;
@@ -3219,15 +3256,15 @@ void ZedAi::update(Actor *owner) {
 	//does a check if the floor is on fire
 	owner->destructible->takeFireDamage(owner, 3.0);
 }
-void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
+void ZedAi::moveOrAttack(Actor *owner, Actor *target, int targetx, int targety)
 {
 	int dx = targetx - owner->x;
 	int dy = targety - owner->y;
 	int stepdx = (dx > 0 ? 1:-1);
 	int stepdy = (dy > 0 ? 1:-1);
 	
-	int dxL = engine.player->lastX - owner->x;
-	int dyL = engine.player->lastY - owner->y;
+	int dxL = target->lastX - owner->x;
+	int dyL = target->lastY - owner->y;
 	int stepdxL = (dxL > 0 ? 1:-1);
 	int stepdyL = (dyL > 0 ? 1:-1);
 	stepdxL = (dxL == 0 ? 0:stepdxL);
@@ -3260,12 +3297,15 @@ void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 	else if (!berserk && distance !=1 && owner->attacker) {
 		TCODRandom *rng = TCODRandom::getInstance();
 		int dice = rng->getInt(0,99);
-		if (dice < 70) {
-			owner->attacker->shoot(owner,engine.player);
-			engine.damageReceived += (owner->totalDex-engine.player->destructible->totalDodge);
+		float dPlayer = engine.player->getDistance(owner->x, owner->y); //distance between zed and the player
+		if (dice < 70) 
+		{	
+			owner->attacker->shoot(owner,target);
+			if(target == engine.player)
+				engine.damageReceived += (owner->totalDex-engine.player->destructible->totalDodge);
 		}
 		//taunting
-		else  {
+		else if(target == engine.player || dPlayer <= 3) {
 			int tauntDice = rng->getInt(0,4);
 			switch (tauntDice) {
 				case 0:
@@ -3303,8 +3343,9 @@ void ZedAi::moveOrAttack(Actor *owner, int targetx, int targety)
 		}
 		}
 		if (distance == 1) {
-			owner->attacker->attack(owner,engine.player);
-			engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
+			owner->attacker->attack(owner,target);
+			if(target == engine.player)
+				engine.damageReceived += (owner->attacker->totalPower - engine.player->destructible->totalDodge);
 		}
 	}
 }

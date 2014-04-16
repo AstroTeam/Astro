@@ -535,9 +535,10 @@ void ItemReq::load(TCODZip &zip) {
 	requirement = zip.getFloat();	
 }
 
-Equipment::Equipment(bool equipped, SlotType slot, ItemBonus *bonus, ItemReq *requirement, bool stacks, int stackSize, PickableType type)
+Equipment::Equipment(bool equipped, SlotType slot, TCODList<ItemBonus *> bonus, ItemReq *requirement, bool stacks, int stackSize, PickableType type)
 	: Pickable(stacks, stackSize,type), equipped(equipped), slot(slot), 
 	bonus(bonus), requirement(requirement) {
+	armorArt = 0;
 }
 
 void Equipment::save(TCODZip &zip) {
@@ -548,7 +549,11 @@ void Equipment::save(TCODZip &zip) {
 	zip.putInt(stackSize);
 	zip.putInt(value);
 	zip.putInt(inkValue);
-	bonus->save(zip);
+	zip.putInt(bonus.size());
+	for(int i = 0; i < bonus.size(); i++){///////////
+		bonus.get(i)->save(zip);
+	}
+	//bonus->save(zip);
 	requirement->save(zip);
 }
 
@@ -559,9 +564,12 @@ void Equipment::load(TCODZip &zip) {
 	stackSize = zip.getInt();
 	value = zip.getInt();
 	inkValue = zip.getInt();
-	ItemBonus *bon = new ItemBonus(ItemBonus::NOBONUS,0);
-	bon->load(zip);
-	bonus = bon;
+	int numBonus = zip.getInt();
+	for(int i = 0; i < numBonus; i++){//////////
+		ItemBonus *bon = new ItemBonus(ItemBonus::NOBONUS,0);
+		bon->load(zip);
+		bonus.push(bon);
+	}
 	ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
 	req->load(zip);
 	requirement = req;
@@ -772,15 +780,18 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 			default: break;
 		}
 		equipped = true;
-		switch(bonus->type) {
-			case ItemBonus::NOBONUS: break;
-			case ItemBonus::HEALTH: wearer->destructible->maxHp += bonus->bonus; break;
-			case ItemBonus::DODGE: wearer->destructible->totalDodge += bonus->bonus; break;
-			case ItemBonus::DR: wearer->destructible->totalDR += bonus->bonus; break;
-			case ItemBonus::STRENGTH: wearer->totalStr += bonus->bonus; break;
-			case ItemBonus::DEXTERITY: wearer->totalDex += bonus->bonus; break;
-			case ItemBonus::INTELLIGENCE: wearer->totalIntel += bonus->bonus; break;
-			default: break;
+		for(int i = 0; i < bonus.size(); i++){/////////
+			ItemBonus *thisBonus = bonus.get(i);
+			switch(thisBonus->type) {
+				case ItemBonus::NOBONUS: break;
+				case ItemBonus::HEALTH: wearer->destructible->maxHp += thisBonus->bonus; break;
+				case ItemBonus::DODGE: wearer->destructible->totalDodge += thisBonus->bonus; break;
+				case ItemBonus::DR: wearer->destructible->totalDR += thisBonus->bonus; break;
+				case ItemBonus::STRENGTH: wearer->totalStr += thisBonus->bonus; break;
+				case ItemBonus::DEXTERITY: wearer->totalDex += thisBonus->bonus; break;
+				case ItemBonus::INTELLIGENCE: wearer->totalIntel += thisBonus->bonus; break;
+				default: break;
+			}
 		}
 		wearer->container->sendToBegin(owner);
 		return true;
@@ -797,20 +808,23 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 			case NOSLOT: break;
 			default: break;
 		}
-		switch(bonus->type) {
-			case ItemBonus::NOBONUS: break;
-			case ItemBonus::HEALTH: 
-				wearer->destructible->maxHp -= bonus->bonus;
-				if (wearer->destructible->hp > wearer->destructible->maxHp) {
-					wearer->destructible->hp = wearer->destructible->maxHp;
-				}
-				break;
-			case ItemBonus::DODGE: wearer->destructible->totalDodge -= bonus->bonus; break;
-			case ItemBonus::DR: wearer->destructible->totalDR -= bonus->bonus; break;
-			case ItemBonus::STRENGTH: wearer->totalStr -= bonus->bonus; break;
-			case ItemBonus::DEXTERITY: wearer->totalDex -= bonus->bonus; break;
-			case ItemBonus::INTELLIGENCE: wearer->totalIntel -= bonus->bonus; break;
-			default: break;
+		for(int i = 0; i < bonus.size(); i++){///////
+			ItemBonus *thisBonus = bonus.get(i);
+			switch(thisBonus->type) {
+				case ItemBonus::NOBONUS: break;
+				case ItemBonus::HEALTH: 
+					wearer->destructible->maxHp -= thisBonus->bonus;
+					if (wearer->destructible->hp > wearer->destructible->maxHp) {
+						wearer->destructible->hp = wearer->destructible->maxHp;
+					}
+					break;
+				case ItemBonus::DODGE: wearer->destructible->totalDodge -= thisBonus->bonus; break;
+				case ItemBonus::DR: wearer->destructible->totalDR -= thisBonus->bonus; break;
+				case ItemBonus::STRENGTH: wearer->totalStr -= thisBonus->bonus; break;
+				case ItemBonus::DEXTERITY: wearer->totalDex -= thisBonus->bonus; break;
+				case ItemBonus::INTELLIGENCE: wearer->totalIntel -= thisBonus->bonus; break;
+				default: break;
+			}
 		}
 		wearer->container->inventory.remove(owner);
 		wearer->container->inventory.push(owner);
@@ -820,7 +834,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 }
 
 Weapon::Weapon(float minDmg, float maxDmg, float critMult, WeaponType wType,
-		bool equipped, SlotType slot, ItemBonus *bonus, ItemReq *requirement):
+		bool equipped, SlotType slot, TCODList<ItemBonus *> bonus, ItemReq *requirement):
 	Equipment(equipped, slot, bonus, requirement, false, 1, Pickable::WEAPON), 
 		minDmg(minDmg), maxDmg(maxDmg), critMult(critMult), wType(wType){
 	//need to make sure no funky combos are done
@@ -838,7 +852,11 @@ void Weapon::save(TCODZip &zip) {
 	zip.putInt(stackSize);
 	zip.putInt(value);
 	zip.putInt(inkValue);
-	bonus->save(zip);
+	zip.putInt(bonus.size());
+	for(int i = 0; i < bonus.size(); i++){///////////
+		bonus.get(i)->save(zip);
+	}
+	//bonus->save(zip);
 	requirement->save(zip);
 	zip.putFloat(minDmg);
 	zip.putFloat(maxDmg);
@@ -853,9 +871,12 @@ void Weapon::load(TCODZip &zip) {
 	stackSize = zip.getInt();
 	value = zip.getInt();
 	inkValue = zip.getInt();
-	ItemBonus *bon = new ItemBonus(ItemBonus::NOBONUS,0);
-	bon->load(zip);
-	bonus = bon;
+	int numBonus = zip.getInt();
+	for(int i = 0; i < numBonus; i++){//////////
+		ItemBonus *bon = new ItemBonus(ItemBonus::NOBONUS,0);
+		bon->load(zip);
+		bonus.push(bon);
+	}
 	ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
 	req->load(zip);
 	requirement = req;
@@ -1039,7 +1060,7 @@ bool Teleporter::use(Actor *owner, Actor *wearer) {
 		"or hit escape to cancel.");
 	int x = engine.player->x;
 	int y = engine.player->y;
-	if (!engine.pickATile(&x,&y, range, 0)) {
+	if (!engine.pickATile(&x,&y, range+1, 0)) {
 		return false;
 	}
 	//teleport if not blocked

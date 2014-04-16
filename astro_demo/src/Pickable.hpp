@@ -134,9 +134,10 @@ public:
 	int armorArt; //1 = Mylar Helm, 2 = Mylar Vest, 3 = Mylar Greaves, 4 = Mylar Boots, 5 = Titanium Helm, 6 = TitanMail, 7 = TitanGreaves, 8 = TitanBoots, 9 = Kevlar Helm, 10 = Kevlar Vest, 11 = Kevlar KneePads, 12 = Kevlar Boots
 	
 	SlotType slot;
-	ItemBonus *bonus;
+	//ItemBonus *bonus;
+	TCODList<ItemBonus *> bonus;
 	ItemReq *requirement;
-	Equipment(bool equipped = false, SlotType slot = NOSLOT, ItemBonus *bonus = NULL, ItemReq *requirement = NULL,
+	Equipment(bool equipped = false, SlotType slot = NOSLOT, TCODList<ItemBonus *> bonus = new TCODList<ItemBonus *>(), ItemReq *requirement = NULL,
 		bool stacks = false, int stackSize = 1, PickableType type = EQUIPMENT);
 	bool use(Actor *owner, Actor *wearer);
 	bool requirementsMet(Actor *owner, Actor *wearer);
@@ -156,7 +157,7 @@ public:
 	WeaponType wType;
 	
 	Weapon(float minDmg = 0, float maxDmg = 0, float critMult = 2, WeaponType wType = NOTYPE,
-		bool equipped = false, SlotType slot = NOSLOT, ItemBonus *bonus = NULL, ItemReq *requirement = NULL);
+		bool equipped = false, SlotType slot = NOSLOT, TCODList<ItemBonus *> bonus = new TCODList<ItemBonus *>(), ItemReq *requirement = NULL);
 	bool use(Actor *owner, Actor *wearer);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);

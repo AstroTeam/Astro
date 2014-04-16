@@ -168,9 +168,13 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 176+16+16+16;
 				}
-				else if(r == 12)//8 is bar
+				else if(r == 12)//12 is bar
 				{
 					srcRect.x = 240;
+				}
+				else if(r == 14)//14 is bar display
+				{
+					srcRect.x = 240+16;
 				}
 				else //else is regular floors
 				{
@@ -293,9 +297,13 @@ void Renderer::render(void *sdlSurface){
 				{
 					srcRect.x = 176+16+16+16;
 				}
-				else if(r == 12)//8 is bar
+				else if(r == 12)//12 is bar
 				{
 					srcRect.x = 240;
+				}
+				else if(r == 14)//14 is bar display
+				{
+					srcRect.x = 240+16;
 				}
 				else
 				{
@@ -407,10 +415,10 @@ void Renderer::render(void *sdlSurface){
 			{
 				srcRect.y = 0;
 				srcRect.x = 0;
-				if (engine.map->tileType(xM,yM) == 12)
-				{
-					srcRect.y += 32;
-				}
+				//if (engine.map->tileType(xM,yM) == 12)
+				//{
+				//	srcRect.y += 32;
+				//}
 				if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white)
 					{
 						//light
@@ -1196,6 +1204,7 @@ void Renderer::render(void *sdlSurface){
 	
 	//COULD OPTIMIZE --> CONTAINER/INVENTORY/PLAYER CONTAINS A LIST OF JUST EQUIPMENT TO RENDER, instead of scanning all items
 	
+	bool MLRTrue = false;
 	SDL_Rect dstRectEquip={plyx*16,plyy*16,16,16};
 	if ((engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN) && engine.armorState == 0){
 		for (Actor **it = engine.player->container->inventory.begin();it != engine.player->container->inventory.end();it++)
@@ -1205,14 +1214,78 @@ void Renderer::render(void *sdlSurface){
 			if ((a->pickable->type == Pickable::EQUIPMENT || a->pickable->type == Pickable::WEAPON) && ((Equipment*)(a->pickable))->equipped && !engine.player->destructible->isDead())//add case to not blit if inventory is open
 			{
 				//equipment
-				if (strcmp(a->name,"Mylar-Lined Boots") == 0)//legacy first thing!
+				/*if (strcmp(a->name,"Mylar-Lined Boots") == 0)//legacy first thing!
 				{
 					srcRect.x = 0;
 					srcRect.y = 0;
 					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}*/
+				//art values for armor
+				int artVal = ((Equipment*)(a->pickable))->armorArt;
+				switch (artVal)
+				{
+					case 0:
+						break;
+					case 1://mylar helmet
+						srcRect.x = 0;
+						srcRect.y = 3*16;
+						break;
+					case 2://mylar vest
+						srcRect.x = 16;
+						srcRect.y = 3*16;
+						break;
+					case 3://mylar greaves
+						srcRect.x = 2*16;
+						srcRect.y = 3*16;
+						break;
+					case 4://mylar boots
+						srcRect.x = 3*16;
+						srcRect.y = 3*16;
+						break;
+					case 5://titan helmet
+						srcRect.x = 0;
+						srcRect.y = 4*16;
+						break;
+					case 6://titan vest
+						srcRect.x = 16;
+						srcRect.y = 4*16;
+						break;
+					case 7://titan greaves
+						srcRect.x = 2*16;
+						srcRect.y = 4*16;
+						break;
+					case 8://titan boots
+						srcRect.x = 3*16;
+						srcRect.y = 4*16;
+						break;
+					case 9://kevlar helmet
+						srcRect.x = 4*16;
+						srcRect.y = 3*16;
+						break;
+					case 10://kevlar vest
+						srcRect.x = 5*16;
+						srcRect.y = 3*16;
+						break;
+					case 11://kevlar greaves
+						srcRect.x = 6*16;
+						srcRect.y = 3*16;
+						break;
+					case 12://kevlar boots
+						srcRect.x = 7*16;
+						srcRect.y = 3*16;
+						break;
+					case 13:
+						MLRTrue = true;
+						break;
+					default:break;
 				}
+				if (artVal > 0 && artVal != 13)
+				{
+					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+				}
+				
 				//marine starter stuff
-				else if (strcmp(a->name,"Marine Fatigue Pants") == 0)
+				if (strcmp(a->name,"Marine Fatigue Pants") == 0)
 				{
 					srcRect.x = 16;
 					srcRect.y = 16;
@@ -1306,7 +1379,7 @@ void Renderer::render(void *sdlSurface){
 				}
 				
 				//rando
-				else if (strcmp(a->name,"Titan-mail") == 0)
+				/*else if (strcmp(a->name,"Titan-mail") == 0)
 				{
 					srcRect.x = 32;
 					srcRect.y = 0;
@@ -1317,11 +1390,19 @@ void Renderer::render(void *sdlSurface){
 					srcRect.x = 16;
 					srcRect.y = 0;
 					SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
-				}
+				}*/
 				
 			}
 		}
 	}
+	
+	if (MLRTrue)
+	{
+		srcRect.x = 0;
+		srcRect.y = 0;
+		SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+	}
+	
 	SDL_UpdateRect(floorMap, plyx*16, plyy*16, 16, 16);
 	
 	

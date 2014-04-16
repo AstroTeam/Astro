@@ -21,8 +21,8 @@ namespace Param {
 		HYDROPONICS, //done - grass, spawns food in garden
 		DEFENDED_ROOM, // to-do - spawns companions
 		BAR, //to-do - spawns alcohol/drugs
-		INFECTED_ROOM //to-do spawns lot of infection.  infected equipment?
-		
+		INFECTED_ROOM, //to-do spawns lot of infection.  infected equipment?
+		DISPLAY //bar displays
 		
 		//lobby - stair room with seating
 		//cult rooms - blood everywhere, crazy cult enemies that have high str, low hp
@@ -117,6 +117,10 @@ public:
 	Actor *createTitanMail(int x, int y, bool isVend);
 	Actor *createTitanGreaves(int x, int y, bool isVend);
 	Actor *createTitanBoots(int x,int y, bool isVend);
+	Actor *createKevlarHelmet(int x, int y, bool isVend);
+	Actor *createKevlarVest(int x, int y, bool isVend);
+	Actor *createKevlarGreaves(int x, int y, bool isVend);
+	Actor *createKevlarBoots(int x, int y, bool isVend);
 	Actor *createMylarCap(int x, int y, bool isVend);
 	Actor *createMylarVest(int x, int y, bool isVend);
 	Actor *createMylarGreaves(int x, int y, bool isVend);
@@ -126,6 +130,7 @@ public:
 	Actor *createFrag(int x, int y);
 	Actor *createFood(int x, int y);
 	Actor *createArtifact(int x, int y);
+	Actor *createCompanion(bool racial); //the racial bool determines whether or not this is a racial companion (default) being spawned. Could also be used for random companions in rooms.
 	void generateRandom(Actor *owner, int ascii); Tile *tiles;
 
 	
