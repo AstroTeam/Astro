@@ -42,11 +42,13 @@ void Attacker::attack(Actor *owner, Actor *target) {
 			}
 		}
 		if(roll >= 20){
-			engine.gui->message(TCODColor::red,"CRITICAL HIT!");
+			if(engine.map->isVisible(owner->x, owner->y))
+				engine.gui->message(TCODColor::red,"CRITICAL HIT!");
 			damageTaken += (critMult * damageRoll1) + hands * owner->totalStr - target->destructible->totalDR;
 		}
 		else if(roll <= 1){
-			engine.gui->message(TCODColor::lightGrey,"critical miss...");
+			if(engine.map->isVisible(owner->x, owner->y))
+				engine.gui->message(TCODColor::lightGrey,"critical miss...");
 			damageTaken += 0;
 		}
 		else if(attackRoll >= target->destructible->totalDodge){
@@ -61,11 +63,13 @@ void Attacker::attack(Actor *owner, Actor *target) {
 			roll = TCODRandom::getInstance()->getInt(1,20);
 			attackRoll = roll + owner->totalStr;
 			if(roll >= 20){
-				engine.gui->message(TCODColor::red,"OFFHAND CRITICAL HIT!");
+				if(engine.map->isVisible(owner->x, owner->y))
+					engine.gui->message(TCODColor::red,"OFFHAND CRITICAL HIT!");
 				damageTaken += critMult * damageRoll2 + ((int)(owner->totalStr/2)) - target->destructible->totalDR;
 			}
 			else if(roll <= 1){
-				engine.gui->message(TCODColor::lightGrey,"offhand critical miss...");
+				if(engine.map->isVisible(owner->x, owner->y))
+					engine.gui->message(TCODColor::lightGrey,"offhand critical miss...");
 				damageTaken += 0;
 			}
 			else if(attackRoll >= target->destructible->totalDodge){
@@ -75,27 +79,36 @@ void Attacker::attack(Actor *owner, Actor *target) {
 		}//end of HAND2 stuff!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
 			if (owner->oozing && target->susceptible) {
+				
 				damageTaken = target->destructible->takeDamage(target,owner, damageTaken+1);
-				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name,damageTaken);
+
+				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+					engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name, damageTaken);
 				
 			}
 			else if(strcmp(target->name,"A Government Issue Locker") == 0)//locker code exception
 			{
+				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+					engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
 				damageTaken = target->destructible->takeDamage(target,owner,damageTaken);
-				engine.gui->message(TCODColor::lightGrey,"The locker opens with a creak as it spills it's forgotten contents.");
+				
 				
 			}
 			else {
+			
 				damageTaken = target->destructible->takeDamage(target,owner,damageTaken);
-				engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name,damageTaken);
+				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+					engine.gui->message(TCODColor::red,"The %s attacks the %s for %g hit points!",owner->name, target->name, damageTaken);
 				if(strcmp(target->name,"player") == 0)
 					engine.damageReceived += damageTaken;
 			}
 		} else {
-			engine.gui->message(TCODColor::lightGrey,"The %s attacks the %s but it has no effect...",owner->name, target->name);
+			if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+				engine.gui->message(TCODColor::lightGrey,"The %s attacks the %s but it has no effect...",owner->name, target->name);
 		}
 	} else {
-		engine.gui->message(TCODColor::lightGrey,"The %s attacks the %s in vain.", owner->name,target->name);
+		if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s attacks the %s in vain.", owner->name,target->name);
 	}
 	lastTarget = target;
 }
@@ -115,11 +128,13 @@ void Attacker::shoot(Actor *owner, Actor *target) {
 		}
 		
 		if(roll >= 20){
-			engine.gui->message(TCODColor::red,"CRITICAL HIT!");
+			if(engine.map->isVisible(owner->x, owner->y))
+				engine.gui->message(TCODColor::red,"CRITICAL HIT!");
 			damageTaken += critMult * (damageRoll + owner->totalDex) - target->destructible->totalDR; //save for damage roll
 		}
 		else if(roll <= 1){
-			engine.gui->message(TCODColor::lightGrey,"critical miss...");
+			if(engine.map->isVisible(owner->x, owner->y))
+				engine.gui->message(TCODColor::lightGrey,"critical miss...");
 			damageTaken += 0;
 		}
 		else if(attackRoll >= target->destructible->totalDodge){
@@ -127,18 +142,27 @@ void Attacker::shoot(Actor *owner, Actor *target) {
 		}
 		if (damageTaken > 0 || (owner->oozing && target->susceptible && damageTaken+1 > 0)) {
 			if (owner->oozing && target->susceptible) {
+				
 				damageTaken = target->destructible->takeDamage(target,owner,damageTaken+1);
-				engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hit points!",owner->name, target->name,damageTaken);
+				
+				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+					engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hit points!",owner->name, target->name, damageTaken);
+				
+				
 			}
 			else {
 				damageTaken = target->destructible->takeDamage(target,owner,damageTaken);
-				engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hit points!",owner->name, target->name,damageTaken);
+				if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+					engine.gui->message(TCODColor::red,"The %s shoots the %s for %g hit points!",owner->name, target->name, damageTaken);
+				
 			}
 		} else {
-			engine.gui->message(TCODColor::lightGrey,"The %s shoots the %s but it has no effect...",owner->name, target->name);
+			if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+				engine.gui->message(TCODColor::lightGrey,"The %s shoots the %s but it has no effect...",owner->name, target->name);
 		}
 	} else {
-		engine.gui->message(TCODColor::lightGrey,"The %s shoots the %s in vain.", owner->name,target->name);
+		if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+			engine.gui->message(TCODColor::lightGrey,"The %s shoots the %s in vain.", owner->name,target->name);
 	}
 	lastTarget = target;
 }

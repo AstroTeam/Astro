@@ -47,7 +47,9 @@ Engine::~Engine() {
 }
 
 void Engine::term() {
+	std::cout << "got here bterm" << std::endl;
 	actors.clearAndDelete();
+	std::cout << "got here aterm" << std::endl;
 	if (map) delete map;
 	gui->clear();
 	engine.turnCount = 0;
@@ -89,27 +91,21 @@ void Engine::init() {
 	
 	
 	switch(engine.gui->raceSelection){
-		case 1:
-			player->race="Human";
-			plyrAscii = 143;
-			player->hunger = 200;
-			player->maxHunger = 200;
-			break;
 		case 2:
 			player->race="Robot";
 			plyrAscii = 159;
-			player->hunger = 100;
-			player->maxHunger = 100;			
+			player->hunger = 200;
+			player->maxHunger = 200;			
 			break;
 		case 3:
 			player->race="Alien";
 			plyrAscii = 175;
-			player->hunger = 40000;
-			player->maxHunger = 40000;			
+			player->hunger = 600;
+			player->maxHunger = 600;			
 			break;
 		default:
 			player->race="Human";
-			plyrAscii = 143;
+			plyrAscii = 143;	
 			player->hunger = 200;
 			player->maxHunger = 200;
 			break;
@@ -131,24 +127,31 @@ void Engine::init() {
 	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,0);
 	
 	Actor *helmet = NULL;
-	ItemBonus *bonusHe;
+	ItemBonus * HeBonus;
+	TCODList<ItemBonus *> bonusHe;
 	
 	Actor *chest = NULL;
-	ItemBonus *bonusC;
+	ItemBonus * CBonus;
+	TCODList<ItemBonus *> bonusC;
+	
 	Actor *legs = NULL;
-	ItemBonus *bonusL;
+	ItemBonus * LBonus;
+	TCODList<ItemBonus *> bonusL;
 	
 	Actor *feet = NULL;
-	ItemBonus *bonusF;
+	ItemBonus * FBonus;
+	TCODList<ItemBonus *> bonusF;
 	
-	Actor *hands = NULL;
-	ItemBonus *bonusHa;
+	Actor *hand1 = NULL;
+	Actor *hand2 = NULL;
+	ItemBonus * HaBonus;
+	TCODList<ItemBonus *> bonusHa;
 	
 	Actor *ranged = NULL;
-	ItemBonus *bonusR;
+	ItemBonus * RBonus;
+	TCODList<ItemBonus *> bonusR;
 	
 	Actor *equip1 = NULL;
-	
 	switch(engine.gui->jobSelection){
 		
 		case 2:
@@ -156,16 +159,19 @@ void Engine::init() {
 			player->job="Medic";
 			
 			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
-			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
+			RBonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+			bonusR.push(RBonus);
 			ranged->blocks = false;
 			ranged->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
+			((Equipment*)(ranged->pickable))->armorArt = 13;
 			((Equipment*)(ranged->pickable))->use(ranged,player);
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
-			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
+			LBonus = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusL.push(LBonus);
 			legs->blocks = false;
 			legs->pickable = new Equipment(0,Equipment::LEGS,bonusL,requirement);
 			legs->sort = 3;
@@ -174,7 +180,8 @@ void Engine::init() {
 			((Equipment*)(legs->pickable))->use(legs,player);
 			
 			feet = new Actor(0,0,185,"Combat Boots",TCODColor::white);
-			bonusF = new ItemBonus(ItemBonus::HEALTH,0);
+			FBonus = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusF.push(FBonus);
 			feet->blocks = false;
 			feet->pickable = new Equipment(0,Equipment::FEET,bonusF,requirement);
 			feet->sort = 3;
@@ -183,7 +190,8 @@ void Engine::init() {
 			((Equipment*)(feet->pickable))->use(feet,player);
 			
 			chest = new Actor(0,0,185,"Marine Medical Jacket",TCODColor::white);
-			bonusC = new ItemBonus(ItemBonus::HEALTH,0);//makes health kits more useful?  or just a class powerup?
+			CBonus = new ItemBonus(ItemBonus::HEALTH,0);//makes health kits more useful?  or just a class powerup?
+			bonusC.push(CBonus);
 			chest->blocks = false;
 			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC,requirement);
 			chest->sort = 3;
@@ -207,16 +215,19 @@ void Engine::init() {
 			player->job="Quartermaster";
 			
 			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
-			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
+			RBonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+			bonusR.push(RBonus);
 			ranged->blocks = false;
 			ranged->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
+			((Equipment*)(ranged->pickable))->armorArt = 13;
 			((Equipment*)(ranged->pickable))->use(ranged,player);
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
-			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
+			LBonus = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusL.push(LBonus);
 			legs->blocks = false;
 			legs->pickable = new Equipment(0,Equipment::LEGS,bonusL,requirement);
 			legs->sort = 3;
@@ -225,7 +236,8 @@ void Engine::init() {
 			((Equipment*)(legs->pickable))->use(legs,player);
 			
 			feet = new Actor(0,0,185,"Combat Boots",TCODColor::white);
-			bonusF = new ItemBonus(ItemBonus::HEALTH,0);
+			FBonus = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusF.push(FBonus);
 			feet->blocks = false;
 			feet->pickable = new Equipment(0,Equipment::FEET,bonusF,requirement);
 			feet->sort = 3;
@@ -234,7 +246,8 @@ void Engine::init() {
 			((Equipment*)(feet->pickable))->use(feet,player);
 			
 			chest = new Actor(0,0,185,"Marine Quarter-Master Jacket",TCODColor::white);
-			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			CBonus = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusC.push(CBonus);
 			chest->blocks = false;
 			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC,requirement);
 			chest->sort = 3;
@@ -258,7 +271,8 @@ void Engine::init() {
 			player->job="Survivalist";
 			
 			chest = new Actor(0,0,185,"T-Shirt (red)",TCODColor::white);
-			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			CBonus = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusC.push(CBonus);
 			chest->blocks = false;
 			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC,requirement);
 			chest->sort = 3;
@@ -294,7 +308,8 @@ void Engine::init() {
 			piratesFound = 1; //enables more gold! Arrrrrrrrr!
 			
 			chest = new Actor(0,0,185,"Boarding Vest",TCODColor::white);
-			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			CBonus = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusC.push(CBonus);
 			chest->blocks = false;
 			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC,requirement);
 			chest->sort = 3;
@@ -303,7 +318,8 @@ void Engine::init() {
 			((Equipment*)(chest->pickable))->use(chest,player);
 			
 			feet = new Actor(0,0,185,"Boarding Boots",TCODColor::white);
-			bonusF = new ItemBonus(ItemBonus::HEALTH,0);
+			FBonus = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusF.push(FBonus);
 			feet->blocks = false;
 			feet->pickable = new Equipment(0,Equipment::FEET,bonusF,requirement);
 			feet->sort = 3;
@@ -404,11 +420,11 @@ void Engine::init() {
 			player->job="Assassin";
 			
 			//get Blink Grenades
-			for(int i=0; i<3; i++){
+			for(int i=0; i<2; i++){
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -426,7 +442,8 @@ void Engine::init() {
 			}
 			
 			legs = new Actor(0,0,185,"Skinsuit Leggings",TCODColor::white);
-			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
+			LBonus = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusL.push(LBonus);
 			legs->blocks = false;
 			legs->pickable = new Equipment(0,Equipment::LEGS,bonusL,requirement);
 			legs->sort = 3;
@@ -435,7 +452,8 @@ void Engine::init() {
 			((Equipment*)(legs->pickable))->use(legs,player);
 			
 			chest = new Actor(0,0,185,"Skinsuit Jacket",TCODColor::white);
-			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			CBonus = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusC.push(CBonus);
 			chest->blocks = false;
 			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC,requirement);
 			chest->sort = 3;
@@ -444,7 +462,8 @@ void Engine::init() {
 			((Equipment*)(chest->pickable))->use(chest,player);
 			
 			helmet = new Actor(0,0,185,"Balaclava",TCODColor::white);
-			bonusHe = new ItemBonus(ItemBonus::HEALTH,5);
+			HeBonus = new ItemBonus(ItemBonus::HEALTH,5);
+			bonusHe.push(HeBonus);
 			helmet->blocks = false;
 			helmet->pickable = new Equipment(0,Equipment::HEAD,bonusHe,requirement);
 			helmet->sort = 3;
@@ -458,11 +477,11 @@ void Engine::init() {
 			player->job="Brute";
 			
 			//get Blink Grenades
-			for(int i=0; i<3; i++){
+			for(int i=0; i<2; i++){
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -478,15 +497,23 @@ void Engine::init() {
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
-			
-			hands = new Actor(0,0,185,"Bruiser Gloves",TCODColor::white);
-			bonusHa = new ItemBonus(ItemBonus::HEALTH,5);
-			hands->blocks = false;
-			hands->pickable = new Equipment(0,Equipment::HAND1,bonusHa,requirement);
-			hands->sort = 3;
-			engine.actors.push(hands);
-			hands->pickable->pick(hands,player);
-			((Equipment*)(hands->pickable))->use(hands,player); 
+			///////************************************
+			hand1 = new Actor(0,0,185,"Bruiser Right Glove",TCODColor::white);
+			hand2 = new Actor(0,0,185,"Bruiser Left Glove",TCODColor::white);
+			HaBonus = new ItemBonus(ItemBonus::HEALTH,5);
+			bonusHa.push(HaBonus);
+			hand1->blocks = false;
+			hand2->blocks = false;
+			hand1->pickable = new Weapon(1,6,2,Weapon::LIGHT,0,Equipment::HAND1,bonusHa,requirement);
+			hand2->pickable = new Weapon(1,6,2,Weapon::LIGHT,0,Equipment::HAND2,bonusHa,requirement);
+			hand1->sort = 4;
+			hand2->sort = 4;
+			engine.actors.push(hand1);
+			engine.actors.push(hand2);
+			hand1->pickable->pick(hand1,player);
+			hand2->pickable->pick(hand2,player);
+			((Weapon*)(hand1->pickable))->use(hand1,player);
+			((Weapon*)(hand2->pickable))->use(hand2,player);
 			
 			break;
 		case 9:
@@ -498,7 +525,7 @@ void Engine::init() {
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -516,7 +543,8 @@ void Engine::init() {
 			}
 			
 			helmet = new Actor(0,0,185,"Tech Helmet",TCODColor::white);
-			bonusHe = new ItemBonus(ItemBonus::HEALTH,5);
+			HeBonus = new ItemBonus(ItemBonus::HEALTH,5);
+			bonusHe.push(HeBonus);
 			helmet->blocks = false;
 			helmet->pickable = new Equipment(0,Equipment::HEAD,bonusHe,requirement);
 			helmet->sort = 3;
@@ -525,7 +553,8 @@ void Engine::init() {
 			((Equipment*)(helmet->pickable))->use(helmet,player);
 			
 			chest = new Actor(0,0,185,"T-Shirt (grey)",TCODColor::white);
-			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			CBonus = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusC.push(CBonus);
 			chest->blocks = false;
 			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC,requirement);
 			chest->sort = 3;
@@ -539,16 +568,19 @@ void Engine::init() {
 			player->job="Infantry";
 
 			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
-			bonusR = new ItemBonus(ItemBonus::DEXTERITY,1);
+			RBonus = new ItemBonus(ItemBonus::DEXTERITY,1);
+			bonusR.push(RBonus);
 			ranged->blocks = false;
 			ranged->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
+			((Equipment*)(ranged->pickable))->armorArt = 13;
 			((Equipment*)(ranged->pickable))->use(ranged,player);
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
-			bonusL = new ItemBonus(ItemBonus::HEALTH,0);
+			LBonus = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusL.push(LBonus);
 			legs->blocks = false;
 			legs->pickable = new Equipment(0,Equipment::LEGS,bonusL,requirement);
 			legs->sort = 3;
@@ -557,7 +589,8 @@ void Engine::init() {
 			((Equipment*)(legs->pickable))->use(legs,player);
 			
 			feet = new Actor(0,0,185,"Combat Boots",TCODColor::white);
-			bonusF = new ItemBonus(ItemBonus::HEALTH,0);
+			FBonus = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusF.push(FBonus);
 			feet->blocks = false;
 			feet->pickable = new Equipment(0,Equipment::FEET,bonusF,requirement);
 			feet->sort = 3;
@@ -566,7 +599,8 @@ void Engine::init() {
 			((Equipment*)(feet->pickable))->use(feet,player);
 			
 			chest = new Actor(0,0,185,"Marine Fatigue Jacket",TCODColor::white);
-			bonusC = new ItemBonus(ItemBonus::HEALTH,0);
+			CBonus = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusC.push(CBonus);
 			chest->blocks = false;
 			chest->pickable = new Equipment(0,Equipment::CHEST,bonusC,requirement);
 			chest->sort = 3;
@@ -575,7 +609,8 @@ void Engine::init() {
 			((Equipment*)(chest->pickable))->use(chest,player);
 				
 			helmet = new Actor(0,0,185,"Marine Ballistic Helmet",TCODColor::white);
-			bonusHe = new ItemBonus(ItemBonus::HEALTH,0);
+			HeBonus = new ItemBonus(ItemBonus::HEALTH,0);
+			bonusHe.push(HeBonus);
 			helmet->blocks = false;
 			helmet->pickable = new Equipment(0,Equipment::HEAD,bonusHe,requirement);
 			helmet->sort = 3;
@@ -628,11 +663,13 @@ void Engine::init() {
 	map = new Map(mapWidth, mapHeight);
 	if (startTutorial) {
 		ctrTer = 0;//13 is size
+		bonusTer = false;
 		cout << "number of terminals in this level " << ctrTer << endl;
 		map->init(true, Param::TUTORIAL);
 	}
 	else {
 		ctrTer = 3;//13 is size
+		bonusTer = false;
 		cout << "number of terminals in this level " << ctrTer << endl;
 		map->init(true, Param::GENERIC);
 	}
@@ -667,13 +704,16 @@ void Engine::save() {
 		zip.putInt(map->height);
 		map->save(zip);
 		//then the player
+		std::cout << "saving player " << std::endl;
 		player->save(zip);
+		std::cout << "done saving player " << std::endl;
 		//then the stairs
 		stairs->save(zip);
 		playerLight->save(zip);
 		//save the boss
-		std::cout << "got to boss " << std::endl;
+		std::cout << "saving boss " << std::endl;
 		boss->save(zip);
+		std::cout << "done saving boss " << std::endl;
 		//then all the other actors
 		zip.putInt(actors.size() - 4); //minus another one for boss actor?
 		std::cout << "saving other actors " << std::endl;
@@ -687,13 +727,18 @@ void Engine::save() {
 		//finally the message log
 		std::cout << "saving gui " <<std::endl;
 		gui->save(zip);
+		std::cout << "Done saving gui " <<std::endl;
 		zip.putInt(numTer);
 		zip.putInt(ctrTer);
+		zip.putInt(bonusTer);
+		std::cout << "saving numTerminals, ctrTer: "<<numTer<<", " <<ctrTer<<std::endl;
 		for (int i = 0; i < numTer; i++) {
 			zip.putInt(valTer[i]);
 			std::cout << "valTer " << valTer[i] << std::endl;
 		}
+		std::cout << "almost done saving" << std::endl;
 		zip.saveToFile("game.sav");
+		std::cout << "done saving" << std::endl;
 	}
 }
 
@@ -707,12 +752,9 @@ void Engine::load(bool pause) {
 	engine.gui->menu.addItem(Menu::NEW_GAME, "NEW GAME");
 	}
 	//else if (level > 0){
-	else {	
-		engine.gui->menu.addItem(Menu::MAIN_MENU, "MAIN MENU");
-	}
 	
 	//if (pause && level>0) {
-	if (pause){		
+	if (pause && level >0){		
 		engine.gui->menu.addItem(Menu::SAVE, "SAVE");
 	}
 	if(TCODSystem::fileExists("game.sav")) {
@@ -782,7 +824,7 @@ void Engine::load(bool pause) {
 		invState = zip.getInt();
 		menuState = zip.getInt();
 		armorState = zip.getInt();
-		
+		std::cout << "got here" << std::endl;
 		invFrames = zip.getInt();
 		selX = zip.getInt();
 		selY = zip.getInt();
@@ -794,8 +836,10 @@ void Engine::load(bool pause) {
 		map = new Map(width,height);
 		map->load(zip);
 		//then the player
+		std::cout << "loading player" << std::endl;
 		player = new Actor(0,0,0,NULL,TCODColor::white);
 		player->load(zip);
+		std::cout << "loaded player" << std::endl;
 		//the stairs
 		stairs = new Actor(0,0,0,NULL,TCODColor::white);
 		stairs->load(zip);
@@ -804,6 +848,7 @@ void Engine::load(bool pause) {
 		playerLight->load(zip);
 		//load the boss
 		boss = new Actor(0,0,0, NULL, TCODColor::white);
+		std::cout << "loading boss " << std::endl;
 		boss->load(zip);
 		actors.push(player);
 		actors.push(stairs);
@@ -817,6 +862,7 @@ void Engine::load(bool pause) {
 		while (nbActors > 0) {
 			Actor *actor = new Actor(0,0,0,NULL, TCODColor::white);
 			actor->load(zip);
+			if(actor != boss && actor != playerLight && actor != stairs && actor != player)
 			actors.push(actor);
 			std::cout << "loaded " << actor->name << std::endl;
 			nbActors--;
@@ -824,13 +870,16 @@ void Engine::load(bool pause) {
 		//finally, the message log
 		std::cout << "got to gui " << std::endl;
 		gui->load(zip);
+		std::cout << "loaded gui " << std::endl;
 		numTer = zip.getInt();
 		ctrTer = zip.getInt();
+		bonusTer = zip.getInt();
+		std::cout << "About to load terminals. numTer, ctrTer = "<<numTer<<", "<<ctrTer << std::endl;
 		for (int i = 0; i < numTer; i++) {
 			valTer[i] = zip.getInt();
 			std::cout << "valTer " << valTer[i] << std::endl;
 		}
-		std::cout << "got past gui " <<std::endl;
+		std::cout << "got past terminals " <<std::endl;
 		gui->message(TCODColor::pink,"loaded");
 		gameStatus = STARTUP;
 	}
@@ -1003,7 +1052,7 @@ void Engine::nextLevel() {
 		int temp = updateRng->getInt(0,2);
 		
 		//find food near teleporter
-		player->hunger = player->maxHunger > player->hunger + 50? player->hunger + 50 : player->maxHunger;
+		player->hunger += (player->maxHunger - player->hunger)*.5;
 		
 		//infantry find grenades
 		if(player->job[0] == 'I'){ 
@@ -1090,11 +1139,11 @@ void Engine::nextLevel() {
 			else
 				gui->message(TCODColor::white,"Blink Grenades fall from the ceiling and land on your head! You add them to your inventory.");
 			//get Blink Grenades
-			for(int i=0; i<5; i++){
+			for(int i=0; i<2; i++){
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -1115,10 +1164,11 @@ void Engine::nextLevel() {
 	if (engine.level != 5)
 	{
 		ctrTer = 3;                                                  ////set ctrTer
+		bonusTer = false;
 	}
 	cout << "number of terminals this level " << ctrTer << endl;
 	TCODRandom * levelRng = TCODRandom::getInstance();
-	if (0 == levelRng->getInt(0,8)) {
+	if (0 == levelRng->getInt(0,30)) {
 		map->init(true, Param::OFFICE_FLOOR);
 	}
 	else
@@ -1140,8 +1190,8 @@ Actor *Engine::getClosestMonster(int x, int y, float range) const {
 	
 	for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 		Actor *actor = *iterator;
-		if (actor != player && actor->destructible 
-			&& !actor->destructible->isDead()) {
+		if (actor != player && actor != player->companion && actor->destructible 
+			&& !actor->destructible->isDead() && map->isVisible(actor->x, actor->y)) {
 			float distance = actor->getDistance(x,y);
 			if (distance < bestDistance && (distance <= range || range ==0.0f)) {
 				bestDistance = distance;

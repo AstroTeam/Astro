@@ -44,6 +44,7 @@ public:
 protected:
 	int moveCount;
 	void moveOrAttack(Actor *owner, int targetx, int targety);
+	void moveOrAttack(Actor *owner, Actor *target, int targetx, int targety);
 };
 
 class SecurityBotAi: public MonsterAi
@@ -56,7 +57,7 @@ class SecurityBotAi: public MonsterAi
 		int vendingX, vendingY; //the position of security bot's vending machine
 	protected:
 		int moveCount;
-		void moveOrAttack(Actor *owner, int targetx, int targety);
+		void moveOrAttack(Actor *owner, Actor *target, int targetx, int targety);
 	
 };
 
@@ -71,7 +72,7 @@ class RangedAi : public Ai
 	protected:
 		int moveCount;
 		int range; //range
-		void moveOrAttack(Actor *owner, int targetx, int targety);
+		void moveOrAttack(Actor *owner, Actor *target, int targetx, int targety);
 };
 
 class EpicenterAi : public Ai {
@@ -157,11 +158,11 @@ class GrenadierAi : public Ai
 		int moveCount;
 		int range; //range
 		int numGrenades;
-		void useEmpGrenade(Actor *owner, int targetx, int targety);
-		void useFirebomb(Actor *owner, int targetx, int targety);
-		void useFrag(Actor *owner, int targetx, int targety);
+		void useEmpGrenade(Actor *owner, Actor *target, int targetx, int targety);
+		void useFirebomb(Actor *owner, Actor *target, int targetx, int targety);
+		void useFrag(Actor *owner, Actor *target, int targetx, int targety);
 		void kamikaze(Actor *owner, Actor *target);
-		void moveOrAttack(Actor *owner, int targetx, int targety);
+		void moveOrAttack(Actor *owner, Actor *target, int targetx, int targety);
 };
 
 class TurretAi : public Ai
@@ -205,7 +206,7 @@ public:
 	float repairPower; //how much the engineer repairs the turret per turn
 	int deployRange; //the max distance between the player and the engineer that will allow the engineer to deploy his turret
 	int moveCount;
-	void moveOrBuild(Actor *owner, int targetx, int targety); 
+	void moveOrBuild(Actor *owner, Actor *target, int targetx, int targety); 
 	
 
 };
@@ -308,7 +309,8 @@ public:
 	void update(Actor *owner);
 	void save(TCODZip &zip);
 	void load(TCODZip &zip);
-
+	float feedMaster(Actor *owner, Actor *master);
+	
 protected:
 	int rangeLimit; 
 	int assignedX, assignedY;
@@ -328,5 +330,7 @@ class ZedAi : public Ai
 		int moveCount;
 		int range; //range
 	 	bool berserk;
-		void moveOrAttack(Actor *owner, int targetx, int targety);
+		bool menuPopped;
+		void moveOrAttack(Actor *owner, Actor *target, int targetx, int targety);
+		void deathMenu();
 };
