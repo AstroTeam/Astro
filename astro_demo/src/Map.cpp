@@ -2096,6 +2096,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 						rack->hostile = false;
 						rack->interact = true;
 						rack->container = new Container(3);
+						generateRandom(rack,243);
 					}
 					else if(gunBat == 1)
 					{
@@ -2115,6 +2116,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 						rack->hostile = false;
 						rack->interact = true;
 						rack->container = new Container(3);
+						generateRandom(rack,243);
 					}
 					else if(gunBat == 1)
 					{
