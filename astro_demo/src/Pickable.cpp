@@ -1075,14 +1075,28 @@ bool Teleporter::use(Actor *owner, Actor *wearer) {
 			return false;
 		}
 	}
-	if(engine.player->job[0] == 'H') //hacker
+	if(engine.player->job[0] == 'H'){ //hacker
 		engine.gui->message(TCODColor::orange, "As a hacker, you mod your own x and y variables to tactically reposition yourself!");
-	else
+		
+		if (engine.player->companion && engine.player->companion->destructible && !engine.player->companion->destructible->isDead()){
+			engine.gui->message(TCODColor::orange, "<%s> And me!",engine.player->companion->name);
+		}
+	}else{
 		engine.gui->message(TCODColor::orange, "You teleport to the chosen location!");
+		if (engine.player->companion && engine.player->companion->destructible && !engine.player->companion->destructible->isDead()){
+			engine.gui->message(TCODColor::orange, "<%s> Me too!",engine.player->companion->name);
+		}
+	}
+	
 	engine.player->x = x;
 	engine.player->y = y;
 	engine.playerLight->x = x;
 	engine.playerLight->y = y;
+	
+	if (engine.player->companion && engine.player->companion->destructible && !engine.player->companion->destructible->isDead()){
+		engine.player->companion->x = x;
+		engine.player->companion->y = y;
+	}
 	engine.map->computeFov();
 	return Pickable::use(owner,wearer);
 }

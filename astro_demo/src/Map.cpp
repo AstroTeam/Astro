@@ -2593,10 +2593,16 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//playerLight->ai->moving = true;
 		engine.sendToBack(engine.playerLight);
 		
-		Actor *pet = createCompanion(true);
-		
-		engine.player->companion = pet;
-		engine.actors.push(pet);
+		if (engine.level == 1){
+			Actor *pet = createCompanion(true);
+			engine.player->companion = pet;
+			engine.actors.push(pet);
+		} else {
+			if (engine.player->companion && engine.player->companion->destructible && !engine.player->companion->destructible->isDead()){
+				engine.player->companion->x = engine.player->x;
+				engine.player->companion->y = engine.player->y;
+			}
+		}
 		
 		//Actor *r4 = createRecord(engine.player->x, engine.player->y-1);
 		//engine.actors.push(r4);
@@ -5711,7 +5717,7 @@ Actor *Map::createArtifact(int x, int y){
 	char* nameBuf = new char[80]; 
 	memset(nameBuf,0,80);
 	TCODRandom *random = TCODRandom::getInstance();
-	Actor *artifact = new Actor(x,y,'A',"Art",TCODColor::lighterGreen);
+	Actor *artifact = new Actor(x,y,153,"Art",TCODColor::gold);
 	artifact->pickable = new Equipment(0);
 	Equipment::SlotType slot = Equipment::NOSLOT;
 	ItemBonus *modBonus = NULL;
@@ -5798,7 +5804,7 @@ Actor *Map::createArtifact(int x, int y){
 }
 
 Actor *Map::createCompanion(bool racial){
-	Actor *pet = new Actor(engine.player->x,engine.player->y,141,"Hyperdonut",TCODColor::white);
+	Actor *pet = new Actor(engine.player->x,engine.player->y,141,"Mr. Bubble-Yum",TCODColor::white);
 	pet->hostile = false;
 	pet->destructible = new MonsterDestructible(50,0,0,10);
 	pet->blocks = false;
@@ -5813,26 +5819,26 @@ Actor *Map::createCompanion(bool racial){
 			case 'A':		//Alien
 			pet->name = "Capybara";
 			pet->ch = 173;
-			pet->destructible->maxHp = 70;
-			pet->destructible->hp = 70;
-			pet->totalStr = 2;
-			pet->attacker = new Attacker(2);
+			pet->destructible->maxHp +=20;
+			pet->destructible->hp +=20;
+			pet->totalStr += 2;
+			pet->attacker = new Attacker(pet->totalStr);
 			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
 			break;
 
 			case 'R':		//Robot
 			pet->name = "Scout Drone";
 			pet->ch = 157;
-			pet->destructible->maxHp = 350;
-			pet->destructible->hp = 350;
-			pet->totalStr = 0;
-			pet->attacker = new Attacker(0);
+			pet->destructible->maxHp += 300;
+			pet->destructible->hp += 300;
+			pet->totalStr += 0;
+			pet->attacker = new Attacker(pet->totalStr);
 			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
 			break;
 			
 			default:		//Human
-			pet->totalStr = -1;
-			pet->attacker = new Attacker(-1);
+			pet->totalStr += -1;
+			pet->attacker = new Attacker(pet->totalStr);
 			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
 			((CompanionAi*)pet->ai)->edible = true;
 			break;
@@ -5841,37 +5847,37 @@ Actor *Map::createCompanion(bool racial){
 		int switcher = tutu->getInt(1,3);
 		switch(switcher){
 			 
-			case 1:		//Alien
-			pet->name = "Capybara";
+			case 1:		//Toaster
+			pet->name = "Shane the useless Toaster";
 			pet->ch = 173;
-			pet->destructible->maxHp = 70;
-			pet->destructible->hp = 70;
-			pet->totalStr = 2;
-			pet->attacker = new Attacker(2);
+			pet->destructible->maxHp += 70;
+			pet->destructible->hp += 70;
+			pet->totalStr += 0;
+			pet->attacker = new Attacker(pet->totalStr);
 			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
 			break;
 
-			case 2:		//Robot
-			pet->name = "Scout Drone";
+			case 2:		//Marine Mook
+			pet->name = "the Marine";
 			pet->ch = 157;
-			pet->destructible->maxHp = 350;
-			pet->destructible->hp = 350;
-			pet->totalStr = 0;
-			pet->attacker = new Attacker(0);
+			pet->destructible->maxHp += 50;
+			pet->destructible->hp += 50;
+			pet->totalStr += 0;
+			pet->attacker = new Attacker(pet->totalStr);
 			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
 			break;
 			
-			case 3:		//Robot
-			pet->name = "Scout Drone";
+			case 3:		//Foodstuff Conglomeration
+			pet->name = "the Awakened Foodstuffs";
 			pet->ch = 157;
-			pet->destructible->maxHp = 350;
-			pet->destructible->hp = 350;
-			pet->totalStr = 0;
-			pet->attacker = new Attacker(0);
+			pet->destructible->maxHp += 250;
+			pet->destructible->hp += 250;
+			pet->totalStr += 0;
+			pet->attacker = new Attacker(pet->totalStr);
 			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
 			break;
 			
-			default:		//Human
+			default:   //just in case
 			pet->totalStr = -1;
 			pet->attacker = new Attacker(-1);
 			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);

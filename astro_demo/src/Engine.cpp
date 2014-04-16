@@ -1153,7 +1153,7 @@ void Engine::nextLevel() {
 	delete map;
 	//delete all actors but player and stairs
 	for(Actor **it = actors.begin(); it != actors.end(); it++) {
-		if (*it != player && *it != stairs) {
+		if (*it != player && *it != stairs && *it!= player->companion) {
 			delete *it;
 			it = actors.remove(it);
 		}
