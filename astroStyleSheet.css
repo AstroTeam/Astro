@@ -8,6 +8,8 @@ background-color:black;
 font-family: 'Roboto', sans-serif;
 position: relative;
 top: 120px;
+margin-left:15%;
+margin-right:15%;
 }
 
 /* Fixed Header */
@@ -23,17 +25,13 @@ position: fixed;
 z-index: 999;
 }
 
+
+
 /* Navigation Bar */
 nav
 {
 color:ForestGreen;
 font-size: 20px;
-}
-
-nav img
-{
-margin-left:50px;
-margin-right:50px;
 }
 
 nav a
@@ -66,18 +64,14 @@ h1
 color:green;
 text-align:left;
 font-size:40px;
-margin-left: 400px;
-margin-right: 400px;
 position: relative;
 }
 
-h2
+h2,th
 {
 color:green;
 text-align:left;
 font-size:30px;
-margin-left: 400px;
-margin-right: 400px;
 position: relative;
 }
 
@@ -86,8 +80,6 @@ h3
 color:green;
 text-align:left;
 font-size:20px;
-margin-left: 400px;
-margin-right: 400px;
 position: relative;
 }
 
@@ -98,14 +90,12 @@ a
 
 
 /* Paragraph */
-p
+p,td
 {
 color:white;
 text-align:justify;
 font-size:16px;
 display:  block;
-margin-left: 400px;
-margin-right: 400px;
 position: relative;
 }
 
@@ -149,3 +139,7 @@ pin a:hover
 {
 color:white;
 }  /* mouse over link */
+
+
+
+
