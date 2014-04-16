@@ -746,6 +746,7 @@ void Engine::load(bool pause) {
 	engine.gui->menu.clear();
 	if (pause) {
 	engine.gui->menu.addItem(Menu::NO_CHOICE, "RESUME GAME");
+	engine.gui->menu.addItem(Menu::MAIN_MENU, "MAIN MENU");
 	}
 	if (!pause) {
 	engine.gui->menu.addItem(Menu::TUTORIAL, "TUTORIAL");
@@ -756,6 +757,7 @@ void Engine::load(bool pause) {
 	//if (pause && level>0) {
 	if (pause && level >0){		
 		engine.gui->menu.addItem(Menu::SAVE, "SAVE");
+		
 	}
 	if(TCODSystem::fileExists("game.sav")) {
 		if (pause) {
@@ -805,6 +807,7 @@ void Engine::load(bool pause) {
 	} else if (menuItem == Menu::NO_CHOICE) {
 		//menuState = 0;
 	} else if (menuItem == Menu::MAIN_MENU) {
+		if(level > 0) //only save if you aren't on the tutorial
 		save();
 		TCODConsole::root->clear();
 		//engine.term();
