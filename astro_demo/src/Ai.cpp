@@ -538,8 +538,8 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//need to figure out how to check if the user has a gun
 			if(owner->container->ranged){
 				//engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
-				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,10);
-				if ( !(owner->hostile||(closestMonster && closestMonster->hostile)) || !closestMonster || !(engine.map->isVisible(closestMonster->x, closestMonster->y))) {
+				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,20);
+				if ( !(owner->hostile||(closestMonster && closestMonster->hostile)) || !closestMonster ) {
 					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
 					return;
 				}
