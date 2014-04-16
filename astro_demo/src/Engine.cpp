@@ -746,7 +746,7 @@ void Engine::load(bool pause) {
 	engine.gui->menu.clear();
 	if (pause) {
 	engine.gui->menu.addItem(Menu::NO_CHOICE, "RESUME GAME");
-	engine.gui->menu.addItem(Menu::MAIN_MENU, "MAIN MENU");
+	//engine.gui->menu.addItem(Menu::MAIN_MENU, "MAIN MENU");
 	}
 	if (!pause) {
 	engine.gui->menu.addItem(Menu::TUTORIAL, "TUTORIAL");
