@@ -418,11 +418,11 @@ void Engine::init() {
 			player->job="Assassin";
 			
 			//get Blink Grenades
-			for(int i=0; i<3; i++){
+			for(int i=0; i<2; i++){
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -475,11 +475,11 @@ void Engine::init() {
 			player->job="Brute";
 			
 			//get Blink Grenades
-			for(int i=0; i<3; i++){
+			for(int i=0; i<2; i++){
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -523,7 +523,7 @@ void Engine::init() {
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -749,12 +749,9 @@ void Engine::load(bool pause) {
 	engine.gui->menu.addItem(Menu::NEW_GAME, "NEW GAME");
 	}
 	//else if (level > 0){
-	else {	
-		engine.gui->menu.addItem(Menu::MAIN_MENU, "MAIN MENU");
-	}
 	
 	//if (pause && level>0) {
-	if (pause){		
+	if (pause && level >0){		
 		engine.gui->menu.addItem(Menu::SAVE, "SAVE");
 	}
 	if(TCODSystem::fileExists("game.sav")) {
@@ -1139,11 +1136,11 @@ void Engine::nextLevel() {
 			else
 				gui->message(TCODColor::white,"Blink Grenades fall from the ceiling and land on your head! You add them to your inventory.");
 			//get Blink Grenades
-			for(int i=0; i<5; i++){
+			for(int i=0; i<2; i++){
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -1191,7 +1188,7 @@ Actor *Engine::getClosestMonster(int x, int y, float range) const {
 	for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 		Actor *actor = *iterator;
 		if (actor != player && actor != player->companion && actor->destructible 
-			&& !actor->destructible->isDead()) {
+			&& !actor->destructible->isDead() && map->isVisible(actor->x, actor->y)) {
 			float distance = actor->getDistance(x,y);
 			if (distance < bestDistance && (distance <= range || range ==0.0f)) {
 				bestDistance = distance;
