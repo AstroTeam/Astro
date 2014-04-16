@@ -4613,9 +4613,9 @@ Actor *Map::createKevlarGreaves(int x, int y, bool isVend){
 	bonus.push(modBonus);
 	kevlarGreaves->pickable = new Equipment(0,Equipment::LEGS,bonus,requirement);
 	kevlarGreaves->sort = 3;
-	((Equipment*)(kevlarGreaves->pickable))->armorArt = 10;
-	kevlarGreaves->pickable->value = 700;
-	kevlarGreaves->pickable->inkValue = 35;
+	((Equipment*)(kevlarGreaves->pickable))->armorArt = 11;
+	kevlarGreaves->pickable->value = 500;
+	kevlarGreaves->pickable->inkValue = 30;
 	kevlarGreaves->col = col;
 	return kevlarGreaves;
 }
@@ -4735,9 +4735,9 @@ Actor *Map::createKevlarBoots(int x, int y, bool isVend){
 	bonus.push(modBonus);
 	kevlarBoots->pickable = new Equipment(0,Equipment::FEET,bonus,requirement);
 	kevlarBoots->sort = 3;
-	((Equipment*)(kevlarBoots->pickable))->armorArt = 10;
-	kevlarBoots->pickable->value = 700;
-	kevlarBoots->pickable->inkValue = 35;
+	((Equipment*)(kevlarBoots->pickable))->armorArt = 12;
+	kevlarBoots->pickable->value = 400;
+	kevlarBoots->pickable->inkValue = 25;
 	kevlarBoots->col = col;
 	return kevlarBoots;
 }
