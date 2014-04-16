@@ -171,7 +171,7 @@ void MonsterDestructible::die(Actor *owner, Actor *killer) {
 	int dummyAscii = 145;
 	if((owner->ch != 243 && owner->ch != 131 && owner->ch != 147 && owner->ch != 225 && owner->ch != 130 && owner->ch != 129 && owner->ch != 146 && owner->ch != dummyAscii)){
 		engine.killCount++;
-		if(engine.map->isVisible(owner->x, owner->y) || owner->ch == 'o')
+		if(engine.map->isVisible(owner->x, owner->y))
 			engine.gui->message(TCODColor::lightGrey,"The %s is dead!", owner->name);
 	}
 	else if(owner->ch == 131) //Ascii for Cleaner bot
