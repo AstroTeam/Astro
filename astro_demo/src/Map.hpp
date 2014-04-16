@@ -117,6 +117,10 @@ public:
 	Actor *createTitanMail(int x, int y, bool isVend);
 	Actor *createTitanGreaves(int x, int y, bool isVend);
 	Actor *createTitanBoots(int x,int y, bool isVend);
+	Actor *createKevlarHelmet(int x, int y, bool isVend);
+	Actor *createKevlarVest(int x, int y, bool isVend);
+	Actor *createKevlarGreaves(int x, int y, bool isVend);
+	Actor *createKevlarBoots(int x, int y, bool isVend);
 	Actor *createMylarCap(int x, int y, bool isVend);
 	Actor *createMylarVest(int x, int y, bool isVend);
 	Actor *createMylarGreaves(int x, int y, bool isVend);

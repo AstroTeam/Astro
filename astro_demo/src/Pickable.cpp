@@ -538,6 +538,7 @@ void ItemReq::load(TCODZip &zip) {
 Equipment::Equipment(bool equipped, SlotType slot, TCODList<ItemBonus *> bonus, ItemReq *requirement, bool stacks, int stackSize, PickableType type)
 	: Pickable(stacks, stackSize,type), equipped(equipped), slot(slot), 
 	bonus(bonus), requirement(requirement) {
+	armorArt = 0;
 }
 
 void Equipment::save(TCODZip &zip) {
