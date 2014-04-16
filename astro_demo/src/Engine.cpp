@@ -166,6 +166,7 @@ void Engine::init() {
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
+			((Equipment*)(ranged->pickable))->armorArt = 13;
 			((Equipment*)(ranged->pickable))->use(ranged,player);
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
@@ -221,6 +222,7 @@ void Engine::init() {
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
+			((Equipment*)(ranged->pickable))->armorArt = 13;
 			((Equipment*)(ranged->pickable))->use(ranged,player);
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
@@ -573,6 +575,7 @@ void Engine::init() {
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
+			((Equipment*)(ranged->pickable))->armorArt = 13;
 			((Equipment*)(ranged->pickable))->use(ranged,player);
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
