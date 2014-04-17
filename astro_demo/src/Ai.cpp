@@ -3607,6 +3607,84 @@ void CompanionAi::periodicMessage(Actor *owner){
 			}
 			break;
 		}
+		case DEPRESSED: {
+			TCODRandom *rando = TCODRandom::getInstance();
+			int switcher = rando->getInt(1,10);
+			switch (switcher)
+			{
+				case 1:
+					engine.gui->message(TCODColor::violet, "<%s> I wish I wasn't here right now.",owner->name);
+					break;
+				case 2:
+					engine.gui->message(TCODColor::violet, "<%s> This medication only works for half a day, then I get sad again.",owner->name);
+					break;
+				case 3:
+					engine.gui->message(TCODColor::violet, "<%s> The world has become so dark.",owner->name);
+					break;
+				case 4:
+					engine.gui->message(TCODColor::violet, "<%s> Why me? *crying* Why me?",owner->name);
+					break;
+				case 5:
+					engine.gui->message(TCODColor::violet, "<%s> Do you think we'll make it?  I don't think so.",owner->name);
+					break;
+				case 6:
+					engine.gui->message(TCODColor::violet, "<%s> I just want someone to talk to, all the others died.",owner->name);
+					break;
+				case 7:
+					engine.gui->message(TCODColor::violet, "<%s> I wanna go home this is no place for me.",owner->name);
+					break;
+				case 8:
+					engine.gui->message(TCODColor::violet, "<%s> I feel severly despondent and dejected, I've felt it over a period of time and accompanied by feelings of hopelessness and inadequacy.",owner->name);
+					break;
+				case 9:
+					engine.gui->message(TCODColor::violet, "<%s> The DSM-LXVII doesn't even say how I feel anymore.",owner->name);
+					break;
+				case 10:
+					engine.gui->message(TCODColor::violet, "<%s> Do you feel bad too?  I haven't felt good in awhile.",owner->name);
+					break;
+				default:break;
+			}
+			break;
+		}
+		case SUICIDAL: {
+			TCODRandom *rando = TCODRandom::getInstance();
+			int switcher = rando->getInt(1,10);
+			switch (switcher)
+			{
+				case 1:
+					engine.gui->message(TCODColor::violet, "<%s> I wish I was dead.",owner->name);
+					break;
+				case 2:
+					engine.gui->message(TCODColor::violet, "<%s> Just take your gun and shoot me please.",owner->name);
+					break;
+				case 3:
+					engine.gui->message(TCODColor::violet, "<%s> The world has become so dark.",owner->name);
+					break;
+				case 4:
+					engine.gui->message(TCODColor::violet, "<%s> Everyone is dead, everyone.",owner->name);
+					break;
+				case 5:
+					engine.gui->message(TCODColor::violet, "<%s> KILL ME! KILLLLLLLLLLLL ME!.",owner->name);
+					break;
+				case 6:
+					engine.gui->message(TCODColor::violet, "<%s> *sobbing* I got out when they didn't.  WHY DID I LIVE!?",owner->name);
+					break;
+				case 7:
+					engine.gui->message(TCODColor::violet, "<%s> *cutting own arm* Why am I alive?",owner->name);
+					break;
+				case 8:
+					engine.gui->message(TCODColor::violet, "<%s> That doctor said I was \"a danger to myself and others\" what a quack.",owner->name);
+					break;
+				case 9:
+					engine.gui->message(TCODColor::violet, "<%s> LET ME DIE!",owner->name);
+					break;
+				case 10:
+					engine.gui->message(TCODColor::violet, "<%s> This place will be my coffin.",owner->name);
+					break;
+				default:break;
+			}
+			break;
+		}
 		default: {
 			engine.gui->message(TCODColor::violet,"<%s> I have yet to be accounted for!", owner->name);
 			
