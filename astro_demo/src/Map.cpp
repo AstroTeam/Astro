@@ -5851,6 +5851,7 @@ Actor *Map::createCompanion(bool racial){
 			pet->totalStr += 2;
 			pet->attacker = new Attacker(pet->totalStr);
 			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			((CompanionAi*)(pet->ai))->att = CompanionAi::CAPYBARA;
 			break;
 
 			case 'R':		//Robot
@@ -5861,6 +5862,7 @@ Actor *Map::createCompanion(bool racial){
 			pet->totalStr += 0;
 			pet->attacker = new Attacker(pet->totalStr);
 			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			((CompanionAi*)(pet->ai))->att = CompanionAi::DRONE;
 			break;
 			
 			default:		//Human
@@ -5868,6 +5870,8 @@ Actor *Map::createCompanion(bool racial){
 			pet->attacker = new Attacker(pet->totalStr);
 			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
 			((CompanionAi*)pet->ai)->edible = true;
+			((CompanionAi*)(pet->ai))->att = CompanionAi::EDIBLE;
+			((CompanionAi*)(pet->ai))->period = 20;
 			break;
 		}
 	} else{

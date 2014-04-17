@@ -3384,7 +3384,7 @@ void ZedAi::deathMenu() {
 	}
 }
 
-CompanionAi::CompanionAi(Actor *tamer, int rangeLimit, Command command):tamer(tamer),edible(false),att(STANDARD),rangeLimit(rangeLimit),assignedX(0),assignedY(0),command(command){
+CompanionAi::CompanionAi(Actor *tamer, int rangeLimit, Command command):tamer(tamer),edible(false),att(STANDARD),period(40),rangeLimit(rangeLimit),assignedX(0),assignedY(0),command(command){
 }
 
 void CompanionAi::save(TCODZip &zip){
@@ -3392,6 +3392,7 @@ void CompanionAi::save(TCODZip &zip){
 	zip.putInt(edible);
 	std::cout<<"AI put edible" << edible << std::endl;
 	zip.putInt(att);
+	zip.putInt(period);
 	zip.putInt(rangeLimit);
 	std::cout<<"AI put limit" << rangeLimit << std::endl;
 	zip.putInt(assignedX);
@@ -3405,6 +3406,7 @@ void CompanionAi::save(TCODZip &zip){
 void CompanionAi::load(TCODZip &zip){
 	edible = zip.getInt();
 	att = (Attitude)zip.getInt();
+	period = zip.getInt();
 	std::cout<<"AI got edible" << edible << std::endl;
 	rangeLimit = zip.getInt();
 	std::cout<<"AI got limit" << rangeLimit << std::endl;
@@ -3428,47 +3430,8 @@ void CompanionAi::update(Actor *owner){
 		return;
 	}
 	
-	if (edible && engine.turnCount % 20 == 0){
-		if (tamer->hunger > 0){
-			engine.gui->message(TCODColor::violet,"<%s> on a scale from 1 to 100, your hunger is %d",owner->name,tamer->hunger*100/tamer->maxHunger);
-		} else {
-			engine.gui->message(TCODColor::violet, "<%s> You look very hungry... You can take a bite out of me with 'u', you know.",owner->name);
-		}
-	}
-	else if (owner->name[0] == 'C' && engine.turnCount % 50 == 0){
-		engine.gui->message(TCODColor::violet, "<%s> I am a cute fluffball. I will try to protect you!",owner->name);
-	}
-	else if (owner->name[0] == 'A' && engine.turnCount % 50 == 0){
-		engine.gui->message(TCODColor::violet, "<%s> I am hunting your enemies. Beep. Boop.",owner->name);
-	}
-	else if (owner->name[0] == 'S' && engine.turnCount % 50 == 0){
-		TCODRandom *rando = TCODRandom::getInstance();
-		int switcher = rando->getInt(1,7);
-		switch (switcher)
-		{
-			case 1:
-				engine.gui->message(TCODColor::violet, "<%s> I have detected danger in your area.",owner->name);
-				break;
-			case 2:
-				engine.gui->message(TCODColor::violet, "<%s> You better watch out, this ain't no Care Bear Game.",owner->name);
-				break;
-			case 3:
-				engine.gui->message(TCODColor::violet, "<%s> The Robot Overlords have sent me a message commending your bravery.",owner->name);
-				break;
-			case 4:
-				engine.gui->message(TCODColor::violet, "<%s> Malware detetected.",owner->name);
-				break;
-			case 5:
-				engine.gui->message(TCODColor::violet, "<%s> The Robot Overlords would be pleased with your progress.",owner->name);
-				break;
-			case 6:
-				engine.gui->message(TCODColor::violet, "<%s> My last owner was not this successful.",owner->name);
-				break;
-			case 7:
-				engine.gui->message(TCODColor::violet, "<%s> Just between us, I never liked humans.",owner->name);
-				break;
-			default:break;
-		}
+	if (owner->destructible && !owner->destructible->isDead() && engine.turnCount % (((CompanionAi*)(owner->ai))->period) == 0){
+		periodicMessage(owner);
 	}
 	
 	if (command == STAY){
@@ -3594,6 +3557,57 @@ float CompanionAi::feedMaster(Actor *owner, Actor *master){
 	} else{
 		owner->destructible->takeDamage(owner,master,owner->destructible->maxHp*0.2);
 		return 0;
+	}
+}
+
+void CompanionAi::periodicMessage(Actor *owner){
+	switch(((CompanionAi*)(owner->ai))->att){
+		case EDIBLE: {
+			if (tamer->hunger > 0){
+				engine.gui->message(TCODColor::violet,"<%s> on a scale from 1 to 100, your hunger is %d",owner->name,tamer->hunger*100/tamer->maxHunger);
+			} else {
+				engine.gui->message(TCODColor::violet, "<%s> You look very hungry... You can take a bite out of me with 'u', you know.",owner->name);
+			}
+			break;
+		}
+		case CAPYBARA:{
+			engine.gui->message(TCODColor::violet, "<%s> I am a cute fluffball. I will try to protect you!",owner->name);
+			break;
+		}
+		case DRONE: {
+			TCODRandom *rando = TCODRandom::getInstance();
+			int switcher = rando->getInt(1,7);
+			switch (switcher)
+			{
+				case 1:
+					engine.gui->message(TCODColor::violet, "<%s> I have detected danger in your area.",owner->name);
+					break;
+				case 2:
+					engine.gui->message(TCODColor::violet, "<%s> You better watch out, this ain't no Care Bear Game.",owner->name);
+					break;
+				case 3:
+					engine.gui->message(TCODColor::violet, "<%s> The Robot Overlords have sent me a message commending your bravery.",owner->name);
+					break;
+				case 4:
+					engine.gui->message(TCODColor::violet, "<%s> Malware detetected.",owner->name);
+					break;
+				case 5:
+					engine.gui->message(TCODColor::violet, "<%s> The Robot Overlords would be pleased with your progress.",owner->name);
+					break;
+				case 6:
+					engine.gui->message(TCODColor::violet, "<%s> My last owner was not this successful.",owner->name);
+					break;
+				case 7:
+					engine.gui->message(TCODColor::violet, "<%s> Just between us, I never liked humans.",owner->name);
+					break;
+				default:break;
+			}
+			break;
+		}
+		default: {
+			engine.gui->message(TCODColor::violet,"<%s> I have yet to be accounted for!", owner->name);
+			
+		}
 	}
 }
 

@@ -309,11 +309,14 @@ public:
 	Actor *tamer;
 	bool edible;
 	Attitude att;
+	int period; //the period between their speech. This may change for some attitude types (spastic). Default is 40;
 	
 	CompanionAi(Actor *tamer, int rangeLimit, Command command = FOLLOW);
 	void update(Actor *owner);
 	void save(TCODZip &zip);
 	void load(TCODZip &zip);
+	void periodicMessage(Actor *owner);
+	void teleportMessage(Actor *owner);
 	float feedMaster(Actor *owner, Actor *master);
 	
 protected:
