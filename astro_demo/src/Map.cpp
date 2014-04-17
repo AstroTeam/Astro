@@ -691,12 +691,12 @@ void Map::spawnTutorial() {
 	
 	//cout << "got to records creation" << endl;
 	for (int tiley = y1; tiley <= y2; tiley+=1) {
-		Actor *booze = createFood(x1+5,tiley);
+		/*Actor *booze = createFood(x1+5,tiley);
 		engine.actors.push(booze);
 		Actor *booze2 = createFood(x1+6,tiley);
 		engine.actors.push(booze2);		
 		Actor *booze3 = createFood(x1+7,tiley);
-		engine.actors.push(booze3);
+		engine.actors.push(booze3);*/
 		/*Actor *MLR = createMLR(x1+4,tiley,false);
 		engine.actors.push(MLR);
 		engine.sendToBack(MLR);

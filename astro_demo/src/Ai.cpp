@@ -2944,7 +2944,7 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
 	}
 	//weapon racks to empty racks
-	else if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 54){
+	else if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 54 || engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 55){
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 85;
 	}
 	//owner->ch = 243;
