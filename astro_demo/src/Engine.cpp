@@ -166,6 +166,7 @@ void Engine::init() {
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
+			((Equipment*)(ranged->pickable))->armorArt = 13;
 			((Equipment*)(ranged->pickable))->use(ranged,player);
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
@@ -221,6 +222,7 @@ void Engine::init() {
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
+			((Equipment*)(ranged->pickable))->armorArt = 13;
 			((Equipment*)(ranged->pickable))->use(ranged,player);
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
@@ -418,11 +420,11 @@ void Engine::init() {
 			player->job="Assassin";
 			
 			//get Blink Grenades
-			for(int i=0; i<3; i++){
+			for(int i=0; i<2; i++){
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -475,11 +477,11 @@ void Engine::init() {
 			player->job="Brute";
 			
 			//get Blink Grenades
-			for(int i=0; i<3; i++){
+			for(int i=0; i<2; i++){
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -523,7 +525,7 @@ void Engine::init() {
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -573,6 +575,7 @@ void Engine::init() {
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
+			((Equipment*)(ranged->pickable))->armorArt = 13;
 			((Equipment*)(ranged->pickable))->use(ranged,player);
 			
 			legs = new Actor(0,0,185,"Marine Fatigue Pants",TCODColor::white);
@@ -743,19 +746,18 @@ void Engine::load(bool pause) {
 	engine.gui->menu.clear();
 	if (pause) {
 	engine.gui->menu.addItem(Menu::NO_CHOICE, "RESUME GAME");
+	//engine.gui->menu.addItem(Menu::MAIN_MENU, "MAIN MENU");
 	}
 	if (!pause) {
 	engine.gui->menu.addItem(Menu::TUTORIAL, "TUTORIAL");
 	engine.gui->menu.addItem(Menu::NEW_GAME, "NEW GAME");
 	}
 	//else if (level > 0){
-	else {	
-		engine.gui->menu.addItem(Menu::MAIN_MENU, "MAIN MENU");
-	}
 	
 	//if (pause && level>0) {
-	if (pause){		
+	if (pause && level >0){		
 		engine.gui->menu.addItem(Menu::SAVE, "SAVE");
+		
 	}
 	if(TCODSystem::fileExists("game.sav")) {
 		if (pause) {
@@ -805,6 +807,7 @@ void Engine::load(bool pause) {
 	} else if (menuItem == Menu::NO_CHOICE) {
 		//menuState = 0;
 	} else if (menuItem == Menu::MAIN_MENU) {
+		if(level > 0) //only save if you aren't on the tutorial
 		save();
 		TCODConsole::root->clear();
 		//engine.term();
@@ -1139,11 +1142,11 @@ void Engine::nextLevel() {
 			else
 				gui->message(TCODColor::white,"Blink Grenades fall from the ceiling and land on your head! You add them to your inventory.");
 			//get Blink Grenades
-			for(int i=0; i<5; i++){
+			for(int i=0; i<2; i++){
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
-				equip1->pickable = new Teleporter(4);
+				equip1->pickable = new Teleporter(5);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
@@ -1153,7 +1156,7 @@ void Engine::nextLevel() {
 	delete map;
 	//delete all actors but player and stairs
 	for(Actor **it = actors.begin(); it != actors.end(); it++) {
-		if (*it != player && *it != stairs) {
+		if (*it != player && *it != stairs && *it!= player->companion) {
 			delete *it;
 			it = actors.remove(it);
 		}
@@ -1191,7 +1194,7 @@ Actor *Engine::getClosestMonster(int x, int y, float range) const {
 	for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 		Actor *actor = *iterator;
 		if (actor != player && actor != player->companion && actor->destructible 
-			&& !actor->destructible->isDead()) {
+			&& !actor->destructible->isDead() && map->isVisible(actor->x, actor->y)) {
 			float distance = actor->getDistance(x,y);
 			if (distance < bestDistance && (distance <= range || range ==0.0f)) {
 				bestDistance = distance;

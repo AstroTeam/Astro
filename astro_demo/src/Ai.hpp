@@ -302,8 +302,13 @@ public:
 		STAY, FOLLOW, ATTACK, GUARD_POINT
 	};
 	
+	enum Attitude{
+		DEPRESSED, SPASTIC, EDIBLE, STANDARD, BRUTISH, TOASTER, DRONE, CAPYBARA
+	};
+	
 	Actor *tamer;
 	bool edible;
+	Attitude att;
 	
 	CompanionAi(Actor *tamer, int rangeLimit, Command command = FOLLOW);
 	void update(Actor *owner);
@@ -331,6 +336,6 @@ class ZedAi : public Ai
 		int range; //range
 	 	bool berserk;
 		bool menuPopped;
-		void moveOrAttack(Actor *owner, int targetx, int targety);
+		void moveOrAttack(Actor *owner, Actor *target, int targetx, int targety);
 		void deathMenu();
 };

@@ -266,6 +266,12 @@ void Gui::currentTileInfo(int x, int y) {
 			case 10://hydroponics
 				tileInfoMessage(TCODColor::chartreuse, "Flooring with grass in it");
 				break;
+			case 12://bar
+				tileInfoMessage(TCODColor::lightOrange, "A nice hardwood floor");
+				break;
+			case 14://bar display
+				tileInfoMessage(TCODColor::white, "A fancy Liquor display");
+				break;
 			default:break;
 		
 		}
@@ -379,6 +385,12 @@ void Gui::renderKeyLook() {
 				break;
 			case 10://hydroponics
 				tileInfoMessage(TCODColor::chartreuse, "Flooring with grass in it");
+				break;
+			case 12://bar
+				tileInfoMessage(TCODColor::lightOrange, "A nice hardwood floor");
+				break;
+			case 14://bar display
+				tileInfoMessage(TCODColor::white, "A fancy Liquor display");
 				break;
 			default:break;
 		
