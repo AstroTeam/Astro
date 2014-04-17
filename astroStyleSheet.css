@@ -7,18 +7,18 @@ body
 background-color:black;
 font-family: 'Roboto', sans-serif;
 position: relative;
-top: 120px;
-margin-left:15%;
-margin-right:15%;
+top: 0px;
+font-size:.9em;
+margin-left:5%;
+margin-right: 5%;
 }
 
 /* Fixed Header */
 
 header
 {
-margin-top: -8px;
-margin-left: -8px;
-height: 120px;
+margin-top: -1%;
+height: 125px;
 background-color:#000000;
 width: 100%;
 position: fixed;
@@ -28,16 +28,11 @@ z-index: 999;
 
 
 /* Navigation Bar */
-nav
-{
-color:ForestGreen;
-font-size: 20px;
-}
 
 nav a
 {
-padding:6px;
-margin:2px;
+padding:.5em;
+margin:.5em;
 }
 
 nav a:link 
@@ -63,7 +58,7 @@ h1
 {
 color:green;
 text-align:left;
-font-size:40px;
+font-size:2em;
 position: relative;
 }
 
@@ -71,30 +66,34 @@ h2,th
 {
 color:green;
 text-align:left;
-font-size:30px;
+font-size:1.5em;
 position: relative;
 }
 
-h3
+h3,nav
 {
 color:green;
 text-align:left;
-font-size:20px;
 position: relative;
 }
 
 a
 {
 	text-decoration: none;
+	
 }
 
+#meat {
+padding-top: 100px;
+
+}
 
 /* Paragraph */
 p,td
 {
 color:white;
 text-align:justify;
-font-size:16px;
+font-size:1em;
 display:  block;
 position: relative;
 }
@@ -122,7 +121,6 @@ pin
 {
 color:white;
 text-align:justify;
-font-size:16px;
 display:  block;
 position: relative;
 }
