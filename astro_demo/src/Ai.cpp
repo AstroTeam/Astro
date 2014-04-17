@@ -3384,13 +3384,14 @@ void ZedAi::deathMenu() {
 	}
 }
 
-CompanionAi::CompanionAi(Actor *tamer, int rangeLimit, Command command):tamer(tamer),edible(false),rangeLimit(rangeLimit),assignedX(0),assignedY(0),command(command){
+CompanionAi::CompanionAi(Actor *tamer, int rangeLimit, Command command):tamer(tamer),edible(false),att(STANDARD),rangeLimit(rangeLimit),assignedX(0),assignedY(0),command(command){
 }
 
 void CompanionAi::save(TCODZip &zip){
 	zip.putInt(COMPANION);
 	zip.putInt(edible);
 	std::cout<<"AI put edible" << edible << std::endl;
+	zip.putInt(att);
 	zip.putInt(rangeLimit);
 	std::cout<<"AI put limit" << rangeLimit << std::endl;
 	zip.putInt(assignedX);
@@ -3403,6 +3404,7 @@ void CompanionAi::save(TCODZip &zip){
 
 void CompanionAi::load(TCODZip &zip){
 	edible = zip.getInt();
+	att = (Attitude)zip.getInt();
 	std::cout<<"AI got edible" << edible << std::endl;
 	rangeLimit = zip.getInt();
 	std::cout<<"AI got limit" << rangeLimit << std::endl;

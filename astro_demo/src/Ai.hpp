@@ -302,8 +302,13 @@ public:
 		STAY, FOLLOW, ATTACK, GUARD_POINT
 	};
 	
+	enum Attitude{
+		DEPRESSED, SPASTIC, EDIBLE, STANDARD, BRUTISH, TOASTER
+	};
+	
 	Actor *tamer;
 	bool edible;
+	Attitude att;
 	
 	CompanionAi(Actor *tamer, int rangeLimit, Command command = FOLLOW);
 	void update(Actor *owner);
