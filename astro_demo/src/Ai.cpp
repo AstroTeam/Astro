@@ -3439,6 +3439,35 @@ void CompanionAi::update(Actor *owner){
 	else if (owner->name[0] == 'A' && engine.turnCount % 50 == 0){
 		engine.gui->message(TCODColor::violet, "<%s> I am hunting your enemies. Beep. Boop.",owner->name);
 	}
+	else if (owner->name[0] == 'S' && engine.turnCount % 50 == 0){
+		TCODRandom *rando = TCODRandom::getInstance();
+		int switcher = rando->getInt(1,7);
+		switch (switcher)
+		{
+			case 1:
+				engine.gui->message(TCODColor::violet, "<%s> I have detected danger in your area.",owner->name);
+				break;
+			case 2:
+				engine.gui->message(TCODColor::violet, "<%s> You better watch out, this ain't no Care Bear Game.",owner->name);
+				break;
+			case 3:
+				engine.gui->message(TCODColor::violet, "<%s> The Robot Overlords have sent me a message commending your bravery.",owner->name);
+				break;
+			case 4:
+				engine.gui->message(TCODColor::violet, "<%s> Malware detetected.",owner->name);
+				break;
+			case 5:
+				engine.gui->message(TCODColor::violet, "<%s> The Robot Overlords would be pleased with your progress.",owner->name);
+				break;
+			case 6:
+				engine.gui->message(TCODColor::violet, "<%s> My last owner was not this successful.",owner->name);
+				break;
+			case 7:
+				engine.gui->message(TCODColor::violet, "<%s> Just between us, I never liked humans.",owner->name);
+				break;
+			default:break;
+		}
+	}
 	
 	if (command == STAY){
 		return;
