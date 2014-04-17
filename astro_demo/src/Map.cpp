@@ -5886,7 +5886,7 @@ Actor *Map::createCompanion(bool racial){
 		pet->destructible->baseDodge += 5;
 		pet->destructible->totalDodge += 5;
 	}
-	else if (switc < 40+20+20+20){
+	else if (switc <= 40+20+20+20){
 		((CompanionAi*)(pet->ai))->att = CompanionAi::DEPRESSED;
 		((CompanionAi*)(pet->ai))->period = 10 * tutu->getInt(2,6);
 		strcat(nameBuf,"the Melancholic ");

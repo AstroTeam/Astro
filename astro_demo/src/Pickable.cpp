@@ -1083,12 +1083,12 @@ bool Teleporter::use(Actor *owner, Actor *wearer) {
 		engine.gui->message(TCODColor::orange, "As a hacker, you mod your own x and y variables to tactically reposition yourself!");
 		
 		if (engine.player->companion && engine.player->companion->destructible && !engine.player->companion->destructible->isDead()){
-			engine.gui->message(TCODColor::orange, "<%s> And me!",engine.player->companion->name);
+			((CompanionAi*)(engine.player->companion->ai))->teleportMessage(engine.player->companion);
 		}
 	}else{
 		engine.gui->message(TCODColor::orange, "You teleport to the chosen location!");
 		if (engine.player->companion && engine.player->companion->destructible && !engine.player->companion->destructible->isDead()){
-			engine.gui->message(TCODColor::orange, "<%s> Me too!",engine.player->companion->name);
+			((CompanionAi*)(engine.player->companion->ai))->teleportMessage(engine.player->companion);
 		}
 	}
 	

@@ -3614,3 +3614,6 @@ void CompanionAi::periodicMessage(Actor *owner){
 	}
 }
 
+void CompanionAi::teleportMessage(Actor *owner){
+	engine.gui->message(TCODColor::violet,"%s vomits uncontrolably, disoriented by the teleportation's effects!",owner->name);
+}
