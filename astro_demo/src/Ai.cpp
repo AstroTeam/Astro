@@ -3421,6 +3421,9 @@ void CompanionAi::load(TCODZip &zip){
 }
 
 void CompanionAi::update(Actor *owner){
+	if (tamer == NULL){
+		return;
+	}
 
 	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
 		owner->destructible->die(owner, NULL);

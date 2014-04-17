@@ -5837,38 +5837,101 @@ Actor *Map::createCompanion(bool racial){
 	pet->blocks = false;
 	pet->container = new Container(2);
 	pet->flashable = true;
+	if (racial){
+		pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+	} else {
+		pet->ai = new CompanionAi(NULL,2,CompanionAi::FOLLOW);
+	}
 	
 	TCODRandom *tutu = TCODRandom::getInstance();
+	
+	char* nameBuf = new char[250]; 
+	memset(nameBuf,0,250);
+	
+	int switc = tutu->getInt(1,10);
+	switch (switc){
+		case 1: strcat(nameBuf,"Mykyl "); break;
+		case 2: strcat(nameBuf,"Bob "); break;
+		case 3: strcat(nameBuf,"Frigth "); break;
+		case 4: strcat(nameBuf,"Lydia "); break;
+		case 5: strcat(nameBuf,"Dweezil "); break;
+		case 6: strcat(nameBuf,"Springleaf "); break;
+		case 7: strcat(nameBuf,"EX-279 "); break;
+		case 8: strcat(nameBuf,"Sally "); break;
+		case 9: strcat(nameBuf,"TOM "); break;
+		case 10: strcat(nameBuf,"Bryndynn "); break;
+	}
+	
+	switc = tutu->getInt(1,100);
+	
+	if (switc < 40){
+		((CompanionAi*)(pet->ai))->att = CompanionAi::STANDARD;
+		((CompanionAi*)(pet->ai))->period = 10 * tutu->getInt(2,6);
+		strcat(nameBuf,"the ");
+		pet->destructible->baseDR += 3;
+		pet->destructible->totalDR += 3;
+		
+	} 
+	else if (switc < 40+20) {
+		((CompanionAi*)(pet->ai))->att = CompanionAi::BRUTISH;
+		((CompanionAi*)(pet->ai))->period = 10 * tutu->getInt(2,6);
+		strcat(nameBuf,"the Brutish ");
+		pet->str += 2;
+		pet->totalStr +=2;
+	}
+	else if (switc < 40+20+20) {
+		((CompanionAi*)(pet->ai))->att = CompanionAi::SPASTIC;
+		((CompanionAi*)(pet->ai))->period = 10 * tutu->getInt(2,6);
+		strcat(nameBuf,"the Spastic ");
+		pet->destructible->baseDodge += 5;
+		pet->destructible->totalDodge += 5;
+	}
+	else if (switc < 40+20+20+20){
+		((CompanionAi*)(pet->ai))->att = CompanionAi::DEPRESSED;
+		((CompanionAi*)(pet->ai))->period = 10 * tutu->getInt(2,6);
+		strcat(nameBuf,"the Melancholic ");
+		pet->destructible->hp += 30;
+		pet->destructible->maxHp += 30;
+	}
+	
 	
 	if (racial){	
 		switch(engine.player->race[0]){
 			 
 			case 'A':		//Alien
-			pet->name = "Capybara";
+			strcat(nameBuf,"Capybara");
+			pet->name = nameBuf;
 			pet->ch = 173;
 			pet->destructible->maxHp +=20;
 			pet->destructible->hp +=20;
 			pet->totalStr += 2;
 			pet->attacker = new Attacker(pet->totalStr);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
-			((CompanionAi*)(pet->ai))->att = CompanionAi::CAPYBARA;
+			
+			if ( ((CompanionAi*)(pet->ai))->att == CompanionAi::STANDARD) {
+				((CompanionAi*)(pet->ai))->att = CompanionAi::CAPYBARA;
+			}
 			break;
 
 			case 'R':		//Robot
-			pet->name = "Scout Drone";
+			strcat(nameBuf,"Scout Drone");
+			pet->name = nameBuf;
 			pet->ch = 157;
 			pet->destructible->maxHp += 300;
 			pet->destructible->hp += 300;
 			pet->totalStr += 0;
 			pet->attacker = new Attacker(pet->totalStr);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
-			((CompanionAi*)(pet->ai))->att = CompanionAi::DRONE;
+			
+			if ( ((CompanionAi*)(pet->ai))->att == CompanionAi::STANDARD) {
+				((CompanionAi*)(pet->ai))->att = CompanionAi::DRONE;
+			}
 			break;
 			
 			default:		//Human
+			strcat(nameBuf,"Donut-Man");
+			pet->name = nameBuf;
 			pet->totalStr += -1;
 			pet->attacker = new Attacker(pet->totalStr);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			
 			((CompanionAi*)pet->ai)->edible = true;
 			((CompanionAi*)(pet->ai))->att = CompanionAi::EDIBLE;
 			((CompanionAi*)(pet->ai))->period = 20;
@@ -5885,33 +5948,37 @@ Actor *Map::createCompanion(bool racial){
 			pet->destructible->hp += 70;
 			pet->totalStr += 0;
 			pet->attacker = new Attacker(pet->totalStr);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			
 			break;
 
 			case 2:		//Marine Mook
-			pet->name = "the Marine";
+			strcat(nameBuf,"Marine");
+			pet->name = nameBuf;
 			pet->ch = 157;
 			pet->destructible->maxHp += 50;
 			pet->destructible->hp += 50;
 			pet->totalStr += 0;
 			pet->attacker = new Attacker(pet->totalStr);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			
 			break;
 			
 			case 3:		//Foodstuff Conglomeration
-			pet->name = "the Awakened Foodstuffs";
+			strcat(nameBuf,"Awakened Foodstuffs");
+			pet->name = nameBuf;
 			pet->ch = 157;
 			pet->destructible->maxHp += 250;
 			pet->destructible->hp += 250;
 			pet->totalStr += 0;
 			pet->attacker = new Attacker(pet->totalStr);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			
 			break;
 			
 			default:   //just in case
+			strcat(nameBuf,"Something");
+			pet->name = nameBuf;
 			pet->totalStr = -1;
 			pet->attacker = new Attacker(-1);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			
 			((CompanionAi*)pet->ai)->edible = true;
 			break;
 		}
