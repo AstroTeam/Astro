@@ -691,6 +691,12 @@ void Map::spawnTutorial() {
 	
 	//cout << "got to records creation" << endl;
 	for (int tiley = y1; tiley <= y2; tiley+=1) {
+		Actor *booze = createFood(x1+5,tiley);
+		engine.actors.push(booze);
+		Actor *booze2 = createFood(x1+6,tiley);
+		engine.actors.push(booze2);		
+		Actor *booze3 = createFood(x1+7,tiley);
+		engine.actors.push(booze3);
 		/*Actor *MLR = createMLR(x1+4,tiley,false);
 		engine.actors.push(MLR);
 		engine.sendToBack(MLR);
@@ -5730,13 +5736,101 @@ Actor* Map::createKey(int x, int y, int keyType)
 }
 
 Actor *Map::createFood(int x, int y){
-	Actor *scrollOfFeeding = new Actor(x,y,14,"Brick of Foodstuffs", TCODColor::white);
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODColor col = TCODColor::white;
+	TCODColor sat = TCODColor::white;
+	Actor *scrollOfFeeding = new Actor(x,y,14,"Brick of Foodstuffs", TCODColor::green);
+	strcat(nameBuf,"Brick of ");
+	TCODRandom *random = TCODRandom::getInstance();
+	int quality = random->getInt(1,5);
+	switch(quality)
+	{
+		case 1:
+			strcat(nameBuf,"rotten ");
+			scrollOfFeeding->hunger = 30;
+			sat = TCODColor::darkGrey;
+			break;
+		case 2:
+			strcat(nameBuf,"stale ");
+			scrollOfFeeding->hunger = 40;
+			sat = TCODColor::grey;
+			break;
+		case 3:
+			scrollOfFeeding->hunger = 50;
+			sat = TCODColor::lightGrey;
+			break;
+		case 4:
+			strcat(nameBuf,"new ");
+			scrollOfFeeding->hunger = 60;
+			sat = TCODColor::lighterGrey;
+			break;
+		case 5:
+			strcat(nameBuf,"quality ");
+			scrollOfFeeding->hunger = 70;
+			sat = TCODColor::lightestGrey;
+			break;
+		default:break;
+	}
+	int color = random->getInt(1,10,3);
+	switch(color)
+	{
+		case 1:
+			col = TCODColor::green;//
+			strcat(nameBuf,"green ");
+			break;
+		case 2:
+			col = TCODColor::sea;//
+			strcat(nameBuf,"turquoise ");
+			break;
+		case 3:
+			col = TCODColor::lime;//
+			strcat(nameBuf,"lime ");
+			break;
+		case 4:
+			col = TCODColor::azure;
+			strcat(nameBuf,"blue ");
+			break;
+		case 5:
+			col = TCODColor::red;
+			strcat(nameBuf,"red ");
+			break;
+		case 6:
+			col = TCODColor::yellow;
+			strcat(nameBuf,"yellow ");
+			break;
+		case 7:
+			col = TCODColor::violet;
+			strcat(nameBuf,"purple ");
+			break;
+		case 8:
+			col = TCODColor::magenta;
+			strcat(nameBuf,"pink ");
+			break;
+		case 9:
+			col = TCODColor::chartreuse;//
+			strcat(nameBuf,"chartreuse ");
+			break;
+		case 10:
+			col = TCODColor::sepia;
+			strcat(nameBuf,"brown ");
+			break;
+		default:break;
+	}
+	//col = TCODColor::green;
+	col = col*sat;
+	//col.r = col.r * sat.r / 255
+	//col.g = col.g * sat.g / 255
+	//col.b = col.b * sat.b / 255
+	strcat(nameBuf,"Foodstuffs");
 	scrollOfFeeding->sort = 1;
+	scrollOfFeeding->name = nameBuf;
 	scrollOfFeeding->blocks = false;
 	scrollOfFeeding->pickable = new Food(1);//this is the stack size. Food should feed for a static amount
 	scrollOfFeeding->pickable->value = 25;
-	scrollOfFeeding->hunger = 60;
+	//scrollOfFeeding->hunger = 60;
 	scrollOfFeeding->pickable->inkValue = 10;
+	scrollOfFeeding->col = col;
 	return scrollOfFeeding;
 }
 
