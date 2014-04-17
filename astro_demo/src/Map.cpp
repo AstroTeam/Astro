@@ -645,9 +645,15 @@ void Map::spawnTutorial() {
 		generateRandom(rack,243);
 		engine.actors.push(rack);
 
-		Actor * rack2= new Actor(x1+2, tiley, 243, "Battery Rack", TCODColor::white);
+		Actor * bat= new Actor(x1+2, tiley, 243, "Battery Rack", TCODColor::white);
 		engine.map->tiles[x1+2+tiley*engine.map->width].decoration = 55;
-		engine.actors.push(rack2);
+		engine.actors.push(bat);
+		bat->destructible = new MonsterDestructible(1,0,0,0);
+		bat->ai = new LockerAi();
+		bat->hostile = false;
+		bat->interact = true;
+		bat->container = new Container(3);
+		generateRandom(bat,243);
 
 		Actor * dummy = new Actor(x2-1, tiley, 145, "Target Dummy", TCODColor::white);
 		//engine.map->tiles[x1+2+tiley*engine.map->width].decoration = 55;
@@ -2100,9 +2106,15 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					}
 					else if(gunBat == 1)
 					{
-						Actor * pcmu = new Actor(i, j, 243, "Battery Rack", TCODColor::white);
+						Actor * bat = new Actor(i, j, 243, "Battery Rack", TCODColor::white);
 						engine.map->tiles[i+j*engine.map->width].decoration = 55;
-						engine.actors.push(pcmu);
+						bat->destructible = new MonsterDestructible(1,0,0,0);
+						bat->ai = new LockerAi();
+						bat->hostile = false;
+						bat->interact = true;
+						bat->container = new Container(3);
+						generateRandom(bat,243);
+						engine.actors.push(bat);
 					}
 				}
 				if (i == x1+3 && j%2 != 0)
@@ -2120,14 +2132,15 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					}
 					else if(gunBat == 1)
 					{
-						Actor * rack = new Actor(i, j, 243, "Battery Rack", TCODColor::white);
+						Actor * bat = new Actor(i, j, 243, "Battery Rack", TCODColor::white);
 						engine.map->tiles[i+j*engine.map->width].decoration = 55;
-						engine.actors.push(rack);
-						rack->destructible = new MonsterDestructible(1,0,0,0);
-						rack->ai = new LockerAi();
-						rack->hostile = false;
-						rack->interact = true;
-						rack->container = new Container(3);
+						bat->destructible = new MonsterDestructible(1,0,0,0);
+						bat->ai = new LockerAi();
+						bat->hostile = false;
+						bat->interact = true;
+						bat->container = new Container(3);
+						generateRandom(bat,243);
+						engine.actors.push(bat);
 					}
 				}
 				
@@ -3075,6 +3088,14 @@ void Map::generateRandom(Actor *owner, int ascii){
 			Actor *MLR = createMLR(0,0,false);
 			engine.actors.push(MLR);
 			MLR->pickable->pick(MLR,owner);
+		}
+	}
+	else if(ascii == 243 && engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 55){//battery rack
+		int random = rng->getInt(0,100);
+		if (random < 100) {
+			Actor *batt = createBatteryPack(0,0);
+			engine.actors.push(batt);
+			batt->pickable->pick(batt,owner);
 		}
 	}
 	else if(ascii == 243){//locker, this might be a problem if we want multiple decors to drop different things
