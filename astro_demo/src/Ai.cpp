@@ -3565,6 +3565,45 @@ float CompanionAi::feedMaster(Actor *owner, Actor *master){
 
 void CompanionAi::periodicMessage(Actor *owner){
 	switch(((CompanionAi*)(owner->ai))->att){
+		case STANDARD: {
+			TCODRandom *rando = TCODRandom::getInstance();
+			int switcher = rando->getInt(1,10);
+			switch (switcher)
+			{
+				case 1:
+					engine.gui->message(TCODColor::violet, "<%s> I am right behind you sir.",owner->name);
+					break;
+				case 2:
+					engine.gui->message(TCODColor::violet, "<%s> This place is dangerous.",owner->name);
+					break;
+				case 3:
+					engine.gui->message(TCODColor::violet, "<%s> I am here to aid you on your journey.",owner->name);
+					break;
+				case 4:
+					engine.gui->message(TCODColor::violet, "<%s> These things are crazy man.",owner->name);
+					break;
+				case 5:
+					engine.gui->message(TCODColor::violet, "<%s> I gotta live man, I gotta make it.",owner->name);
+					break;
+				case 6:
+					engine.gui->message(TCODColor::violet, "<%s> These people aren't, like, people.",owner->name);
+					break;
+				case 7:
+					engine.gui->message(TCODColor::violet, "<%s> I've killed so many.",owner->name);
+					break;
+				case 8:
+					engine.gui->message(TCODColor::violet, "<%s> Don't worry, I've got your back.",owner->name);
+					break;
+				case 9:
+					engine.gui->message(TCODColor::violet, "<%s> Watch out for the moss, it sucks the life right out of you.",owner->name);
+					break;
+				case 10:
+					engine.gui->message(TCODColor::violet, "<%s> Do you have a headache too?",owner->name);
+					break;
+				default:break;
+			}
+			break;
+		}
 		case EDIBLE: {
 			if (tamer->hunger > 0){
 				engine.gui->message(TCODColor::violet,"<%s> on a scale from 1 to 100, your hunger is %d",owner->name,tamer->hunger*100/tamer->maxHunger);

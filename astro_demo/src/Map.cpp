@@ -5862,8 +5862,8 @@ Actor *Map::createCompanion(bool racial){
 		case 10: strcat(nameBuf,"Bryndynn "); break;
 	}
 	
-	switc = tutu->getInt(1,100);
-	
+	switc = tutu->getInt(1,120);
+	//add new ones
 	if (switc < 40){
 		((CompanionAi*)(pet->ai))->att = CompanionAi::STANDARD;
 		((CompanionAi*)(pet->ai))->period = 10 * tutu->getInt(2,6);
@@ -5892,6 +5892,13 @@ Actor *Map::createCompanion(bool racial){
 		strcat(nameBuf,"the Melancholic ");
 		pet->destructible->hp += 30;
 		pet->destructible->maxHp += 30;
+	}
+	else if (switc <= 40+20+20+20+20){
+		((CompanionAi*)(pet->ai))->att = CompanionAi::SUICIDAL;
+		((CompanionAi*)(pet->ai))->period = 10 * tutu->getInt(2,6);
+		strcat(nameBuf,"the Suicidal ");
+		pet->destructible->hp += 60;
+		//pet->destructible->maxHp += 30;
 	}
 	
 	
