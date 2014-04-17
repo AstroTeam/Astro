@@ -960,7 +960,7 @@ void Renderer::render(void *sdlSurface){
 					}
 					
 					
-					if (engine.mapcon->getCharForeground(xM,yM) == TCODColor::white){
+					if (engine.map->isInFov(xM, yM)){
 						//light
 						srcRect.x=0;
 					}else{
