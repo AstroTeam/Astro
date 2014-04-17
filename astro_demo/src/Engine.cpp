@@ -162,7 +162,7 @@ void Engine::init() {
 			RBonus = new ItemBonus(ItemBonus::DEXTERITY,1);
 			bonusR.push(RBonus);
 			ranged->blocks = false;
-			ranged->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
+			ranged->pickable = new Weapon(1,6,2,20,1,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
@@ -217,7 +217,7 @@ void Engine::init() {
 			RBonus = new ItemBonus(ItemBonus::DEXTERITY,1);
 			bonusR.push(RBonus);
 			ranged->blocks = false;
-			ranged->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
+			ranged->pickable = new Weapon(1,6,2,20,1,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
@@ -502,8 +502,8 @@ void Engine::init() {
 			bonusHa.push(HaBonus);
 			hand1->blocks = false;
 			hand2->blocks = false;
-			hand1->pickable = new Weapon(1,6,2,Weapon::LIGHT,0,Equipment::HAND1,bonusHa,requirement);
-			hand2->pickable = new Weapon(1,6,2,Weapon::LIGHT,0,Equipment::HAND2,bonusHa,requirement);
+			hand1->pickable = new Weapon(1,6,2,20,0,Weapon::LIGHT,0,Equipment::HAND1,bonusHa,requirement);
+			hand2->pickable = new Weapon(1,6,2,20,0,Weapon::LIGHT,0,Equipment::HAND2,bonusHa,requirement);
 			hand1->sort = 4;
 			hand2->sort = 4;
 			engine.actors.push(hand1);
@@ -569,7 +569,7 @@ void Engine::init() {
 			RBonus = new ItemBonus(ItemBonus::DEXTERITY,1);
 			bonusR.push(RBonus);
 			ranged->blocks = false;
-			ranged->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
+			ranged->pickable = new Weapon(1,6,2,20,1,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);

@@ -545,15 +545,15 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				}
 				//hit the closest monster for <damage> hit points;
 				else{
-					if(owner->attacker && owner->attacker->battery >= 1){
+					//if(owner->attacker && owner->attacker->battery >= 1){
 						owner->attacker->shoot(owner, closestMonster);
-						owner->attacker->usePower(owner, 1);
+						//owner->attacker->usePower(owner, 1);
 						engine.damageDone += (int)owner->totalDex - closestMonster->destructible->totalDodge;
 						engine.gameStatus = Engine::NEW_TURN;
-					}
-					else{
-						engine.gui->message(TCODColor::lightGrey, "Not enough battery to shoot.");
-					}
+					//}
+					//else{
+					//	engine.gui->message(TCODColor::lightGrey, "Not enough battery to shoot.");
+					//}
 				}
 				
 			}
@@ -583,15 +583,15 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				}*/
 				//hit the closest monster for <damage> hit points;
 				else{
-					if(owner->attacker && owner->attacker->battery >= 1){
+					//if(owner->attacker && owner->attacker->battery >= 1){
 						owner->attacker->shoot(owner, actor);
-						owner->attacker->usePower(owner, 1);
+						//owner->attacker->usePower(owner, 1);
 						engine.damageDone += (int)owner->totalDex - actor->destructible->totalDodge;
 						engine.gameStatus = Engine::NEW_TURN;
-					}
-					else{
-						engine.gui->message(TCODColor::lightGrey, "Not enough battery to shoot.");
-					}
+					//}
+					//else{
+					//	engine.gui->message(TCODColor::lightGrey, "Not enough battery to shoot.");
+					//}
 				}
 				
 			}
@@ -2629,7 +2629,7 @@ Actor *VendingAi::clone(Actor *owner){
 			case Pickable::FLARE: droppy->pickable = new Flare(((Flare*)(owner->pickable))->nbTurns, ((Flare*)(owner->pickable))->range, ((Flare*)(owner->pickable))->lightRange); droppy->sort = 2; break;
 			case Pickable::EQUIPMENT: droppy->pickable = new Equipment(0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement); droppy->sort = owner->sort; break;
 			case Pickable::FRAGMENT: droppy->pickable = new Fragment(((Fragment*)(owner->pickable))->range,((Fragment*)(owner->pickable))->damage,((Fragment*)(owner->pickable))->maxRange); droppy->sort = 2; break;
-			case Pickable::WEAPON: droppy->pickable = new Weapon(((Weapon*)(owner->pickable))->minDmg,((Weapon*)(owner->pickable))->maxDmg,((Weapon*)(owner->pickable))->critMult,((Weapon*)(owner->pickable))->wType,0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement); droppy->sort = 4; break;
+			case Pickable::WEAPON: droppy->pickable = new Weapon(((Weapon*)(owner->pickable))->minDmg,((Weapon*)(owner->pickable))->maxDmg,((Weapon*)(owner->pickable))->critMult,((Weapon*)(owner->pickable))->critRange,((Weapon*)(owner->pickable))->powerUse,((Weapon*)(owner->pickable))->wType,0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement); droppy->sort = 4; break;
 			case Pickable::FOOD: break; //I don't think FOOD should be in vending machines, interestingly enough. There are PCMUs for that
 			case Pickable::KEY: break; //Keys probably shouldn't be in vending machines
 			case Pickable::ALCOHOL: break; //NO ALCOHOL IN 3D PRINTERS!

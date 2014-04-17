@@ -154,9 +154,11 @@ public:
 	float minDmg;
 	float maxDmg;
 	float critMult;
+	float critRange;
+	float powerUse;
 	WeaponType wType;
 	
-	Weapon(float minDmg = 0, float maxDmg = 0, float critMult = 2, WeaponType wType = NOTYPE,
+	Weapon(float minDmg = 0, float maxDmg = 0, float critMult = 2, float critRange = 20, float powerUse = 0, WeaponType wType = NOTYPE,
 		bool equipped = false, SlotType slot = NOSLOT, TCODList<ItemBonus *> bonus = new TCODList<ItemBonus *>(), ItemReq *requirement = NULL);
 	bool use(Actor *owner, Actor *wearer);
 	void load(TCODZip &zip);

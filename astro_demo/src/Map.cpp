@@ -4757,6 +4757,8 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 	int minDmg = 1;
 	int maxDmg = 6;
 	int critMult = 2;
+	int critRange = 20;
+	int powerUse = 1;
 	//random 1-3, 1 is worse, 2 is average, 3 is good
 	int choices = random->getInt(1,3);
 	int names = random->getInt(1,5);
@@ -4786,6 +4788,7 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 					case 4:
 						strcat(nameBuf,"Critically Flawed ");
 						critMult = 1;
+						critRange = 21;
 						break;
 					case 5:
 						strcat(nameBuf,"Burning ");
@@ -4917,7 +4920,7 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 	//MLR->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
 	//1 = min damage, 6 = max damage, 2 is crit mult, RANGED, 0 = not equipped,RANGED, bonus, req
 	bonus.push(modBonus);
-	MLR->pickable = new Weapon(minDmg,maxDmg,critMult,Weapon::RANGED,0,Equipment::RANGED,bonus,requirement);
+	MLR->pickable = new Weapon(minDmg,maxDmg,critMult,critRange,powerUse,Weapon::RANGED,0,Equipment::RANGED,bonus,requirement);
 	MLR->sort = 4;
 	((Equipment*)(MLR->pickable))->armorArt = 13;
 	MLR->pickable->value = 200;
@@ -4949,6 +4952,9 @@ Actor *Map::createCombatKnife(int x, int y){
 	int reqBUF = 3;
 	int minDmg = 1;
 	int maxDmg = 4;
+	int critMult = 2;
+	int critRange = 20;
+	int powerUse = 0;
 	switch (goodbad)
 	{
 		case 1://bad
@@ -5118,7 +5124,7 @@ Actor *Map::createCombatKnife(int x, int y){
 	combatKnife->name = nameBuf;
 	//combatKnife->pickable = new Equipment(0,Equipment::HAND1,bonus,requirement);
 	bonus.push(modBonus);
-	combatKnife->pickable = new Weapon(minDmg,maxDmg,3,*wpn,0,*slot,bonus,requirement);
+	combatKnife->pickable = new Weapon(minDmg,maxDmg,critMult,critRange,powerUse,*wpn,0,*slot,bonus,requirement);
 	combatKnife->pickable->value = 100;
 	combatKnife->pickable->inkValue = 10;
 	combatKnife->sort = 4;

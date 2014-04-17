@@ -832,7 +832,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 	return false;
 }
 
-Weapon::Weapon(float minDmg, float maxDmg, float critMult, WeaponType wType,
+Weapon::Weapon(float minDmg, float maxDmg, float critMult, float critRange, float powerUse, WeaponType wType,
 		bool equipped, SlotType slot, TCODList<ItemBonus *> bonus, ItemReq *requirement):
 	Equipment(equipped, slot, bonus, requirement, false, 1, Pickable::WEAPON), 
 		minDmg(minDmg), maxDmg(maxDmg), critMult(critMult), wType(wType){
@@ -860,6 +860,8 @@ void Weapon::save(TCODZip &zip) {
 	zip.putFloat(minDmg);
 	zip.putFloat(maxDmg);
 	zip.putFloat(critMult);
+	zip.putFloat(critRange);
+	zip.putFloat(powerUse);
 	zip.putInt(wType);
 }
 
@@ -882,6 +884,8 @@ void Weapon::load(TCODZip &zip) {
 	minDmg = zip.getFloat();
 	maxDmg = zip.getFloat();
 	critMult = zip.getFloat();
+	critRange = zip.getFloat();
+	powerUse = zip.getFloat();
 	wType = (WeaponType)zip.getInt();
 }
 
