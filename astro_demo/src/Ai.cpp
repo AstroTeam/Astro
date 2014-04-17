@@ -3724,6 +3724,10 @@ void CompanionAi::periodicMessage(Actor *owner){
 			}
 			break;
 		}
+		case TOASTER:{
+			engine.gui->message(TCODColor::violet,"%s dings, ejecting a piece of toast that reads, \"Kill me!\"",owner->name);
+			break;
+		}
 		default: {
 			engine.gui->message(TCODColor::violet,"<%s> I have yet to be accounted for!", owner->name);
 			
