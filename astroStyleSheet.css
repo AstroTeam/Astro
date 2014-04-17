@@ -111,6 +111,19 @@ p a:hover
 color:white;
 }  /* mouse over link */
 
+td a:link 
+{
+color:ForestGreen;
+}      /* unvisited link */
+td a:visited 
+{
+color:GoldenRod;
+}  /* visited link */
+td a:hover 
+{
+color:white;
+}  /* mouse over link */
+
 developer p{
 text-align:left;
 }
