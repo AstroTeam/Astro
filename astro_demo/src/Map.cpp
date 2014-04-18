@@ -6035,7 +6035,7 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 			break;
 			
 			default:		//Human
-			strcat(nameBuf,"Donut-Thing");
+			strcat(nameBuf,"Donutling");
 			pet->name = nameBuf;
 			pet->totalStr += -1;
 			pet->attacker = new Attacker(pet->totalStr);
@@ -6050,7 +6050,7 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 			 
 			case 1:		//Toaster
 			pet->name = "Shane the useless Toaster";
-			pet->ch = 173;
+			pet->ch = 158;
 			pet->destructible->maxHp += 70;
 			pet->destructible->hp += 70;
 			pet->totalStr += 0;
@@ -6062,7 +6062,7 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 			case 2:		//Marine Mook
 			strcat(nameBuf,"Marine");
 			pet->name = nameBuf;
-			pet->ch = 157;
+			pet->ch = 142;
 			pet->destructible->maxHp += 50;
 			pet->destructible->hp += 50;
 			pet->totalStr += 0;
@@ -6073,7 +6073,7 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 			case 3:		//Foodstuff Conglomeration
 			strcat(nameBuf,"Awakened Foodstuffs");
 			pet->name = nameBuf;
-			pet->ch = 157;
+			pet->ch = 174;
 			pet->destructible->maxHp += 250;
 			pet->destructible->hp += 250;
 			pet->totalStr += 0;
