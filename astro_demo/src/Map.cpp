@@ -6077,6 +6077,7 @@ Actor *Map::createCompanion(bool racial){
 			pet->destructible->maxHp += 250;
 			pet->destructible->hp += 250;
 			pet->totalStr += 0;
+			((CompanionAi*)pet->ai)->edible = true;
 			pet->attacker = new Attacker(pet->totalStr);
 			
 			break;

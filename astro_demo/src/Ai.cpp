@@ -644,7 +644,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		case 'U':
 			Actor *closestMonster = engine.getClosestMonster(engine.player->x, engine.player->y,1);
 			if (closestMonster != NULL && closestMonster->tameable == true && closestMonster != engine.player->companion){
-				engine.gui->message(TCODColor::blue,"You swap %s for %s",engine.player->companion->name,closestMonster->name);
+				engine.gui->message(TCODColor::violet,"You swap %s for %s",engine.player->companion->name,closestMonster->name);
 				((CompanionAi*)(engine.player->companion->ai))->tamer = NULL;
 				((CompanionAi*)(closestMonster->ai))->tamer = engine.player;
 				engine.player->companion = closestMonster;
@@ -3594,7 +3594,7 @@ void CompanionAi::periodicMessage(Actor *owner){
 			switch (switcher)
 			{
 				case 1:
-					engine.gui->message(TCODColor::violet, "<%s> I am right behind you sir.",owner->name);
+					engine.gui->message(TCODColor::violet, "<%s> I am right behind you, sir.",owner->name);
 					break;
 				case 2:
 					engine.gui->message(TCODColor::violet, "<%s> This place is dangerous.",owner->name);
@@ -3603,10 +3603,10 @@ void CompanionAi::periodicMessage(Actor *owner){
 					engine.gui->message(TCODColor::violet, "<%s> I am here to aid you on your journey.",owner->name);
 					break;
 				case 4:
-					engine.gui->message(TCODColor::violet, "<%s> These things are crazy man.",owner->name);
+					engine.gui->message(TCODColor::violet, "<%s> These things are crazy, man.",owner->name);
 					break;
 				case 5:
-					engine.gui->message(TCODColor::violet, "<%s> I gotta live man, I gotta make it.",owner->name);
+					engine.gui->message(TCODColor::violet, "<%s> I gotta live, man. I gotta make it.",owner->name);
 					break;
 				case 6:
 					engine.gui->message(TCODColor::violet, "<%s> These people aren't, like, people.",owner->name);
@@ -3749,6 +3749,21 @@ void CompanionAi::periodicMessage(Actor *owner){
 		}
 		case TOASTER:{
 			engine.gui->message(TCODColor::violet,"%s dings, ejecting a piece of toast that reads, \"Kill me!\"",owner->name);
+			break;
+		}
+		case SPASTIC:{
+			TCODRandom *rando = TCODRandom::getInstance();
+			int switcher = rando->getInt(1,3);
+			switch (switcher){
+				case 1: engine.gui->message(TCODColor::violet,"%s twitches uncontrollably.",owner->name);
+				case 2: engine.gui->message(TCODColor::violet,"%s squeals, arms moving spasmodically.",owner->name);
+				case 3: engine.gui->message(TCODColor::violet,"<%s> I can feel them crawling all over my skin!",owner->name);
+				default: break;
+			}
+			break;
+		}
+		case BRUTISH:{
+			engine.gui->message(TCODColor::violet,"%s grunts.",owner->name);
 			break;
 		}
 		default: {
