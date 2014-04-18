@@ -6035,7 +6035,7 @@ Actor *Map::createCompanion(bool racial){
 			break;
 			
 			default:		//Human
-			strcat(nameBuf,"Donut-Man");
+			strcat(nameBuf,"Donut-Thing");
 			pet->name = nameBuf;
 			pet->totalStr += -1;
 			pet->attacker = new Attacker(pet->totalStr);
