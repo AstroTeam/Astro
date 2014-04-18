@@ -641,6 +641,17 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				}
 			}
 		break;
+		case 'U':
+			Actor *closestMonster = engine.getClosestMonster(engine.player->x, engine.player->y,1);
+			if (closestMonster != NULL && closestMonster->tameable == true && closestMonster != engine.player->companion){
+				engine.gui->message(TCODColor::blue,"You swap %s for %s",engine.player->companion->name,closestMonster->name);
+				((CompanionAi*)(engine.player->companion->ai))->tamer = NULL;
+				((CompanionAi*)(closestMonster->ai))->tamer = engine.player;
+				engine.player->companion = closestMonster;
+			} else{
+				engine.gui->message(TCODColor::pink, "There are no other companions to swap yours with!");
+			}
+		break;
 	}
 }
 
@@ -3401,6 +3412,12 @@ void CompanionAi::save(TCODZip &zip){
 	std::cout<<"AI put Y" << assignedY << std::endl;
 	zip.putInt(command);
 	std::cout<<"AI put command" << command << std::endl;
+	
+	if (tamer == engine.player){
+		zip.putInt(1);
+	} else{
+		zip.putInt(0);
+	}
 }
 
 void CompanionAi::load(TCODZip &zip){
@@ -3416,8 +3433,13 @@ void CompanionAi::load(TCODZip &zip){
 	std::cout<<"AI got Y" << assignedY << std::endl;
 	command = (Command)zip.getInt();
 	std::cout<<"AI got command" << command << std::endl;
-
-	tamer = engine.player;
+	bool playerTamed = zip.getInt();
+	
+	if (playerTamed){
+		tamer = engine.player;
+	} else{
+		tamer=NULL;
+	}
 }
 
 void CompanionAi::update(Actor *owner){
@@ -3540,10 +3562,11 @@ void CompanionAi::moveOrAttack(Actor *owner, int targetx, int targety){
 
 float CompanionAi::feedMaster(Actor *owner, Actor *master){
 
+	engine.gui->message(TCODColor::red,"You take a large bite out of your companion. Chomp!");
 	TCODRandom *spagoo = TCODRandom::getInstance();
 	int switcher = spagoo->getInt(0,5);
 	switch(switcher){
-		case 0:	engine.gui->message(TCODColor::violet,"<%s> WWWWAAAAAAAAUUUUGGGGGGHH!!!",owner->name); break;
+		case 0:	engine.gui->message(TCODColor::violet,"<%s> UUUUWWWWAAAAAAAAGGGGGGHH!!!",owner->name); break;
 		case 1:	engine.gui->message(TCODColor::violet,"<%s> AAAAAAAAaaaaaGGGGGGHH!!!",owner->name); break;
 		case 2:	engine.gui->message(TCODColor::violet,"<%s> WHYYY!?!?",owner->name); break;
 		case 3:	engine.gui->message(TCODColor::violet,"<%s> GEEEYAAAAGGGHH!!!",owner->name); break;

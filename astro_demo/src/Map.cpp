@@ -2616,6 +2616,12 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 			Actor *pet = createCompanion(true);
 			engine.player->companion = pet;
 			engine.actors.push(pet);
+			
+			if(canWalk(engine.player->x,engine.player->y+1)){
+				Actor *pet2 = createCompanion(false);
+				engine.actors.push(pet2);
+			}
+			
 		} else {
 			if (engine.player->companion && engine.player->companion->destructible && !engine.player->companion->destructible->isDead()){
 				engine.player->companion->x = engine.player->x;
@@ -5931,6 +5937,7 @@ Actor *Map::createCompanion(bool racial){
 	pet->blocks = false;
 	pet->container = new Container(2);
 	pet->flashable = true;
+	pet->tameable = true;
 	if (racial){
 		pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
 	} else {
@@ -6032,7 +6039,6 @@ Actor *Map::createCompanion(bool racial){
 			pet->name = nameBuf;
 			pet->totalStr += -1;
 			pet->attacker = new Attacker(pet->totalStr);
-			
 			((CompanionAi*)pet->ai)->edible = true;
 			((CompanionAi*)(pet->ai))->att = CompanionAi::EDIBLE;
 			((CompanionAi*)(pet->ai))->period = 20;
