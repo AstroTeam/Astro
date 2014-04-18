@@ -645,9 +645,15 @@ void Map::spawnTutorial() {
 		generateRandom(rack,243);
 		engine.actors.push(rack);
 
-		Actor * rack2= new Actor(x1+2, tiley, 243, "Battery Rack", TCODColor::white);
+		Actor * bat= new Actor(x1+2, tiley, 243, "Battery Rack", TCODColor::white);
 		engine.map->tiles[x1+2+tiley*engine.map->width].decoration = 55;
-		engine.actors.push(rack2);
+		engine.actors.push(bat);
+		bat->destructible = new MonsterDestructible(1,0,0,0);
+		bat->ai = new LockerAi();
+		bat->hostile = false;
+		bat->interact = true;
+		bat->container = new Container(3);
+		generateRandom(bat,243);
 
 		Actor * dummy = new Actor(x2-1, tiley, 145, "Target Dummy", TCODColor::white);
 		//engine.map->tiles[x1+2+tiley*engine.map->width].decoration = 55;
@@ -685,6 +691,12 @@ void Map::spawnTutorial() {
 	
 	//cout << "got to records creation" << endl;
 	for (int tiley = y1; tiley <= y2; tiley+=1) {
+		/*Actor *booze = createFood(x1+5,tiley);
+		engine.actors.push(booze);
+		Actor *booze2 = createFood(x1+6,tiley);
+		engine.actors.push(booze2);		
+		Actor *booze3 = createFood(x1+7,tiley);
+		engine.actors.push(booze3);*/
 		/*Actor *MLR = createMLR(x1+4,tiley,false);
 		engine.actors.push(MLR);
 		engine.sendToBack(MLR);
@@ -2100,9 +2112,15 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					}
 					else if(gunBat == 1)
 					{
-						Actor * pcmu = new Actor(i, j, 243, "Battery Rack", TCODColor::white);
+						Actor * bat = new Actor(i, j, 243, "Battery Rack", TCODColor::white);
 						engine.map->tiles[i+j*engine.map->width].decoration = 55;
-						engine.actors.push(pcmu);
+						bat->destructible = new MonsterDestructible(1,0,0,0);
+						bat->ai = new LockerAi();
+						bat->hostile = false;
+						bat->interact = true;
+						bat->container = new Container(3);
+						generateRandom(bat,243);
+						engine.actors.push(bat);
 					}
 				}
 				if (i == x1+3 && j%2 != 0)
@@ -2120,14 +2138,15 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					}
 					else if(gunBat == 1)
 					{
-						Actor * rack = new Actor(i, j, 243, "Battery Rack", TCODColor::white);
+						Actor * bat = new Actor(i, j, 243, "Battery Rack", TCODColor::white);
 						engine.map->tiles[i+j*engine.map->width].decoration = 55;
-						engine.actors.push(rack);
-						rack->destructible = new MonsterDestructible(1,0,0,0);
-						rack->ai = new LockerAi();
-						rack->hostile = false;
-						rack->interact = true;
-						rack->container = new Container(3);
+						bat->destructible = new MonsterDestructible(1,0,0,0);
+						bat->ai = new LockerAi();
+						bat->hostile = false;
+						bat->interact = true;
+						bat->container = new Container(3);
+						generateRandom(bat,243);
+						engine.actors.push(bat);
 					}
 				}
 				
@@ -2593,10 +2612,22 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		//playerLight->ai->moving = true;
 		engine.sendToBack(engine.playerLight);
 		
-		Actor *pet = createCompanion(true);
-		
-		engine.player->companion = pet;
-		engine.actors.push(pet);
+		if (engine.level == 1){
+			Actor *pet = createCompanion(engine.player->x,engine.player->y,true);
+			engine.player->companion = pet;
+			engine.actors.push(pet);
+			
+			if(canWalk(engine.player->x,engine.player->y+1)){
+				Actor *pet2 = createCompanion(engine.player->x,engine.player->y+1,false);
+				engine.actors.push(pet2);
+			}
+			
+		} else {
+			if (engine.player->companion && engine.player->companion->destructible && !engine.player->companion->destructible->isDead()){
+				engine.player->companion->x = engine.player->x;
+				engine.player->companion->y = engine.player->y;
+			}
+		}
 		
 		//Actor *r4 = createRecord(engine.player->x, engine.player->y-1);
 		//engine.actors.push(r4);
@@ -3069,6 +3100,14 @@ void Map::generateRandom(Actor *owner, int ascii){
 			Actor *MLR = createMLR(0,0,false);
 			engine.actors.push(MLR);
 			MLR->pickable->pick(MLR,owner);
+		}
+	}
+	else if(ascii == 243 && engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 55){//battery rack
+		int random = rng->getInt(0,100);
+		if (random < 100) {
+			Actor *batt = createBatteryPack(0,0);
+			engine.actors.push(batt);
+			batt->pickable->pick(batt,owner);
 		}
 	}
 	else if(ascii == 243){//locker, this might be a problem if we want multiple decors to drop different things
@@ -5303,6 +5342,8 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 	int minDmg = 1;
 	int maxDmg = 6;
 	int critMult = 2;
+	int critRange = 20;
+	int powerUse = 1;
 	//random 1-3, 1 is worse, 2 is average, 3 is good
 	int choices = random->getInt(1,3);
 	int names = random->getInt(1,5);
@@ -5332,6 +5373,7 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 					case 4:
 						strcat(nameBuf,"Critically Flawed ");
 						critMult = 1;
+						critRange = 21;
 						break;
 					case 5:
 						strcat(nameBuf,"Burning ");
@@ -5463,7 +5505,7 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 	//MLR->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
 	//1 = min damage, 6 = max damage, 2 is crit mult, RANGED, 0 = not equipped,RANGED, bonus, req
 	bonus.push(modBonus);
-	MLR->pickable = new Weapon(minDmg,maxDmg,critMult,Weapon::RANGED,0,Equipment::RANGED,bonus,requirement);
+	MLR->pickable = new Weapon(minDmg,maxDmg,critMult,critRange,powerUse,Weapon::RANGED,0,Equipment::RANGED,bonus,requirement);
 	MLR->sort = 4;
 	((Equipment*)(MLR->pickable))->armorArt = 13;
 	MLR->pickable->value = 200;
@@ -5495,6 +5537,9 @@ Actor *Map::createCombatKnife(int x, int y){
 	int reqBUF = 3;
 	int minDmg = 1;
 	int maxDmg = 4;
+	int critMult = 2;
+	int critRange = 20;
+	int powerUse = 0;
 	switch (goodbad)
 	{
 		case 1://bad
@@ -5664,7 +5709,7 @@ Actor *Map::createCombatKnife(int x, int y){
 	combatKnife->name = nameBuf;
 	//combatKnife->pickable = new Equipment(0,Equipment::HAND1,bonus,requirement);
 	bonus.push(modBonus);
-	combatKnife->pickable = new Weapon(minDmg,maxDmg,3,*wpn,0,*slot,bonus,requirement);
+	combatKnife->pickable = new Weapon(minDmg,maxDmg,critMult,critRange,powerUse,*wpn,0,*slot,bonus,requirement);
 	combatKnife->pickable->value = 100;
 	combatKnife->pickable->inkValue = 10;
 	combatKnife->sort = 4;
@@ -5697,13 +5742,101 @@ Actor* Map::createKey(int x, int y, int keyType)
 }
 
 Actor *Map::createFood(int x, int y){
-	Actor *scrollOfFeeding = new Actor(x,y,14,"Brick of Foodstuffs", TCODColor::white);
+	char* nameBuf = new char[80]; 
+	memset(nameBuf,0,80);
+	TCODColor col = TCODColor::white;
+	TCODColor sat = TCODColor::white;
+	Actor *scrollOfFeeding = new Actor(x,y,14,"Brick of Foodstuffs", TCODColor::green);
+	strcat(nameBuf,"Brick of ");
+	TCODRandom *random = TCODRandom::getInstance();
+	int quality = random->getInt(1,5);
+	switch(quality)
+	{
+		case 1:
+			strcat(nameBuf,"rotten ");
+			scrollOfFeeding->hunger = 30;
+			sat = TCODColor::darkGrey;
+			break;
+		case 2:
+			strcat(nameBuf,"stale ");
+			scrollOfFeeding->hunger = 40;
+			sat = TCODColor::grey;
+			break;
+		case 3:
+			scrollOfFeeding->hunger = 50;
+			sat = TCODColor::lightGrey;
+			break;
+		case 4:
+			strcat(nameBuf,"new ");
+			scrollOfFeeding->hunger = 60;
+			sat = TCODColor::lighterGrey;
+			break;
+		case 5:
+			strcat(nameBuf,"quality ");
+			scrollOfFeeding->hunger = 70;
+			sat = TCODColor::lightestGrey;
+			break;
+		default:break;
+	}
+	int color = random->getInt(1,10,3);
+	switch(color)
+	{
+		case 1:
+			col = TCODColor::green;//
+			strcat(nameBuf,"green ");
+			break;
+		case 2:
+			col = TCODColor::sea;//
+			strcat(nameBuf,"turquoise ");
+			break;
+		case 3:
+			col = TCODColor::lime;//
+			strcat(nameBuf,"lime ");
+			break;
+		case 4:
+			col = TCODColor::azure;
+			strcat(nameBuf,"blue ");
+			break;
+		case 5:
+			col = TCODColor::red;
+			strcat(nameBuf,"red ");
+			break;
+		case 6:
+			col = TCODColor::yellow;
+			strcat(nameBuf,"yellow ");
+			break;
+		case 7:
+			col = TCODColor::violet;
+			strcat(nameBuf,"purple ");
+			break;
+		case 8:
+			col = TCODColor::magenta;
+			strcat(nameBuf,"pink ");
+			break;
+		case 9:
+			col = TCODColor::chartreuse;//
+			strcat(nameBuf,"chartreuse ");
+			break;
+		case 10:
+			col = TCODColor::sepia;
+			strcat(nameBuf,"brown ");
+			break;
+		default:break;
+	}
+	//col = TCODColor::green;
+	col = col*sat;
+	//col.r = col.r * sat.r / 255
+	//col.g = col.g * sat.g / 255
+	//col.b = col.b * sat.b / 255
+	strcat(nameBuf,"Foodstuffs");
 	scrollOfFeeding->sort = 1;
+	scrollOfFeeding->name = nameBuf;
 	scrollOfFeeding->blocks = false;
 	scrollOfFeeding->pickable = new Food(1);//this is the stack size. Food should feed for a static amount
 	scrollOfFeeding->pickable->value = 25;
-	scrollOfFeeding->hunger = 60;
+	//scrollOfFeeding->hunger = 60;
 	scrollOfFeeding->pickable->inkValue = 10;
+	scrollOfFeeding->col = col;
 	return scrollOfFeeding;
 }
 
@@ -5711,7 +5844,7 @@ Actor *Map::createArtifact(int x, int y){
 	char* nameBuf = new char[80]; 
 	memset(nameBuf,0,80);
 	TCODRandom *random = TCODRandom::getInstance();
-	Actor *artifact = new Actor(x,y,'A',"Art",TCODColor::lighterGreen);
+	Actor *artifact = new Actor(x,y,153,"Art",TCODColor::gold);
 	artifact->pickable = new Equipment(0);
 	Equipment::SlotType slot = Equipment::NOSLOT;
 	ItemBonus *modBonus = NULL;
@@ -5797,84 +5930,164 @@ Actor *Map::createArtifact(int x, int y){
 	return artifact;
 }
 
-Actor *Map::createCompanion(bool racial){
-	Actor *pet = new Actor(engine.player->x,engine.player->y,141,"Hyperdonut",TCODColor::white);
+Actor *Map::createCompanion(int x, int y, bool racial){
+	Actor *pet = new Actor(x,y,141,"Mr. Bubble-Yum",TCODColor::white);
 	pet->hostile = false;
 	pet->destructible = new MonsterDestructible(50,0,0,10);
 	pet->blocks = false;
 	pet->container = new Container(2);
 	pet->flashable = true;
+	pet->tameable = true;
+	if (racial){
+		pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+	} else {
+		pet->ai = new CompanionAi(NULL,2,CompanionAi::FOLLOW);
+	}
 	
 	TCODRandom *tutu = TCODRandom::getInstance();
+	
+	char* nameBuf = new char[250]; 
+	memset(nameBuf,0,250);
+	
+	int switc = tutu->getInt(1,10);
+	switch (switc){
+		case 1: strcat(nameBuf,"Mykyl "); break;
+		case 2: strcat(nameBuf,"Bob "); break;
+		case 3: strcat(nameBuf,"Frigth "); break;
+		case 4: strcat(nameBuf,"Lydia "); break;
+		case 5: strcat(nameBuf,"Dweezil "); break;
+		case 6: strcat(nameBuf,"Springleaf "); break;
+		case 7: strcat(nameBuf,"EX-279 "); break;
+		case 8: strcat(nameBuf,"Sally "); break;
+		case 9: strcat(nameBuf,"TOM "); break;
+		case 10: strcat(nameBuf,"Bryndynn "); break;
+	}
+	
+	switc = tutu->getInt(1,120);
+	//add new ones
+	if (switc < 40){
+		((CompanionAi*)(pet->ai))->att = CompanionAi::STANDARD;
+		((CompanionAi*)(pet->ai))->period = 10 * tutu->getInt(2,6);
+		strcat(nameBuf,"the ");
+		pet->destructible->baseDR += 3;
+		pet->destructible->totalDR += 3;
+		
+	} 
+	else if (switc < 40+20) {
+		((CompanionAi*)(pet->ai))->att = CompanionAi::BRUTISH;
+		((CompanionAi*)(pet->ai))->period = 10 * tutu->getInt(2,6);
+		strcat(nameBuf,"the Brutish ");
+		pet->str += 2;
+		pet->totalStr +=2;
+	}
+	else if (switc < 40+20+20) {
+		((CompanionAi*)(pet->ai))->att = CompanionAi::SPASTIC;
+		((CompanionAi*)(pet->ai))->period = 10 * tutu->getInt(2,6);
+		strcat(nameBuf,"the Spastic ");
+		pet->destructible->baseDodge += 5;
+		pet->destructible->totalDodge += 5;
+	}
+	else if (switc <= 40+20+20+20){
+		((CompanionAi*)(pet->ai))->att = CompanionAi::DEPRESSED;
+		((CompanionAi*)(pet->ai))->period = 10 * tutu->getInt(2,6);
+		strcat(nameBuf,"the Melancholic ");
+		pet->destructible->hp += 30;
+		pet->destructible->maxHp += 30;
+	}
+	else if (switc <= 40+20+20+20+20){
+		((CompanionAi*)(pet->ai))->att = CompanionAi::SUICIDAL;
+		((CompanionAi*)(pet->ai))->period = 10 * tutu->getInt(2,6);
+		strcat(nameBuf,"the Suicidal ");
+		pet->destructible->hp += 60;
+		pet->destructible->maxHp += 60;
+	}
+	
 	
 	if (racial){	
 		switch(engine.player->race[0]){
 			 
 			case 'A':		//Alien
-			pet->name = "Capybara";
+			strcat(nameBuf,"Capybara");
+			pet->name = nameBuf;
 			pet->ch = 173;
-			pet->destructible->maxHp = 70;
-			pet->destructible->hp = 70;
-			pet->totalStr = 2;
-			pet->attacker = new Attacker(2);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			pet->destructible->maxHp +=20;
+			pet->destructible->hp +=20;
+			pet->totalStr += 2;
+			pet->attacker = new Attacker(pet->totalStr);
+			
+			if ( ((CompanionAi*)(pet->ai))->att == CompanionAi::STANDARD) {
+				((CompanionAi*)(pet->ai))->att = CompanionAi::CAPYBARA;
+			}
 			break;
 
 			case 'R':		//Robot
-			pet->name = "Scout Drone";
+			strcat(nameBuf,"Scout Drone");
+			pet->name = nameBuf;
 			pet->ch = 157;
-			pet->destructible->maxHp = 350;
-			pet->destructible->hp = 350;
-			pet->totalStr = 0;
-			pet->attacker = new Attacker(0);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			pet->destructible->maxHp += 300;
+			pet->destructible->hp += 300;
+			pet->totalStr += 0;
+			pet->attacker = new Attacker(pet->totalStr);
+			
+			if ( ((CompanionAi*)(pet->ai))->att == CompanionAi::STANDARD) {
+				((CompanionAi*)(pet->ai))->att = CompanionAi::DRONE;
+			}
 			break;
 			
 			default:		//Human
-			pet->totalStr = -1;
-			pet->attacker = new Attacker(-1);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			strcat(nameBuf,"Donut-Thing");
+			pet->name = nameBuf;
+			pet->totalStr += -1;
+			pet->attacker = new Attacker(pet->totalStr);
 			((CompanionAi*)pet->ai)->edible = true;
+			((CompanionAi*)(pet->ai))->att = CompanionAi::EDIBLE;
+			((CompanionAi*)(pet->ai))->period = 20;
 			break;
 		}
 	} else{
 		int switcher = tutu->getInt(1,3);
 		switch(switcher){
 			 
-			case 1:		//Alien
-			pet->name = "Capybara";
+			case 1:		//Toaster
+			pet->name = "Shane the useless Toaster";
 			pet->ch = 173;
-			pet->destructible->maxHp = 70;
-			pet->destructible->hp = 70;
-			pet->totalStr = 2;
-			pet->attacker = new Attacker(2);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			pet->destructible->maxHp += 70;
+			pet->destructible->hp += 70;
+			pet->totalStr += 0;
+			pet->attacker = new Attacker(pet->totalStr);
+			((CompanionAi*)(pet->ai))->att = CompanionAi::TOASTER;
+			
 			break;
 
-			case 2:		//Robot
-			pet->name = "Scout Drone";
+			case 2:		//Marine Mook
+			strcat(nameBuf,"Marine");
+			pet->name = nameBuf;
 			pet->ch = 157;
-			pet->destructible->maxHp = 350;
-			pet->destructible->hp = 350;
-			pet->totalStr = 0;
-			pet->attacker = new Attacker(0);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			pet->destructible->maxHp += 50;
+			pet->destructible->hp += 50;
+			pet->totalStr += 0;
+			pet->attacker = new Attacker(pet->totalStr);
+			
 			break;
 			
-			case 3:		//Robot
-			pet->name = "Scout Drone";
+			case 3:		//Foodstuff Conglomeration
+			strcat(nameBuf,"Awakened Foodstuffs");
+			pet->name = nameBuf;
 			pet->ch = 157;
-			pet->destructible->maxHp = 350;
-			pet->destructible->hp = 350;
-			pet->totalStr = 0;
-			pet->attacker = new Attacker(0);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			pet->destructible->maxHp += 250;
+			pet->destructible->hp += 250;
+			pet->totalStr += 0;
+			((CompanionAi*)pet->ai)->edible = true;
+			pet->attacker = new Attacker(pet->totalStr);
+			
 			break;
 			
-			default:		//Human
+			default:   //just in case
+			strcat(nameBuf,"Something");
+			pet->name = nameBuf;
 			pet->totalStr = -1;
 			pet->attacker = new Attacker(-1);
-			pet->ai = new CompanionAi(engine.player,2,CompanionAi::FOLLOW);
+			
 			((CompanionAi*)pet->ai)->edible = true;
 			break;
 		}

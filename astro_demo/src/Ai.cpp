@@ -359,6 +359,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					TriggerAi* t = (TriggerAi*)actor->ai;
 					t->pressed = false;
 					engine.gui->message(TCODColor::lightGrey,"The terminal replayed its message.");
+					engine.ctrTer -= 1;
 					actor->ai->update(actor);
 				}
 			}
@@ -545,15 +546,15 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				}
 				//hit the closest monster for <damage> hit points;
 				else{
-					if(owner->attacker && owner->attacker->battery >= 1){
+					//if(owner->attacker && owner->attacker->battery >= 1){
 						owner->attacker->shoot(owner, closestMonster);
-						owner->attacker->usePower(owner, 1);
+						//owner->attacker->usePower(owner, 1);
 						engine.damageDone += (int)owner->totalDex - closestMonster->destructible->totalDodge;
 						engine.gameStatus = Engine::NEW_TURN;
-					}
-					else{
-						engine.gui->message(TCODColor::lightGrey, "Not enough battery to shoot.");
-					}
+					//}
+					//else{
+					//	engine.gui->message(TCODColor::lightGrey, "Not enough battery to shoot.");
+					//}
 				}
 				
 			}
@@ -583,15 +584,15 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				}*/
 				//hit the closest monster for <damage> hit points;
 				else{
-					if(owner->attacker && owner->attacker->battery >= 1){
+					//if(owner->attacker && owner->attacker->battery >= 1){
 						owner->attacker->shoot(owner, actor);
-						owner->attacker->usePower(owner, 1);
+						//owner->attacker->usePower(owner, 1);
 						engine.damageDone += (int)owner->totalDex - actor->destructible->totalDodge;
 						engine.gameStatus = Engine::NEW_TURN;
-					}
-					else{
-						engine.gui->message(TCODColor::lightGrey, "Not enough battery to shoot.");
-					}
+					//}
+					//else{
+					//	engine.gui->message(TCODColor::lightGrey, "Not enough battery to shoot.");
+					//}
 				}
 				
 			}
@@ -638,6 +639,17 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				} else {
 					engine.gui->message(TCODColor::grey,"You are too far away to reach your companion.");
 				}
+			}
+		break;
+		case 'U':
+			Actor *closestMonster = engine.getClosestMonster(engine.player->x, engine.player->y,1);
+			if (closestMonster != NULL && closestMonster->tameable == true && closestMonster != engine.player->companion){
+				engine.gui->message(TCODColor::violet,"You swap %s for %s",engine.player->companion->name,closestMonster->name);
+				((CompanionAi*)(engine.player->companion->ai))->tamer = NULL;
+				((CompanionAi*)(closestMonster->ai))->tamer = engine.player;
+				engine.player->companion = closestMonster;
+			} else{
+				engine.gui->message(TCODColor::pink, "There are no other companions to swap yours with!");
 			}
 		break;
 	}
@@ -2632,7 +2644,7 @@ Actor *VendingAi::clone(Actor *owner){
 			case Pickable::FLARE: droppy->pickable = new Flare(((Flare*)(owner->pickable))->nbTurns, ((Flare*)(owner->pickable))->range, ((Flare*)(owner->pickable))->lightRange); droppy->sort = 2; break;
 			case Pickable::EQUIPMENT: droppy->pickable = new Equipment(0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement); droppy->sort = owner->sort; break;
 			case Pickable::FRAGMENT: droppy->pickable = new Fragment(((Fragment*)(owner->pickable))->range,((Fragment*)(owner->pickable))->damage,((Fragment*)(owner->pickable))->maxRange); droppy->sort = 2; break;
-			case Pickable::WEAPON: droppy->pickable = new Weapon(((Weapon*)(owner->pickable))->minDmg,((Weapon*)(owner->pickable))->maxDmg,((Weapon*)(owner->pickable))->critMult,((Weapon*)(owner->pickable))->wType,0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement); droppy->sort = 4; break;
+			case Pickable::WEAPON: droppy->pickable = new Weapon(((Weapon*)(owner->pickable))->minDmg,((Weapon*)(owner->pickable))->maxDmg,((Weapon*)(owner->pickable))->critMult,((Weapon*)(owner->pickable))->critRange,((Weapon*)(owner->pickable))->powerUse,((Weapon*)(owner->pickable))->wType,0,((Equipment*)(owner->pickable))->slot,((Equipment*)(owner->pickable))->bonus,((Equipment*)(owner->pickable))->requirement); droppy->sort = 4; break;
 			case Pickable::FOOD: break; //I don't think FOOD should be in vending machines, interestingly enough. There are PCMUs for that
 			case Pickable::KEY: break; //Keys probably shouldn't be in vending machines
 			case Pickable::ALCOHOL: break; //NO ALCOHOL IN 3D PRINTERS!
@@ -2941,6 +2953,10 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 	//this line of code causes the locker dropping flavor text to never be printed, is that intentional?
 	if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
+	}
+	//weapon racks to empty racks
+	else if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 54 || engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 55){
+		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 85;
 	}
 	//owner->ch = 243;
 	if(owner->container && !owner->container->inventory.isEmpty())
@@ -3379,13 +3395,15 @@ void ZedAi::deathMenu() {
 	}
 }
 
-CompanionAi::CompanionAi(Actor *tamer, int rangeLimit, Command command):tamer(tamer),edible(false),rangeLimit(rangeLimit),assignedX(0),assignedY(0),command(command){
+CompanionAi::CompanionAi(Actor *tamer, int rangeLimit, Command command):tamer(tamer),edible(false),att(STANDARD),period(40),rangeLimit(rangeLimit),assignedX(0),assignedY(0),command(command){
 }
 
 void CompanionAi::save(TCODZip &zip){
 	zip.putInt(COMPANION);
 	zip.putInt(edible);
 	std::cout<<"AI put edible" << edible << std::endl;
+	zip.putInt(att);
+	zip.putInt(period);
 	zip.putInt(rangeLimit);
 	std::cout<<"AI put limit" << rangeLimit << std::endl;
 	zip.putInt(assignedX);
@@ -3394,10 +3412,18 @@ void CompanionAi::save(TCODZip &zip){
 	std::cout<<"AI put Y" << assignedY << std::endl;
 	zip.putInt(command);
 	std::cout<<"AI put command" << command << std::endl;
+	
+	if (tamer == engine.player){
+		zip.putInt(1);
+	} else{
+		zip.putInt(0);
+	}
 }
 
 void CompanionAi::load(TCODZip &zip){
 	edible = zip.getInt();
+	att = (Attitude)zip.getInt();
+	period = zip.getInt();
 	std::cout<<"AI got edible" << edible << std::endl;
 	rangeLimit = zip.getInt();
 	std::cout<<"AI got limit" << rangeLimit << std::endl;
@@ -3407,11 +3433,19 @@ void CompanionAi::load(TCODZip &zip){
 	std::cout<<"AI got Y" << assignedY << std::endl;
 	command = (Command)zip.getInt();
 	std::cout<<"AI got command" << command << std::endl;
-
-	tamer = engine.player;
+	bool playerTamed = zip.getInt();
+	
+	if (playerTamed){
+		tamer = engine.player;
+	} else{
+		tamer=NULL;
+	}
 }
 
 void CompanionAi::update(Actor *owner){
+	if (tamer == NULL){
+		return;
+	}
 
 	if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
 		owner->destructible->die(owner, NULL);
@@ -3421,18 +3455,8 @@ void CompanionAi::update(Actor *owner){
 		return;
 	}
 	
-	if (edible && engine.turnCount % 20 == 0){
-		if (tamer->hunger > 0){
-			engine.gui->message(TCODColor::violet,"<%s> on a scale from 1 to 100, your hunger is %d",owner->name,tamer->hunger*100/tamer->maxHunger);
-		} else {
-			engine.gui->message(TCODColor::violet, "<%s> You look very hungry... You can take a bite out of me with 'u', you know.",owner->name);
-		}
-	}
-	else if (owner->name[0] == 'C' && engine.turnCount % 50 == 0){
-		engine.gui->message(TCODColor::violet, "<%s> I am a cute fluffball. I will try to protect you!",owner->name);
-	}
-	else if (owner->name[0] == 'A' && engine.turnCount % 50 == 0){
-		engine.gui->message(TCODColor::violet, "<%s> I am hunting your enemies. Beep. Boop.",owner->name);
+	if (owner->destructible && !owner->destructible->isDead() && engine.turnCount % (((CompanionAi*)(owner->ai))->period) == 0){
+		periodicMessage(owner);
 	}
 	
 	if (command == STAY){
@@ -3538,10 +3562,11 @@ void CompanionAi::moveOrAttack(Actor *owner, int targetx, int targety){
 
 float CompanionAi::feedMaster(Actor *owner, Actor *master){
 
+	engine.gui->message(TCODColor::red,"You take a large bite out of your companion. Chomp!");
 	TCODRandom *spagoo = TCODRandom::getInstance();
 	int switcher = spagoo->getInt(0,5);
 	switch(switcher){
-		case 0:	engine.gui->message(TCODColor::violet,"<%s> WWWWAAAAAAAAUUUUGGGGGGHH!!!",owner->name); break;
+		case 0:	engine.gui->message(TCODColor::violet,"<%s> UUUUWWWWAAAAAAAAGGGGGGHH!!!",owner->name); break;
 		case 1:	engine.gui->message(TCODColor::violet,"<%s> AAAAAAAAaaaaaGGGGGGHH!!!",owner->name); break;
 		case 2:	engine.gui->message(TCODColor::violet,"<%s> WHYYY!?!?",owner->name); break;
 		case 3:	engine.gui->message(TCODColor::violet,"<%s> GEEEYAAAAGGGHH!!!",owner->name); break;
@@ -3561,3 +3586,193 @@ float CompanionAi::feedMaster(Actor *owner, Actor *master){
 	}
 }
 
+void CompanionAi::periodicMessage(Actor *owner){
+	switch(((CompanionAi*)(owner->ai))->att){
+		case STANDARD: {
+			TCODRandom *rando = TCODRandom::getInstance();
+			int switcher = rando->getInt(1,10);
+			switch (switcher)
+			{
+				case 1:
+					engine.gui->message(TCODColor::violet, "<%s> I am right behind you, sir.",owner->name);
+					break;
+				case 2:
+					engine.gui->message(TCODColor::violet, "<%s> This place is dangerous.",owner->name);
+					break;
+				case 3:
+					engine.gui->message(TCODColor::violet, "<%s> I am here to aid you on your journey.",owner->name);
+					break;
+				case 4:
+					engine.gui->message(TCODColor::violet, "<%s> These things are crazy, man.",owner->name);
+					break;
+				case 5:
+					engine.gui->message(TCODColor::violet, "<%s> I gotta live, man. I gotta make it.",owner->name);
+					break;
+				case 6:
+					engine.gui->message(TCODColor::violet, "<%s> These people aren't, like, people.",owner->name);
+					break;
+				case 7:
+					engine.gui->message(TCODColor::violet, "<%s> I've killed so many.",owner->name);
+					break;
+				case 8:
+					engine.gui->message(TCODColor::violet, "<%s> Don't worry, I've got your back.",owner->name);
+					break;
+				case 9:
+					engine.gui->message(TCODColor::violet, "<%s> Watch out for the moss, it sucks the life right out of you.",owner->name);
+					break;
+				case 10:
+					engine.gui->message(TCODColor::violet, "<%s> Do you have a headache too?",owner->name);
+					break;
+				default:break;
+			}
+			break;
+		}
+		case EDIBLE: {
+			if (tamer->hunger > 0){
+				engine.gui->message(TCODColor::violet,"<%s> on a scale from 1 to 100, your hunger is %d",owner->name,tamer->hunger*100/tamer->maxHunger);
+			} else {
+				engine.gui->message(TCODColor::violet, "<%s> You look very hungry... You can take a bite out of me with 'u', you know.",owner->name);
+			}
+			break;
+		}
+		case CAPYBARA:{
+			engine.gui->message(TCODColor::violet, "<%s> I am a cute fluffball. I will try to protect you!",owner->name);
+			break;
+		}
+		case DRONE: {
+			TCODRandom *rando = TCODRandom::getInstance();
+			int switcher = rando->getInt(1,7);
+			switch (switcher)
+			{
+				case 1:
+					engine.gui->message(TCODColor::violet, "<%s> I have detected danger in your area.",owner->name);
+					break;
+				case 2:
+					engine.gui->message(TCODColor::violet, "<%s> You better watch out, this ain't no Care Bear Game.",owner->name);
+					break;
+				case 3:
+					engine.gui->message(TCODColor::violet, "<%s> The Robot Overlords have sent me a message commending your bravery.",owner->name);
+					break;
+				case 4:
+					engine.gui->message(TCODColor::violet, "<%s> Malware detetected.",owner->name);
+					break;
+				case 5:
+					engine.gui->message(TCODColor::violet, "<%s> The Robot Overlords would be pleased with your progress.",owner->name);
+					break;
+				case 6:
+					engine.gui->message(TCODColor::violet, "<%s> My last owner was not this successful.",owner->name);
+					break;
+				case 7:
+					engine.gui->message(TCODColor::violet, "<%s> Just between us, I never liked humans.",owner->name);
+					break;
+				default:break;
+			}
+			break;
+		}
+		case DEPRESSED: {
+			TCODRandom *rando = TCODRandom::getInstance();
+			int switcher = rando->getInt(1,10);
+			switch (switcher)
+			{
+				case 1:
+					engine.gui->message(TCODColor::violet, "<%s> I wish I wasn't here right now.",owner->name);
+					break;
+				case 2:
+					engine.gui->message(TCODColor::violet, "<%s> This medication only works for half a day, then I get sad again.",owner->name);
+					break;
+				case 3:
+					engine.gui->message(TCODColor::violet, "<%s> The world has become so dark.",owner->name);
+					break;
+				case 4:
+					engine.gui->message(TCODColor::violet, "<%s> Why me? *crying* Why me?",owner->name);
+					break;
+				case 5:
+					engine.gui->message(TCODColor::violet, "<%s> Do you think we'll make it?  I don't think so.",owner->name);
+					break;
+				case 6:
+					engine.gui->message(TCODColor::violet, "<%s> I just want someone to talk to, all the others died.",owner->name);
+					break;
+				case 7:
+					engine.gui->message(TCODColor::violet, "<%s> I wanna go home this is no place for me.",owner->name);
+					break;
+				case 8:
+					engine.gui->message(TCODColor::violet, "<%s> I feel severly despondent and dejected, I've felt it over a period of time and accompanied by feelings of hopelessness and inadequacy.",owner->name);
+					break;
+				case 9:
+					engine.gui->message(TCODColor::violet, "<%s> The DSM-LXVII doesn't even say how I feel anymore.",owner->name);
+					break;
+				case 10:
+					engine.gui->message(TCODColor::violet, "<%s> Do you feel bad too?  I haven't felt good in awhile.",owner->name);
+					break;
+				default:break;
+			}
+			break;
+		}
+		case SUICIDAL: {
+			TCODRandom *rando = TCODRandom::getInstance();
+			int switcher = rando->getInt(1,10);
+			switch (switcher)
+			{
+				case 1:
+					engine.gui->message(TCODColor::violet, "<%s> I wish I was dead.",owner->name);
+					break;
+				case 2:
+					engine.gui->message(TCODColor::violet, "<%s> Just take your gun and shoot me please.",owner->name);
+					break;
+				case 3:
+					engine.gui->message(TCODColor::violet, "<%s> The world has become so dark.",owner->name);
+					break;
+				case 4:
+					engine.gui->message(TCODColor::violet, "<%s> Everyone is dead, everyone.",owner->name);
+					break;
+				case 5:
+					engine.gui->message(TCODColor::violet, "<%s> KILL ME! KILLLLLLLLLLLL ME!.",owner->name);
+					break;
+				case 6:
+					engine.gui->message(TCODColor::violet, "<%s> *sobbing* I got out when they didn't.  WHY DID I LIVE!?",owner->name);
+					break;
+				case 7:
+					engine.gui->message(TCODColor::violet, "<%s> *cutting own arm* Why am I alive?",owner->name);
+					break;
+				case 8:
+					engine.gui->message(TCODColor::violet, "<%s> That doctor said I was \"a danger to myself and others\" what a quack.",owner->name);
+					break;
+				case 9:
+					engine.gui->message(TCODColor::violet, "<%s> LET ME DIE!",owner->name);
+					break;
+				case 10:
+					engine.gui->message(TCODColor::violet, "<%s> This place will be my coffin.",owner->name);
+					break;
+				default:break;
+			}
+			break;
+		}
+		case TOASTER:{
+			engine.gui->message(TCODColor::violet,"%s dings, ejecting a piece of toast that reads, \"Kill me!\"",owner->name);
+			break;
+		}
+		case SPASTIC:{
+			TCODRandom *rando = TCODRandom::getInstance();
+			int switcher = rando->getInt(1,3);
+			switch (switcher){
+				case 1: engine.gui->message(TCODColor::violet,"%s twitches uncontrollably.",owner->name);
+				case 2: engine.gui->message(TCODColor::violet,"%s squeals, arms moving spasmodically.",owner->name);
+				case 3: engine.gui->message(TCODColor::violet,"<%s> I can feel them crawling all over my skin!",owner->name);
+				default: break;
+			}
+			break;
+		}
+		case BRUTISH:{
+			engine.gui->message(TCODColor::violet,"%s grunts.",owner->name);
+			break;
+		}
+		default: {
+			engine.gui->message(TCODColor::violet,"<%s> I have yet to be accounted for!", owner->name);
+			
+		}
+	}
+}
+
+void CompanionAi::teleportMessage(Actor *owner){
+	engine.gui->message(TCODColor::violet,"%s vomits uncontrolably, disoriented by the teleportation's effects!",owner->name);
+}

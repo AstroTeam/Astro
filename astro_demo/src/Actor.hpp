@@ -14,6 +14,7 @@ public:
 	bool interact; //does this guy have an interaction function?
 	bool smashable; //can this be smashed?
 	bool oozing; //is this guy infected?
+	bool tameable; //can he be turned into a companion?
 	bool susceptible; //is this guy susceptible to the infection?
 	bool flashable; //is this actor affected by flash bangs
 	int sort; //Actor type (1 = Item, 2 = Tech, 3 = Armor, 4 = Weapon)

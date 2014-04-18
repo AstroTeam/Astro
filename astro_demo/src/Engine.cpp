@@ -162,7 +162,7 @@ void Engine::init() {
 			RBonus = new ItemBonus(ItemBonus::DEXTERITY,1);
 			bonusR.push(RBonus);
 			ranged->blocks = false;
-			ranged->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
+			ranged->pickable = new Weapon(1,6,2,20,1,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
@@ -218,7 +218,7 @@ void Engine::init() {
 			RBonus = new ItemBonus(ItemBonus::DEXTERITY,1);
 			bonusR.push(RBonus);
 			ranged->blocks = false;
-			ranged->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
+			ranged->pickable = new Weapon(1,6,2,20,1,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
@@ -504,8 +504,8 @@ void Engine::init() {
 			bonusHa.push(HaBonus);
 			hand1->blocks = false;
 			hand2->blocks = false;
-			hand1->pickable = new Weapon(1,6,2,Weapon::LIGHT,0,Equipment::HAND1,bonusHa,requirement);
-			hand2->pickable = new Weapon(1,6,2,Weapon::LIGHT,0,Equipment::HAND2,bonusHa,requirement);
+			hand1->pickable = new Weapon(1,6,2,20,0,Weapon::LIGHT,0,Equipment::HAND1,bonusHa,requirement);
+			hand2->pickable = new Weapon(1,6,2,20,0,Weapon::LIGHT,0,Equipment::HAND2,bonusHa,requirement);
 			hand1->sort = 4;
 			hand2->sort = 4;
 			engine.actors.push(hand1);
@@ -571,7 +571,7 @@ void Engine::init() {
 			RBonus = new ItemBonus(ItemBonus::DEXTERITY,1);
 			bonusR.push(RBonus);
 			ranged->blocks = false;
-			ranged->pickable = new Weapon(1,6,2,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
+			ranged->pickable = new Weapon(1,6,2,20,1,Weapon::RANGED,0,Equipment::RANGED,bonusR,requirement);
 			ranged->sort = 4;
 			engine.actors.push(ranged);
 			ranged->pickable->pick(ranged,player);
@@ -746,6 +746,7 @@ void Engine::load(bool pause) {
 	engine.gui->menu.clear();
 	if (pause) {
 	engine.gui->menu.addItem(Menu::NO_CHOICE, "RESUME GAME");
+	//engine.gui->menu.addItem(Menu::MAIN_MENU, "MAIN MENU");
 	}
 	if (!pause) {
 	engine.gui->menu.addItem(Menu::TUTORIAL, "TUTORIAL");
@@ -756,6 +757,7 @@ void Engine::load(bool pause) {
 	//if (pause && level>0) {
 	if (pause && level >0){		
 		engine.gui->menu.addItem(Menu::SAVE, "SAVE");
+		
 	}
 	if(TCODSystem::fileExists("game.sav")) {
 		if (pause) {
@@ -805,6 +807,7 @@ void Engine::load(bool pause) {
 	} else if (menuItem == Menu::NO_CHOICE) {
 		//menuState = 0;
 	} else if (menuItem == Menu::MAIN_MENU) {
+		if(level > 0) //only save if you aren't on the tutorial
 		save();
 		TCODConsole::root->clear();
 		//engine.term();
@@ -1153,7 +1156,7 @@ void Engine::nextLevel() {
 	delete map;
 	//delete all actors but player and stairs
 	for(Actor **it = actors.begin(); it != actors.end(); it++) {
-		if (*it != player && *it != stairs) {
+		if (*it != player && *it != stairs && *it!= player->companion) {
 			delete *it;
 			it = actors.remove(it);
 		}
