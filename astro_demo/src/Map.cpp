@@ -2613,12 +2613,12 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		engine.sendToBack(engine.playerLight);
 		
 		if (engine.level == 1){
-			Actor *pet = createCompanion(true);
+			Actor *pet = createCompanion(engine.player->x,engine.player->y,true);
 			engine.player->companion = pet;
 			engine.actors.push(pet);
 			
 			if(canWalk(engine.player->x,engine.player->y+1)){
-				Actor *pet2 = createCompanion(false);
+				Actor *pet2 = createCompanion(engine.player->x,engine.player->y+1,false);
 				engine.actors.push(pet2);
 			}
 			
@@ -5930,8 +5930,8 @@ Actor *Map::createArtifact(int x, int y){
 	return artifact;
 }
 
-Actor *Map::createCompanion(bool racial){
-	Actor *pet = new Actor(engine.player->x,engine.player->y,141,"Mr. Bubble-Yum",TCODColor::white);
+Actor *Map::createCompanion(int x, int y, bool racial){
+	Actor *pet = new Actor(x,y,141,"Mr. Bubble-Yum",TCODColor::white);
 	pet->hostile = false;
 	pet->destructible = new MonsterDestructible(50,0,0,10);
 	pet->blocks = false;
@@ -5999,7 +5999,7 @@ Actor *Map::createCompanion(bool racial){
 		((CompanionAi*)(pet->ai))->period = 10 * tutu->getInt(2,6);
 		strcat(nameBuf,"the Suicidal ");
 		pet->destructible->hp += 60;
-		//pet->destructible->maxHp += 30;
+		pet->destructible->maxHp += 60;
 	}
 	
 	
