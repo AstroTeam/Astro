@@ -833,7 +833,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 	return false;
 }
 
-Weapon::Weapon(float minDmg, float maxDmg, float critMult, WeaponType wType,
+Weapon::Weapon(float minDmg, float maxDmg, float critMult, float critRange, float powerUse, WeaponType wType,
 		bool equipped, SlotType slot, TCODList<ItemBonus *> bonus, ItemReq *requirement):
 	Equipment(equipped, slot, bonus, requirement, false, 1, Pickable::WEAPON), 
 		minDmg(minDmg), maxDmg(maxDmg), critMult(critMult), wType(wType){
@@ -861,6 +861,8 @@ void Weapon::save(TCODZip &zip) {
 	zip.putFloat(minDmg);
 	zip.putFloat(maxDmg);
 	zip.putFloat(critMult);
+	zip.putFloat(critRange);
+	zip.putFloat(powerUse);
 	zip.putInt(wType);
 }
 
@@ -883,6 +885,8 @@ void Weapon::load(TCODZip &zip) {
 	minDmg = zip.getFloat();
 	maxDmg = zip.getFloat();
 	critMult = zip.getFloat();
+	critRange = zip.getFloat();
+	powerUse = zip.getFloat();
 	wType = (WeaponType)zip.getInt();
 }
 
@@ -1075,14 +1079,28 @@ bool Teleporter::use(Actor *owner, Actor *wearer) {
 			return false;
 		}
 	}
-	if(engine.player->job[0] == 'H') //hacker
+	if(engine.player->job[0] == 'H'){ //hacker
 		engine.gui->message(TCODColor::orange, "As a hacker, you mod your own x and y variables to tactically reposition yourself!");
-	else
+		
+		if (engine.player->companion && engine.player->companion->destructible && !engine.player->companion->destructible->isDead()){
+			((CompanionAi*)(engine.player->companion->ai))->teleportMessage(engine.player->companion);
+		}
+	}else{
 		engine.gui->message(TCODColor::orange, "You teleport to the chosen location!");
+		if (engine.player->companion && engine.player->companion->destructible && !engine.player->companion->destructible->isDead()){
+			((CompanionAi*)(engine.player->companion->ai))->teleportMessage(engine.player->companion);
+		}
+	}
+	
 	engine.player->x = x;
 	engine.player->y = y;
 	engine.playerLight->x = x;
 	engine.playerLight->y = y;
+	
+	if (engine.player->companion && engine.player->companion->destructible && !engine.player->companion->destructible->isDead()){
+		engine.player->companion->x = x;
+		engine.player->companion->y = y;
+	}
 	engine.map->computeFov();
 	return Pickable::use(owner,wearer);
 }
