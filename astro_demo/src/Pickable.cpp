@@ -836,7 +836,7 @@ bool Equipment::use(Actor *owner, Actor *wearer) {
 Weapon::Weapon(float minDmg, float maxDmg, float critMult, float critRange, float powerUse, WeaponType wType,
 		bool equipped, SlotType slot, TCODList<ItemBonus *> bonus, ItemReq *requirement):
 	Equipment(equipped, slot, bonus, requirement, false, 1, Pickable::WEAPON), 
-		minDmg(minDmg), maxDmg(maxDmg), critMult(critMult), wType(wType){
+		minDmg(minDmg), maxDmg(maxDmg), critMult(critMult),critRange(critRange),powerUse(powerUse),wType(wType){
 	//need to make sure no funky combos are done
 }
 
