@@ -5950,17 +5950,55 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 	memset(nameBuf,0,250);
 	
 	int switc = tutu->getInt(1,10);
-	switch (switc){
-		case 1: strcat(nameBuf,"Mykyl "); break;
-		case 2: strcat(nameBuf,"Bob "); break;
-		case 3: strcat(nameBuf,"Frigth "); break;
-		case 4: strcat(nameBuf,"Lydia "); break;
-		case 5: strcat(nameBuf,"Dweezil "); break;
-		case 6: strcat(nameBuf,"Springleaf "); break;
-		case 7: strcat(nameBuf,"EX-279 "); break;
-		case 8: strcat(nameBuf,"Sally "); break;
-		case 9: strcat(nameBuf,"TOM "); break;
-		case 10: strcat(nameBuf,"Bryndynn "); break;
+	int switcher = tutu->getInt(1,3);
+	if (racial)
+		switcher = 4;
+	switch (switcher){
+		case 1://toaster
+			strcat(nameBuf,"Shane "); break;
+			break;
+		case 2://marine (human names)
+			switch (switc){
+				case 1: strcat(nameBuf,"Jim "); break;
+				case 2: strcat(nameBuf,"Johnson "); break;
+				case 3: strcat(nameBuf,"Kevin "); break;
+				case 4: strcat(nameBuf,"Smith "); break;
+				case 5: strcat(nameBuf,"Drake "); break;
+				case 6: strcat(nameBuf,"Sam "); break;
+				case 7: strcat(nameBuf,"Frank "); break;
+				case 8: strcat(nameBuf,"Dan "); break;
+				case 9: strcat(nameBuf,"Tom "); break;
+				case 10: strcat(nameBuf,"Bruce "); break;
+			}
+			break;
+		case 3://foodstuffs (alien-ish names)
+			switch (switc){
+				case 1: strcat(nameBuf,"Flynnis "); break;
+				case 2: strcat(nameBuf,"Jergenous "); break;
+				case 3: strcat(nameBuf,"Jinuss "); break;
+				case 4: strcat(nameBuf,"Scrous "); break;
+				case 5: strcat(nameBuf,"Druffe "); break;
+				case 6: strcat(nameBuf,"Scazuluk "); break;
+				case 7: strcat(nameBuf,"Frum "); break;
+				case 8: strcat(nameBuf,"Quzzleq "); break;
+				case 9: strcat(nameBuf,"Jifflo "); break;
+				case 10: strcat(nameBuf,"Lifforq "); break;
+			}
+			break;
+		case 4://generic/any & racial
+			switch (switc){
+				case 1: strcat(nameBuf,"Mykyl "); break;
+				case 2: strcat(nameBuf,"Bob "); break;
+				case 3: strcat(nameBuf,"Frigth "); break;
+				case 4: strcat(nameBuf,"Lydia "); break;
+				case 5: strcat(nameBuf,"Dweezil "); break;
+				case 6: strcat(nameBuf,"Springleaf "); break;
+				case 7: strcat(nameBuf,"EX-279 "); break;
+				case 8: strcat(nameBuf,"Sally "); break;
+				case 9: strcat(nameBuf,"TOM "); break;
+				case 10: strcat(nameBuf,"Bryndynn "); break;
+			}
+			break;
 	}
 	
 	switc = tutu->getInt(1,120);
@@ -6045,11 +6083,11 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 			break;
 		}
 	} else{
-		int switcher = tutu->getInt(1,3);
+		
 		switch(switcher){
 			 
 			case 1:		//Toaster
-			pet->name = "Shane the useless Toaster";
+			pet->name = "the useless Toaster";
 			pet->ch = 158;
 			pet->destructible->maxHp += 70;
 			pet->destructible->hp += 70;
