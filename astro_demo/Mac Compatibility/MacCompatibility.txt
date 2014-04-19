@@ -1,0 +1,13 @@
+Running Astro on Mac
+--------------------
+
+1)  go to the following website and download WineBottler:
+
+http://winebottler.kronenberg.org/
+
+2) Drag Wine and WineBottler into your Applications folder when the screen pops up.
+
+3) When attempting to run Astro's exe, a popup will appear asking if you want Wine to run it. 
+Check the box that says not to ask again. Click "go" to begin the installation.
+
+4) Astro will now run when you click on the exe! 
