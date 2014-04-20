@@ -24,6 +24,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 		case KEY: pickable = new Key(0); break;
 		case ALCOHOL: pickable = new Alcohol(0,0);break;
 		case TELEPORTER: pickable = new Teleporter(0);break;
+		case FLAMETHROWER: pickable = new Flamethrower(0,0); break;
 		case NONE: break;
 	}
 	std::cout << "chose a module type " << std::endl;
@@ -491,6 +492,7 @@ void Pickable::drop(Actor *owner, Actor *wearer, bool isNPC) {
 				case KEY: droppy->pickable = new Key(((Key*)(owner->pickable))->keyType); droppy->sort = 1; break;
 				case ALCOHOL: droppy->pickable = new Alcohol(((Alcohol*)(owner->pickable))->strength,((Alcohol*)(owner->pickable))->quality); droppy->sort = 1; break;
 				case TELEPORTER: droppy->pickable = new Teleporter(((Teleporter*)(owner->pickable))->range); droppy->sort = 2; break;
+				case FLAMETHROWER: break;
 				case NONE: break;
 			}
 			droppy->pickable->stackSize = numberDropped;
@@ -888,6 +890,114 @@ void Weapon::load(TCODZip &zip) {
 	critRange = zip.getFloat();
 	powerUse = zip.getFloat();
 	wType = (WeaponType)zip.getInt();
+}
+Flamethrower::Flamethrower(float range, float powerUse, bool equipped, SlotType slot, TCODList<ItemBonus *> bonus, ItemReq *requirement):
+	Equipment(equipped, slot, bonus, requirement, false, 1, Pickable::FLAMETHROWER), range(range), powerUse(powerUse){
+}
+
+bool Flamethrower::use(Actor *owner, Actor *wearer){
+	return Equipment::use(owner, wearer);
+}
+
+bool Flamethrower::ignite(Actor *owner, Actor *wearer){
+	engine.gui->message(TCODColor::cyan, "Please choose a tile to ignite, "
+		"or hit escape to cancel.");
+	int x = engine.player->x;
+	int y = engine.player->y;
+	if(!engine.pickATile(&x,&y,range,0)){
+		return false;
+	}
+	engine.gui->message(TCODColor::orange, "You ignite all tiles between yourself and your target");
+	if(x == engine.player->x && y == engine.player->y){
+		engine.map->tiles[x+y*engine.map->width].envSta = 1;
+		engine.map->tiles[x+y*engine.map->width].temperature = 6;
+	}else if(x == engine.player->x){
+		int xx = x;
+		int yy = y;
+		if(y > engine.player->y){
+			do{
+				engine.map->tiles[xx+yy*engine.map->width].envSta = 1;
+				engine.map->tiles[xx+yy*engine.map->width].temperature = 6;
+				yy--;
+			}while(yy > engine.player->y);
+		}else if(y < engine.player->y){
+			do{
+				engine.map->tiles[xx+yy*engine.map->width].envSta = 1;
+				engine.map->tiles[xx+yy*engine.map->width].temperature = 6;
+				yy++;
+			}while(yy < engine.player->y);
+		}
+	}else if(y == engine.player->y){
+		int xx = x;
+		int yy = y;
+		if(x > engine.player->x){
+			do{
+				engine.map->tiles[xx+yy*engine.map->width].envSta = 1;
+				engine.map->tiles[xx+yy*engine.map->width].temperature = 6;
+				xx--;
+			}while(xx > engine.player->x);
+		}else if(x < engine.player->x){
+			do{
+				engine.map->tiles[xx+yy*engine.map->width].envSta = 1;
+				engine.map->tiles[xx+yy*engine.map->width].temperature = 6;
+				xx++;
+			}while(xx < engine.player->x);
+		}
+	}else{
+		//Need to decide in what order the tiles should be set on fire
+		//int xx = x;
+		//int yy = y;
+		if(x > engine.player->x){
+			if(y > engine.player->y){
+				
+			}else if(y < engine.player->y){
+			}
+		}else if(x < engine.player->x){
+			if(y > engine.player->y){
+			}else if(y < engine.player->y){
+			}
+		}
+		
+	}
+	return true;
+}
+
+void Flamethrower::save(TCODZip &zip) {
+	zip.putInt(type);
+	zip.putInt(equipped);
+	zip.putInt(slot);
+	zip.putInt(stacks);
+	zip.putInt(stackSize);
+	zip.putInt(value);
+	zip.putInt(inkValue);
+	zip.putInt(bonus.size());
+	for(int i = 0; i < bonus.size(); i++){///////////
+		bonus.get(i)->save(zip);
+	}
+	//bonus->save(zip);
+	requirement->save(zip);
+	zip.putFloat(range);
+	zip.putFloat(powerUse);
+}
+
+void Flamethrower::load(TCODZip &zip) {
+	equipped = zip.getInt();
+	slot = (SlotType)zip.getInt();
+	stacks = zip.getInt();
+	stackSize = zip.getInt();
+	value = zip.getInt();
+	inkValue = zip.getInt();
+	int numBonus = zip.getInt();
+	for(int i = 0; i < numBonus; i++){//////////
+		ItemBonus *bon = new ItemBonus(ItemBonus::NOBONUS,0);
+		bon->load(zip);
+		bonus.push(bon);
+	}
+	ItemReq *req = new ItemReq(ItemReq::NOREQ,0);
+	req->load(zip);
+	requirement = req;
+	range = zip.getFloat();
+	powerUse = zip.getFloat();
 }
 
 bool Equipment::requirementsMet(Actor *owner, Actor *wearer){

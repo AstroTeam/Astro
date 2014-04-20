@@ -2650,6 +2650,7 @@ Actor *VendingAi::clone(Actor *owner){
 			case Pickable::ALCOHOL: break; //NO ALCOHOL IN 3D PRINTERS!
 			case Pickable::TELEPORTER: break; //no teleporters in 3D printers
 			case Pickable::NONE: break;
+			case Pickable::FLAMETHROWER: break;
 		}
 		return droppy;
 }

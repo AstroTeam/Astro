@@ -1,7 +1,7 @@
 class Pickable : public Persistent {
 public:
 	enum PickableType {
-		NONE, HEALER, CHARGER, LIGHTNING_BOLT, CONFUSER, FIREBALL, EQUIPMENT, FLARE, CURRENCY, FRAGMENT, WEAPON,FOOD, KEY, ALCOHOL, TELEPORTER
+		NONE, HEALER, CHARGER, LIGHTNING_BOLT, CONFUSER, FIREBALL, EQUIPMENT, FLARE, CURRENCY, FRAGMENT, WEAPON,FOOD, KEY, ALCOHOL, TELEPORTER, FLAMETHROWER
 	};
 	bool stacks;
 	int stackSize;
@@ -161,6 +161,19 @@ public:
 	Weapon(float minDmg = 0, float maxDmg = 0, float critMult = 2, float critRange = 20, float powerUse = 0, WeaponType wType = NOTYPE,
 		bool equipped = false, SlotType slot = NOSLOT, TCODList<ItemBonus *> bonus = new TCODList<ItemBonus *>(), ItemReq *requirement = NULL);
 	bool use(Actor *owner, Actor *wearer);
+	void load(TCODZip &zip);
+	void save(TCODZip &zip);
+};
+
+class Flamethrower : public Equipment {
+	public:
+	
+	float range;
+	float powerUse;
+	
+	Flamethrower(float range = 0, float powerUse = 0, bool equipped = false, SlotType slot = RANGED, TCODList<ItemBonus *> bonus = new TCODList<ItemBonus *>(), ItemReq *requirement = NULL);
+	bool use(Actor *owner, Actor *wearer);
+	bool ignite(Actor *owner, Actor *wearer);
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
 };
