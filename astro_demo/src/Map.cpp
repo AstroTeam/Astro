@@ -5801,43 +5801,43 @@ Actor *Map::createFood(int x, int y){
 	{
 		case 1:
 			col = TCODColor::green;//
-			strcat(nameBuf,"green ");
+			//strcat(nameBuf,"green ");
 			break;
 		case 2:
 			col = TCODColor::sea;//
-			strcat(nameBuf,"turquoise ");
+			//strcat(nameBuf,"turquoise ");
 			break;
 		case 3:
 			col = TCODColor::lime;//
-			strcat(nameBuf,"lime ");
+			//strcat(nameBuf,"lime ");
 			break;
 		case 4:
 			col = TCODColor::azure;
-			strcat(nameBuf,"blue ");
+			//strcat(nameBuf,"blue ");
 			break;
 		case 5:
 			col = TCODColor::red;
-			strcat(nameBuf,"red ");
+			//strcat(nameBuf,"red ");
 			break;
 		case 6:
 			col = TCODColor::yellow;
-			strcat(nameBuf,"yellow ");
+			//strcat(nameBuf,"yellow ");
 			break;
 		case 7:
 			col = TCODColor::violet;
-			strcat(nameBuf,"purple ");
+			//strcat(nameBuf,"purple ");
 			break;
 		case 8:
 			col = TCODColor::magenta;
-			strcat(nameBuf,"pink ");
+			//strcat(nameBuf,"pink ");
 			break;
 		case 9:
 			col = TCODColor::chartreuse;//
-			strcat(nameBuf,"chartreuse ");
+			//strcat(nameBuf,"chartreuse ");
 			break;
 		case 10:
 			col = TCODColor::sepia;
-			strcat(nameBuf,"brown ");
+			//strcat(nameBuf,"brown ");
 			break;
 		default:break;
 	}
