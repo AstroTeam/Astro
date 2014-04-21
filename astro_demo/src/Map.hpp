@@ -38,7 +38,7 @@ struct Tile {
 	bool lit;
 	int num;
 	bool drty;
-	//environment stuff
+	//environment stuff  1 is fire, 2 is scorched
 	int envSta;
 	int temperature;
 	//decoration int

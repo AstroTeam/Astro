@@ -1073,7 +1073,8 @@ void Renderer::render(void *sdlSurface){
 					srcRect.y = 0;
 					//srcRect.x += (rng->getInt(0,2))*16;
 					//if (slowing%5 == 0)
-					SDL_BlitSurface(fire,&srcRect,floorMap,&dstRect);
+					if (engine.map->tiles[xM+yM*engine.map->width].explored)
+						{SDL_BlitSurface(fire,&srcRect,floorMap,&dstRect);}
 					if (engine.map->tiles[xM+yM*engine.map->width].temperature == 0)
 						engine.map->tiles[xM+yM*engine.map->width].envSta = 2;
 					else if (engine.gameStatus == engine.NEW_TURN)
@@ -1085,11 +1086,18 @@ void Renderer::render(void *sdlSurface){
 					
 						
 				}
-				if (engine.map->tiles[xM+yM*engine.map->width].envSta == 2 && engine.map->tiles[xM+yM*engine.map->width].decoration == 0)
+				else if (engine.map->tiles[xM+yM*engine.map->width].envSta == 2 && engine.map->tiles[xM+yM*engine.map->width].decoration == 0 && engine.map->tiles[xM+yM*engine.map->width].explored)
 				{
 					srcRect.x = 4 * 16;
 					srcRect.y = 0;
-					SDL_SetAlpha(fire, SDL_SRCALPHA, 255*.5);
+					if (engine.map->isInFov(xM,yM)){
+						//light
+						SDL_SetAlpha(fire, SDL_SRCALPHA, 255*.5);
+					}else{
+						//dark/*commet*/
+						SDL_SetAlpha(fire, SDL_SRCALPHA, 255*.175);
+					}
+					
 					SDL_BlitSurface(fire,&srcRect,floorMap,&dstRect);
 					SDL_SetAlpha(fire, SDL_SRCALPHA, 255*.9);
 				}
