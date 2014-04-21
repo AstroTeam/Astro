@@ -688,9 +688,27 @@ void Map::spawnTutorial() {
 	knife3->pickable = new Weapon(1,8,3,Weapon::HEAVY,0,Equipment::HAND1,bonus,requirement);
 	knife3->sort = 4;
 	engine.actors.push(knife3);*/
-	
+		Actor *flamer = new Actor(x1+6,y1,'f',"flamethrower",TCODColor::white);
+		flamer->blocks = false;
+		//MLR->name = nameBuf;
+		//MLR->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
+		//1 = min damage, 6 = max damage, 2 is crit mult, RANGED, 0 = not equipped,RANGED, bonus, req
+		//bonus.push(modBonus);
+		//ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
+		TCODList<ItemBonus *> bonus;
+		ItemReq *req = new ItemReq(ItemReq::STRENGTH,1);
+		flamer->pickable = new Flamethrower(5,1,false,Equipment::RANGED,bonus,req);
+		flamer->sort = 3;
+		//((Equipment*)(MLR->pickable))->armorArt = 13;
+		//flamer->pickable->value = 200;
+		//flamer->pickable->inkValue = 30;
+		//col = TCODColor::white;
+		//MLR->col = col;
+		engine.actors.push(flamer);
 	//cout << "got to records creation" << endl;
 	for (int tiley = y1; tiley <= y2; tiley+=1) {
+		
+		//engine.sendToBack(MLR2);
 		/*Actor *booze = createFood(x1+5,tiley);
 		engine.actors.push(booze);
 		Actor *booze2 = createFood(x1+6,tiley);

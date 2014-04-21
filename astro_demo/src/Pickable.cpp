@@ -896,6 +896,8 @@ Flamethrower::Flamethrower(float range, float powerUse, bool equipped, SlotType 
 }
 
 bool Flamethrower::use(Actor *owner, Actor *wearer){
+	
+	(Flamethrower)owner->ignite(owner, wearer);
 	return Equipment::use(owner, wearer);
 }
 
@@ -908,9 +910,19 @@ bool Flamethrower::ignite(Actor *owner, Actor *wearer){
 		return false;
 	}
 	engine.gui->message(TCODColor::orange, "You ignite all tiles between yourself and your target");
-	if(x == engine.player->x && y == engine.player->y){
+	int xP = engine.player->x;
+	int yP = engine.player->y;
+	// Going from point 5,8 to point 13,4
+	TCODLine::init(xP,yP,x,y);
+	do {
+		// update cell x,y
 		engine.map->tiles[x+y*engine.map->width].envSta = 1;
 		engine.map->tiles[x+y*engine.map->width].temperature = 6;
+	} while (!TCODLine::step(&x,&y));
+	
+	
+	/*if(x == engine.player->x && y == engine.player->y){
+		
 	}else if(x == engine.player->x){
 		int xx = x;
 		int yy = y;
@@ -958,7 +970,7 @@ bool Flamethrower::ignite(Actor *owner, Actor *wearer){
 			}
 		}
 		
-	}
+	}*/
 	return true;
 }
 
