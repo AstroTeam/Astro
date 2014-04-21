@@ -698,8 +698,6 @@ void Map::spawnTutorial() {
 		TCODList<ItemBonus *> bonus;
 		ItemReq *req = new ItemReq(ItemReq::STRENGTH,1);
 		flamer->pickable = new Flamethrower(5,1,0,Equipment::RANGED,bonus,req);
-		((Flamethrower*)(flamer->pickable))->range = 5;
-		((Flamethrower*)(flamer->pickable))->powerUse = 1;
 		flamer->sort = 4;
 		//((Equipment*)(MLR->pickable))->armorArt = 13;
 		//flamer->pickable->value = 200;
