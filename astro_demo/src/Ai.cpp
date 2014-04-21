@@ -538,25 +538,30 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//shooty shooty bang bang -Mitchell
 			//need to figure out how to check if the user has a gun
 			if(owner->container->ranged){
-				//engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
-				Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,20);
-				if ( !(owner->hostile||(closestMonster && closestMonster->hostile)) || !closestMonster ) {
-					engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
-					return;
+				if(((Equipment*)(owner->container->ranged->pickable))->type == Pickable::FLAMETHROWER){
+					((Flamethrower*)(owner->container->ranged))->ignite();
+					//int powerUse = ((Flamethrower*)(owner->container->ranged))->powerUse;
+					owner->attacker->usePower(owner, 1);
+				}else{
+					//engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
+					Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,20);
+					if ( !(owner->hostile||(closestMonster && closestMonster->hostile)) || !closestMonster ) {
+						engine.gui->message(TCODColor::lightGrey, "No enemy is close enough to shoot.");
+						return;
+					}
+					//hit the closest monster for <damage> hit points;
+					else{
+						//if(owner->attacker && owner->attacker->battery >= 1){
+							owner->attacker->shoot(owner, closestMonster);
+							//owner->attacker->usePower(owner, 1);
+							engine.damageDone += (int)owner->totalDex - closestMonster->destructible->totalDodge;
+							engine.gameStatus = Engine::NEW_TURN;
+						//}
+						//else{
+						//	engine.gui->message(TCODColor::lightGrey, "Not enough battery to shoot.");
+						//}
+					}
 				}
-				//hit the closest monster for <damage> hit points;
-				else{
-					//if(owner->attacker && owner->attacker->battery >= 1){
-						owner->attacker->shoot(owner, closestMonster);
-						//owner->attacker->usePower(owner, 1);
-						engine.damageDone += (int)owner->totalDex - closestMonster->destructible->totalDodge;
-						engine.gameStatus = Engine::NEW_TURN;
-					//}
-					//else{
-					//	engine.gui->message(TCODColor::lightGrey, "Not enough battery to shoot.");
-					//}
-				}
-				
 			}
 			else{
 				engine.gui->message(TCODColor::lightGrey,"You do not have a ranged weapon equipped");

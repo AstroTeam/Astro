@@ -896,17 +896,15 @@ Flamethrower::Flamethrower(float range, float powerUse, bool equipped, SlotType 
 }
 
 bool Flamethrower::use(Actor *owner, Actor *wearer){
-	
-	(Flamethrower)owner->ignite(owner, wearer);
 	return Equipment::use(owner, wearer);
 }
 
-bool Flamethrower::ignite(Actor *owner, Actor *wearer){
+bool Flamethrower::ignite(){
 	engine.gui->message(TCODColor::cyan, "Please choose a tile to ignite, "
 		"or hit escape to cancel.");
 	int x = engine.player->x;
 	int y = engine.player->y;
-	if(!engine.pickATile(&x,&y,range,0)){
+	if(!engine.pickATile(&x,&y,5,0)){
 		return false;
 	}
 	engine.gui->message(TCODColor::orange, "You ignite all tiles between yourself and your target");

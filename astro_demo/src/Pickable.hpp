@@ -171,9 +171,9 @@ class Flamethrower : public Equipment {
 	float range;
 	float powerUse;
 	
-	Flamethrower(float range = 0, float powerUse = 0, bool equipped = false, SlotType slot = RANGED, TCODList<ItemBonus *> bonus = new TCODList<ItemBonus *>(), ItemReq *requirement = NULL);
+	Flamethrower(float range, float powerUse, bool equipped = false, SlotType slot = RANGED, TCODList<ItemBonus *> bonus = new TCODList<ItemBonus *>(), ItemReq *requirement = NULL);
 	bool use(Actor *owner, Actor *wearer);
-	bool ignite(Actor *owner, Actor *wearer);
+	bool ignite();
 	void load(TCODZip &zip);
 	void save(TCODZip &zip);
 };
