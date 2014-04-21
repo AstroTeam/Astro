@@ -539,10 +539,9 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//need to figure out how to check if the user has a gun
 			if(owner->container->ranged){
 				if(((Equipment*)(owner->container->ranged->pickable))->type == Pickable::FLAMETHROWER){
-					((Flamethrower*)(owner->container->ranged))->ignite();
-					//int powerUse = ((Flamethrower*)(owner->container->ranged))->powerUse;
-					owner->attacker->usePower(owner, 1);
-					engine.gameStatus = Engine::NEW_TURN;
+					if(((Flamethrower*)(owner->container->ranged))->ignite(owner)){
+						engine.gameStatus = Engine::NEW_TURN;
+					}
 				}else{
 					//engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
 					Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,20);
@@ -678,7 +677,7 @@ Actor *PlayerAi::choseFromInventory(Actor *owner,int type, bool isVend) {
 		it != owner->container->inventory.end(); it++) {
 		Actor *actor = *it;
 		if(actor->sort == type){
-			if((actor->pickable->type == Pickable::EQUIPMENT || actor->pickable->type == Pickable::WEAPON)&& ((Equipment*)(actor->pickable))->equipped){
+			if((actor->pickable->type == Pickable::EQUIPMENT || actor->pickable->type == Pickable::WEAPON || actor->pickable->type == Pickable::FLAMETHROWER)&& ((Equipment*)(actor->pickable))->equipped){
 				inventoryScreen->print(1,y,"(%c) %s(E)",shortcut,actor->name);
 			}else{
 				inventoryScreen->print(1,y,"(%c) %s",shortcut,actor->name);
@@ -748,7 +747,7 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	con.print(1,36,"RANGED: ");
 	for(Actor **it = owner->container->inventory.begin(); it != owner->container->inventory.end(); ++it){
 		Actor *actor = *it;
-		if((actor->pickable->type == Pickable::EQUIPMENT || actor->pickable->type == Pickable::WEAPON) && ((Equipment*)(actor->pickable))->equipped){
+		if((actor->pickable->type == Pickable::EQUIPMENT || actor->pickable->type == Pickable::WEAPON || actor->pickable->type == Pickable::FLAMETHROWER) && ((Equipment*)(actor->pickable))->equipped){
 			switch(((Equipment*)(actor->pickable))->slot){
 				case Equipment::HEAD:
 					con.print(6,24,"%s",actor->name);

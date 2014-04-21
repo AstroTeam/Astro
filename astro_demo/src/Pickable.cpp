@@ -899,12 +899,20 @@ bool Flamethrower::use(Actor *owner, Actor *wearer){
 	return Equipment::use(owner, wearer);
 }
 
-bool Flamethrower::ignite(){
-	engine.gui->message(TCODColor::cyan, "Please choose a tile to ignite, "
-		"or hit escape to cancel.");
+bool Flamethrower::ignite(Actor *owner){
 	int x = engine.player->x;
 	int y = engine.player->y;
-	if(!engine.pickATile(&x,&y,5,0)){
+	int range = ((Flamethrower*)(owner->container->ranged->pickable))->range;
+	int powerUse = ((Flamethrower*)(owner->container->ranged->pickable))->powerUse;
+	//cout << "The Range is " << range << endl;
+	//cout << "The Power Use is "<< powerUse << endl;
+	if(owner->attacker->battery < powerUse){
+		engine.gui->message(TCODColor::red, "You do not have enough battery to use the flamethrower");
+		return false;
+	}
+	engine.gui->message(TCODColor::cyan, "Please choose a tile to ignite, "
+		"or hit escape to cancel.");
+	if(!engine.pickATile(&x,&y,range,0)){
 		return false;
 	}
 	engine.gui->message(TCODColor::orange, "You ignite all tiles between yourself and your target");
@@ -918,6 +926,7 @@ bool Flamethrower::ignite(){
 		engine.map->tiles[x+y*engine.map->width].temperature = 6;
 	} while (!TCODLine::step(&x,&y));
 	
+	owner->attacker->usePower(owner, powerUse);
 	
 	/*if(x == engine.player->x && y == engine.player->y){
 		
