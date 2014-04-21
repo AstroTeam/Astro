@@ -542,6 +542,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					((Flamethrower*)(owner->container->ranged))->ignite();
 					//int powerUse = ((Flamethrower*)(owner->container->ranged))->powerUse;
 					owner->attacker->usePower(owner, 1);
+					engine.gameStatus = Engine::NEW_TURN;
 				}else{
 					//engine.gui->message(TCODColor::darkerOrange,"You fire your MLR");
 					Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,20);
