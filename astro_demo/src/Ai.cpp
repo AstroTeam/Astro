@@ -2492,7 +2492,7 @@ void VendingAi::vendSidebar(){
 	TCODConsole vendBar(16,32);
 	vendBar.setDefaultBackground(TCODColor::black);
 	vendBar.clear();
-	vendBar.setDefaultForeground(TCODColor(200,180,50));
+	vendBar.setDefaultForeground(TCODColor(100,180,250));
 	vendBar.printFrame(0,0,16,32,true,TCOD_BKGND_ALPHA(50),"VENDING");
 	
 	vendBar.print(1,5,"Pbc: %d",engine.player->container->wallet);
