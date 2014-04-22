@@ -59,6 +59,13 @@ void Aura::apply(Actor *target){
 				}
 			}
 			break;
+		case FIRE:
+			if(target->destructible) {
+				target->destructible->heal(bonus);
+				engine.gui->message(TCODColor::orange,"%s is burning!",target->name);
+				//engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].envSta = 1;
+			}
+			break;
 		default: break;
 	}
 }
@@ -147,6 +154,13 @@ void Aura::unApply(Actor *target){
 					if (target->destructible->maxHp < target->destructible->hp) {
 						target->destructible->hp = target->destructible->maxHp;
 					}
+				}
+				break;
+			case FIRE:
+				if(target->destructible) {
+					//target->destructible->heal(bonus);
+					engine.gui->message(TCODColor::yellow,"%s has ceased burning.",target->name);
+					//engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].envSta = 1;
 				}
 				break;
 			default: break;

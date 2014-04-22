@@ -1097,12 +1097,22 @@ void Renderer::render(void *sdlSurface){
 							{
 								if (i != j || (j == 0 && i == 0))
 								engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].lit = true;
-								//engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].num++;
+								
+								
+								
+								//if (engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].temperature < engine.map->tiles[(xM)+(yM)*engine.map->width].temperature)
+								//{
+								//	engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].temperature ++;
+								//	if (engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].envSta != 1)
+								//	engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].envSta = 1;
+								//}
 							}
 						}
 						//engine.gui->message(TCODColor::red, "tempreature at %d,%d is %d",xM,yM,engine.map->tiles[xM+yM*engine.map->width].temperature);
 					}
-						
+					 
+					 
+							
 					
 						
 				}

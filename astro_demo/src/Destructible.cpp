@@ -86,7 +86,13 @@ float Destructible::takeFireDamage(Actor *owner, float damage) {
 		if (damage > 0){
 			hp -= damage;
 			if(engine.map->isVisible(owner->x, owner->y))
-				engine.gui->message(TCODColor::red, "%s takes %g fire damage.",owner->name,damage);
+				{
+					engine.gui->message(TCODColor::red, "%s takes %g fire damage.",owner->name,damage);
+					Aura *fire = new Aura(6, Aura::FIRE, Aura::ITERABLE, -3);
+					engine.player->auras.push(fire);
+					//fire->apply(engine.player);
+					//engine.gui->message(TCODColor::orange,"%s has caught fire!",owner->name);
+				}
 			if (hp <= 0) {
 				//die(owner, NULL);
 			}
