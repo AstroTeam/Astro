@@ -258,14 +258,14 @@ bool PlayerAi::moveOrAttack(Actor *owner, int targetx, int targety) {
 					{
 						actor->hostile = true;
 						actor->ch = 130; //update to active security bot
-					}else if(!actor->hostile && actor->ch == 'G') //gardner become hostile
+					}else if(!actor->hostile && actor->ch == 135) //gardner become hostile
 						actor->hostile = true;
 					engine.damageDone += owner->attacker->totalPower - actor->destructible->totalDodge;
 				}else if(actor->interact && ((!owner->hostile) || (engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration == 56 || engine.map->tiles[actor->x+(actor->y)*engine.map->width].decoration == 57 )))
 					((InteractibleAi*)actor->ai)->interaction(actor, owner);
 				else if(!owner->hostile && !actor->hostile && actor->ch == 129)
 					engine.gui->message(TCODColor::grey, "The %s seems to be inactive", actor->name);
-				else if(!owner->hostile && !actor->hostile && actor->ch == 'G')
+				else if(!owner->hostile && !actor->hostile && actor->ch == 135)
 					engine.gui->message(TCODColor::grey, "Welcome to Hydroponics, please do not touch anything!", actor->name);
 			}else if(actor->interact){
 					((InteractibleAi*)actor->ai)->interaction(actor, owner);

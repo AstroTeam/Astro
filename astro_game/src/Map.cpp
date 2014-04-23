@@ -1357,7 +1357,7 @@ Actor* Map::createGardner(int x, int y)
 	float gardnerStr = 3*scale;
 	float gardnerDex = 0*scale;
 	float gardnerXp = 25*scale;
-	int gardnerAscii = 'G';
+	int gardnerAscii = 135;
 	
 	Actor *gardner = new Actor(x,y,gardnerAscii,"Crazed Gardner",TCODColor::white);
 	gardner->hostile = false;
