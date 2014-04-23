@@ -640,6 +640,9 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		
 		case 'o': //orders
 			
+			//might need another "handleActionKey" for orders, like a handleOrders
+			//so we can print out a message before it, better code practice, etc.
+			
 			if (engine.player->companion != NULL)//if you have a companion
 			{
 				//TCOD_key_t key3 = TCODConsole::waitForKeypress(true);
@@ -671,7 +674,8 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 							engine.gui->message(TCODColor::white, "Choose a point to guard.");
 							if(!engine.pickATile(&x,&y,10,0)){
 								//return false;
-								engine.gui->message(TCODColor::white, "Error...exiting.");
+								engine.gui->message(TCODColor::white, "404 error...exiting.");
+								exit = true;
 							}
 							((CompanionAi*)engine.player->companion->ai)->setAssignmentCoor(x,y);
 							engine.gui->message(TCODColor::white, "Guarding point (%d,%d)",x,y);
@@ -3565,7 +3569,7 @@ void CompanionAi::update(Actor *owner){
 		if (tamer->attacker->lastTarget != NULL && !tamer->attacker->lastTarget->destructible->isDead()){
 			if (owner->attacker && tamer->attacker->lastTarget != owner && tamer->attacker->lastTarget != tamer){
 				owner->attacker->lastTarget = tamer->attacker->lastTarget;
-				//engine.gui->message(TCODColor::violet,"<%s> I will protect you from that %s!",owner->name,owner->attacker->lastTarget->name);
+				engine.gui->message(TCODColor::violet,"<%s> I will protect you from that %s!",owner->name,owner->attacker->lastTarget->name);
 				if (tamer->getDistance(owner->attacker->lastTarget->x,owner->attacker->lastTarget->y) <= rangeLimit){
 					targeting = true;
 					moveOrAttack(owner,owner->attacker->lastTarget->x,owner->attacker->lastTarget->y);
