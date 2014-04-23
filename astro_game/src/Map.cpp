@@ -5555,7 +5555,7 @@ Actor *Map::createFlameThrower(int x, int y, bool isVend){
 	TCODColor col = TCODColor::white;
 	int range = 5;
 	int powerUse = 2;
-	int width = 1;
+	int width = random->getInt(1,3);;
 	int choices = random->getInt(1,3);
 	int flaw = random->getInt(1,3);
 	int max = random->getInt(0,2);
@@ -5581,15 +5581,13 @@ Actor *Map::createFlameThrower(int x, int y, bool isVend){
 						requirement = new ItemReq(ItemReq::DEXTERITY,2 + (engine.level - 1));
 						range = 4;
 						powerUse = 3;
-						width = 2;
 						break;
 					case 3:
-						strcat(nameBuf,"Vulnerable ");
-						modBonus = new ItemBonus(ItemBonus::DR,-2);
+						strcat(nameBuf,"Inefficient ");
+						modBonus = new ItemBonus(ItemBonus::DR,-1);
 						requirement = new ItemReq(ItemReq::NOREQ,0);
-						range = 3;
-						powerUse = 3;
-						width = 3;
+						range = 5;
+						powerUse = 5;
 						break;
 					default:break;
 				}
@@ -5603,19 +5601,25 @@ Actor *Map::createFlameThrower(int x, int y, bool isVend){
 				switch(max)
 				{
 					case 0:
-						strcat(nameBuf,"Durable ");
+						strcat(nameBuf,"Improved ");
 						modBonus = new ItemBonus(ItemBonus::HEALTH,5 + (5*engine.level));
 						requirement = new ItemReq(ItemReq::DEXTERITY,3 + (engine.level - 1));
+						range = 6;
+						powerUse = 2;
 						break;
 					case 1:
-						strcat(nameBuf,"Useful ");
+						strcat(nameBuf,"Efficient ");
 						modBonus = new ItemBonus(ItemBonus::DR,1 + (engine.level - 1));
 						requirement = new ItemReq(ItemReq::DEXTERITY,2 + (engine.level - 1));
+						range = 5;
+						powerUse = 1;
 						break;
 					case 2:
-						strcat(nameBuf,"Cheap ");
+						strcat(nameBuf,"Useful ");
 						modBonus = new ItemBonus(ItemBonus::STRENGTH,1 + (engine.level - 1));
 						requirement = new ItemReq(ItemReq::STRENGTH,2 + (engine.level - 1));
+						range = 6;
+						powerUse = 3;
 						break;
 					default:break;
 				}
@@ -5626,24 +5630,32 @@ Actor *Map::createFlameThrower(int x, int y, bool isVend){
 				switch(gain)
 				{
 					case 1:
-						strcat(nameBuf,"Reinforced ");
+						strcat(nameBuf,"Long Range ");
 						modBonus = new ItemBonus(ItemBonus::STRENGTH,2 + (engine.level - 1));
 						requirement = new ItemReq(ItemReq::STRENGTH,3 + (engine.level - 1));
+						range = 8;
+						powerUse = 3;
 						break;
 					case 2:
-						strcat(nameBuf,"Tough ");
+						strcat(nameBuf,"Shielded ");
 						modBonus = new ItemBonus(ItemBonus::DR,2 + (engine.level - 1));
 						requirement = new ItemReq(ItemReq::DEXTERITY,4 + (engine.level - 1));
+						range = 4;
+						powerUse = 1;
 						break;
 					case 3:
-						strcat(nameBuf,"High Tech ");
+						strcat(nameBuf,"Highly Efficient ");
 						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,2 + (engine.level - 1));
 						requirement = new ItemReq(ItemReq::INTELLIGENCE,4 + (engine.level - 1));
+						range = 7;
+						powerUse = 1;
 						break;
 					case 4:
 						strcat(nameBuf,"Reliable ");
 						modBonus = new ItemBonus(ItemBonus::HEALTH,10 + (10*engine.level));
 						requirement = new ItemReq(ItemReq::DEXTERITY,3 + (engine.level - 1));
+						range = 6;
+						powerUse = 2;
 						break;
 					default:break;
 				}
