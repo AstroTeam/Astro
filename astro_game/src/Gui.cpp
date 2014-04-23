@@ -139,8 +139,6 @@ void Gui::render() {
 	//renderBar(1,21, BAR_WIDTH, NULL, 6, 10, TCODColor::orange, TCODColor::darkerOrange);
 
 	
-	//display FPS
-	sidebar->print(3,23,"FPS : %d",TCODSystem::getFps());
 	
 	//display wallet amount
 	sidebar->print(3,25,"Wallet : %d",engine.player->container->wallet);
