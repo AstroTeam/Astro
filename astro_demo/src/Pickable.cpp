@@ -902,8 +902,6 @@ bool Flamethrower::use(Actor *owner, Actor *wearer){
 bool Flamethrower::ignite(Actor *owner){
 	int x = engine.player->x;
 	int y = engine.player->y;
-	int range = ((Flamethrower*)(owner->container->ranged->pickable))->range;
-	int powerUse = ((Flamethrower*)(owner->container->ranged->pickable))->powerUse;
 	//cout << "The Range is " << range << endl;
 	//cout << "The Power Use is "<< powerUse << endl;
 	if(owner->attacker->battery < powerUse){

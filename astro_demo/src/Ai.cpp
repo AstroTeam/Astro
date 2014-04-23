@@ -539,7 +539,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//need to figure out how to check if the user has a gun
 			if(owner->container->ranged){
 				if(((Equipment*)(owner->container->ranged->pickable))->type == Pickable::FLAMETHROWER){
-					if(((Flamethrower*)(owner->container->ranged))->ignite(owner)){
+					if(((Flamethrower*)(owner->container->ranged->pickable))->ignite(owner)){
 						engine.gameStatus = Engine::NEW_TURN;
 					}
 				}else{
