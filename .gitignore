@@ -19,7 +19,7 @@ screenshot*.png
 *.exe
 
 #Track Demo.exe
-!astro_demo\Demo.exe
+!astro_demo\Astro.exe
 
 # Unecessary Text Files
 stderr.txt

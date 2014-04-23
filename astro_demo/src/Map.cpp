@@ -688,7 +688,7 @@ void Map::spawnTutorial() {
 	knife3->pickable = new Weapon(1,8,3,Weapon::HEAVY,0,Equipment::HAND1,bonus,requirement);
 	knife3->sort = 4;
 	engine.actors.push(knife3);*/
-		Actor *flamer = new Actor(x1+6,y1,'f',"flamethrower",TCODColor::white);
+		Actor *flamer = new Actor(x1+6,y1,'f',"Flamethrower",TCODColor::white);
 		flamer->blocks = false;
 		//MLR->name = nameBuf;
 		//MLR->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
@@ -697,7 +697,9 @@ void Map::spawnTutorial() {
 		//ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
 		TCODList<ItemBonus *> bonus;
 		ItemReq *req = new ItemReq(ItemReq::STRENGTH,1);
-		flamer->pickable = new Flamethrower(5,1,0,Equipment::RANGED,bonus,req);
+		flamer->pickable = new Flamethrower(5,2,0,Equipment::RANGED,bonus,req);
+		//int range = ((Flamethrower*)(flamer->pickable))->range;
+		//cout << "The Range is " << range << endl;
 		flamer->sort = 4;
 		//((Equipment*)(MLR->pickable))->armorArt = 13;
 		//flamer->pickable->value = 200;
@@ -5801,43 +5803,43 @@ Actor *Map::createFood(int x, int y){
 	{
 		case 1:
 			col = TCODColor::green;//
-			strcat(nameBuf,"green ");
+			//strcat(nameBuf,"green ");
 			break;
 		case 2:
 			col = TCODColor::sea;//
-			strcat(nameBuf,"turquoise ");
+			//strcat(nameBuf,"turquoise ");
 			break;
 		case 3:
 			col = TCODColor::lime;//
-			strcat(nameBuf,"lime ");
+			//strcat(nameBuf,"lime ");
 			break;
 		case 4:
 			col = TCODColor::azure;
-			strcat(nameBuf,"blue ");
+			//strcat(nameBuf,"blue ");
 			break;
 		case 5:
 			col = TCODColor::red;
-			strcat(nameBuf,"red ");
+			//strcat(nameBuf,"red ");
 			break;
 		case 6:
 			col = TCODColor::yellow;
-			strcat(nameBuf,"yellow ");
+			//strcat(nameBuf,"yellow ");
 			break;
 		case 7:
 			col = TCODColor::violet;
-			strcat(nameBuf,"purple ");
+			//strcat(nameBuf,"purple ");
 			break;
 		case 8:
 			col = TCODColor::magenta;
-			strcat(nameBuf,"pink ");
+			//strcat(nameBuf,"pink ");
 			break;
 		case 9:
 			col = TCODColor::chartreuse;//
-			strcat(nameBuf,"chartreuse ");
+			//strcat(nameBuf,"chartreuse ");
 			break;
 		case 10:
 			col = TCODColor::sepia;
-			strcat(nameBuf,"brown ");
+			//strcat(nameBuf,"brown ");
 			break;
 		default:break;
 	}

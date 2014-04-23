@@ -1073,23 +1073,61 @@ void Renderer::render(void *sdlSurface){
 					srcRect.y = 0;
 					//srcRect.x += (rng->getInt(0,2))*16;
 					//if (slowing%5 == 0)
-					SDL_BlitSurface(fire,&srcRect,floorMap,&dstRect);
+					if (engine.map->isInFov(xM,yM))
+						{SDL_BlitSurface(fire,&srcRect,floorMap,&dstRect);}
 					if (engine.map->tiles[xM+yM*engine.map->width].temperature == 0)
+					{
 						engine.map->tiles[xM+yM*engine.map->width].envSta = 2;
+						for (int i = -1; i <= 1;i++)
+						{
+							for (int j = -1; j <= 1;j++)
+							{
+								if (engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].num == 0)
+								engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].lit = false;
+								//engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].num++;
+							}
+						}
+					}
 					else if (engine.gameStatus == engine.NEW_TURN)
 					{
 						engine.map->tiles[xM+yM*engine.map->width].temperature--;
+						for (int i = -1; i <= 1;i++)
+						{
+							for (int j = -1; j <= 1;j++)
+							{
+								if (i != j || (j == 0 && i == 0))
+								engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].lit = true;
+								
+								
+								
+								//if (engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].temperature < engine.map->tiles[(xM)+(yM)*engine.map->width].temperature)
+								//{
+								//	engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].temperature ++;
+								//	if (engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].envSta != 1)
+								//	engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].envSta = 1;
+								//}
+							}
+						}
 						//engine.gui->message(TCODColor::red, "tempreature at %d,%d is %d",xM,yM,engine.map->tiles[xM+yM*engine.map->width].temperature);
 					}
-						
+					 
+					 
+							
 					
 						
 				}
-				if (engine.map->tiles[xM+yM*engine.map->width].envSta == 2 && engine.map->tiles[xM+yM*engine.map->width].decoration == 0)
+				else if (engine.map->tiles[xM+yM*engine.map->width].envSta == 2 && engine.map->tiles[xM+yM*engine.map->width].decoration == 0 && engine.map->tiles[xM+yM*engine.map->width].explored)
 				{
 					srcRect.x = 4 * 16;
 					srcRect.y = 0;
-					SDL_SetAlpha(fire, SDL_SRCALPHA, 255*.5);
+					if (engine.map->isInFov(xM,yM)){
+						//light
+						SDL_SetAlpha(fire, SDL_SRCALPHA, 255*.5);
+					}else{
+						//dark/*commet*/
+						SDL_SetAlpha(fire, SDL_SRCALPHA, 255*.175);
+					}
+					
 					SDL_BlitSurface(fire,&srcRect,floorMap,&dstRect);
 					SDL_SetAlpha(fire, SDL_SRCALPHA, 255*.9);
 				}
