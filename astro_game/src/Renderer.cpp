@@ -1514,7 +1514,13 @@ void Renderer::render(void *sdlSurface){
 	else if (engine.menuState == 1)//character screen
 	{
 		//blitting
-		SDL_Surface *character = SDL_LoadBMP("tile_assets/character_screen_char.bmp");
+		SDL_Surface *character;
+		//deciding which to use
+		if (engine.player->ch == 143)//human
+			character = SDL_LoadBMP("tile_assets/character_screen_char.bmp");
+		else if (engine.player->ch == 175)//alien
+			character = SDL_LoadBMP("tile_assets/character_screen_char_alien.bmp");
+		
 		SDL_SetColorKey(character,SDL_SRCCOLORKEY,255);
 		SDL_Rect dstRect={35*16,5*16,400,256};
 		SDL_BlitSurface(character,NULL,screen,&dstRect);
