@@ -891,8 +891,8 @@ void Weapon::load(TCODZip &zip) {
 	powerUse = zip.getFloat();
 	wType = (WeaponType)zip.getInt();
 }
-Flamethrower::Flamethrower(float range, float powerUse, bool equipped, SlotType slot, TCODList<ItemBonus *> bonus, ItemReq *requirement):
-	Equipment(equipped, slot, bonus, requirement, false, 1, Pickable::FLAMETHROWER), range(range), powerUse(powerUse){
+Flamethrower::Flamethrower(float range, float powerUse, int width, bool equipped, SlotType slot, TCODList<ItemBonus *> bonus, ItemReq *requirement):
+	Equipment(equipped, slot, bonus, requirement, false, 1, Pickable::FLAMETHROWER), range(range), powerUse(powerUse), width(width){
 }
 
 bool Flamethrower::use(Actor *owner, Actor *wearer){
@@ -902,7 +902,8 @@ bool Flamethrower::use(Actor *owner, Actor *wearer){
 bool Flamethrower::ignite(Actor *owner){
 	int x = engine.player->x;
 	int y = engine.player->y;
-	//cout << "The Range is " << range << endl;
+	int width = ((Flamethrower*)(owner->container->ranged->pickable))->width;
+	cout << "The Width is " << width << endl;
 	//cout << "The Power Use is "<< powerUse << endl;
 	if(owner->attacker->battery < powerUse){
 		engine.gui->message(TCODColor::red, "You do not have enough battery to use the flamethrower");
@@ -916,14 +917,79 @@ bool Flamethrower::ignite(Actor *owner){
 	engine.gui->message(TCODColor::orange, "You ignite all tiles between yourself and your target");
 	int xP = engine.player->x;
 	int yP = engine.player->y;
-	// Going from point 5,8 to point 13,4
-	TCODLine::init(xP,yP,x,y);
-	do {
-		// update cell x,y
-		engine.map->tiles[x+y*engine.map->width].envSta = 1;
-		engine.map->tiles[x+y*engine.map->width].temperature = 6;
-	} while (!TCODLine::step(&x,&y));
+	int x1 = 0;
+	int y1 = 0;
+	int x2 = 0;
+	int y2 = 0;
 	
+	if(x > engine.player->x){
+		if(y > engine.player->y){
+			x1 = x;
+			y1 = y - 1;
+			x2 = x - 1;
+			y2 = y;
+		}else if(y < engine.player->y){
+			x1 = x;
+			y1 = y + 1;
+			x2 = x - 1;
+			y2 = y;
+		}else{
+			x1 = x;
+			y1 = y + 1;
+			x2 = x;
+			y2 = y - 1;
+		}
+	}else if(x < engine.player->x){
+		if(y > engine.player->y){
+			x1 = x + 1;
+			y1 = y;
+			x2 = x;
+			y2 = y - 1;
+		}else if(y < engine.player->y){
+			x1 = x + 1;
+			y1 = y ;
+			x2 = x;
+			y2 = y + 1;
+		}else{
+			x1 = x;
+			y1 = y + 1;
+			x2 = x;
+			y2 = y - 1;
+		}
+	}else{
+		if(y > engine.player->y){
+			y1 = y;
+			x1 = x+1;
+			y2 = y;
+			x2 = x-1;
+		}else if(y < engine.player->y){
+		}
+	}
+	// Going from point 5,8 to point 13,4
+	if(width >= 1){
+		TCODLine::init(xP,yP,x,y);
+		do {
+			// update cell x,y
+			engine.map->tiles[x+y*engine.map->width].envSta = 1;
+			engine.map->tiles[x+y*engine.map->width].temperature = 6;
+		} while (!TCODLine::step(&x,&y));
+	}
+	if(width >= 2){
+		TCODLine::init(xP,yP,x1,y1);
+		do {
+			// update cell x,y
+			engine.map->tiles[x1+y1*engine.map->width].envSta = 1;
+			engine.map->tiles[x1+y1*engine.map->width].temperature = 6;
+		} while (!TCODLine::step(&x1,&y1));
+	}
+	if(width >= 3){
+		TCODLine::init(xP,yP,x2,y2);
+		do {
+			// update cell x,y
+			engine.map->tiles[x2+y2*engine.map->width].envSta = 1;
+			engine.map->tiles[x2+y2*engine.map->width].temperature = 6;
+		} while (!TCODLine::step(&x2,&y2));
+	}
 	owner->attacker->usePower(owner, powerUse);
 	
 	/*if(x == engine.player->x && y == engine.player->y){

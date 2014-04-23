@@ -688,19 +688,20 @@ void Map::spawnTutorial() {
 	knife3->pickable = new Weapon(1,8,3,Weapon::HEAVY,0,Equipment::HAND1,bonus,requirement);
 	knife3->sort = 4;
 	engine.actors.push(knife3);*/
-		Actor *flamer = new Actor(x1+6,y1,'f',"Flamethrower",TCODColor::white);
-		flamer->blocks = false;
+		Actor *flamer = createFlameThrower(x1+6,y1,false);
+		//flamer->blocks = false;
 		//MLR->name = nameBuf;
 		//MLR->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
 		//1 = min damage, 6 = max damage, 2 is crit mult, RANGED, 0 = not equipped,RANGED, bonus, req
 		//bonus.push(modBonus);
 		//ItemBonus *bonus = new ItemBonus(ItemBonus::STRENGTH,1);
-		TCODList<ItemBonus *> bonus;
-		ItemReq *req = new ItemReq(ItemReq::STRENGTH,1);
-		flamer->pickable = new Flamethrower(5,2,0,Equipment::RANGED,bonus,req);
+		//TCODList<ItemBonus *> bonus;
+		//ItemReq *req = new ItemReq(ItemReq::STRENGTH,1);
+		//flamer->pickable = new Flamethrower(5,2,2,0,Equipment::RANGED,bonus,req);
 		//int range = ((Flamethrower*)(flamer->pickable))->range;
 		//cout << "The Range is " << range << endl;
-		flamer->sort = 4;
+		//flamer->sort = 4;
+		//((Equipment*)(flamer->pickable))->armorArt = 14;
 		//((Equipment*)(MLR->pickable))->armorArt = 13;
 		//flamer->pickable->value = 200;
 		//flamer->pickable->inkValue = 30;
@@ -710,6 +711,12 @@ void Map::spawnTutorial() {
 	//cout << "got to records creation" << endl;
 	for (int tiley = y1; tiley <= y2; tiley+=1) {
 		
+		/*Actor *flamer = createFlameThrower(x1+5,tiley,false);
+		engine.actors.push(flamer);
+		Actor *flamer2 = createFlameThrower(x1+6,tiley,false);
+		engine.actors.push(flamer2);
+		Actor *flamer3 = createFlameThrower(x1+7,tiley,false);
+		engine.actors.push(flamer3);*/
 		//engine.sendToBack(MLR2);
 		/*Actor *booze = createFood(x1+5,tiley);
 		engine.actors.push(booze);
@@ -5533,6 +5540,128 @@ Actor *Map::createMLR(int x, int y, bool isVend){
 	//col = TCODColor::white;
 	MLR->col = col;
 	return MLR;
+}
+Actor *Map::createFlameThrower(int x, int y, bool isVend){
+	char* nameBuf = new char[80];
+	memset(nameBuf,0,80);
+	Actor *flamer = new Actor(x,y,169,"Art",TCODColor::white);
+	flamer->blocks = false;
+	TCODList<ItemBonus *> bonus;
+	ItemBonus *STDBonus = new ItemBonus(ItemBonus::STRENGTH,3);
+	ItemBonus *modBonus = new ItemBonus(ItemBonus::DR,0);
+	bonus.push(STDBonus);
+	ItemReq *requirement = new ItemReq(ItemReq::STRENGTH,5);
+	TCODRandom *random = TCODRandom::getInstance();
+	TCODColor col = TCODColor::white;
+	int range = 5;
+	int powerUse = 2;
+	int width = 1;
+	int choices = random->getInt(1,3);
+	int flaw = random->getInt(1,3);
+	int max = random->getInt(0,2);
+	int gain = random->getInt(1,4);
+	if(!isVend){
+	switch(choices) 
+		{
+			case 1:
+				//random flaws
+				
+				switch(flaw)
+				{
+					case 1:
+						strcat(nameBuf,"Malfunctioning ");
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-(20 + 8 + (2*engine.level)));
+						requirement = new ItemReq(ItemReq::STRENGTH,1 + (engine.level - 1));
+						range = 3;
+						powerUse = 2;
+						break;
+					case 2:
+						strcat(nameBuf,"Dangerous ");
+						modBonus = new ItemBonus(ItemBonus::HEALTH,-(5+(5*engine.level)));
+						requirement = new ItemReq(ItemReq::DEXTERITY,2 + (engine.level - 1));
+						range = 4;
+						powerUse = 3;
+						width = 2;
+						break;
+					case 3:
+						strcat(nameBuf,"Vulnerable ");
+						modBonus = new ItemBonus(ItemBonus::DR,-2);
+						requirement = new ItemReq(ItemReq::NOREQ,0);
+						range = 3;
+						powerUse = 3;
+						width = 3;
+						break;
+					default:break;
+				}
+				//bad Mylar Boots
+				col = TCODColor::lighterRed;
+				break;
+			case 2:
+				//random damage slightly
+				
+				//int min = random->getInt(1,2);
+				switch(max)
+				{
+					case 0:
+						strcat(nameBuf,"Durable ");
+						modBonus = new ItemBonus(ItemBonus::HEALTH,5 + (5*engine.level));
+						requirement = new ItemReq(ItemReq::DEXTERITY,3 + (engine.level - 1));
+						break;
+					case 1:
+						strcat(nameBuf,"Useful ");
+						modBonus = new ItemBonus(ItemBonus::DR,1 + (engine.level - 1));
+						requirement = new ItemReq(ItemReq::DEXTERITY,2 + (engine.level - 1));
+						break;
+					case 2:
+						strcat(nameBuf,"Cheap ");
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,1 + (engine.level - 1));
+						requirement = new ItemReq(ItemReq::STRENGTH,2 + (engine.level - 1));
+						break;
+					default:break;
+				}
+				break;
+			case 3:
+				//random gains
+				
+				switch(gain)
+				{
+					case 1:
+						strcat(nameBuf,"Reinforced ");
+						modBonus = new ItemBonus(ItemBonus::STRENGTH,2 + (engine.level - 1));
+						requirement = new ItemReq(ItemReq::STRENGTH,3 + (engine.level - 1));
+						break;
+					case 2:
+						strcat(nameBuf,"Tough ");
+						modBonus = new ItemBonus(ItemBonus::DR,2 + (engine.level - 1));
+						requirement = new ItemReq(ItemReq::DEXTERITY,4 + (engine.level - 1));
+						break;
+					case 3:
+						strcat(nameBuf,"High Tech ");
+						modBonus = new ItemBonus(ItemBonus::INTELLIGENCE,2 + (engine.level - 1));
+						requirement = new ItemReq(ItemReq::INTELLIGENCE,4 + (engine.level - 1));
+						break;
+					case 4:
+						strcat(nameBuf,"Reliable ");
+						modBonus = new ItemBonus(ItemBonus::HEALTH,10 + (10*engine.level));
+						requirement = new ItemReq(ItemReq::DEXTERITY,3 + (engine.level - 1));
+						break;
+					default:break;
+				}
+				col = TCODColor::lighterGreen;
+				break;
+			default:break;
+		}
+	}
+	strcat(nameBuf,"Flamethrower");
+	flamer->name = nameBuf;
+	bonus.push(modBonus);
+	flamer->pickable = new Flamethrower(range,powerUse,width,0,Equipment::RANGED,bonus,requirement);
+	flamer->col = col;
+	flamer->pickable->value = 400;
+	flamer->pickable->inkValue = 25;
+	return flamer;
+	
+	
 }
 Actor *Map::createCombatKnife(int x, int y){
 	char* nameBuf = new char[80]; 

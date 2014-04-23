@@ -126,6 +126,7 @@ public:
 	Actor *createMylarGreaves(int x, int y, bool isVend);
 	Actor *createMylarBoots(int x, int y, bool isVend);
 	Actor *createMLR(int x, int y, bool isVend);
+	Actor *createFlameThrower(int x, int y, bool isVend);
 	Actor *createCombatKnife(int x, int y);
 	Actor *createFrag(int x, int y);
 	Actor *createFood(int x, int y);
