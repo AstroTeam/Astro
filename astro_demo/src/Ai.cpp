@@ -637,6 +637,41 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				engine.gui->message(TCODColor::yellow,"You have found no maps yet.");
 			}
 		break;
+		
+		case 'o': //orders
+			
+			if (engine.player->companion != NULL)//if you have a companion
+			{
+				//TCOD_key_t key3 = TCODConsole::waitForKeypress(true);
+				//engine.gui->message(TCODColor::white, "Orders: \"s\" to stay at a point");
+				int x = engine.player->x;
+				int y = engine.player->y;
+				bool exit = false;
+				engine.render();
+				while (!exit) {
+					TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&engine.lastKey,NULL);
+					switch (engine.lastKey.c) {
+						case 's' : //stay
+							engine.gui->message(TCODColor::white, "Choose a point to go to and stay at.");
+							//stay at a point
+							if(!engine.pickATile(&x,&y,10,0)){
+								//return false;
+							}
+							engine.gui->message(TCODColor::white, "Going to coordinates (%d,%d)",x,y);
+							exit = true;
+							break;
+						case 'x':
+							exit = true;
+							break;
+						default : //nothing, exit
+							
+							break;
+						
+					}
+				}
+			}
+		break;
+		
 		case 'u':
 			if (engine.player->companion){
 				if (engine.player->getDistance(engine.player->companion->x,engine.player->companion->y) < 2){
@@ -646,7 +681,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				}
 			}
 		break;
-		case 'U':
+		case 'U'://this has to be last for some reason, skipping the initializing of closestMonster :/
 			Actor *closestMonster = engine.getClosestMonster(engine.player->x, engine.player->y,1);
 			if (closestMonster != NULL && closestMonster->tameable == true && closestMonster != engine.player->companion){
 				engine.gui->message(TCODColor::violet,"You swap %s for %s",engine.player->companion->name,closestMonster->name);
@@ -657,6 +692,8 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				engine.gui->message(TCODColor::pink, "There are no other companions to swap yours with!");
 			}
 		break;
+		
+		
 	}
 }
 
@@ -3469,6 +3506,7 @@ void CompanionAi::update(Actor *owner){
 	}
 	
 	if (command == STAY){
+		
 		return;
 	}
 	else if (command == GUARD_POINT ){
