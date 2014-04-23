@@ -318,6 +318,7 @@ public:
 	void periodicMessage(Actor *owner);
 	void teleportMessage(Actor *owner);
 	float feedMaster(Actor *owner, Actor *master);
+	void setCommand(Command command);
 	
 protected:
 	int rangeLimit; 

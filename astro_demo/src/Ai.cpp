@@ -643,21 +643,27 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			if (engine.player->companion != NULL)//if you have a companion
 			{
 				//TCOD_key_t key3 = TCODConsole::waitForKeypress(true);
-				//engine.gui->message(TCODColor::white, "Orders: \"s\" to stay at a point");
-				int x = engine.player->x;
-				int y = engine.player->y;
+				//engine.gui->message(TCODColor::white, "Orders: \"s\" to stay at a point")//
+				
+				//^^ that doesn't print till after and it makes me sad
+				
+				//int x = engine.player->x;
+				//int y = engine.player->y;
 				bool exit = false;
 				engine.render();
 				while (!exit) {
 					TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&engine.lastKey,NULL);
 					switch (engine.lastKey.c) {
 						case 's' : //stay
-							engine.gui->message(TCODColor::white, "Choose a point to go to and stay at.");
+							engine.gui->message(TCODColor::white, "Companion will now stay at current location.");
 							//stay at a point
-							if(!engine.pickATile(&x,&y,10,0)){
-								//return false;
-							}
-							engine.gui->message(TCODColor::white, "Going to coordinates (%d,%d)",x,y);
+							((CompanionAi*)engine.player->companion->ai)->setCommand(CompanionAi::STAY);
+							exit = true;
+							break;
+						case 'f' : //follow
+							engine.gui->message(TCODColor::white, "Companion will now follow you around.");
+							//stay at a point
+							((CompanionAi*)engine.player->companion->ai)->setCommand(CompanionAi::FOLLOW);
 							exit = true;
 							break;
 						case 'x':
@@ -3823,3 +3829,8 @@ void CompanionAi::periodicMessage(Actor *owner){
 void CompanionAi::teleportMessage(Actor *owner){
 	engine.gui->message(TCODColor::violet,"%s vomits uncontrolably, disoriented by the teleportation's effects!",owner->name);
 }
+
+void CompanionAi::setCommand(Command newCommand){
+	command = newCommand;
+}
+
