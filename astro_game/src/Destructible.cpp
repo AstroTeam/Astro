@@ -69,6 +69,9 @@ float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 		damage = 0;	
 	}
 	
+	if (engine.map->tiles[owner->x+owner->y*engine.mapWidth].envSta == 0)
+		engine.map->tiles[owner->x+owner->y*engine.mapWidth].envSta = 3;
+	
 	return damage;
 }
 
@@ -158,6 +161,7 @@ void Destructible::die(Actor *owner, Actor *killer) {
 	//owner->blocks = false;
 	//make sure corpses are drawn before other important things
 	engine.sendToBack(owner);
+
 }
 
 MonsterDestructible::MonsterDestructible(float maxHp, float dodge, float dr, int xp) :

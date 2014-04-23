@@ -1131,6 +1131,23 @@ void Renderer::render(void *sdlSurface){
 					SDL_BlitSurface(fire,&srcRect,floorMap,&dstRect);
 					SDL_SetAlpha(fire, SDL_SRCALPHA, 255*.9);
 				}
+				else if (engine.map->tiles[xM+yM*engine.map->width].envSta == 3 && engine.map->tiles[xM+yM*engine.map->width].explored)
+				{//bloody mess
+					SDL_SetAlpha(fire, SDL_SRCALPHA, 255*.9);
+					srcRect.y = 0;
+					if (engine.map->isInFov(xM,yM)){
+						//light
+						//SDL_SetAlpha(fire, SDL_SRCALPHA, 255*.9);
+						srcRect.x = 5 * 16;
+					}else{
+						//dark/*commet*/
+						//SDL_SetAlpha(fire, SDL_SRCALPHA, 255*.5);
+						srcRect.x = 6 * 16;
+					}
+					
+					SDL_BlitSurface(fire,&srcRect,floorMap,&dstRect);
+					
+				}
 				
 				
 			}

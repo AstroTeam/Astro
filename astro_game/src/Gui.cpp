@@ -295,9 +295,11 @@ void Gui::currentTileInfo(int x, int y) {
 
 		//tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
 		if (engine.map->tiles[x+y*engine.map->width].temperature > 0)
-		tileInfoMessage(TCODColor::red, "THE TILE IS ON FIRE!");
+			tileInfoMessage(TCODColor::red, "THE TILE IS ON FIRE!");
 		if (engine.map->tiles[x+y*engine.map->width].envSta == 2)
-		tileInfoMessage(TCODColor::grey, "The tile has been scorched.");
+			tileInfoMessage(TCODColor::grey, "The area has been scorched.");
+		else if (engine.map->tiles[x+y*engine.map->width].envSta == 3)
+			tileInfoMessage(TCODColor::darkRed, "The area is covered in blood.");
 		
 	for (Actor **it = engine.actors.begin(); it != engine.actors.end(); it++) {
 		Actor *actor = *it;
@@ -412,12 +414,13 @@ void Gui::renderKeyLook() {
 			tileInfoMessage(TCODColor::purple, "and odd purple flowers");
 		
 
-			//tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
-			if (engine.map->tiles[x+y*engine.map->width].temperature > 0)
+		//tileInfoMessage(TCODColor::yellow, "the light level is %d",c);
+		if (engine.map->tiles[x+y*engine.map->width].temperature > 0)
 			tileInfoMessage(TCODColor::red, "THE TILE IS ON FIRE!");
-			//tileInfoMessage(TCODColor::yellow, "the environment is %d",e);
-			if (engine.map->tiles[x+y*engine.map->width].envSta == 2)
-			tileInfoMessage(TCODColor::grey, "The tile has been scorched.");
+		if (engine.map->tiles[x+y*engine.map->width].envSta == 2)
+			tileInfoMessage(TCODColor::grey, "The area has been scorched.");
+		else if (engine.map->tiles[x+y*engine.map->width].envSta == 3)
+			tileInfoMessage(TCODColor::darkRed, "The area is covered in blood.");
 			
 		//}else {
 			//tileInfoMessage(TCODColor::lightGrey, "You remember seeing:");
