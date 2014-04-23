@@ -647,8 +647,8 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				
 				//^^ that doesn't print till after and it makes me sad
 				
-				//int x = engine.player->x;
-				//int y = engine.player->y;
+				int x = engine.player->x;
+				int y = engine.player->y;
 				bool exit = false;
 				engine.render();
 				while (!exit) {
@@ -664,6 +664,19 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 							engine.gui->message(TCODColor::white, "Companion will now follow you around.");
 							//stay at a point
 							((CompanionAi*)engine.player->companion->ai)->setCommand(CompanionAi::FOLLOW);
+							exit = true;
+							break;
+						case 'g' : //guard point
+							
+							engine.gui->message(TCODColor::white, "Choose a point to guard.");
+							if(!engine.pickATile(&x,&y,10,0)){
+								//return false;
+								engine.gui->message(TCODColor::white, "Error...exiting.");
+							}
+							((CompanionAi*)engine.player->companion->ai)->setAssignmentCoor(x,y);
+							engine.gui->message(TCODColor::white, "Guarding point (%d,%d)",x,y);
+							//stay at a point
+							((CompanionAi*)engine.player->companion->ai)->setCommand(CompanionAi::GUARD_POINT);
 							exit = true;
 							break;
 						case 'x':
@@ -3832,5 +3845,10 @@ void CompanionAi::teleportMessage(Actor *owner){
 
 void CompanionAi::setCommand(Command newCommand){
 	command = newCommand;
+}
+
+void CompanionAi::setAssignmentCoor(int x, int y){
+	assignedX = x;
+	assignedY = y;
 }
 
