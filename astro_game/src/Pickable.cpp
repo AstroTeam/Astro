@@ -921,6 +921,8 @@ bool Flamethrower::ignite(Actor *owner){
 	int y1 = 0;
 	int x2 = 0;
 	int y2 = 0;
+	int xT = 0;
+	int yT = 0;
 	
 	if(x > engine.player->x){
 		if(y > engine.player->y){
@@ -972,10 +974,12 @@ bool Flamethrower::ignite(Actor *owner){
 			// update cell x,y
 			engine.map->tiles[x+y*engine.map->width].envSta = 1;
 			engine.map->tiles[x+y*engine.map->width].temperature = 6;
+			xT = x;
+			yT = y;
 		} while (!TCODLine::step(&x,&y));
 	}
 	if(width >= 2){
-		TCODLine::init(xP,yP,x1,y1);
+		TCODLine::init(xT,yT,x1,y1);
 		do {
 			// update cell x,y
 			engine.map->tiles[x1+y1*engine.map->width].envSta = 1;
@@ -983,7 +987,7 @@ bool Flamethrower::ignite(Actor *owner){
 		} while (!TCODLine::step(&x1,&y1));
 	}
 	if(width >= 3){
-		TCODLine::init(xP,yP,x2,y2);
+		TCODLine::init(xT,yT,x2,y2);
 		do {
 			// update cell x,y
 			engine.map->tiles[x2+y2*engine.map->width].envSta = 1;

@@ -688,7 +688,7 @@ void Map::spawnTutorial() {
 	knife3->pickable = new Weapon(1,8,3,Weapon::HEAVY,0,Equipment::HAND1,bonus,requirement);
 	knife3->sort = 4;
 	engine.actors.push(knife3);*/
-		Actor *flamer = createFlameThrower(x1+6,y1,false);
+		//Actor *flamer = createFlameThrower(x1+6,y1,false);
 		//flamer->blocks = false;
 		//MLR->name = nameBuf;
 		//MLR->pickable = new Equipment(0,Equipment::RANGED,bonus,requirement);
@@ -707,7 +707,7 @@ void Map::spawnTutorial() {
 		//flamer->pickable->inkValue = 30;
 		//col = TCODColor::white;
 		//MLR->col = col;
-		engine.actors.push(flamer);
+		//engine.actors.push(flamer);
 	//cout << "got to records creation" << endl;
 	for (int tiley = y1; tiley <= y2; tiley+=1) {
 		
@@ -3117,7 +3117,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 		return;
 	}
 	else if(ascii == 243 && engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 54){//weapon rack
-		int random = rng->getInt(0,100);
+		int random = rng->getInt(0,125);
 		if(random < 75){
 			Actor *melee = createCombatKnife(0,0);
 			engine.actors.push(melee);
@@ -3127,6 +3127,10 @@ void Map::generateRandom(Actor *owner, int ascii){
 			Actor *MLR = createMLR(0,0,false);
 			engine.actors.push(MLR);
 			MLR->pickable->pick(MLR,owner);
+		}else{
+			Actor *flamer = createFlameThrower(0,0,false);
+			engine.actors.push(flamer);
+			flamer->pickable->pick(flamer,owner);
 		}
 	}
 	else if(ascii == 243 && engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 55){//battery rack
@@ -5555,7 +5559,7 @@ Actor *Map::createFlameThrower(int x, int y, bool isVend){
 	TCODColor col = TCODColor::white;
 	int range = 5;
 	int powerUse = 2;
-	int width = random->getInt(1,3);;
+	int width = random->getInt(1,3);
 	int choices = random->getInt(1,3);
 	int flaw = random->getInt(1,3);
 	int max = random->getInt(0,2);
@@ -5667,8 +5671,10 @@ Actor *Map::createFlameThrower(int x, int y, bool isVend){
 	strcat(nameBuf,"Flamethrower");
 	flamer->name = nameBuf;
 	bonus.push(modBonus);
-	flamer->pickable = new Flamethrower(range,powerUse,width,0,Equipment::RANGED,bonus,requirement);
+	flamer->pickable = new Flamethrower(range,powerUse,width,false,Equipment::RANGED,bonus,requirement);
 	flamer->col = col;
+	flamer->sort = 4;
+	((Equipment*)(flamer->pickable))->armorArt = 14;
 	flamer->pickable->value = 400;
 	flamer->pickable->inkValue = 25;
 	return flamer;
