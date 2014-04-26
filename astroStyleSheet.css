@@ -97,7 +97,18 @@ font-size:1em;
 display:  block;
 position: relative;
 }
-
+h2.npc
+{
+padding-bottom: 0em; 
+margin-bottom: 0em;
+padding-left: 1em;
+}
+p.npcdesc
+{
+margin-top: 1em; 
+padding-top: 0em; 
+margin-left: 3em;
+}
 p a:link 
 {
 color:ForestGreen;
