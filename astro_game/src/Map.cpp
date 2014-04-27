@@ -1501,7 +1501,7 @@ void Map::addItem(int x, int y, RoomType roomType) {
 		engine.sendToBack(scrollOfDrunkeness);
 	}else if(dice<40+40+40+15+15+5+10+40+40+40+40+100) {
 		Actor *stackOfFood = createFood(x,y);
-		engine.actors.push(stackOfFood);
+		//engine.actors.push(stackOfFood);
 		engine.sendToBack(stackOfFood);
 	}else {
 		Actor *stackOfMoney = createCurrencyStack(x,y);
@@ -2363,7 +2363,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 				if ((x == x1+2 && (y == y1+2 || y == y1+3)) || (x == x1+3 && (y == y1+2 || y ==y1+3)))
 				{
 					Actor *stackOfFood = createFood(x,y);
-					engine.actors.push(stackOfFood);
+					//engine.actors.push(stackOfFood);
 					engine.sendToBack(stackOfFood);
 					Actor *pallet = new Actor(x, y, 243, "A pallet.", TCODColor::white);
 					//engine.mapconDec->setChar(x,y, 32);//
@@ -2378,7 +2378,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 					if ((x == x2-2 && (y == y2-2 || y == y2-3)) || (x == x2-3 && (y == y2-2 || y ==y2-3)))
 					{
 						Actor *stackOfFood = createFood(x,y);
-						engine.actors.push(stackOfFood);
+						//engine.actors.push(stackOfFood);
 						engine.sendToBack(stackOfFood);
 						Actor *pallet = new Actor(x, y, 243, "A pallet.", TCODColor::white);
 						//engine.mapconDec->setChar(x,y, 32);//
@@ -6009,6 +6009,7 @@ Actor *Map::createFood(int x, int y){
 	//scrollOfFeeding->hunger = 60;
 	scrollOfFeeding->pickable->inkValue = 10;
 	scrollOfFeeding->col = col;
+	engine.actors.push(scrollOfFeeding);
 	return scrollOfFeeding;
 }
 
