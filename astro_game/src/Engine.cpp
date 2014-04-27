@@ -1217,7 +1217,7 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {   //need to 
 		case TCODK_RIGHT: dx = 1; break;
 		case TCODK_ENTER: 
 		{
-			if ((player->getDistance(*x,*y) > maxRange && maxRange != 0) || !map->isInFov(*x,*y)) {
+			if ((player->getDistance(*x,*y) > maxRange && maxRange != 0)) {
 				gui->message(TCODColor::pink,"this tile is out of range!");
 				return false;
 			} else {

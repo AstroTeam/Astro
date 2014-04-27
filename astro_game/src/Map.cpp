@@ -1,4 +1,3 @@
-
 #include "main.hpp"
 
 #include <cstring>
@@ -138,7 +137,7 @@ void Map::init(bool withActors, LevelType levelType) {
 
 		//Create boss, for now it is a simple security bot
 		if (withActors) {
-			if (engine.level == 5) {
+			if (engine.level == 1) {
 				//creating the final boss
 				int level = engine.level;
 				float scale = 1 + .1*(level - 1);
@@ -3107,6 +3106,11 @@ void Map::render() const {
 void Map::generateRandom(Actor *owner, int ascii){
 	TCODRandom *rng = TCODRandom::getInstance();
 	int dice = rng->getInt(0,100);
+
+	//zed umber
+	/*if (ascii == 'Z') {
+		}
+	*/
 	
 	//modify as needed:
 	if(ascii == 243 && engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 56) //this is the weapon vault, add whatever gubbins that you want
