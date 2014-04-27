@@ -11,7 +11,7 @@ protected:
 	enum AiType {
 		MONSTER, SECURITY, CONFUSED_ACTOR, PLAYER, TRIGGER, RANGED, LIGHT, 
 		FLARE, GRENADIER, TURRET, CLEANER, INTERACTIBLE, CONSOLE, VENDING, ENGINEER, EPICENTER, TURRETCONTROL, LOCKER, GARDNER,
-		FRUIT, ZED,COMPANION
+		FRUIT, ZED,COMPANION, DUMMY
 
 	};
 };
@@ -343,4 +343,14 @@ class ZedAi : public Ai
 		bool menuPopped;
 		void moveOrAttack(Actor *owner, Actor *target, int targetx, int targety);
 		void deathMenu();
+};
+
+class DummyAi : public Ai
+{
+	public:
+		DummyAi();
+		void update(Actor *owner);
+		void load(TCODZip &zip);
+		void save(TCODZip &zip);
+		
 };

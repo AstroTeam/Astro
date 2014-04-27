@@ -31,6 +31,7 @@ Ai *Ai::create(TCODZip &zip) {
 		case FRUIT: ai = new FruitAi(NULL,0); break;
 		case ZED: ai = new ZedAi(); break;
 		case COMPANION: std::cout<<"got here"<<std::endl; ai = new CompanionAi(NULL,0); break;
+		case DUMMY: ai = new DummyAi(); break;
 		
 	}
 	std::cout << "got past switch " << std::endl;
@@ -3860,3 +3861,17 @@ void CompanionAi::setAssignmentCoor(int x, int y){
 	assignedY = y;
 }
 
+DummyAi::DummyAi()
+{
+}
+void DummyAi::update(Actor *owner)
+{
+		if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
+			owner->destructible->die(owner, NULL);
+}
+void DummyAi::load(TCODZip &zip) {
+}
+
+void DummyAi::save(TCODZip &zip) {
+	zip.putInt(DUMMY);
+}

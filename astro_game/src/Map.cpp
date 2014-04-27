@@ -659,6 +659,7 @@ void Map::spawnTutorial() {
 		//engine.actors.push(dummy);
 		engine.map->tiles[x2-1+tiley*engine.map->width].decoration = 23;
 		dummy->destructible = new MonsterDestructible(10,0,0,1);
+		dummy->ai = new DummyAi();
 		engine.actors.push(dummy);
 	}
 	//melee weapons for testing
