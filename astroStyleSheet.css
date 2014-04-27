@@ -99,6 +99,7 @@ position: relative;
 }
 h2.npc
 {
+  font-size: 1.2em;
 margin-top: 0.5em; 
 padding-bottom: 0em; 
 margin-bottom: 0em;
@@ -195,7 +196,3 @@ pin a:hover
 {
 color:white;
 }  /* mouse over link */
-
-
-
-
