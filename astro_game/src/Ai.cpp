@@ -676,6 +676,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 								//return false;
 								engine.gui->message(TCODColor::white, "404 error...exiting.");
 								exit = true;
+								break;
 							}
 							((CompanionAi*)engine.player->companion->ai)->setAssignmentCoor(x,y);
 							engine.gui->message(TCODColor::white, "Guarding point (%d,%d)",x,y);
