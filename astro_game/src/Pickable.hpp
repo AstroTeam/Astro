@@ -127,7 +127,7 @@ class ItemReq{
 class Equipment : public Pickable {
 public:
 	enum SlotType{
-		NOSLOT,HEAD, CHEST, LEGS, FEET, HAND1, HAND2, RANGED
+		NOSLOT, HEAD, CHEST, LEGS, FEET, HAND1, HAND2, RANGED
 	};
 	
 	bool equipped;

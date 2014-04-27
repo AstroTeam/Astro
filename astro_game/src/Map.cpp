@@ -4003,7 +4003,7 @@ Actor *Map::createTitanHelm(int x, int y, bool isVend){
 	titanHelm->blocks = false;
 	titanHelm->name = nameBuf;
 	bonus.push(modBonus);
-	titanHelm->pickable = new Equipment(0,Equipment::CHEST,bonus,requirement);
+	titanHelm->pickable = new Equipment(0,Equipment::HEAD,bonus,requirement);
 	titanHelm->sort = 3;
 	((Equipment*)(titanHelm->pickable))->armorArt = 5;
 	titanHelm->pickable->value = 1000;
