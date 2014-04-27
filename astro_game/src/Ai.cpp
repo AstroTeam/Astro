@@ -3518,7 +3518,10 @@ void CompanionAi::update(Actor *owner){
 		if ((((CompanionAi*)(owner->ai))->att) == SUICIDAL){
 			engine.gui->message(TCODColor::violet,"<%s> Sweet release...",owner->name);
 		}
+		
 		owner->destructible->die(owner, NULL);
+		(((CompanionAi*)(owner->ai))->tamer)->companion = NULL;
+		(((CompanionAi*)(owner->ai))->tamer) = NULL;
 	}
 
 	if (owner->destructible && owner->destructible->isDead()) {
