@@ -137,6 +137,8 @@ void Attacker::shoot(Actor *owner, Actor *target) {
 		float damageRoll = 0;
 		float critMult = 2;
 		bool enoughPower = false;
+		if(owner != engine.player)
+			enoughPower = true;
 		if(owner->container->ranged){
 			int powerUse = ((Weapon*)owner->container->ranged->pickable)->powerUse;
 			if(owner != engine.player || owner->attacker->battery >= powerUse){
@@ -153,12 +155,12 @@ void Attacker::shoot(Actor *owner, Actor *target) {
 		}
 		if(enoughPower){
 			if(roll >= 20){
-				if(engine.map->isVisible(owner->x, owner->y))
+				if(engine.map->isVisible(target->x, target->y))
 					engine.gui->message(TCODColor::red,"CRITICAL HIT!");
 				damageTaken += critMult * (damageRoll + owner->totalDex) - target->destructible->totalDR; //save for damage roll
 			}
 			else if(roll <= 1){
-				if(engine.map->isVisible(owner->x, owner->y))
+				if(engine.map->isVisible(target->x, target->y))
 					engine.gui->message(TCODColor::lightGrey,"critical miss...");
 				damageTaken += 0;
 			}
