@@ -1839,15 +1839,14 @@ void GrenadierAi::update(Actor *owner) {
 }
 void GrenadierAi::useEmpGrenade(Actor *owner, Actor *target, int targetx, int targety)
 {
-	if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
-	engine.gui->message(TCODColor::red,"The %s uses an EMP Grenade on the %s!",owner->name, target->name);
 	float damageTaken = -3 + 3 * owner->totalIntel;
 	if(target->destructible)
 		damageTaken = target->destructible->takeDamage(target, owner, damageTaken);
 	numGrenades--;
 	if(engine.player == target)
 		engine.damageReceived += (3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
-	
+	if(engine.map->isVisible(owner->x, owner->y) || engine.map->isVisible(target->x, target->y))
+		engine.gui->message(TCODColor::red,"The %s uses an EMP Grenade on the %s for %g hit points!",owner->name, target->name, damageTaken);
 }
 void GrenadierAi::useFirebomb(Actor *owner, Actor *target, int targetx, int targety)
 {
@@ -1936,12 +1935,14 @@ void GrenadierAi::kamikaze(Actor *owner, Actor *target)
 	if(dice <= 15)
 	{
 		//emp grenade
-		if(engine.map->isVisible(target->x, target->y) || engine.map->isVisible(owner->x, owner->y))
-			engine.gui->message(TCODColor::red, "The %s kamikazes with an EMP Grenade on the %s!",owner->name,name);
+		
 		float damageTaken = -1*numGrenades*(-3 + 3 * owner->totalIntel);
 		damageTaken = target->destructible->takeDamage(target, owner,damageTaken );
 		if(target == engine.player)
 			engine.damageReceived += -1*numGrenades*(3 * owner->totalIntel - 3 - engine.player->destructible->totalDodge);
+			
+		if(engine.map->isVisible(target->x, target->y) || engine.map->isVisible(owner->x, owner->y))
+			engine.gui->message(TCODColor::red, "The %s kamikazes with an EMP Grenade on the %s for %g hit points!",owner->name,name, damageTaken);
 	}
 	else if(dice <= 25)
 	{
