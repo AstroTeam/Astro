@@ -86,7 +86,7 @@ void Engine::init() {
 	player->totalIntel=engine.gui->intelValue;
 	player->vit=engine.gui->vitValue;
 	player->destructible->hp=engine.gui->vitValue;
-	player->destructible->maxHp=engine.gui->vitValue;	
+	player->destructible->maxHp=engine.gui->vitValue;
 	int plyrAscii = 64;
 	
 	
@@ -673,7 +673,7 @@ void Engine::init() {
 		cout << "number of terminals in this level " << ctrTer << endl;
 		map->init(true, Param::GENERIC);
 	}
-	gui->message(TCODColor::red, "Welcome to Astroverius Station! Warning unknown alien life form detected!");
+	gui->message(TCODColor::red, "Welcome to Astroverious Station! Warning unknown alien life form detected!");
 	gui->message(TCODColor::blue,"You appear to be a %s %s %s. Your experience will be needed to complete this journey.", player->race, player->role, player->job);
 	if (map->artifacts > 0) {
 		engine.gui->message(TCODColor::red,"The air hums with unknown energy... Perhaps there is an artifact of great power here!");

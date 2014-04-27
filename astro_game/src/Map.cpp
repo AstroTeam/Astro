@@ -905,7 +905,7 @@ void Map::spawnTutorial() {
 	//we have 30 characters to use until a \n is needed
 	//triggerTile->ai = new TriggerAi("<Intercom>: \"Prepare to starve\n in the tutorial level!\"");
 	triggerTile->ai = new TriggerAi(  
-	"Welcome to the Astroverius.\n\n"
+	"Welcome to the Astroverious.\n\n"
 	"To move press the UP, DOWN, LEFT, and RIGHT keys, or use the NUMPAD; 7,9,1 and 3 can be used to move diagonally.\n\n"
 	"Try exploring the entirety of this room to get the hang of it.  Good Luck.\n\n"
 	"Press \'g\' when standing over a terminal to replay its message");

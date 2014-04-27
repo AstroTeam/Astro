@@ -3297,7 +3297,7 @@ void ZedAi::update(Actor *owner) {
 			menuPopped = true;
 			Actor *blackbox = new Actor(owner->x, owner->y, 227, "Intercom Terminal", TCODColor::white);
 			blackbox->ai = new TriggerAi(  
-					"Welcome to the Astroverius.\n\n"
+					"Welcome to the Astroverious.\n\n"
 					"To move press the UP, DOWN, LEFT, and RIGHT keys, or use the NUMPAD; 7,9,1 and 3 can be used to move diagonally.\n\n"
 					"Try exploring the entirety of this room to get the hang of it.  Good Luck.\n\n"
 					"Press \'g\' when standing over a terminal to replay its message");
