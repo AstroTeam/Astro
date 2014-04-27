@@ -1,4 +1,3 @@
-
 #include "main.hpp"
 
 #include <cstring>
@@ -138,7 +137,7 @@ void Map::init(bool withActors, LevelType levelType) {
 
 		//Create boss, for now it is a simple security bot
 		if (withActors) {
-			if (engine.level == 5) {
+			if (engine.level == 1) {
 				//creating the final boss
 				int level = engine.level;
 				float scale = 1 + .1*(level - 1);
@@ -1073,7 +1072,7 @@ Actor* Map::createCleanerBot(int x, int y)
 Actor* Map::createSecurityBot(int x, int y)
 {
 	int level = engine.level;
-	float scale = 1 + .1*(level - 1);
+	float scale = 2 + .2*(level - 1);
 	float securityBotHp = 25*scale;
 	float securityBotDodge = 0*scale;
 	float securityBotDR = 0*scale;
@@ -1096,7 +1095,7 @@ Actor* Map::createSecurityBot(int x, int y)
 Actor* Map::createInfectedCrewMember(int x, int y)
 {
 	int level = engine.level;
-	float scale = 1 + .1*(level - 1);
+	float scale = 2 + .2*(level - 1);
 	float infectedCrewMemHp = 10*scale;
 	float infectedCrewMemDodge = 0*scale;
 	float infectedCrewMemDR = 0*scale;
@@ -1121,7 +1120,7 @@ Actor* Map::createInfectedCrewMember(int x, int y)
 Actor* Map::createInfectedNCO(int x, int y)
 {
 	int level = engine.level;
-	float scale = 1 + .1*(level - 1);
+	float scale = 2 + .2*(level - 1);
 	float infectedNCOHp = 12*scale;
 	float infectedNCODodge = 1*scale;
 	float infectedNCODR = 0*scale;
@@ -1144,7 +1143,7 @@ Actor* Map::createInfectedNCO(int x, int y)
 Actor* Map::createInfectedOfficer(int x, int y)
 {
 	int level = engine.level;
-	float scale = 1 + .1*(level - 1);
+	float scale = 2 + .2*(level - 1);
 	float infectedOfficerHp = 15*scale;
 	float infectedOfficerDodge = 1*scale;
 	float infectedOfficerDR = 0*scale;
@@ -1168,7 +1167,7 @@ Actor* Map::createInfectedOfficer(int x, int y)
 Actor* Map::createInfectedMarine(int x, int y)
 {
 	int level = engine.level;
-	float scale = 1 + .1*(level - 1);
+	float scale = 2 + .2*(level - 1);
 	float infectedMarineHp = 10*scale;
 	float infectedMarineDodge = 0*scale;
 	float infectedMarineDR = 0*scale;
@@ -1193,7 +1192,7 @@ Actor* Map::createInfectedMarine(int x, int y)
 Actor* Map::createInfectedGrenadier(int x, int y)
 {
 	int level = engine.level;
-	float scale = 1 + .1*(level - 1);
+	float scale = 2 + .2*(level - 1);
 	float infectedGrenadierHp = 10*scale;
 	float infectedGrenadierDodge = 0*scale;
 	float infectedGrenadierDR = 0*scale;
@@ -1221,7 +1220,7 @@ Actor *Map::createInfectedEngineer(int x, int y)
 {
 
 	int level = engine.level;
-	float scale = 1 + .1*(level - 1);
+	float scale = 2 + .2*(level - 1);
 	float infectedEngineerHp = 10*scale;
 	float infectedEngineerDodge = 0*scale;
 	float infectedEngineerDR = 0*scale;
@@ -1249,7 +1248,7 @@ Actor *Map::createInfectedEngineer(int x, int y)
 Actor* Map::createMiniSporeCreature(int x, int y)
 {
 	int level = engine.level;
-	float scale = 1 + .1*(level - 1);
+	float scale = 2 + .2*(level - 1);
 	float miniSporeCreatureHp = 10*scale;
 	float miniSporeCreatureDodge = 0*scale;
 	float miniSporeCreatureDR = 0*scale;
@@ -1274,7 +1273,7 @@ Actor* Map::createMiniSporeCreature(int x, int y)
 Actor* Map::createSporeCreature(int x, int y)
 {
 	int level = engine.level;
-	float scale = 1 + .1*(level - 1);
+	float scale = 2 + .2*(level - 1);
 	float sporeCreatureHp = 17*scale;
 	float sporeCreatureDodge = 1*scale;
 	float sporeCreatureDR = 0*scale;
@@ -1300,7 +1299,7 @@ Actor* Map::createSporeCreature(int x, int y)
 Actor* Map::createTurret(int x, int y)
 {
 	int level = engine.level;
-	float scale = 1 + .1*(level - 1);
+	float scale = 2 + .2*(level - 1);
 	float turretHp = 10*scale;
 	float turretDodge = 0*scale;
 	float turretDR = 0*scale;
@@ -1326,7 +1325,7 @@ Actor* Map::createTurret(int x, int y)
 Actor* Map::createTurretControl(int x, int y)
 {
 	int level = engine.level;
-	float scale = 1 + .1*(level - 1);
+	float scale = 2 + .2*(level - 1);
 	float controlHp = 15*scale;
 	float controlDodge = 0;
 	float controlDR = 0;
@@ -1350,7 +1349,7 @@ Actor* Map::createTurretControl(int x, int y)
 Actor* Map::createGardner(int x, int y)
 {
 	int level = engine.level;
-	float scale = 1 + .1*(level - 1);
+	float scale = 2 + .2*(level - 1);
 	float gardnerHp = 10*scale;
 	float gardnerDodge = 0*scale;
 	float gardnerDR = 0*scale;
@@ -1376,7 +1375,7 @@ Actor* Map::createGardner(int x, int y)
 Actor* Map::createCrawler(int x, int y)
 {
 	int level = engine.level;
-	float scale = 1 + .1*(level - 1);
+	float scale = 2 + .2*(level - 1);
 	float crawlerHp = 15*scale;
 	float crawlerDodge = 3*scale;
 	float crawlerDR = 0*scale;
@@ -1401,7 +1400,7 @@ Actor* Map::createCrawler(int x, int y)
 Actor* Map::createVendor(int x, int y)
 {
 	int level = engine.level;
-	float scale = 1 + .1*(level - 1);
+	float scale = 2 + .2*(level - 1);
 	float vendorHp = 10*scale;
 	float vendorDodge = 0*scale;
 	float vendorDR = 0*scale;
@@ -1422,7 +1421,7 @@ Actor* Map::createVendor(int x, int y)
 Actor* Map::createConsole(int x, int y)
 {
 	int level = engine.level;
-	float scale = 1 + .1*(level - 1);
+	float scale = 2 + .2*(level - 1);
 	float consoleHp = 10*scale;
 	float consoleDodge = 0*scale;
 	float consoleDR = 0*scale;
@@ -3107,6 +3106,11 @@ void Map::render() const {
 void Map::generateRandom(Actor *owner, int ascii){
 	TCODRandom *rng = TCODRandom::getInstance();
 	int dice = rng->getInt(0,100);
+
+	//zed umber
+	/*if (ascii == 'Z') {
+		}
+	*/
 	
 	//modify as needed:
 	if(ascii == 243 && engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 56) //this is the weapon vault, add whatever gubbins that you want
