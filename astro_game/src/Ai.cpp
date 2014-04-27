@@ -3293,6 +3293,15 @@ void ZedAi::update(Actor *owner) {
 		if (!menuPopped) {
 			deathMenu();
 			menuPopped = true;
+			Actor *blackbox = new Actor(owner->x, owner->y, 227, "Intercom Terminal", TCODColor::white);
+			blackbox->ai = new TriggerAi(  
+					"Welcome to the Astroverius.\n\n"
+					"To move press the UP, DOWN, LEFT, and RIGHT keys, or use the NUMPAD; 7,9,1 and 3 can be used to move diagonally.\n\n"
+					"Try exploring the entirety of this room to get the hang of it.  Good Luck.\n\n"
+					"Press \'g\' when standing over a terminal to replay its message");
+			blackbox->blocks = false;
+			engine.actors.push(blackbox);
+
 		}
 		return;
 	}
@@ -3440,18 +3449,10 @@ void ZedAi::deathMenu() {
 	while (!choice_made) 
 	{
 		engine.gui->menu.clear();
-		engine.gui->menu.addItem(Menu::END_GAME, "Escape the spacestation.");
-		engine.gui->menu.addItem(Menu::CONTINUE_GAME, "Continue to explore.");
+		engine.gui->menu.addItem(Menu::CONTINUE_GAME, "Zed dropped a blackbox. I'll go take a took.");
 		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::GAME_END);
 		switch (menuItem) {
-			case Menu::END_GAME:
-				engine.gui->message(TCODColor::orange, "Game Over: You win!");
-				choice_made = true;
-				TCODSystem::deleteFile("game.sav");
-				exit(0);
-				break;
 			case Menu::CONTINUE_GAME:
-					engine.gui->message(TCODColor::orange, "The adventure never ends!");
 				choice_made = true;
 				break;
 			case Menu::NO_CHOICE:
