@@ -1537,6 +1537,9 @@ void Renderer::render(void *sdlSurface){
 			character = SDL_LoadBMP("tile_assets/character_screen_char.bmp");
 		else if (engine.player->ch == 175)//alien
 			character = SDL_LoadBMP("tile_assets/character_screen_char_alien.bmp");
+		else
+			character = SDL_LoadBMP("tile_assets/character_screen_char_robot.bmp");
+		
 		
 		SDL_SetColorKey(character,SDL_SRCCOLORKEY,255);
 		SDL_Rect dstRect={35*16,5*16,400,256};
