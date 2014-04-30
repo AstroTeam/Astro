@@ -667,7 +667,7 @@ void Engine::init() {
 	
 	
 	player->ch = plyrAscii;
-	stairs = new Actor(0,0,'>', "stairs", TCODColor::white);
+	stairs = new Actor(0,0,6, "teleporter", TCODColor::white);
 	stairs->blocks = false;
 	actors.push(stairs);
 	map = new Map(mapWidth, mapHeight);
