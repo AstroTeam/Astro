@@ -1,9 +1,7 @@
 Astro
 ====
 
-Basic premise:  A classified military space station has gone dark and the mission is to retrieve information, including the ship’s black box as well as other info, about why and what they were doing.
-
-Upon investigating, you find that there are weird aliens all over the ship.  These aliens manifest themselves as their own entities but also have spores which can control both people and robots.  This allows there to be multiple enemy types: Aliens, infected human crew, infected robot crew, infected ship systems, malfunctioning robots, and more.
+	A classified military space station has gone dark and the mission is to retrieve information, including the ship’s black box as well as what happened, about why and what they were doing.  Upon investigating, you find that there are weird aliens all over the ship.  These aliens manifest themselves as their own entities but also have spores which can control both people and robots.  This causes the existence of multiple enemy types: Aliens, infected human crew, infected robot crew, infected ship systems, malfunctioning robots, and more.
 
 
 Stats
