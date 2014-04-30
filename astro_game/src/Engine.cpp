@@ -1760,7 +1760,7 @@ int Engine::getInitStr(int race, int job){
 		case 3: //Alien
 			strength -= 1;
 			break;
-			
+	}
 	switch (job){
 		case 1: //Infantry
 			break;
@@ -1782,7 +1782,6 @@ int Engine::getInitStr(int race, int job){
 		case 9: //Hacker
 			strength -= 2;
 			break;
-	}
 	}
 	return strength;
 }
@@ -1815,6 +1814,7 @@ int Engine::getInitDex(int race, int job){
 			dexterity += 6;
 			break;
 		case 8: //Brute
+			dexterity -= 1;
 			break; 
 		case 9: //Hacker
 			dexterity += 1;
@@ -1857,6 +1857,7 @@ int Engine::getInitIntel(int race, int job){
 			intelligence += 4;
 			break;
 		case 8: //Brute
+			intelligence -= 1;
 			break; 
 		case 9: //Hacker
 			intelligence += 6;
