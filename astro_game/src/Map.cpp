@@ -5843,7 +5843,7 @@ Actor *Map::createCombatKnife(int x, int y){
 			break;
 		case 2://offhand
 			minDmg -= 5;//offhand OP
-			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+1);//2 is "average"
+			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF-5);//2 is "average"
 			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF);//3 is "average"
 			slot = new Equipment::SlotType(Equipment::HAND2);
 			wpn = new Weapon::WeaponType(Weapon::LIGHT);
