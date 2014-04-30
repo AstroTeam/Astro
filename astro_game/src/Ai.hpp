@@ -91,8 +91,9 @@ class TriggerAi : public Ai {
 public:
 	const char * text;
 	bool pressed;
+	bool tall;
 	void save(TCODZip &zip);
-	TriggerAi(const char *text);
+	TriggerAi(const char *text, bool tallness = false);
 	TriggerAi ();
 	void update(Actor * owner);
 	void load(TCODZip &zip);
