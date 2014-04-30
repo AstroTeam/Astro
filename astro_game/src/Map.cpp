@@ -709,7 +709,7 @@ void Map::spawnTutorial() {
 		//MLR->col = col;
 		//engine.actors.push(flamer);
 	//cout << "got to records creation" << endl;
-	for (int tiley = y1; tiley <= y2; tiley+=1) {
+	//for (int tiley = y1; tiley <= y2; tiley+=1) {
 		
 		/*Actor *flamer = createFlameThrower(x1+5,tiley,false);
 		engine.actors.push(flamer);
@@ -784,7 +784,7 @@ void Map::spawnTutorial() {
 		Actor *kevlarBoots = createTitanBoots(x1+7,tiley,false);
 		engine.actors.push(kevlarBoots);
 		cout<< "Titan Boots Made" << endl;*/
-	}
+	//}
 	//cout << "got past records creation" << endl;
 	
 	//Actor *record = createRecord(x1+8,y1);
@@ -3121,6 +3121,23 @@ void Map::generateRandom(Actor *owner, int ascii){
 		artifact->pickable->pick(artifact, owner);
 		return;
 	}
+	else if(ascii == 243 && engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 54 && engine.level == 0){//weapon rack in tutorial
+		int random = rng->getInt(0,125);
+		if(random < 75){
+			Actor *melee = createCombatKnife(0,0);
+			engine.actors.push(melee);
+			melee->pickable->pick(melee,owner);
+		}
+		else if (random < 100) {
+			Actor *MLR = createMLR(0,0,false);
+			engine.actors.push(MLR);
+			MLR->pickable->pick(MLR,owner);
+		}else{
+			Actor *flamer = createFlameThrower(0,0,false);
+			engine.actors.push(flamer);
+			flamer->pickable->pick(flamer,owner);
+		}
+	}
 	else if(ascii == 243 && engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 54){//weapon rack
 		int random = rng->getInt(0,125);
 		if(random < 75){
@@ -3513,7 +3530,7 @@ Actor *Map::createAlcohol(int x, int y){
 	char* nameBuf = new char[80]; 
 	memset(nameBuf,0,80);
 	TCODRandom *random = TCODRandom::getInstance();
-	Actor *scrollOfDrunk = new Actor(x,y,15,"Bottle 'o' Alcohol", TCODColor::white);
+	Actor *scrollOfDrunk = new Actor(x,y,15,"Bottle o' Alcohol", TCODColor::white);
 	//TCODColor col = TCODColor::white; 
 	//int ascii = random->getInt(11,15);
 	int type = random->getInt(1,15);
@@ -5825,8 +5842,8 @@ Actor *Map::createCombatKnife(int x, int y){
 			
 			break;
 		case 2://offhand
-			minDmg += 1;//faster, so more reliable
-			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+1);//2 is "average"
+			minDmg -= 5;//offhand OP
+			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF-5);//2 is "average"
 			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF);//3 is "average"
 			slot = new Equipment::SlotType(Equipment::HAND2);
 			wpn = new Weapon::WeaponType(Weapon::LIGHT);
@@ -6106,7 +6123,7 @@ Actor *Map::createArtifact(int x, int y){
 Actor *Map::createCompanion(int x, int y, bool racial){
 	Actor *pet = new Actor(x,y,141,"Mr. Bubble-Yum",TCODColor::white);
 	pet->hostile = false;
-	pet->destructible = new MonsterDestructible(50,0,0,10);
+	pet->destructible = new MonsterDestructible(100,0,0,10);
 	pet->blocks = false;
 	pet->container = new Container(2);
 	pet->flashable = true;
@@ -6128,8 +6145,18 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 		switcher = 4;
 	switch (switcher){
 		case 1://toaster
-			strcat(nameBuf,"Shane "); break;
-			break;
+			switch (switc){
+				case 1: strcat(nameBuf,"Shane "); break;
+				case 2: strcat(nameBuf,"Wesley "); break;
+				case 3: strcat(nameBuf,"Aaron "); break;
+				case 4: strcat(nameBuf,"Ryan "); break;
+				case 5: strcat(nameBuf,"Garrett "); break;
+				case 6: strcat(nameBuf,"Meghan "); break;
+				case 7: strcat(nameBuf,"Mitchell "); break;
+				case 8: strcat(nameBuf,"Diana "); break;
+				case 9: strcat(nameBuf,"Leona "); break;
+				case 10: strcat(nameBuf,"Lee "); break;
+			}
 		case 2://marine (human names)
 			switch (switc){
 				case 1: strcat(nameBuf,"Jim "); break;
@@ -6175,6 +6202,9 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 	}
 	
 	switc = tutu->getInt(1,120);
+	
+	pet->str += 3;
+	pet->totalStr +=3;
 	//add new ones
 	if (switc < 40){
 		((CompanionAi*)(pet->ai))->att = CompanionAi::STANDARD;
@@ -6221,9 +6251,9 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 			strcat(nameBuf,"Capybara");
 			pet->name = nameBuf;
 			pet->ch = 173;
-			pet->destructible->maxHp +=20;
-			pet->destructible->hp +=20;
-			pet->totalStr += 2;
+			pet->destructible->maxHp +=50;
+			pet->destructible->hp +=50;
+			pet->totalStr += 7;
 			pet->attacker = new Attacker(pet->totalStr);
 			
 			if ( ((CompanionAi*)(pet->ai))->att == CompanionAi::STANDARD) {

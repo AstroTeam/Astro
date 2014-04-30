@@ -84,7 +84,7 @@ void Engine::init() {
 	player->totalDex=engine.gui->dexValue;
 	player->intel=engine.gui->intelValue;
 	player->totalIntel=engine.gui->intelValue;
-	player->vit=engine.gui->vitValue
+	player->vit=engine.gui->vitValue;
 	player->destructible->hp=engine.gui->vitValue;
 	player->destructible->maxHp=engine.gui->vitValue;
 	int plyrAscii = 64;
