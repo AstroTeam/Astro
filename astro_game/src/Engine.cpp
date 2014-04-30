@@ -212,6 +212,28 @@ void Engine::init() {
 			player->role="Marine";
 			player->job="Quartermaster";
 			
+			//gets a key to a vault
+			Actor *key;
+			key = new Actor(0,0, 190, "Cardkey", TCODColor::white);
+			key->sort = 1;
+			key->blocks = false;
+			key->pickable = new Key(0);
+			key->pickable->value = 0;
+			key->pickable->inkValue = 0;
+			key = map->createKey(0,0,0);
+			engine.actors.push(key);
+			key->pickable->pick(key,player);
+			
+			//starts with 4000 quarters        (...of a PBC)
+			for(int i=0;i<10;i++){
+				Actor *equip1 = new Actor(0,0,188,"PetaBitcoins",TCODColor::yellow);
+				equip1->sort = 0;
+				equip1->blocks = false;
+				equip1->pickable = new Coinage(1,100);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
 			ranged = new Actor(0,0,169,"MLR",TCODColor::white);
 			RBonus = new ItemBonus(ItemBonus::DEXTERITY,1);
 			bonusR.push(RBonus);
@@ -252,16 +274,6 @@ void Engine::init() {
 			engine.actors.push(chest);
 			chest->pickable->pick(chest,player);
 			((Equipment*)(chest->pickable))->use(chest,player);
-			
-			//starts with 4000 quarters        (...of a PBC)
-			for(int i=0;i<10;i++){
-				Actor *equip1 = new Actor(0,0,188,"PetaBitcoins",TCODColor::yellow);
-				equip1->sort = 0;
-				equip1->blocks = false;
-				equip1->pickable = new Coinage(1,100);
-				engine.actors.push(equip1);
-				equip1->pickable->pick(equip1,player);
-			}
 			
 			break;
 		case 4:
@@ -1851,6 +1863,7 @@ int Engine::getInitIntel(int race, int job){
 		case 3: //Quartermaster
 			break;
 		case 4: //Survivalist
+			intelligence += 1;
 			break;
 		case 5: //Pirate
 			break; 
