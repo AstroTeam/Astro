@@ -6202,6 +6202,9 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 	}
 	
 	switc = tutu->getInt(1,120);
+	
+	pet->str += 3;
+	pet->totalStr +=3;
 	//add new ones
 	if (switc < 40){
 		((CompanionAi*)(pet->ai))->att = CompanionAi::STANDARD;
@@ -6248,9 +6251,9 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 			strcat(nameBuf,"Capybara");
 			pet->name = nameBuf;
 			pet->ch = 173;
-			pet->destructible->maxHp +=20;
-			pet->destructible->hp +=20;
-			pet->totalStr += 2;
+			pet->destructible->maxHp +=50;
+			pet->destructible->hp +=50;
+			pet->totalStr += 7;
 			pet->attacker = new Attacker(pet->totalStr);
 			
 			if ( ((CompanionAi*)(pet->ai))->att == CompanionAi::STANDARD) {
