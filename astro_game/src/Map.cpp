@@ -6300,7 +6300,7 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 		switch(switcher){
 			 
 			case 1:		//Toaster
-			pet->name = "the useless Toaster";
+			pet->name = "Shane the useless Toaster";
 			pet->ch = 158;
 			pet->destructible->maxHp += 70;
 			pet->destructible->hp += 70;
