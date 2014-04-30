@@ -84,7 +84,7 @@ void Engine::init() {
 	player->totalDex=engine.gui->dexValue;
 	player->intel=engine.gui->intelValue;
 	player->totalIntel=engine.gui->intelValue;
-	player->vit=engine.gui->vitValue;
+	player->vit=engine.gui->vitValue
 	player->destructible->hp=engine.gui->vitValue;
 	player->destructible->maxHp=engine.gui->vitValue;
 	int plyrAscii = 64;
@@ -1193,7 +1193,7 @@ Actor *Engine::getClosestMonster(int x, int y, float range) const {
 	
 	for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 		Actor *actor = *iterator;
-		if (actor != player && actor != player->companion && actor->destructible 
+		if (actor->ch != 243 && actor != player && actor != player->companion && actor->destructible 
 			&& !actor->destructible->isDead() && map->isVisible(actor->x, actor->y)) {
 			float distance = actor->getDistance(x,y);
 			if (distance < bestDistance && (distance <= range || range ==0.0f)) {
