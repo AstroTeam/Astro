@@ -4277,6 +4277,7 @@ Actor *Map::createTitanBoots(int x, int y, bool isVend){
 	titanBoots->col = col;
 	return titanBoots;
 }
+
 Actor *Map::createTitanGreaves(int x, int y, bool isVend){
 	char* nameBuf = new char[80]; 
 	memset(nameBuf,0,80);
