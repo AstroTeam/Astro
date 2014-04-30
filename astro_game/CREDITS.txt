@@ -1,6 +1,6 @@
 About Astro
 
-Astro is a sci-fi themed, roguelike, RPG. It is written in C++, utilizing libTCOD and SDL. Currently, the game is playable on Windows and Linux machines.
+Astro is a sci-fi themed, roguelike RPG. It is written in C++, utilizing libTCOD and SDL. Currently, the game is playable on Windows and Linux machines.
 The version control system for this project is GitHub.
 
 
@@ -9,9 +9,9 @@ Astro Developers
 Mitchell Burgunder
 Combat System, Weapons, Hit Chance Randomization, and Container Class Reconstruction
 
-Graduation Date:
-Major:
-Contact Info:
+Graduation Date: May 2016
+Major: Computer Science
+Contact Info: smoke signals
 
 
 Garrett Cotton
