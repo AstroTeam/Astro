@@ -215,7 +215,7 @@ void PlayerAi::update(Actor *owner) {
 		engine.playerLight->y = engine.stairs->y; 
 		
 		engine.map->computeFov(); break;*/
-		
+		break;
 	case TCODK_PRINTSCREEN:
 		TCODSystem::saveScreenshot(NULL);
 		engine.gui->message(TCODColor::orange,"screenshot saved"); break;
@@ -644,6 +644,8 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//might need another "handleActionKey" for orders, like a handleOrders
 			//so we can print out a message before it, better code practice, etc.
 			
+			//engine.gui->message(TCODColor::white, "Companion commands: (s)tay, (f)ollow, or (g)uard");
+			
 			if (engine.player->companion != NULL)//if you have a companion
 			{
 				//TCOD_key_t key3 = TCODConsole::waitForKeypress(true);
@@ -654,7 +656,9 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				int x = engine.player->x;
 				int y = engine.player->y;
 				bool exit = false;
+				engine.gui->message(TCODColor::white, "Companion commands: (s)tay, (f)ollow, or (g)uard");
 				engine.render();
+				
 				while (!exit) {
 					TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&engine.lastKey,NULL);
 					switch (engine.lastKey.c) {
@@ -696,7 +700,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			}
 		break;
 		
-		case 'u':
+		case 'u':  //bite companion
 			if (engine.player->companion){
 				if (engine.player->getDistance(engine.player->companion->x,engine.player->companion->y) < 2){
 					((CompanionAi*)engine.player->companion->ai)->feedMaster(engine.player->companion,engine.player);
@@ -705,7 +709,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				}
 			}
 		break;
-		case 'U'://this has to be last for some reason, skipping the initializing of closestMonster :/
+		case 'U'://tame new companion//this has to be last for some reason, skipping the initializing of closestMonster :/
 			Actor *closestMonster = engine.getClosestMonster(engine.player->x, engine.player->y,1);
 			if (closestMonster != NULL && closestMonster->tameable == true && closestMonster != engine.player->companion){
 				engine.gui->message(TCODColor::violet,"You swap %s for %s",engine.player->companion->name,closestMonster->name);
@@ -3096,7 +3100,7 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 						}
 						choice_made = true;
 						engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration = 57;
-						engine.save();
+						//engine.save();
 						break;
 					case Menu::EXIT :
 						choice_made = true;

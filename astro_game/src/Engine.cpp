@@ -1193,7 +1193,7 @@ Actor *Engine::getClosestMonster(int x, int y, float range) const {
 	
 	for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 		Actor *actor = *iterator;
-		if (actor != player && actor != player->companion && actor->destructible 
+		if (actor->ch != 243 && actor != player && actor != player->companion && actor->destructible 
 			&& !actor->destructible->isDead() && map->isVisible(actor->x, actor->y)) {
 			float distance = actor->getDistance(x,y);
 			if (distance < bestDistance && (distance <= range || range ==0.0f)) {
@@ -1717,7 +1717,7 @@ int Engine::getInitVit(int race, int job){
 			vitality +=20;
 			break; 
 		case 3: //Alien
-			vitality -= 40;
+			vitality -= 20;
 			break;
 	}
 	
@@ -1755,12 +1755,12 @@ int Engine::getInitStr(int race, int job){
 		case 1: //Human
 			break;
 		case 2: //Robot
-			strength += 2;
+			strength += 1;
 			break; 
 		case 3: //Alien
 			strength -= 1;
 			break;
-			
+	}
 	switch (job){
 		case 1: //Infantry
 			break;
@@ -1783,7 +1783,6 @@ int Engine::getInitStr(int race, int job){
 			strength -= 2;
 			break;
 	}
-	}
 	return strength;
 }
 
@@ -1793,7 +1792,7 @@ int Engine::getInitDex(int race, int job){
 		case 1: //Human
 			break;
 		case 2: //Robot
-			dexterity -= 2;
+			dexterity -= 1;
 			break; 
 		case 3: //Alien
 			dexterity -= 1;
@@ -1815,6 +1814,7 @@ int Engine::getInitDex(int race, int job){
 			dexterity += 6;
 			break;
 		case 8: //Brute
+			dexterity -= 1;
 			break; 
 		case 9: //Hacker
 			dexterity += 1;
@@ -1832,7 +1832,7 @@ int Engine::getInitIntel(int race, int job){
 		case 1: //Human
 			break;
 		case 2: //Robot
-			intelligence += 2;
+			intelligence += 1;
 			break; 
 		case 3: //Alien
 			intelligence -= 1; 
@@ -1857,6 +1857,7 @@ int Engine::getInitIntel(int race, int job){
 			intelligence += 4;
 			break;
 		case 8: //Brute
+			intelligence -= 1;
 			break; 
 		case 9: //Hacker
 			intelligence += 6;

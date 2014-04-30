@@ -69,7 +69,7 @@ float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 		damage = 0;	
 	}
 	
-	if (engine.map->tiles[owner->x+owner->y*engine.mapWidth].envSta == 0)
+	if (engine.map->tiles[owner->x+owner->y*engine.mapWidth].envSta == 0 && !(owner->ch == 131 || owner->ch == 147 || owner->ch == 225 || owner->ch == 130 || owner->ch == 129 || owner->ch == 146 || owner->ch == 189 || owner->ch == 145 || owner->ch == 157 || owner->ch == 165 || owner->ch == 166 || owner->ch == 243 || owner->ch == 157 || owner->ch == 158 || owner->ch == 174 ))
 		engine.map->tiles[owner->x+owner->y*engine.mapWidth].envSta = 3;
 	
 	return damage;
@@ -274,7 +274,7 @@ void PlayerDestructible::die(Actor *owner, Actor *killer) {
 	engine.gui->message(TCODColor::darkRed,"You died!\n");
 	Destructible::die(owner, killer);
 	engine.gameStatus=Engine::DEFEAT;
-	engine.save();
+	//engine.save();
 }
 
 void PlayerDestructible::save(TCODZip &zip) {

@@ -3530,7 +3530,7 @@ Actor *Map::createAlcohol(int x, int y){
 	char* nameBuf = new char[80]; 
 	memset(nameBuf,0,80);
 	TCODRandom *random = TCODRandom::getInstance();
-	Actor *scrollOfDrunk = new Actor(x,y,15,"Bottle 'o' Alcohol", TCODColor::white);
+	Actor *scrollOfDrunk = new Actor(x,y,15,"Bottle o' Alcohol", TCODColor::white);
 	//TCODColor col = TCODColor::white; 
 	//int ascii = random->getInt(11,15);
 	int type = random->getInt(1,15);
@@ -5816,7 +5816,7 @@ Actor *Map::createCombatKnife(int x, int y){
 	{
 		case 1://right hand
 			minDmg += 1;//faster, so more reliable
-			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+1);//2 is "average"
+			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF);//2 is "average"
 			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF);//3 is "average"
 			slot = new Equipment::SlotType(Equipment::HAND1);
 			wpn = new Weapon::WeaponType(Weapon::LIGHT);
@@ -5843,7 +5843,8 @@ Actor *Map::createCombatKnife(int x, int y){
 			break;
 		case 2://offhand
 			minDmg -= 5;//offhand OP
-			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+1);//2 is "average"
+			strBUF-=5;
+			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF);//2 is "average"
 			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF);//3 is "average"
 			slot = new Equipment::SlotType(Equipment::HAND2);
 			wpn = new Weapon::WeaponType(Weapon::LIGHT);
@@ -5869,7 +5870,8 @@ Actor *Map::createCombatKnife(int x, int y){
 			break;
 		case 3://TWO HANDED
 			maxDmg += 1;//heavier, so more max
-			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+4);//5 is "average" (1 more than 2 average 1 handers)
+			strBUF+=4;
+			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF);//5 is "average" (1 more than 2 average 1 handers)
 			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF+4);//7 is "average"
 			slot = new Equipment::SlotType(Equipment::HAND1);
 			wpn = new Weapon::WeaponType(Weapon::HEAVY);
@@ -5895,7 +5897,15 @@ Actor *Map::createCombatKnife(int x, int y){
 			break;
 		default:break;
 	}
-	combatKnife->name = nameBuf;
+	char* knifeNamePrefix = new char[50];
+	memset(knifeNamePrefix,0,50);
+	if(strBUF >= 0){
+		strcat(knifeNamePrefix, "+");
+	}
+	strcat(knifeNamePrefix, itoa(strBUF, new char[1],10));
+	strcat(knifeNamePrefix, "S ");
+	strcat(knifeNamePrefix, nameBuf);
+	combatKnife->name = knifeNamePrefix;
 	//combatKnife->pickable = new Equipment(0,Equipment::HAND1,bonus,requirement);
 	bonus.push(modBonus);
 	combatKnife->pickable = new Weapon(minDmg,maxDmg,critMult,critRange,powerUse,*wpn,0,*slot,bonus,requirement);
@@ -6202,6 +6212,9 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 	}
 	
 	switc = tutu->getInt(1,120);
+	
+	pet->str += 3;
+	pet->totalStr +=3;
 	//add new ones
 	if (switc < 40){
 		((CompanionAi*)(pet->ai))->att = CompanionAi::STANDARD;
@@ -6248,9 +6261,9 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 			strcat(nameBuf,"Capybara");
 			pet->name = nameBuf;
 			pet->ch = 173;
-			pet->destructible->maxHp +=20;
-			pet->destructible->hp +=20;
-			pet->totalStr += 2;
+			pet->destructible->maxHp +=50;
+			pet->destructible->hp +=50;
+			pet->totalStr += 7;
 			pet->attacker = new Attacker(pet->totalStr);
 			
 			if ( ((CompanionAi*)(pet->ai))->att == CompanionAi::STANDARD) {
