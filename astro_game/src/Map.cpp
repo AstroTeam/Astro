@@ -148,7 +148,7 @@ void Map::init(bool withActors, LevelType levelType) {
 				float zDex = 20*scale;
 				float zXp = 100*scale;
 
-				Actor *z = new Actor(engine.stairs->x+1, engine.stairs->y,'Z',"Zed Umber",TCODColor::white);
+				Actor *z = new Actor(engine.stairs->x+1, engine.stairs->y,136,"Zed Umber",TCODColor::white);
 				Actor *boss = z;
 				z->destructible = new MonsterDestructible(zHp,zDodge,zDR,zXp);
 				z->totalStr = zStr;
@@ -159,7 +159,7 @@ void Map::init(bool withActors, LevelType levelType) {
 				//generateRandom(z, zAscii);
 
 				boss->name = "Zed Umber";
-				boss->ch = 'Z';
+				boss->ch = 136;
 				boss->destructible->hp = boss->destructible->hp*2;
 				boss->destructible->maxHp = boss->destructible->hp;
 				boss->totalStr = boss->totalStr*1.25;
@@ -3109,7 +3109,7 @@ void Map::generateRandom(Actor *owner, int ascii){
 	int dice = rng->getInt(0,100);
 
 	//zed umber
-	/*if (ascii == 'Z') {
+	/*if (ascii == 136) {
 		}
 	*/
 	
