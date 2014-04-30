@@ -188,7 +188,7 @@ float Actor::getDistance(int cx, int cy) const {
 
 float Actor::getHpUp(){
 	if(job[0] == 'A')
-		return 7;
+		return 10;
 	else
 		return 20;
 }
