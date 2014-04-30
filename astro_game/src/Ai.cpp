@@ -215,7 +215,7 @@ void PlayerAi::update(Actor *owner) {
 		engine.playerLight->y = engine.stairs->y; 
 		
 		engine.map->computeFov(); break;*/
-		
+		break;
 	case TCODK_PRINTSCREEN:
 		TCODSystem::saveScreenshot(NULL);
 		engine.gui->message(TCODColor::orange,"screenshot saved"); break;
