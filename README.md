@@ -58,7 +58,8 @@ Classes & Subclasses
 
 ● Mercenary- Narrowly-focused classes. Start with grenades.
 
-    ○ Assassin - High strength, dexterity, and intelligence. Has extremely low vitality. Starts with EMPs.
+    ○ Assassin - High strength, dexterity, and intelligence. Has extremely low vitality. 
+        Starts with EMPs.
     
     ○ Brute - Insane  bonus starting vitality. 
     
