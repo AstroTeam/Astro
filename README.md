@@ -8,12 +8,16 @@ Upon investigating, you find that there are weird aliens all over the ship.  The
 
 Stats
 -----
-    ○ Strength - Base melee weapon damage and melee accuracy.  Governs axes, swords, and maces. A large enough value may be required for some weapons and armor.
+    ○ Strength - Base melee weapon damage and melee accuracy.  
+        Governs axes, swords, and maces. 
+        A large enough value may be required for some weapons and armor.
 
-    ○ Dexterity - Base ranged weapon damage and combat mobility. Governs laser weapons. Increases accuracy with all lasers. Increases chance of dodging enemy attacks. 
-A large enough value may be required for some weapons.
+    ○ Dexterity - Base ranged weapon damage and combat mobility. Governs laser weapons. 
+        Increases accuracy with all lasers. Increases chance of dodging enemy attacks. 
+        A large enough value may be required for some weapons.
 
-    ○ Intelligence - Base tech usefulness and damage. Governs medkits, flashbangs, and explosives. A large enough value may be  required for certain powerful armor.
+    ○ Intelligence - Base tech usefulness and damage. Governs medkits, flashbangs, and explosives. 
+        A large enough value may be  required for certain powerful armor.
 
     ○ Vitality - Base health.
 
@@ -55,4 +59,6 @@ Classes & Subclasses
     
     ○ Brute - Insane  bonus starting vitality. 
     
-    ○ Hacker -  Significant starting bonus intelligence. Has increased dexterity, but has low strength and vitality. Has 100% chance of hacking terminals.
+    ○ Hacker -  Significant starting bonus intelligence. 
+        Has increased dexterity, but has low strength and vitality. 
+        Has 100% chance of hacking terminals.
