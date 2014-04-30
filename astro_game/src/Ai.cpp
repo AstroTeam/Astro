@@ -656,8 +656,9 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				int x = engine.player->x;
 				int y = engine.player->y;
 				bool exit = false;
-				engine.render();
 				engine.gui->message(TCODColor::white, "Companion commands: (s)tay, (f)ollow, or (g)uard");
+				engine.render();
+				
 				while (!exit) {
 					TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&engine.lastKey,NULL);
 					switch (engine.lastKey.c) {
