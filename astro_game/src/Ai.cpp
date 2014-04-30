@@ -142,6 +142,7 @@ void PlayerAi::update(Actor *owner) {
 		while (!choice_made) {
 		if (first) {
 			engine.gui->message(TCODColor::yellow,"As the monster falls to the floor, you feel yourself filled with some unknown strength!");
+			engine.render();
 			TCODConsole::flush();
 			xpLevel++;
 			owner->destructible->xp -= levelUpXp;
@@ -709,7 +710,8 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 					engine.gui->message(TCODColor::grey,"You are too far away to reach your companion.");
 				}
 			}
-		break;
+			engine.gameStatus = Engine::NEW_TURN;
+			break;
 		case 'U'://tame new companion//this has to be last for some reason, skipping the initializing of closestMonster :/
 			Actor *closestMonster = engine.getClosestMonster(engine.player->x, engine.player->y,1);
 			if (closestMonster != NULL && closestMonster->tameable == true && closestMonster != engine.player->companion){
