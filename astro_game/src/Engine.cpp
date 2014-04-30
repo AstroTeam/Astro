@@ -1657,7 +1657,12 @@ if(cat == 1){
 						choice = false;
 					else{
 						engine.gui->statPoints = engine.gui->statPoints - 1;
-						engine.gui->vitValue += 20;
+						if(engine.gui->jobSelection != 7){
+							engine.gui->vitValue += 20;
+						}
+						else{
+							engine.gui->vitValue += 10;
+						}
 						engine.gui->classSidebar();
 					}
 					break;
@@ -1737,7 +1742,7 @@ int Engine::getInitVit(int race, int job){
 			vitality -= 40;
 			break;
 		case 7: //Assassin
-			vitality /= 3;
+			vitality /= 2;
 			break;
 		case 8: //Brute
 			vitality += 60;
@@ -1854,7 +1859,7 @@ int Engine::getInitIntel(int race, int job){
 		case 6: //Merchant
 			break;
 		case 7: //Assassin
-			intelligence += 4;
+			intelligence += 5;
 			break;
 		case 8: //Brute
 			intelligence -= 1;
