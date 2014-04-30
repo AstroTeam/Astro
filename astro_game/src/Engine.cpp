@@ -756,7 +756,7 @@ void Engine::load(bool pause) {
 	
 	//if (pause && level>0) {
 	if (pause && level >0){		
-		engine.gui->menu.addItem(Menu::SAVE, "SAVE");
+		//engine.gui->menu.addItem(Menu::SAVE, "SAVE");			//temp remove saving
 		
 	}
 	if(TCODSystem::fileExists("game.sav")) {
@@ -782,7 +782,7 @@ void Engine::load(bool pause) {
 		
 	if (menuItem == Menu::EXIT || menuItem == Menu::NONE) {
 		//exit or window closed
-		save();
+		//save();					//temp remove saving
 		exit(0);
 		//menuState = 0;
 	} else if (menuItem == Menu::TUTORIAL) {
@@ -802,13 +802,13 @@ void Engine::load(bool pause) {
 		//engine.term();
 		//engine.init();
 	} else if (menuItem == Menu::SAVE) {
-		save();
+		//save();							//temp remove saving
 		//menuState = 0;
 	} else if (menuItem == Menu::NO_CHOICE) {
 		//menuState = 0;
 	} else if (menuItem == Menu::MAIN_MENU) {
 		if(level > 0) //only save if you aren't on the tutorial
-		save();
+		//save();						//temp remove saving
 		TCODConsole::root->clear();
 		//engine.term();
 		load(false);
@@ -1179,7 +1179,7 @@ void Engine::nextLevel() {
 		map->init(true, Param::GENERIC);
 	}
 	gameStatus = STARTUP;
-	save();
+	//save();					//temp remove save
 }
 
 void Engine::sendToBack(Actor *actor) {
