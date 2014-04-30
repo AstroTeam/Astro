@@ -1,0 +1,70 @@
+About Astro
+
+Astro is a sci-fi themed, roguelike, RPG. It is written in C++, utilizing libTCOD and SDL. Currently, the game is playable on Windows and Linux machines.
+The version control system for this project is GitHub.
+
+
+Astro Developers
+
+Mitchell Burgunder
+Combat System, Weapons, Hit Chance Randomization, and Container Class Reconstruction
+
+Graduation Date:
+Major:
+Contact Info:
+
+
+Garrett Cotton
+Artifacts, Scrolling Map, Saving & Loading, Leveling Scale, Vending Machines, Currency System, Companions, Food & Hydroponics
+
+Graduation Date: May 2015
+Major: Computer Science
+Contact Info: cottog8444@gmail.com
+
+
+Shane Exterkamp
+Graphics/Art for everything, Map Rendering, Custom Lighting, Intercoms, Inventory Tablet
+
+Graduation Date: May 2016
+Major: Computer Science Engineering
+Contact Info: exterkamps@ufl.edu
+
+
+Ryan Faries
+NPC creation and AI, Ranged Enemies, Grenadiers, Turrets and Turret Consoles, Vault/Key System, Engineers, Security Bots, Cleaning Robots, etc...
+
+Graduation Date: May 2015
+Major: Computer Science and Mathematics
+Contact Info: rfaries@cise.ufl.edu
+
+
+Shane Geller
+Inventory System, Character Statistics, Character Menu Screen, NPC Custom Loot Generation, Vending Machine UI, and Windows Distribution
+
+Graduation Date: May 2016
+Major: Computer Science Engineering
+Contact Info: sgeller32@ufl.edu GitHub
+
+
+Meghan King
+Website Developer, Creator & Manager of Scrum Documentation, Tile Look Up Functionality/GUI, and Text Wrapping
+
+Graduation Date: May 2015
+Major: Mathematics
+Contact Info: meghantking67@gmail.com
+
+
+Aaron Marquez
+Custom Rooms, Tutorial Creation, Infection Spreading, Random Dungeon Generation, and Linux Distribution
+
+Graduation Date: May 2016
+Major: Computer Science Engineering
+Contact Info: amarquez@cise.ufl.edu
+
+
+Wesley Olson
+
+Main Character Structure, Leveling Stats, Level-up System, Xbox 360 Controls, Blink Grenades, and User Cheat-Sheet
+
+Major: Computer Engineering BS/MS Program
+Contact Info: whozap@gmail.com
