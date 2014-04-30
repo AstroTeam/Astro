@@ -5816,7 +5816,7 @@ Actor *Map::createCombatKnife(int x, int y){
 	{
 		case 1://right hand
 			minDmg += 1;//faster, so more reliable
-			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+1);//2 is "average"
+			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF);//2 is "average"
 			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF);//3 is "average"
 			slot = new Equipment::SlotType(Equipment::HAND1);
 			wpn = new Weapon::WeaponType(Weapon::LIGHT);
@@ -5843,7 +5843,8 @@ Actor *Map::createCombatKnife(int x, int y){
 			break;
 		case 2://offhand
 			minDmg -= 5;//offhand OP
-			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF-5);//2 is "average"
+			strBUF-=5;
+			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF);//2 is "average"
 			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF);//3 is "average"
 			slot = new Equipment::SlotType(Equipment::HAND2);
 			wpn = new Weapon::WeaponType(Weapon::LIGHT);
@@ -5869,7 +5870,8 @@ Actor *Map::createCombatKnife(int x, int y){
 			break;
 		case 3://TWO HANDED
 			maxDmg += 1;//heavier, so more max
-			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF+4);//5 is "average" (1 more than 2 average 1 handers)
+			strBUF+=4;
+			modBonus = new ItemBonus(ItemBonus::STRENGTH,strBUF);//5 is "average" (1 more than 2 average 1 handers)
 			requirement = new ItemReq(ItemReq::STRENGTH,reqBUF+4);//7 is "average"
 			slot = new Equipment::SlotType(Equipment::HAND1);
 			wpn = new Weapon::WeaponType(Weapon::HEAVY);
@@ -5895,7 +5897,15 @@ Actor *Map::createCombatKnife(int x, int y){
 			break;
 		default:break;
 	}
-	combatKnife->name = nameBuf;
+	char* knifeNamePrefix = new char[50];
+	memset(knifeNamePrefix,0,50);
+	if(strBUF >= 0){
+		strcat(knifeNamePrefix, "+");
+	}
+	strcat(knifeNamePrefix, itoa(strBUF, new char[1],10));
+	strcat(knifeNamePrefix, "S ");
+	strcat(knifeNamePrefix, nameBuf);
+	combatKnife->name = knifeNamePrefix;
 	//combatKnife->pickable = new Equipment(0,Equipment::HAND1,bonus,requirement);
 	bonus.push(modBonus);
 	combatKnife->pickable = new Weapon(minDmg,maxDmg,critMult,critRange,powerUse,*wpn,0,*slot,bonus,requirement);
