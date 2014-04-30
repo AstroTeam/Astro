@@ -713,8 +713,13 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		case 'U'://tame new companion//this has to be last for some reason, skipping the initializing of closestMonster :/
 			Actor *closestMonster = engine.getClosestMonster(engine.player->x, engine.player->y,1);
 			if (closestMonster != NULL && closestMonster->tameable == true && closestMonster != engine.player->companion){
-				engine.gui->message(TCODColor::violet,"You swap %s for %s",engine.player->companion->name,closestMonster->name);
-				((CompanionAi*)(engine.player->companion->ai))->tamer = NULL;
+				if(engine.player->companion){
+					engine.gui->message(TCODColor::violet,"You swap %s for %s",engine.player->companion->name,closestMonster->name);
+					((CompanionAi*)(engine.player->companion->ai))->tamer = NULL;
+				}
+				else{
+					engine.gui->message(TCODColor::violet,"%s is now following you.",closestMonster->name);
+				}
 				((CompanionAi*)(closestMonster->ai))->tamer = engine.player;
 				engine.player->companion = closestMonster;
 			} else{
