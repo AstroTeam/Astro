@@ -1764,8 +1764,6 @@ int Engine::getInitStr(int race, int job){
 			break;
 	}
 	switch (job){
-		case 1: //Infantry
-			break;
 		case 2: //Medic
 			break; 
 		case 3: //Quartermaster
@@ -1783,6 +1781,9 @@ int Engine::getInitStr(int race, int job){
 			break; 
 		case 9: //Hacker
 			strength -= 2;
+			break;
+		default: //Infantry
+			strength -= 1;
 			break;
 	}
 	return strength;
@@ -1822,7 +1823,7 @@ int Engine::getInitDex(int race, int job){
 			dexterity += 1;
 			break;
 		default: //Infantry
-			dexterity += 3;
+			dexterity += 2;
 			break;
 	}
 	return dexterity;
