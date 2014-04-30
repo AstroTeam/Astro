@@ -1195,13 +1195,24 @@ void EpicenterAi::save(TCODZip &zip) {
 	zip.putInt(EPICENTER);
 }
 
-TriggerAi::TriggerAi(const char *text) {
+/*TriggerAi::TriggerAi(const char *text, bool tallness) {
 	//cout << "trigger made, message: " << text << endl;
 	this->text = text;
 	pressed = false;
+	tall = tallness;
 }
+*/
+
+TriggerAi::TriggerAi(const char *text, bool tallness) {
+	//cout << "trigger made, message: " << text << endl;
+	this->text = text;
+	pressed = false;
+	tall = tallness;
+}
+
 TriggerAi::TriggerAi() {
 	pressed = false;
+	tall = false;
 }
 
 void TriggerAi::load(TCODZip &zip) {
@@ -1222,19 +1233,28 @@ void TriggerAi::update(Actor *owner) {
 		pressed = true;
 		engine.armorState = 1;
 		//TCODConsole::flush();
-		int PAUSE_MENU_WIDTH = 32;
-		int PAUSE_MENU_HEIGHT = 16;
+		int menuWidth = 32;
+		int menuHeight = 16;
+
+		if (tall) {
+			menuHeight = menuHeight*2;
+		}
 		
-		TCODConsole termwindow(PAUSE_MENU_WIDTH,PAUSE_MENU_HEIGHT);
+		TCODConsole termwindow(menuWidth,menuWidth);
 		
-		int menux = engine.screenWidth / 2 - PAUSE_MENU_WIDTH / 2;
-		int menuy = engine.screenHeight / 2 - PAUSE_MENU_HEIGHT / 2;
+		int menux = engine.screenWidth / 2 - menuWidth / 2;
+		int menuy = engine.screenHeight / 2 - menuHeight / 2;
 		//make me red
 		termwindow.setDefaultForeground(TCODColor(67,199,50));
 		termwindow.setDefaultBackground(TCODColor(0,0,0));
-		termwindow.printFrame(0,0,32,16,true,TCOD_BKGND_ALPHA(50),"\{ AUTOMATED TERMINAL \{");
-		termwindow.printRect(1,1,30,16,text);
-		TCODConsole::blit(&termwindow,0,0,32,16,TCODConsole::root,menux,menuy);
+		if (tall) {
+			termwindow.printFrame(0,0,menuWidth,menuHeight,true,TCOD_BKGND_ALPHA(50),"\{ BLACK BOX \{");
+		} else{
+			termwindow.printFrame(0,0,menuWidth,menuHeight,true,TCOD_BKGND_ALPHA(50),"\{ AUTOMATED TERMINAL \{");
+		}
+
+		termwindow.printRect(1,1,30,menuHeight,text);
+		TCODConsole::blit(&termwindow,0,0,menuWidth,menuHeight,TCODConsole::root,menux,menuy);
 		TCODConsole::flush();
 		TCOD_key_t key;
 		TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
@@ -3297,10 +3317,14 @@ void ZedAi::update(Actor *owner) {
 			menuPopped = true;
 			Actor *blackbox = new Actor(owner->x, owner->y, 227, "Intercom Terminal", TCODColor::white);
 			blackbox->ai = new TriggerAi(  
-					"Welcome to the Astroverious.\n\n"
-					"To move press the UP, DOWN, LEFT, and RIGHT keys, or use the NUMPAD; 7,9,1 and 3 can be used to move diagonally.\n\n"
-					"Try exploring the entirety of this room to get the hang of it.  Good Luck.\n\n"
-					"Press \'g\' when standing over a terminal to replay its message");
+					"This ship was hit by a small, green blob years ago. Our researchers found that it had a new material that caused test subjects to live forever.\n\n" 
+					"Over time, side effects ensued, and the ship was overrun by psychos and infected computer systems.\n\n"
+					"This advanced material is beyond any human understanding. All of our researchers started attacking other crewmemebers.\n\n" 
+					"The infection spread, and I, Zed Umber, am the last to have any indication of control over my body.\n\n"
+
+					"Good luck escaping this ship through the mixed up teleporters. I have tried, but there seems to be no clear route to the escape pods.\n\n"
+					"Welcome to INFINITY MODE!\n\n",
+					true);
 			blackbox->blocks = false;
 			engine.actors.push(blackbox);
 
@@ -3451,7 +3475,7 @@ void ZedAi::deathMenu() {
 	while (!choice_made) 
 	{
 		engine.gui->menu.clear();
-		engine.gui->menu.addItem(Menu::CONTINUE_GAME, "Zed dropped a blackbox. I'll go take a took.");
+		engine.gui->menu.addItem(Menu::CONTINUE_GAME, "Zed dropped a blackbox.\n\nI'll go take a took.");
 		Menu::MenuItemCode menuItem = engine.gui->menu.pick(Menu::GAME_END);
 		switch (menuItem) {
 			case Menu::CONTINUE_GAME:
@@ -3865,6 +3889,7 @@ void CompanionAi::setAssignmentCoor(int x, int y){
 DummyAi::DummyAi()
 {
 }
+
 void DummyAi::update(Actor *owner)
 {
 		if(owner->destructible && !owner->destructible->hasDied && owner->destructible->hp <= 0)
