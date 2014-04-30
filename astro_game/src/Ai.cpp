@@ -645,9 +645,12 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 			//so we can print out a message before it, better code practice, etc.
 			
 			//engine.gui->message(TCODColor::white, "Companion commands: (s)tay, (f)ollow, or (g)uard");
-			
+		
 			if (engine.player->companion != NULL)//if you have a companion
 			{
+				engine.gui->message(TCODColor::white, "Companion commands: (s)tay, (f)ollow, or (g)uard");
+				engine.render();
+				TCODConsole::flush();
 				//TCOD_key_t key3 = TCODConsole::waitForKeypress(true);
 				//engine.gui->message(TCODColor::white, "Orders: \"s\" to stay at a point")//
 				
@@ -656,9 +659,8 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 				int x = engine.player->x;
 				int y = engine.player->y;
 				bool exit = false;
-				engine.render();
-				engine.gui->message(TCODColor::white, "Companion commands: (s)tay, (f)ollow, or (g)uard");
 				while (!exit) {
+					engine.render();
 					TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&engine.lastKey,NULL);
 					switch (engine.lastKey.c) {
 						case 's' : //stay
