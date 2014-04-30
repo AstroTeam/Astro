@@ -1717,7 +1717,7 @@ int Engine::getInitVit(int race, int job){
 			vitality +=20;
 			break; 
 		case 3: //Alien
-			vitality -= 40;
+			vitality -= 20;
 			break;
 	}
 	
@@ -1755,7 +1755,7 @@ int Engine::getInitStr(int race, int job){
 		case 1: //Human
 			break;
 		case 2: //Robot
-			strength += 2;
+			strength += 1;
 			break; 
 		case 3: //Alien
 			strength -= 1;
@@ -1793,7 +1793,7 @@ int Engine::getInitDex(int race, int job){
 		case 1: //Human
 			break;
 		case 2: //Robot
-			dexterity -= 2;
+			dexterity -= 1;
 			break; 
 		case 3: //Alien
 			dexterity -= 1;
@@ -1832,7 +1832,7 @@ int Engine::getInitIntel(int race, int job){
 		case 1: //Human
 			break;
 		case 2: //Robot
-			intelligence += 2;
+			intelligence += 1;
 			break; 
 		case 3: //Alien
 			intelligence -= 1; 
