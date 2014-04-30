@@ -3530,7 +3530,7 @@ Actor *Map::createAlcohol(int x, int y){
 	char* nameBuf = new char[80]; 
 	memset(nameBuf,0,80);
 	TCODRandom *random = TCODRandom::getInstance();
-	Actor *scrollOfDrunk = new Actor(x,y,15,"Bottle 'o' Alcohol", TCODColor::white);
+	Actor *scrollOfDrunk = new Actor(x,y,15,"Bottle o' Alcohol", TCODColor::white);
 	//TCODColor col = TCODColor::white; 
 	//int ascii = random->getInt(11,15);
 	int type = random->getInt(1,15);
