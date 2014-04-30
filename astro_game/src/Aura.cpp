@@ -62,7 +62,8 @@ void Aura::apply(Actor *target){
 		case FIRE:
 			if(target->destructible) {
 				target->destructible->heal(bonus);
-				engine.gui->message(TCODColor::orange,"%s is burning!",target->name);
+				if(engine.map->isVisible(target->x, target->y))
+					engine.gui->message(TCODColor::orange,"The %s is burning!",target->name);
 				//engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].envSta = 1;
 			}
 			break;

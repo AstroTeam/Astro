@@ -32,7 +32,7 @@ int main( int argc, char* args[] ) {
 
 		TCODConsole::flush();
 	}
-	engine.save();
+	//engine.save();
 	SDL_Quit();
 	return 0;
 }

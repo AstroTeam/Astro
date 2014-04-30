@@ -3079,7 +3079,7 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 						}
 						choice_made = true;
 						engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration = 57;
-						engine.save();
+						//engine.save();
 						break;
 					case Menu::EXIT :
 						choice_made = true;
