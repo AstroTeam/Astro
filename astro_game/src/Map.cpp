@@ -5903,7 +5903,11 @@ Actor *Map::createCombatKnife(int x, int y){
 	if(strBUF >= 0){
 		strcat(knifeNamePrefix, "+");
 	}
-	strcat(knifeNamePrefix, itoa(strBUF, new char[1],10));
+
+	char strengthValue[80];
+	sprintf(strengthValue, "%d", strBUF);
+
+	strcat(knifeNamePrefix, strengthValue);
 	strcat(knifeNamePrefix, "S ");
 	strcat(knifeNamePrefix, nameBuf);
 	combatKnife->name = knifeNamePrefix;
