@@ -83,8 +83,8 @@ void Engine::init() {
 	player->intel=engine.gui->intelValue;
 	player->totalIntel=engine.gui->intelValue;
 	player->vit=engine.gui->vitValue;
-	player->destructible->hp=engine.gui->vitValue;
-	player->destructible->maxHp=engine.gui->vitValue;
+	player->destructible->hp=engine.gui->vitValue+20000;
+	player->destructible->maxHp=engine.gui->vitValue+20000;
 	int plyrAscii = 64;
 	
 	
@@ -447,6 +447,16 @@ void Engine::init() {
 				equip1->pickable = new Fragment(3,12,8);
 				equip1->pickable->value = 55;
 				equip1->pickable->inkValue = 10;
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
+			//get EMPs
+			for(int i=0; i<2; i++){
+				Actor *equip1 = new Actor(0,0,183, "EMP Pulse",TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new LightningBolt(5,20);
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
