@@ -141,6 +141,7 @@ void Engine::init() {
 	TCODList<ItemBonus *> bonusF;
 	
 	Actor *hand1 = NULL;
+	Actor *hand2 = NULL;
 	ItemBonus * HaBonus;
 	TCODList<ItemBonus *> bonusHa;
 	
@@ -364,7 +365,7 @@ void Engine::init() {
 			player->job="Merchant";
 			
 			//get a Blink Grenade
-			for(int i=0; i<1; i++){
+			for(int i=0; i<3; i++){
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;
@@ -384,7 +385,7 @@ void Engine::init() {
 			}
 			
 			//get a flashbang
-			for(int i=0; i<1; i++){
+			for(int i=0; i<3; i++){
 				Actor *equip1 = new Actor(0,0,181,"Flashbang", TCODColor::white);
 				equip1->sort = 2;
 				equip1->blocks = false;
@@ -394,7 +395,7 @@ void Engine::init() {
 			}
 			
 			//get a firebomb
-			for(int i=0; i<1; i++){
+			for(int i=0; i<3; i++){
 				Actor *equip1 = new Actor(0,0,182,"Firebomb",TCODColor::white);
 				equip1->sort = 2;
 				equip1->blocks = false;
@@ -404,7 +405,7 @@ void Engine::init() {
 			}
 			
 			//get an EMP
-			for(int i=0; i<1; i++){
+			for(int i=0; i<3; i++){
 				Actor *equip1 = new Actor(0,0,183, "EMP Pulse",TCODColor::white);
 				equip1->sort = 2;
 				equip1->blocks = false;
@@ -414,7 +415,7 @@ void Engine::init() {
 			}
 			
 			//get a health pack
-			for(int i=0; i<1; i++){
+			for(int i=0; i<5; i++){
 				Actor *equip1 = new Actor(0,0,184,"Medkit", TCODColor::white);
 				equip1->sort = 1;
 				equip1->blocks = false;
@@ -424,7 +425,7 @@ void Engine::init() {
 			}
 			
 			//get a frag grenade
-			for(int i=0; i<1; i++){
+			for(int i=0; i<3; i++){
 				Actor *equip1 = new Actor(0,0,'g',"Frag Grenade",TCODColor::white);
 				equip1->sort = 2;
 				equip1->blocks = false;
@@ -533,12 +534,21 @@ void Engine::init() {
 			HaBonus = new ItemBonus(ItemBonus::STRENGTH,0);
 			bonusHa.push(HaBonus);
 			hand1->blocks = false;
-			hand1->pickable = new Weapon(1,6,2,20,0,Weapon::LIGHT,0,Equipment::HAND1,bonusHa,requirement);
+			hand1->pickable = new Weapon(1,4,2,20,0,Weapon::LIGHT,0,Equipment::HAND1,bonusHa,requirement);
 			hand1->sort = 4;
 			engine.actors.push(hand1);
 			hand1->pickable->pick(hand1,player);
 			((Weapon*)(hand1->pickable))->use(hand1,player);
 			
+			hand2 = new Actor(0,0,185,"Bruiser Left Glove",TCODColor::white);
+			HaBonus = new ItemBonus(ItemBonus::STRENGTH,0);
+			bonusHa.push(HaBonus);
+			hand2->blocks = false;
+			hand2->pickable = new Weapon(1,4,2,20,0,Weapon::LIGHT,0,Equipment::HAND2,bonusHa,requirement);
+			hand2->sort = 4;
+			engine.actors.push(hand2);
+			hand1->pickable->pick(hand2,player);
+			((Weapon*)(hand2->pickable))->use(hand2,player);
 			break;
 		case 9:
 			player->role="Mercenary";
