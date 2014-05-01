@@ -451,6 +451,16 @@ void Engine::init() {
 				equip1->pickable->pick(equip1,player);
 			}
 			
+			//get EMPs
+			for(int i=0; i<2; i++){
+				Actor *equip1 = new Actor(0,0,183, "EMP Pulse",TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new LightningBolt(5,20);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
 			legs = new Actor(0,0,185,"Skinsuit Leggings",TCODColor::white);
 			LBonus = new ItemBonus(ItemBonus::HEALTH,0);
 			bonusL.push(LBonus);
