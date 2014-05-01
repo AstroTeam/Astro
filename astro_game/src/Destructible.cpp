@@ -92,7 +92,7 @@ float Destructible::takeFireDamage(Actor *owner, float damage) {
 				{
 					engine.gui->message(TCODColor::red, "%s takes %g fire damage.",owner->name,damage);
 					Aura *fire = new Aura(4, Aura::FIRE, Aura::ITERABLE, -3);
-					engine.player->auras.push(fire);
+					owner->auras.push(fire);
 					//fire->apply(engine.player);
 					//engine.gui->message(TCODColor::orange,"%s has caught fire!",owner->name);
 				}

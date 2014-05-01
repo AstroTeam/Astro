@@ -572,7 +572,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		break;
 		case 'F':
 			//aimed shooty shooty bang bang -Mitchell
-			if(owner->container->ranged){
+			if(owner->container->ranged && ((Equipment*)(owner->container->ranged->pickable))->type != Pickable::FLAMETHROWER){
 				//Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,3);
 				engine.gui->message(TCODColor::cyan, "Choose a target to shoot");
 				int x = engine.player->x;
@@ -3868,9 +3868,9 @@ void CompanionAi::periodicMessage(Actor *owner){
 			TCODRandom *rando = TCODRandom::getInstance();
 			int switcher = rando->getInt(1,3);
 			switch (switcher){
-				case 1: engine.gui->message(TCODColor::violet,"%s twitches uncontrollably.",owner->name);
-				case 2: engine.gui->message(TCODColor::violet,"%s squeals, arms moving spasmodically.",owner->name);
-				case 3: engine.gui->message(TCODColor::violet,"<%s> I can feel them crawling all over my skin!",owner->name);
+				case 1: engine.gui->message(TCODColor::violet,"%s twitches uncontrollably.",owner->name); break;
+				case 2: engine.gui->message(TCODColor::violet,"%s squeals, arms moving spasmodically.",owner->name); break;
+				case 3: engine.gui->message(TCODColor::violet,"<%s> I can feel them crawling all over my skin!",owner->name); break;
 				default: break;
 			}
 			break;
