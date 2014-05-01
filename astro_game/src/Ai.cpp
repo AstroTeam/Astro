@@ -572,7 +572,7 @@ void PlayerAi::handleActionKey(Actor *owner, int ascii) {
 		break;
 		case 'F':
 			//aimed shooty shooty bang bang -Mitchell
-			if(owner->container->ranged && ((Equipment*)(owner->container->ranged->pickable))->type != Pickable::FLAMETHROWE){
+			if(owner->container->ranged && ((Equipment*)(owner->container->ranged->pickable))->type != Pickable::FLAMETHROWER){
 				//Actor *closestMonster = engine.getClosestMonster(owner->x, owner->y,3);
 				engine.gui->message(TCODColor::cyan, "Choose a target to shoot");
 				int x = engine.player->x;
