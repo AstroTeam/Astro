@@ -5903,9 +5903,17 @@ Actor *Map::createCombatKnife(int x, int y){
 	if(strBUF >= 0){
 		strcat(knifeNamePrefix, "+");
 	}
+	else if(hand == 2 && strBUF >= -6){
+		strcat(knifeNamePrefix, "+");
+	}
 
 	char strengthValue[80];
-	sprintf(strengthValue, "%d", strBUF);
+	if(hand == 2){
+		sprintf(strengthValue, "%d", strBUF + 6);
+	}
+	else{
+		sprintf(strengthValue, "%d", strBUF );
+	}
 
 	strcat(knifeNamePrefix, strengthValue);
 	strcat(knifeNamePrefix, "S ");
@@ -6266,8 +6274,8 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 			strcat(nameBuf,"Capybara");
 			pet->name = nameBuf;
 			pet->ch = 173;
-			pet->destructible->maxHp +=50;
-			pet->destructible->hp +=50;
+			pet->destructible->maxHp +=100;
+			pet->destructible->hp +=100;
 			pet->totalStr += 7;
 			pet->attacker = new Attacker(pet->totalStr);
 			
@@ -6293,6 +6301,8 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 			default:		//Human
 			strcat(nameBuf,"Donutling");
 			pet->name = nameBuf;
+			pet->destructible->hp += 60;
+			pet->destructible->maxHp += 60;
 			pet->totalStr += -1;
 			pet->attacker = new Attacker(pet->totalStr);
 			((CompanionAi*)pet->ai)->edible = true;

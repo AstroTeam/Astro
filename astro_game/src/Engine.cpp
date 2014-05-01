@@ -1769,7 +1769,7 @@ int Engine::getInitVit(int race, int job){
 		case 5: //Pirate
 			break; 
 		case 6: //Merchant
-			vitality -= 40;
+			vitality -= 20;
 			break;
 		case 7: //Assassin
 			vitality /= 2;
