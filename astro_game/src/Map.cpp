@@ -162,8 +162,8 @@ void Map::init(bool withActors, LevelType levelType) {
 				boss->ch = 136;
 				boss->destructible->hp = boss->destructible->hp*2;
 				boss->destructible->maxHp = boss->destructible->hp;
-				boss->totalStr = boss->totalStr*1.25;
-				boss->totalDex = boss->totalStr*1.25;
+				boss->totalStr = boss->totalStr*.75;
+				boss->totalDex = boss->totalStr*.75;
 
 				generateRandom(z, 'Z');
 
