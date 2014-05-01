@@ -209,7 +209,7 @@ void PlayerAi::update(Actor *owner) {
 	case TCODK_TAB: 
 		//engine.save();											//temp save removal
 		//engine.gui->message(TCODColor::pink, "saved"); break;
-	/* case TCODK_CONTROL: 	//cheat mode teleport to stairs for debug
+	 /*case TCODK_CONTROL: 	//cheat mode teleport to stairs for debug
 		engine.player->x = engine.stairs->x;
 		engine.playerLight->x = engine.stairs->x;
 		engine.player->y = engine.stairs->y;
