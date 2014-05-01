@@ -3898,7 +3898,7 @@ Actor *Map::createFrag(int x, int y){
 	scrollOfFragging->sort = 2;
 	scrollOfFragging->blocks = false;
 	scrollOfFragging->pickable = new Fragment(3,12,8);
-	scrollOfFragging->pickable->value = 55;
+	scrollOfFragging->pickable->value = 45;
 	scrollOfFragging->pickable->inkValue = 10;
 	return scrollOfFragging;
 }
@@ -3907,7 +3907,7 @@ Actor *Map::createEMP(int x, int y){
 	scrollOfLightningBolt->sort = 2;
 	scrollOfLightningBolt->blocks = false;
 	scrollOfLightningBolt->pickable = new LightningBolt(5,20);
-	scrollOfLightningBolt->pickable->value = 60;
+	scrollOfLightningBolt->pickable->value = 40;
 	scrollOfLightningBolt->pickable->inkValue = 10;
 	return scrollOfLightningBolt;
 }

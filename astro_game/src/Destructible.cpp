@@ -62,7 +62,7 @@ float Destructible::takeDamage(Actor *owner, Actor *attacker, float damage) {
 		hp -= (int) damage;
 		if (hp <= 0 && !hasDied) {
 			//die(owner, attacker);
-			if(attacker && (attacker == engine.player || attacker == engine.player->companion)) //only increase XP if the player/companion is the killer
+			//if(attacker && (attacker == engine.player || attacker == engine.player->companion)) //only increase XP if the player/companion is the killer //temp comment to fix bug
 				engine.player->destructible->xp += xp;
 		}
 	} else {
