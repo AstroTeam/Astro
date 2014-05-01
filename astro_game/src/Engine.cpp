@@ -509,7 +509,7 @@ void Engine::init() {
 			player->job="Brute";
 			
 			//get Blink Grenades
-			for(int i=0; i<2; i++){
+			for(int i=0; i<1; i++){
 				Actor *equip1 = new Actor(0,0,'.',"Blink Grenade",TCODColor::red);
 				equip1->sort = 2;
 				equip1->blocks = false;

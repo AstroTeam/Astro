@@ -3493,9 +3493,9 @@ Actor *Map::createCurrencyStack(int x, int y){
 	currencyStack->sort = 0;
 	currencyStack->blocks = false;
 	if(engine.piratesFound == 0)
-		currencyStack->pickable = new Coinage(1,100+75*(engine.level-1));
+		currencyStack->pickable = new Coinage(1,200+150*(engine.level-1));
 	else
-		currencyStack->pickable = new Coinage(1,150+100*(engine.level-1));
+		currencyStack->pickable = new Coinage(1,300+200*(engine.level-1));
 	return currencyStack;
 }
 
