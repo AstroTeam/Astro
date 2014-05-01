@@ -97,7 +97,53 @@ font-size:1em;
 display:  block;
 position: relative;
 }
+h2.npc
+{
+  font-size: 1.2em;
+margin-top: 0.5em; 
+padding-bottom: 0em; 
+margin-bottom: 0em;
+padding-left: 1em;
+}
+h3.class
+{
+padding-bottom: 0em; 
+margin-bottom: 0em;
+margin-top: 0.5em;
+padding-left: 1em;
+}
+h4.subclass
+{
+color:green;
+text-align:left;
+position: relative;
+padding-bottom: 0em; 
+margin-bottom: 0em;
+margin-top: 0.5em;
+padding-left: 3em;
 
+}
+p.classdesc
+{
+margin-top: 0em; 
+margin-bottom: 0em;
+padding-top: 0em; 
+margin-left: 3em;
+}
+p.subclassdesc
+{
+margin-top: 0em; 
+margin-bottom: 0em;
+padding-top: 0em; 
+margin-left: 4em;
+}
+p.npcdesc
+{
+margin-bottom: 0em; 
+margin-top: 0em; 
+padding-top: 0em; 
+margin-left: 3em;
+}
 p a:link 
 {
 color:ForestGreen;
@@ -150,7 +196,3 @@ pin a:hover
 {
 color:white;
 }  /* mouse over link */
-
-
-
-
