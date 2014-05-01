@@ -3868,9 +3868,9 @@ void CompanionAi::periodicMessage(Actor *owner){
 			TCODRandom *rando = TCODRandom::getInstance();
 			int switcher = rando->getInt(1,3);
 			switch (switcher){
-				case 1: engine.gui->message(TCODColor::violet,"%s twitches uncontrollably.",owner->name);
-				case 2: engine.gui->message(TCODColor::violet,"%s squeals, arms moving spasmodically.",owner->name);
-				case 3: engine.gui->message(TCODColor::violet,"<%s> I can feel them crawling all over my skin!",owner->name);
+				case 1: engine.gui->message(TCODColor::violet,"%s twitches uncontrollably.",owner->name); break;
+				case 2: engine.gui->message(TCODColor::violet,"%s squeals, arms moving spasmodically.",owner->name); break;
+				case 3: engine.gui->message(TCODColor::violet,"<%s> I can feel them crawling all over my skin!",owner->name); break;
 				default: break;
 			}
 			break;
