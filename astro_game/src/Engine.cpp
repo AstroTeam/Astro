@@ -1797,7 +1797,7 @@ int Engine::getInitVit(int race, int job){
 			vitality /= 2;
 			break;
 		case 8: //Brute
-			vitality += 60;
+			vitality += 50;
 			break; 
 		case 9: //Hacker
 			vitality -= 40;
@@ -1835,7 +1835,7 @@ int Engine::getInitStr(int race, int job){
 		case 8: //Brute
 			break; 
 		case 9: //Hacker
-			strength -= 2;
+			strength -= 3;
 			break;
 		default: //Infantry
 			strength -= 1;
