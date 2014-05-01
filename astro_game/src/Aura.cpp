@@ -160,7 +160,7 @@ void Aura::unApply(Actor *target){
 			case FIRE:
 				if(target->destructible) {
 					//target->destructible->heal(bonus);
-					engine.gui->message(TCODColor::yellow,"%s has ceased burning.",target->name);
+					engine.gui->message(TCODColor::yellow,"The %s has ceased burning.",target->name);
 					//engine.map->tiles[(xM+i)+(yM+j)*engine.map->width].envSta = 1;
 				}
 				break;

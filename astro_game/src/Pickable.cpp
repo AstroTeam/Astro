@@ -221,7 +221,7 @@ bool Fireball::use(Actor *owner, Actor *wearer) {
 			&&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) {
 			//the initial damage is a little high, i think it should actually be zero, since it immediatlly affects the monsters
 				float damageTaken = 1;
-				damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);
+				damageTaken = actor->destructible->takeDamage(actor, wearer, damageTaken);
 				
 				if (!actor->destructible->isDead()) 
 				{
@@ -302,7 +302,7 @@ bool Fragment::use(Actor *owner, Actor *wearer) {
 		if (actor->destructible && !actor->destructible->isDead() &&actor->getDistance(x,y) <= 1 + (wearer->totalIntel - 1) /3) 
 		{
 			float damageTaken = 2 * wearer->totalIntel;
-			damageTaken = actor->destructible->takeDamage(actor, owner, damageTaken);	
+			damageTaken = actor->destructible->takeDamage(actor, wearer, damageTaken);	
 				
 			if (!actor->destructible->isDead()) 
 			{	
