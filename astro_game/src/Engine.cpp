@@ -534,7 +534,7 @@ void Engine::init() {
 			HaBonus = new ItemBonus(ItemBonus::STRENGTH,0);
 			bonusHa.push(HaBonus);
 			hand1->blocks = false;
-			hand1->pickable = new Weapon(1,4,2,20,0,Weapon::LIGHT,0,Equipment::HAND1,bonusHa,requirement);
+			hand1->pickable = new Weapon(1,3,2,20,0,Weapon::LIGHT,0,Equipment::HAND1,bonusHa,requirement);
 			hand1->sort = 4;
 			engine.actors.push(hand1);
 			hand1->pickable->pick(hand1,player);
@@ -544,7 +544,7 @@ void Engine::init() {
 			HaBonus = new ItemBonus(ItemBonus::STRENGTH,0);
 			bonusHa.push(HaBonus);
 			hand2->blocks = false;
-			hand2->pickable = new Weapon(1,4,2,20,0,Weapon::LIGHT,0,Equipment::HAND2,bonusHa,requirement);
+			hand2->pickable = new Weapon(1,3,2,20,0,Weapon::LIGHT,0,Equipment::HAND2,bonusHa,requirement);
 			hand2->sort = 4;
 			engine.actors.push(hand2);
 			hand1->pickable->pick(hand2,player);
