@@ -1,6 +1,8 @@
 Astro
 ====
 
+Current state: software festival demo (boss moved to first level)
+
 A classified military space station has gone dark and the mission is to retrieve information, 
 including the ship’s black box as well as what happened, about why and what they were doing.  
 Upon investigating, you find that there are weird aliens all over the ship.  These aliens 
