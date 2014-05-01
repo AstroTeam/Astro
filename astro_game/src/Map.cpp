@@ -1193,7 +1193,7 @@ Actor* Map::createInfectedMarine(int x, int y)
 Actor* Map::createInfectedGrenadier(int x, int y)
 {
 	int level = engine.level;
-	float scale = 2 + .2*(level - 1);
+	float scale = 1 + .2*(level - 1);
 	float infectedGrenadierHp = 10*scale;
 	float infectedGrenadierDodge = 0*scale;
 	float infectedGrenadierDR = 0*scale;

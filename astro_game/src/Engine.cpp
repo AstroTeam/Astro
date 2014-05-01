@@ -141,7 +141,6 @@ void Engine::init() {
 	TCODList<ItemBonus *> bonusF;
 	
 	Actor *hand1 = NULL;
-	Actor *hand2 = NULL;
 	ItemBonus * HaBonus;
 	TCODList<ItemBonus *> bonusHa;
 	
@@ -482,7 +481,7 @@ void Engine::init() {
 			((Equipment*)(chest->pickable))->use(chest,player);
 			
 			helmet = new Actor(0,0,185,"Balaclava",TCODColor::white);
-			HeBonus = new ItemBonus(ItemBonus::HEALTH,5);
+			HeBonus = new ItemBonus(ItemBonus::HEALTH,0);
 			bonusHe.push(HeBonus);
 			helmet->blocks = false;
 			helmet->pickable = new Equipment(0,Equipment::HEAD,bonusHe,requirement);
@@ -519,21 +518,14 @@ void Engine::init() {
 			}
 			///////************************************
 			hand1 = new Actor(0,0,185,"Bruiser Right Glove",TCODColor::white);
-			hand2 = new Actor(0,0,185,"Bruiser Left Glove",TCODColor::white);
-			HaBonus = new ItemBonus(ItemBonus::HEALTH,5);
+			HaBonus = new ItemBonus(ItemBonus::STRENGTH,0);
 			bonusHa.push(HaBonus);
 			hand1->blocks = false;
-			hand2->blocks = false;
 			hand1->pickable = new Weapon(1,6,2,20,0,Weapon::LIGHT,0,Equipment::HAND1,bonusHa,requirement);
-			hand2->pickable = new Weapon(1,6,2,20,0,Weapon::LIGHT,0,Equipment::HAND2,bonusHa,requirement);
 			hand1->sort = 4;
-			hand2->sort = 4;
 			engine.actors.push(hand1);
-			engine.actors.push(hand2);
 			hand1->pickable->pick(hand1,player);
-			hand2->pickable->pick(hand2,player);
 			((Weapon*)(hand1->pickable))->use(hand1,player);
-			((Weapon*)(hand2->pickable))->use(hand2,player);
 			
 			break;
 		case 9:
@@ -563,7 +555,7 @@ void Engine::init() {
 			}
 			
 			helmet = new Actor(0,0,185,"Tech Helmet",TCODColor::white);
-			HeBonus = new ItemBonus(ItemBonus::HEALTH,5);
+			HeBonus = new ItemBonus(ItemBonus::HEALTH,0);
 			bonusHe.push(HeBonus);
 			helmet->blocks = false;
 			helmet->pickable = new Equipment(0,Equipment::HEAD,bonusHe,requirement);
@@ -1883,7 +1875,7 @@ int Engine::getInitIntel(int race, int job){
 			intelligence += 5;
 			break;
 		case 8: //Brute
-			intelligence -= 1;
+			intelligence -= 2;
 			break; 
 		case 9: //Hacker
 			intelligence += 6;
