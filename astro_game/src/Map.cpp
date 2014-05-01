@@ -46,7 +46,7 @@ public:
 			room->x2 = x+w-1;
 			room->y2 = y+h-1;
 			
-			std::cout << "room " << room->x1 << " " << room->y1 << " " << room->x2 << " " << room->y2 << std::endl;
+			//std::cout << "room " << room->x1 << " " << room->y1 << " " << room->x2 << " " << room->y2 << std::endl;
 			
 			//will this room be special?
 			int index = map.rng->getInt(0, roomList->size()-1);
@@ -68,7 +68,7 @@ public:
 			
 			lastx = x+w/2;
 			lasty = y+h/2;
-			cout << roomList->size() << endl;
+			//cout << roomList->size() << endl;
 			roomNum++;
 			
 		}
@@ -78,7 +78,7 @@ public:
 
 Map::Map(int width, int height,int artifacts, short epicenterAmount): width(width),height(height),artifacts(artifacts),epicenterAmount(epicenterAmount) {
 	seed = TCODRandom::getInstance()->getInt(0,0x7FFFFFFF);
-	cout<< "seed " << seed << endl;
+	//cout<< "seed " << seed << endl;
 }
 
 Map::~Map() {
@@ -120,14 +120,14 @@ int Map::tileType(int x, int y) {
 }
 
 void Map::init(bool withActors, LevelType levelType) {
-	cout << levelType << endl << endl;
+	//cout << levelType << endl << endl;
 
-	cout << "used seed " << seed << endl;
+	//cout << "used seed " << seed << endl;
 	rng = new TCODRandom(seed,TCOD_RNG_CMWC);
 	tiles = new Tile[width*height];
 	map = new TCODMap(width, height);
 	type = levelType;
-	cout << width << " , " << height << endl;
+	//cout << width << " , " << height << endl;
 	if (levelType != TUTORIAL) {
 		TCODBsp bsp(0,0,width,height);
 		bsp.splitRecursive(rng,8,ROOM_MAX_SIZE,ROOM_MAX_SIZE,1.5f, 1.5f);
@@ -193,7 +193,7 @@ void Map::init(bool withActors, LevelType levelType) {
 void Map::save(TCODZip &zip) {
 	zip.putInt(seed);
 	zip.putInt(type);
-	cout << "saved seed " << seed << endl;
+	//cout << "saved seed " << seed << endl;
 	for (int i = 0; i < width*height; i++) {
 		zip.putInt(tiles[i].explored);
 		zip.putFloat(tiles[i].infection);
@@ -211,7 +211,7 @@ void Map::save(TCODZip &zip) {
 void Map::load(TCODZip &zip) {
 	seed = zip.getInt();
 	type = (LevelType)zip.getInt();
-	cout << "loaded seed " << seed << endl;
+	//cout << "loaded seed " << seed << endl;
 	init(false,type);
 	for (int i = 0; i <width*height; i++) {
 		tiles[i].explored = zip.getInt();
@@ -344,12 +344,12 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 void Map::spawnTutorial() {
 	//this resets the level so it'll be 1 for the real level 1
 	engine.level = 0;
-	cout << engine.mapWidth << " , " << engine.mapHeight << endl;
+	//cout << engine.mapWidth << " , " << engine.mapHeight << endl;
 	int x1 = engine.mapWidth/2-6;
 	int x2 = engine.mapWidth/2+6;
 	int y1 = -20 +engine.mapHeight-12;
 	int y2 = -20 +engine.mapHeight-7;
-	cout << "creating tutorial room"<< endl;
+	//cout << "creating tutorial room"<< endl;
 	
 	for (int tilex = x1; tilex <=x2; tilex++) {//first room
 		for (int tiley = y1; tiley <= y2; tiley++) {
@@ -366,7 +366,7 @@ void Map::spawnTutorial() {
 	"Most items can be interacted with by simply moving into them by pressing the corresponding movement key whilst being adjacent to it. (Like these automated terminals)");
 	triggerTileI->blocks = false; 
 	engine.actors.push(triggerTileI);
-	cout << "got past first terminal" << endl;
+	//cout << "got past first terminal" << endl;
 	//make FOV terminal
 	Actor *triggerTileFov = new Actor(x2-1,y2-1, 227, "Intercom Terminal", TCODColor::white);
 	triggerTileFov->ai = new TriggerAi(  
@@ -432,7 +432,7 @@ void Map::spawnTutorial() {
 	triggerTileLR->blocks = false;
 	engine.actors.push(triggerTileLR);
 	
-	cout << "got past light room terminal" << endl;
+	//cout << "got past light room terminal" << endl;
 	
 	//add server and console
 	tiles[x2+y1*engine.mapWidth].tileType = Param::SERVER;
@@ -1615,7 +1615,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	//custom room feature
 	//OFFICE ROOMS
 	if (room->type == OFFICE) {
-		cout << "Office made" << endl;
+		//cout << "Office made" << endl;
 		int files = 0;
 		while (files < 10)
 		{
@@ -1761,7 +1761,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		
 	}		
 	if (room->type == BARRACKS) {
-		cout << "Barrack Made" << endl;
+		//cout << "Barrack Made" << endl;
 		//TCODRandom *rng = TCODRandom::getInstance();
 		//add a row on the left, then on the right
 		//boolean to see the distance between the beds, if it is enough, add some lockers
@@ -1850,7 +1850,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		}
 	}
 	if (room->type == GENERATOR) {
-		cout << "Generator room Made" << endl;
+		//cout << "Generator room Made" << endl;
 		Actor * generator = new Actor(x1+1,y1+1,243,"A floor tile that has been jerry rigged to accept a generator.", TCODColor::white);
 		//engine.mapconDec->setChar(x1+1,y1+1, 25);//
 		engine.map->tiles[(x1+1)+(y1+1)*engine.map->width].decoration = 25;
@@ -1937,7 +1937,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	}
 
 	if (room->type == KITCHEN) {
-		cout << "KITCHEN Made" << endl;
+		//cout << "KITCHEN Made" << endl;
 		//TCODRandom *rng = TCODRandom::getInstance();
 		int midX = (x1+x2)/2;
 		for (int i = x1; i < x2+1; i++)
@@ -2009,7 +2009,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	}
 
 	if (room->type == SERVER) {
-		cout << "Server room made" << endl;
+		//cout << "Server room made" << endl;
 		//expand the room outwards
 		int tx1 = x1-1;
 		int tx2 = x2+1;
@@ -2063,7 +2063,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 		}
 	}
 	if (room->type == MESSHALL) {
-		cout << "Messhall made" << endl;
+		//cout << "Messhall made" << endl;
 
 		//placeholder, to be replaced
 		//Actor * pcmu = new Actor(x1, y1, 'T', "Cafeteria Table", TCODColor::white);
@@ -2114,7 +2114,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 
 	}
 	if (room->type == ARMORY) {
-		cout << "Armory made" << endl;
+		//cout << "Armory made" << endl;
 
 		//placeholder, to be replaced
 		//Actor * pcmu = new Actor(x1, y1, 'C', "Weapons Case", TCODColor::white);
@@ -2209,7 +2209,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 
 	}
 	if (room->type == OBSERVATORY) {
-		cout << "Observatory made" << endl;
+		//cout << "Observatory made" << endl;
 
 		//placeholder, to be replaced
 		//Actor * pcmu = new Actor(x1, y1, 'W', "Space Window", TCODColor::white);
@@ -2222,7 +2222,7 @@ void Map::createRoom(int roomNum, bool withActors, Room * room) {
 	}
 
 	if (room->type == HYDROPONICS) {
-		cout << "Hydroponics made" << endl;
+		//cout << "Hydroponics made" << endl;
 
 		//long rows of hydroponic racks
 		bool gardnerCreated = false;
@@ -3807,7 +3807,7 @@ Actor *Map::createRecord(int x, int y){
 			//cout << "id2find: " << id2find << endl;
 			id2find = random->getInt(minid,maxid);
 		}
-		cout << engine.ctrTer << endl;
+		//cout << engine.ctrTer << endl;
 		engine.ctrTer--;
 		engine.valTer[id2find-1] = false;
 		//cout << "id2find final: " << id2find << endl;
@@ -3853,7 +3853,7 @@ Actor *Map::createRecord(int x, int y){
 			//getline(myfile,line,'@');
 			//cout << "about to strcat!" << endl;
 			strcat(nameBuf,line.c_str());
-			cout << "strcat done" << endl;
+			//cout << "strcat done" << endl;
 			//cout << line << '\n';
 			myfile.close();
 		}
@@ -3865,7 +3865,7 @@ Actor *Map::createRecord(int x, int y){
 	}
 	scrollOfRecords->ai = new TriggerAi(nameBuf);
 	scrollOfRecords->blocks = false;
-	cout << "done with record" << endl;
+	//cout << "done with record" << endl;
 	return scrollOfRecords;
 		//make interaction terminal
 	//Actor *triggerTileI = new Actor(x1+1,y1+1, 227, "Intercom Terminal", TCODColor::white);
@@ -5903,9 +5903,17 @@ Actor *Map::createCombatKnife(int x, int y){
 	if(strBUF >= 0){
 		strcat(knifeNamePrefix, "+");
 	}
+	else if(hand == 2 && strBUF >= -6){
+		strcat(knifeNamePrefix, "+");
+	}
 
 	char strengthValue[80];
-	sprintf(strengthValue, "%d", strBUF);
+	if(hand == 2){
+		sprintf(strengthValue, "%d", strBUF + 6);
+	}
+	else{
+		sprintf(strengthValue, "%d", strBUF );
+	}
 
 	strcat(knifeNamePrefix, strengthValue);
 	strcat(knifeNamePrefix, "S ");
@@ -6266,8 +6274,8 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 			strcat(nameBuf,"Capybara");
 			pet->name = nameBuf;
 			pet->ch = 173;
-			pet->destructible->maxHp +=50;
-			pet->destructible->hp +=50;
+			pet->destructible->maxHp +=100;
+			pet->destructible->hp +=100;
 			pet->totalStr += 7;
 			pet->attacker = new Attacker(pet->totalStr);
 			
@@ -6293,6 +6301,8 @@ Actor *Map::createCompanion(int x, int y, bool racial){
 			default:		//Human
 			strcat(nameBuf,"Donutling");
 			pet->name = nameBuf;
+			pet->destructible->hp += 60;
+			pet->destructible->maxHp += 60;
 			pet->totalStr += -1;
 			pet->attacker = new Attacker(pet->totalStr);
 			((CompanionAi*)pet->ai)->edible = true;

@@ -1303,13 +1303,14 @@ void Renderer::render(void *sdlSurface){
 	//COULD OPTIMIZE --> CONTAINER/INVENTORY/PLAYER CONTAINS A LIST OF JUST EQUIPMENT TO RENDER, instead of scanning all items
 	
 	bool MLRTrue = false;
+	bool FlmrTrue = false;
 	SDL_Rect dstRectEquip={plyx*16,plyy*16,16,16};
 	if ((engine.gameStatus == engine.IDLE || engine.gameStatus == engine.NEW_TURN) && engine.armorState == 0){
 		for (Actor **it = engine.player->container->inventory.begin();it != engine.player->container->inventory.end();it++)
 		{
 		
 			Actor *a = *it;
-			if ((a->pickable->type == Pickable::EQUIPMENT || a->pickable->type == Pickable::WEAPON) && ((Equipment*)(a->pickable))->equipped && !engine.player->destructible->isDead())//add case to not blit if inventory is open
+			if ((a->pickable->type == Pickable::EQUIPMENT || a->pickable->type == Pickable::WEAPON || a->pickable->type == Pickable::FLAMETHROWER) && ((Equipment*)(a->pickable))->equipped && !engine.player->destructible->isDead())//add case to not blit if inventory is open
 			{
 				//equipment
 				/*if (strcmp(a->name,"Mylar-Lined Boots") == 0)//legacy first thing!
@@ -1374,6 +1375,9 @@ void Renderer::render(void *sdlSurface){
 						break;
 					case 13:
 						MLRTrue = true;
+						break;
+					case 14:
+						FlmrTrue = true;
 						break;
 					default:break;
 				}
@@ -1500,6 +1504,12 @@ void Renderer::render(void *sdlSurface){
 		srcRect.y = 0;
 		SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
 	}
+	if (FlmrTrue)
+	{
+		srcRect.x = 16;
+		srcRect.y = 0;
+		SDL_BlitSurface(equipment,&srcRect,floorMap,&dstRectEquip);
+	}
 	
 	SDL_UpdateRect(floorMap, plyx*16, plyy*16, 16, 16);
 	
@@ -1568,6 +1578,7 @@ void Renderer::render(void *sdlSurface){
 		SDL_Surface *map = SDL_LoadBMP("tile_assets/consoleMap.bmp");
 		SDL_Surface *mapPix = SDL_LoadBMP("tile_assets/mapPix.bmp");
 		SDL_Surface *mapPixRed = SDL_LoadBMP("tile_assets/mapPixRed.bmp");
+		SDL_Surface *mapPixBlue = SDL_LoadBMP("tile_assets/mapPixBlue.bmp");
 		SDL_Surface *mapPixDarker = SDL_LoadBMP("tile_assets/mapPixDarker.bmp");
 		for (int x = 0; x < 100; x++)
 		{
@@ -1578,6 +1589,11 @@ void Renderer::render(void *sdlSurface){
 					{
 						SDL_Rect dstRect1={x*4,y*4,4,4};
 						SDL_BlitSurface(mapPixRed,NULL,map,&dstRect1);
+					}
+					else if (engine.stairs->x == x && engine.stairs->y == y)//teleporter
+					{
+						SDL_Rect dstRect1={x*4,y*4,4,4};
+						SDL_BlitSurface(mapPixBlue,NULL,map,&dstRect1);
 					}
 					else if (engine.map->tiles[x+y*engine.map->width].decoration != 0)
 					{
@@ -1599,6 +1615,7 @@ void Renderer::render(void *sdlSurface){
 		SDL_FreeSurface(map);
 		SDL_FreeSurface(mapPix);
 		SDL_FreeSurface(mapPixRed);
+		SDL_FreeSurface(mapPixBlue);
 		SDL_FreeSurface(mapPixDarker);
 		engine.menuState = 2;
 	}

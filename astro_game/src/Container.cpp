@@ -18,7 +18,7 @@ void Container::load(TCODZip &zip) {
 	sort4_size = zip.getInt();
 	wallet = zip.getInt();
 	int nbActors = zip.getInt();
-	std::cout << "got size " << nbActors << std::endl;
+	////std::cout << "got size " << nbActors << std::endl;
 	while (nbActors > 0) {
 		Actor *actor = new Actor(0,0,0,NULL,TCODColor::white);
 		actor->load(zip);
@@ -71,10 +71,10 @@ void Container::save(TCODZip &zip) {
 	zip.putInt(sort4_size);
 	zip.putInt(wallet);
 	zip.putInt(inventory.size());
-	std::cout << "put size " << inventory.size() << std::endl;
+	//std::cout << "put size " << inventory.size() << std::endl;
 	for (Actor **it = inventory.begin(); it != inventory.end(); it++) {
 		(*it)->save(zip);
-		std::cout << "saved " << (*it)->name << std::endl;
+		//std::cout << "saved " << (*it)->name << std::endl;
 	}
 	zip.putInt(head != NULL);
 	zip.putInt(chest != NULL);
