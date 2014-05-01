@@ -853,10 +853,7 @@ void PlayerAi::displayCharacterInfo(Actor *owner){
 	//Diplay Character Stats
 	con.print(2,4,"STATS");
 	con.print(1,6,"LVL: %d",xpLevel);
-	if(owner->destructible->totalDR - owner->destructible->baseDR >= 0)
-		con.print(1,8,"DR: %d(+%d)",owner->destructible->baseDR,owner->destructible->totalDR - owner->destructible->baseDR);
-	else
-		con.print(1,8,"DR: %d(%d)",owner->destructible->baseDR,owner->destructible->totalDR - owner->destructible->baseDR);
+	con.print(1,8,"DR: %g",owner->destructible->totalDR);
 	if(owner->totalStr - owner->str >= 0)
 		con.print(1,10,"STR: %d(+%d)",owner->str,owner->totalStr - owner->str);
 	else

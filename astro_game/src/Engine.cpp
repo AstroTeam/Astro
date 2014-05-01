@@ -317,6 +317,18 @@ void Engine::init() {
 			
 			piratesFound = 1; //enables more gold! Arrrrrrrrr!
 			
+			//get RUMMMM!
+			for(int i=0;i<30;i++){
+				Actor *scrollOfDrunk = new Actor(0,0,15,"RUM!", TCODColor::white);
+				scrollOfDrunk->sort = 1;
+				scrollOfDrunk->blocks = false;
+				scrollOfDrunk->pickable = new Alcohol(6,20);//1 is the amt of buff/debuff, 10 is the length of buff/debuff
+				scrollOfDrunk->pickable->value = 30;
+				scrollOfDrunk->pickable->inkValue = 5;
+				engine.actors.push(scrollOfDrunk);
+				scrollOfDrunk->pickable->pick(scrollOfDrunk,player);
+			}
+			
 			chest = new Actor(0,0,185,"Boarding Vest",TCODColor::white);
 			CBonus = new ItemBonus(ItemBonus::HEALTH,0);
 			bonusC.push(CBonus);

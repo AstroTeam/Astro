@@ -1076,7 +1076,7 @@ Actor* Map::createSecurityBot(int x, int y)
 	float scale = 2 + .2*(level - 1);
 	float securityBotHp = 25*scale;
 	float securityBotDodge = 0*scale;
-	float securityBotDR = 0*scale;
+	float securityBotDR = (int)2*scale;
 	float securityBotStr = 10*scale;
 	float securityBotXp = 25*scale;
 	int securityBotAscii = 129; //CHANGED
