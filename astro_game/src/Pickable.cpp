@@ -7,7 +7,7 @@ Pickable::Pickable(bool stacks, int stackSize, PickableType type) :
 
 Pickable *Pickable::create(TCODZip &zip) {
 	PickableType type = (PickableType)zip.getInt();
-	std::cout << "pickabletype " << std::endl;
+	//std::cout << "pickabletype " << std::endl;
 	Pickable *pickable = NULL;
 	switch(type) {
 		case CURRENCY: pickable = new Coinage(0); break;
@@ -27,7 +27,7 @@ Pickable *Pickable::create(TCODZip &zip) {
 		case FLAMETHROWER: pickable = new Flamethrower(0,0); break;
 		case NONE: break;
 	}
-	std::cout << "chose a module type " << std::endl;
+	//std::cout << "chose a module type " << std::endl;
 	pickable->load(zip);
 	return pickable;
 }
@@ -903,7 +903,7 @@ bool Flamethrower::ignite(Actor *owner){
 	int x = engine.player->x;
 	int y = engine.player->y;
 	int width = ((Flamethrower*)(owner->container->ranged->pickable))->width;
-	cout << "The Width is " << width << endl;
+	//cout << "The Width is " << width << endl;
 	//cout << "The Power Use is "<< powerUse << endl;
 	if(owner->attacker->battery < powerUse){
 		engine.gui->message(TCODColor::red, "You do not have enough battery to use the flamethrower");

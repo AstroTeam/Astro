@@ -88,7 +88,7 @@ void Actor::load(TCODZip &zip) {
 	totalIntel = zip.getInt();
 	col= zip.getColor();
 	name = strdup(zip.getString());
-	std::cout << "got name " << name << std::endl;
+	////std::cout << "got name " << name << std::endl;
 	race = strdup(zip.getString());
 	role = strdup(zip.getString());
 	job = strdup(zip.getString());
@@ -114,54 +114,54 @@ void Actor::load(TCODZip &zip) {
 	}
 	
 	bool hasAttacker = zip.getInt();
-	std::cout <<"got hasAttacker " << hasAttacker << std::endl;
+	//std::cout <<"got hasAttacker " << hasAttacker << std::endl;
 	bool hasDestructible = zip.getInt();
-	std::cout <<"got hasDestructible "<< hasDestructible << std::endl;
+	//std::cout <<"got hasDestructible "<< hasDestructible << std::endl;
 	bool hasAi = zip.getInt();
-	std::cout <<"got hasAi "<< hasAi << std::endl;
+	//std::cout <<"got hasAi "<< hasAi << std::endl;
 	bool hasPickable = zip.getInt();
-	std::cout <<"got hasPickable " << hasPickable << std::endl;
+	//std::cout <<"got hasPickable " << hasPickable << std::endl;
 	bool hasContainer = zip.getInt();
-	std::cout <<"got hasContainer " << hasContainer << std::endl;
+	//std::cout <<"got hasContainer " << hasContainer << std::endl;
 	bool hasCompanion = zip.getInt();
-	std::cout <<"got hasCompanion " << hasCompanion << std::endl;
+	//std::cout <<"got hasCompanion " << hasCompanion << std::endl;
 	
 	if (hasAttacker) {
 		attacker = new Attacker(0.0f);
 		attacker->load(zip);
 	}
-	std::cout <<"got attacker module" << std::endl;
+	//std::cout <<"got attacker module" << std::endl;
 	
 	if (hasDestructible) {
-		std::cout << "trying destructible" << std::endl;
+		//std::cout << "trying destructible" << std::endl;
 		destructible = Destructible::create(zip);
 	}
-	std::cout <<"got destructible module" << std::endl;
+	//std::cout <<"got destructible module" << std::endl;
 	
 	if (hasAi) {
-		std::cout << "trying ai" <<std::endl;
+		//std::cout << "trying ai" <<std::endl;
 		ai = Ai::create(zip);
 	}
-	std::cout <<"got ai module" << std::endl;
+	//std::cout <<"got ai module" << std::endl;
 	
 	if (hasPickable) {
-		std::cout << "trying pickable module" <<std::endl;
+		//std::cout << "trying pickable module" <<std::endl;
 		pickable = Pickable::create(zip);
 	}
-	std::cout <<"got pickable module" << std::endl;
+	//std::cout <<"got pickable module" << std::endl;
 	
 	if (hasContainer) {
-		std::cout << "trying container module " << std::endl;
+		//std::cout << "trying container module " << std::endl;
 		container = new Container(0);
 		container->load(zip);
 	}
-	std::cout <<"got container module" << std::endl;
+	//std::cout <<"got container module" << std::endl;
 	
 	if (hasCompanion){
 		Actor *act = new Actor(0,0,0,NULL,TCODColor::white);
 		act->load(zip);
 		companion = act;
-		std::cout << "got companion" <<std::endl;
+		//std::cout << "got companion" <<std::endl;
 	}
 }
 	

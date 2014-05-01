@@ -4,7 +4,7 @@
 #include <string>
 Ai *Ai::create(TCODZip &zip) {
 	AiType type = (AiType)zip.getInt();
-	std::cout << "got AITYPE" << type << std::endl;
+	//std::cout << "got AITYPE" << type << std::endl;
 	Ai *ai = NULL;
 	switch(type) {
 		case PLAYER: ai = new PlayerAi(); break;
@@ -30,11 +30,12 @@ Ai *Ai::create(TCODZip &zip) {
 		case GARDNER: ai = new GardnerAi(); break;
 		case FRUIT: ai = new FruitAi(NULL,0); break;
 		case ZED: ai = new ZedAi(); break;
-		case COMPANION: std::cout<<"got here"<<std::endl; ai = new CompanionAi(NULL,0); break;
+		case COMPANION: //std::cout<<"got here"<<std::endl; 
+			ai = new CompanionAi(NULL,0); break;
 		case DUMMY: ai = new DummyAi(); break;
 		
 	}
-	std::cout << "got past switch " << std::endl;
+	//std::cout << "got past switch " << std::endl;
 	ai->load(zip);
 	return ai;
 }
@@ -3049,7 +3050,7 @@ locked = zip.getInt();
 }
 void LockerAi::interaction(Actor *owner, Actor *target){
 
-	std::cout << "got to interact" << std::endl;
+	//std::cout << "got to interact" << std::endl;
 	//this line of code causes the locker dropping flavor text to never be printed, is that intentional?
 	if (engine.map->tiles[owner->x+(owner->y)*engine.map->width].decoration == 23){
 		engine.map->tiles[owner->x+owner->y*engine.map->width].decoration = 24;
@@ -3122,7 +3123,7 @@ void LockerAi::interaction(Actor *owner, Actor *target){
 		}
 		if(!locked)
 		{
-			std::cout << "got here" << std::endl;
+			//std::cout << "got here" << std::endl;
 			Actor **iterator=owner->container->inventory.begin();
 			for(int i = 0; i < owner->container->size; i++)
 			{
@@ -3506,17 +3507,17 @@ CompanionAi::CompanionAi(Actor *tamer, int rangeLimit, Command command):tamer(ta
 void CompanionAi::save(TCODZip &zip){
 	zip.putInt(COMPANION);
 	zip.putInt(edible);
-	std::cout<<"AI put edible" << edible << std::endl;
+	//std::cout<<"AI put edible" << edible << std::endl;
 	zip.putInt(att);
 	zip.putInt(period);
 	zip.putInt(rangeLimit);
-	std::cout<<"AI put limit" << rangeLimit << std::endl;
+	//std::cout<<"AI put limit" << rangeLimit << std::endl;
 	zip.putInt(assignedX);
-	std::cout<<"AI put X" << assignedX << std::endl;
+	//std::cout<<"AI put X" << assignedX << std::endl;
 	zip.putInt(assignedY);
-	std::cout<<"AI put Y" << assignedY << std::endl;
+	//std::cout<<"AI put Y" << assignedY << std::endl;
 	zip.putInt(command);
-	std::cout<<"AI put command" << command << std::endl;
+	//std::cout<<"AI put command" << command << std::endl;
 	
 	if (tamer == engine.player){
 		zip.putInt(1);
@@ -3529,15 +3530,15 @@ void CompanionAi::load(TCODZip &zip){
 	edible = zip.getInt();
 	att = (Attitude)zip.getInt();
 	period = zip.getInt();
-	std::cout<<"AI got edible" << edible << std::endl;
+	//std::cout<<"AI got edible" << edible << std::endl;
 	rangeLimit = zip.getInt();
-	std::cout<<"AI got limit" << rangeLimit << std::endl;
+	//std::cout<<"AI got limit" << rangeLimit << std::endl;
 	assignedX = zip.getInt();
-	std::cout<<"AI got X" << assignedX << std::endl;
+	//std::cout<<"AI got X" << assignedX << std::endl;
 	assignedY = zip.getInt();
-	std::cout<<"AI got Y" << assignedY << std::endl;
+	//std::cout<<"AI got Y" << assignedY << std::endl;
 	command = (Command)zip.getInt();
-	std::cout<<"AI got command" << command << std::endl;
+	//std::cout<<"AI got command" << command << std::endl;
 	bool playerTamed = zip.getInt();
 	
 	if (playerTamed){

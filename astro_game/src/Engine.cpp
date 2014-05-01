@@ -676,13 +676,13 @@ void Engine::init() {
 	if (startTutorial) {
 		ctrTer = 0;//13 is size
 		bonusTer = false;
-		cout << "number of terminals in this level " << ctrTer << endl;
+		//cout << "number of terminals in this level " << ctrTer << endl;
 		map->init(true, Param::TUTORIAL);
 	}
 	else {
 		ctrTer = 3;//13 is size
 		bonusTer = false;
-		cout << "number of terminals in this level " << ctrTer << endl;
+		//cout << "number of terminals in this level " << ctrTer << endl;
 		map->init(true, Param::GENERIC);
 	}
 	gui->message(TCODColor::red, "Welcome to Astroverious Station! Warning unknown alien life form detected!");
@@ -716,41 +716,41 @@ void Engine::save() {
 		zip.putInt(map->height);
 		map->save(zip);
 		//then the player
-		std::cout << "saving player " << std::endl;
+		////std::cout << "saving player " << std::endl;
 		player->save(zip);
-		std::cout << "done saving player " << std::endl;
+		//std::cout << "done saving player " << std::endl;
 		//then the stairs
 		stairs->save(zip);
 		playerLight->save(zip);
 		//save the boss
-		std::cout << "saving boss " << std::endl;
+		//std::cout << "saving boss " << std::endl;
 		boss->save(zip);
-		std::cout << "done saving boss " << std::endl;
+		//std::cout << "done saving boss " << std::endl;
 		//then all the other actors
 		zip.putInt(actors.size() - 4); //minus another one for boss actor?
-		std::cout << "saving other actors " << std::endl;
-		std::cout << "number of actors " << actors.size() - 4 << std::endl;
+		//std::cout << "saving other actors " << std::endl;
+		//std::cout << "number of actors " << actors.size() - 4 << std::endl;
 		for (Actor **it = actors.begin(); it!=actors.end(); it++) {
 			if (*it != player && *it != stairs && *it != playerLight && *it != boss) { //!= boss like stairs etc.?
-				std::cout << "saving " << (*it)->name << std::endl;
+				//std::cout << "saving " << (*it)->name << std::endl;
 				(*it)->save(zip);
 			}
 		}
 		//finally the message log
-		std::cout << "saving gui " <<std::endl;
+		//std::cout << "saving gui " <<std::endl;
 		gui->save(zip);
-		std::cout << "Done saving gui " <<std::endl;
+		//std::cout << "Done saving gui " <<std::endl;
 		zip.putInt(numTer);
 		zip.putInt(ctrTer);
 		zip.putInt(bonusTer);
-		std::cout << "saving numTerminals, ctrTer: "<<numTer<<", " <<ctrTer<<std::endl;
+		//std::cout << "saving numTerminals, ctrTer: "<<numTer<<", " <<ctrTer<<std::endl;
 		for (int i = 0; i < numTer; i++) {
 			zip.putInt(valTer[i]);
-			std::cout << "valTer " << valTer[i] << std::endl;
+			//std::cout << "valTer " << valTer[i] << std::endl;
 		}
-		std::cout << "almost done saving" << std::endl;
+		//std::cout << "almost done saving" << std::endl;
 		zip.saveToFile("game.sav");
-		std::cout << "done saving" << std::endl;
+		//std::cout << "done saving" << std::endl;
 	}
 }
 
@@ -839,7 +839,7 @@ void Engine::load(bool pause) {
 		invState = zip.getInt();
 		menuState = zip.getInt();
 		armorState = zip.getInt();
-		std::cout << "got here" << std::endl;
+		//std::cout << "got here" << std::endl;
 		invFrames = zip.getInt();
 		selX = zip.getInt();
 		selY = zip.getInt();
@@ -851,10 +851,10 @@ void Engine::load(bool pause) {
 		map = new Map(width,height);
 		map->load(zip);
 		//then the player
-		std::cout << "loading player" << std::endl;
+		//std::cout << "loading player" << std::endl;
 		player = new Actor(0,0,0,NULL,TCODColor::white);
 		player->load(zip);
-		std::cout << "loaded player" << std::endl;
+		//std::cout << "loaded player" << std::endl;
 		//the stairs
 		stairs = new Actor(0,0,0,NULL,TCODColor::white);
 		stairs->load(zip);
@@ -863,7 +863,7 @@ void Engine::load(bool pause) {
 		playerLight->load(zip);
 		//load the boss
 		boss = new Actor(0,0,0, NULL, TCODColor::white);
-		std::cout << "loading boss " << std::endl;
+		//std::cout << "loading boss " << std::endl;
 		boss->load(zip);
 		actors.push(player);
 		actors.push(stairs);
@@ -872,29 +872,29 @@ void Engine::load(bool pause) {
 		//actors.push(boss); //I push the boss to actorsList on line in Map.cpp so I don't need to push it here?
 		//then all other actors
 		int nbActors = zip.getInt();
-		std::cout << "loading other actors" << std::endl;
-		std::cout << "number of actors " << nbActors << std::endl;
+		//std::cout << "loading other actors" << std::endl;
+		//std::cout << "number of actors " << nbActors << std::endl;
 		while (nbActors > 0) {
 			Actor *actor = new Actor(0,0,0,NULL, TCODColor::white);
 			actor->load(zip);
 			if(actor != boss && actor != playerLight && actor != stairs && actor != player)
 			actors.push(actor);
-			std::cout << "loaded " << actor->name << std::endl;
+			//std::cout << "loaded " << actor->name << std::endl;
 			nbActors--;
 		}
 		//finally, the message log
-		std::cout << "got to gui " << std::endl;
+		//std::cout << "got to gui " << std::endl;
 		gui->load(zip);
-		std::cout << "loaded gui " << std::endl;
+		//std::cout << "loaded gui " << std::endl;
 		numTer = zip.getInt();
 		ctrTer = zip.getInt();
 		bonusTer = zip.getInt();
-		std::cout << "About to load terminals. numTer, ctrTer = "<<numTer<<", "<<ctrTer << std::endl;
+		//std::cout << "About to load terminals. numTer, ctrTer = "<<numTer<<", "<<ctrTer << std::endl;
 		for (int i = 0; i < numTer; i++) {
 			valTer[i] = zip.getInt();
-			std::cout << "valTer " << valTer[i] << std::endl;
+			//std::cout << "valTer " << valTer[i] << std::endl;
 		}
-		std::cout << "got past terminals " <<std::endl;
+		//std::cout << "got past terminals " <<std::endl;
 		gui->message(TCODColor::pink,"loaded");
 		gameStatus = STARTUP;
 	}
@@ -921,12 +921,12 @@ void Engine::update() {
 		if(player->destructible->maxHp > player->destructible->hp && player->hunger > 0 && engine.turnCount%10 == 1)
 			player->destructible->hp++;
 		player->updateAuras();
-		std::cout << "updating actors " <<std::endl;
-		std::cout << "number of actors " << actors.size() - 1 << std::endl;
+		//std::cout << "updating actors " <<std::endl;
+		//std::cout << "number of actors " << actors.size() - 1 << std::endl;
 		for (Actor **iterator = actors.begin(); iterator != actors.end(); iterator++) {
 			Actor *actor = *iterator;
 			if (actor != player){// && actor->ch != 'l') {
-				std::cout << "updating " << actor->name << std::endl;
+				//std::cout << "updating " << actor->name << std::endl;
 				actor->update();
 			}
 		}
@@ -1180,7 +1180,7 @@ void Engine::nextLevel() {
 		ctrTer = 3;                                                  ////set ctrTer
 		bonusTer = false;
 	}
-	cout << "number of terminals this level " << ctrTer << endl;
+	//cout << "number of terminals this level " << ctrTer << endl;
 	TCODRandom * levelRng = TCODRandom::getInstance();
 	if (0 == levelRng->getInt(0,30)) {
 		map->init(true, Param::OFFICE_FLOOR);
