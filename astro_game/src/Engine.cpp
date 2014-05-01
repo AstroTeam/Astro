@@ -197,7 +197,7 @@ void Engine::init() {
 			((Equipment*)(chest->pickable))->use(chest,player);
 			
 			//Give some medkits
-			for(int i=0; i<4; i++){
+			for(int i=0; i<6; i++){
 				Actor *equip1 = new Actor(0,0,184,"Medkit", TCODColor::white);
 				equip1->sort = 1;
 				equip1->blocks = false;
@@ -451,7 +451,7 @@ void Engine::init() {
 			}
 			
 			//get EMPs
-			for(int i=0; i<2; i++){
+			for(int i=0; i<3; i++){
 				Actor *equip1 = new Actor(0,0,183, "EMP Pulse",TCODColor::white);
 				equip1->sort = 2;
 				equip1->blocks = false;
@@ -553,6 +553,23 @@ void Engine::init() {
 				engine.actors.push(equip1);
 				equip1->pickable->pick(equip1,player);
 			}
+			
+			//get an EMP
+			for(int i=0; i<3; i++){
+				Actor *equip1 = new Actor(0,0,183, "EMP Pulse",TCODColor::white);
+				equip1->sort = 2;
+				equip1->blocks = false;
+				equip1->pickable = new LightningBolt(5,20);
+				engine.actors.push(equip1);
+				equip1->pickable->pick(equip1,player);
+			}
+			
+			equip1 = new Actor(0,0,182,"Firebomb", TCODColor::white);
+			equip1->sort = 2;
+			equip1->blocks = false;
+			equip1->pickable = new Fireball(3,12,8);
+			engine.actors.push(equip1);
+			equip1->pickable->pick(equip1,player);
 			
 			helmet = new Actor(0,0,185,"Tech Helmet",TCODColor::white);
 			HeBonus = new ItemBonus(ItemBonus::HEALTH,0);
@@ -918,7 +935,9 @@ void Engine::update() {
 	if (gameStatus == NEW_TURN){
 		engine.turnCount++;
 		player->getHungry();
-		if(player->destructible->maxHp > player->destructible->hp && player->hunger > 0 && engine.turnCount%10 == 1)
+		if(player->race[0] != 'A' && player->destructible->maxHp > player->destructible->hp && player->hunger > 0 && engine.turnCount%10 == 1)
+			player->destructible->hp++;
+		if(player->race[0] == 'A' && player->destructible->maxHp > player->destructible->hp && player->hunger > 0 && engine.turnCount%5 == 1)
 			player->destructible->hp++;
 		player->updateAuras();
 		//std::cout << "updating actors " <<std::endl;
@@ -1820,6 +1839,7 @@ int Engine::getInitDex(int race, int job){
 		case 2: //Medic
 			break; 
 		case 3: //Quartermaster
+			dexterity += 1;
 			break;
 		case 4: //Survivalist
 			break;
