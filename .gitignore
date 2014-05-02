@@ -26,3 +26,4 @@ stderr.txt
 stdout.txt
 
 #Ignore
+.DS_Store
