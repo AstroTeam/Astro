@@ -1357,7 +1357,6 @@ bool Engine::pickATile(int *x, int *y, float maxRange, float AOE) {   //need to 
 	//need to make a list of '.' under other chars, that there would be a difference between mapcon and mapconCpy
 	//then need to make some sort of flag
 	
-	
 	//blitting of the map onto the screen...maybe blit onto temp root copy, then render and blit back
 	TCODConsole::blit(mapcon, mapx1, mapy1, mapx2, mapy2a, 
 		TCODConsole::root, 22, 0);
