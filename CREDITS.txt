@@ -11,7 +11,7 @@ Combat System, Weapons, Hit Chance Randomization, and Container Class Reconstruc
 
 Graduation Date: May 2016
 Major: Computer Science
-Contact Info: smoke signals
+Contact Info: mburgunder@ufl.edu
 
 
 Garrett Cotton
